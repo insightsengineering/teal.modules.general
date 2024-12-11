@@ -19,11 +19,20 @@
 #' @param show_total (`logical(1)`)
 #' Indicates whether to show total column.
 #' Defaults to `TRUE`.
+#' @param decorators `r roxygen_decorators_param("tm_t_crosstable")`
 #'
 #' @note For more examples, please see the vignette "Using cross table" via
 #' `vignette("using-cross-table", package = "teal.modules.general")`.
 #'
 #' @inherit shared_params return
+#'
+#' @section Decorating `tm_t_crosstable`:
+#'
+#' This module generates the following objects, which can be modified in place using decorators:
+#' - `table` (`ElementaryTable` - output of `rtables::build_table`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -39,7 +48,6 @@
 #'   }
 #'   mtcars[["primary_key"]] <- seq_len(nrow(mtcars))
 #' })
-#' datanames(data) <- "mtcars"
 #' join_keys(data) <- join_keys(join_key("mtcars", "mtcars", "primary_key"))
 #'
 #' app <- init(
@@ -85,8 +93,7 @@
 #' data <- within(data, {
 #'   ADSL <- rADSL
 #' })
-#' datanames(data) <- "ADSL"
-#' join_keys(data) <- default_cdisc_join_keys[datanames(data)]
+#' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
 #' app <- init(
 #'   data = data,
@@ -136,7 +143,8 @@ tm_t_crosstable <- function(label = "Cross Table",
                             show_total = TRUE,
                             pre_output = NULL,
                             post_output = NULL,
-                            basic_table_args = teal.widgets::basic_table_args()) {
+                            basic_table_args = teal.widgets::basic_table_args(),
+                            decorators = NULL) {
   message("Initializing tm_t_crosstable")
 
   # Requires Suggested packages
@@ -160,6 +168,9 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
+
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, null.ok = TRUE, "plot")
   # End of assertions
 
   # Make UI args
@@ -169,7 +180,8 @@ tm_t_crosstable <- function(label = "Cross Table",
     label = label,
     x = x,
     y = y,
-    basic_table_args = basic_table_args
+    basic_table_args = basic_table_args,
+    decorators = decorators
   )
 
   ans <- module(
@@ -186,6 +198,7 @@ tm_t_crosstable <- function(label = "Cross Table",
 
 # UI function for the cross-table module
 ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, post_output, ...) {
+  args <- list(...)
   ns <- NS(id)
   is_single_dataset <- teal.transform::is_single_dataset(x, y)
 
@@ -223,7 +236,8 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
           checkboxInput(ns("show_percentage"), "Show column percentage", value = show_percentage),
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
         )
-      )
+      ),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot"))
     ),
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
@@ -234,7 +248,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
 }
 
 # Server function for the cross-table module
-srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, basic_table_args) {
+srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, basic_table_args, decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -353,7 +367,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         teal.code::eval_code(
           substitute(
             expr = {
-              lyt <- basic_tables %>%
+              table <- basic_tables %>%
                 split_call %>% # styler: off
                 rtables::add_colcounts() %>%
                 tern::analyze_vars(
@@ -389,19 +403,25 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
           substitute(
             expr = {
               ANL <- tern::df_explicit_na(ANL)
-              tbl <- rtables::build_table(lyt = lyt, df = ANL[order(ANL[[y_name]]), ])
-              tbl
+              table <- rtables::build_table(lyt = table, df = ANL[order(ANL[[y_name]]), ])
             },
             env = list(y_name = y_name)
           )
         )
     })
 
-    output$title <- renderText(output_q()[["title"]])
+    decorated_output_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = select_decorators(decorators, "plot"),
+      expr = table
+    )
+
+    output$title <- renderText(req(decorated_output_q())[["title"]])
 
     table_r <- reactive({
       req(iv_r()$is_valid())
-      output_q()[["tbl"]]
+      req(decorated_output_q())[["table"]]
     })
 
     teal.widgets::table_with_settings_srv(
@@ -411,7 +431,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
       title = "Show R Code for Cross-Table"
     )
 
@@ -430,7 +450,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(teal.code::get_code(req(decorated_output_q())))
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

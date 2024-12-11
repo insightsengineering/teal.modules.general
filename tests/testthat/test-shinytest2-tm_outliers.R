@@ -4,7 +4,6 @@ app_driver_tm_outlier <- function() {
     CO2 <- CO2 # nolint: object_name
     CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: object_name
   })
-  teal.data::datanames(data) <- "CO2"
   teal.data::join_keys(data) <- teal.data::join_keys(join_key("CO2", "CO2", "primary_key"))
 
   vars <- teal.transform::choices_selected(
@@ -199,7 +198,7 @@ testthat::test_that("e2e - tm_outliers:
   # IQR METHOD
   testthat::expect_identical(app_driver$get_active_module_input("method"), "IQR")
   testthat::expect_match(
-    app_driver$active_module_element_text("ui_outlier_help"),
+    normalize_math_italic_text(app_driver$active_module_element_text("ui_outlier_help")),
     "x<Q1−3×IQRx<Q1−3×IQRx",
     fixed = TRUE
   )
@@ -212,7 +211,7 @@ testthat::test_that("e2e - tm_outliers:
   app_driver$expect_no_shiny_error()
   testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("zscore_slider")))
   testthat::expect_match(
-    app_driver$active_module_element_text("ui_outlier_help"),
+    normalize_math_italic_text(app_driver$active_module_element_text("ui_outlier_help")),
     "Zscore(x)<−3Zscore(x)<−3Zscore(x)",
     fixed = TRUE
   )
@@ -225,7 +224,7 @@ testthat::test_that("e2e - tm_outliers:
   app_driver$expect_no_shiny_error()
   testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("percentile_slider")))
   testthat::expect_match(
-    app_driver$active_module_element_text("ui_outlier_help"),
+    normalize_math_italic_text(app_driver$active_module_element_text("ui_outlier_help")),
     "Percentile(x)<0.01Percentile(x)<0.01 Percentile(x)",
     fixed = TRUE
   )
