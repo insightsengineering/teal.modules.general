@@ -37,8 +37,8 @@ Inside this app 3 datasets will be used
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
-  ADRS <- teal.modules.general::rADRS
-  ADLB <- teal.modules.general::rADLB
+  ADRS <- teal.data::rADRS
+  ADLB <- teal.data::rADLB
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 ```

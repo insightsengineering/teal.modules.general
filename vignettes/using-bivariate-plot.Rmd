@@ -40,9 +40,9 @@ data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL %>%
     mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-  ADRS <- teal.modules.general::rADRS
+  ADRS <- teal.data::rADRS
   ADTTE <- teal.modules.general::rADTTE
-  ADLB <- teal.modules.general::rADLB %>%
+  ADLB <- teal.data::rADLB %>%
     mutate(CHGC = as.factor(case_when(
       CHG < 1 ~ "N",
       CHG > 1 ~ "P",

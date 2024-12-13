@@ -37,7 +37,7 @@ data <- teal_data()
 data <- within(data, {
   ADSL <- teal.modules.general::rADSL
   ADTTE <- teal.modules.general::rADTTE
-  ADLB <- teal.modules.general::rADLB
+  ADLB <- teal.data::rADLB
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 ```

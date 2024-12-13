@@ -104,7 +104,7 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
-#'   ADSL <- rADSL
+#'   ADSL <- teal.data::rADSL
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
