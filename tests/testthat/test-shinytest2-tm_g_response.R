@@ -2,7 +2,7 @@ app_driver_tm_g_response <- function() {
   data <- teal.data::teal_data()
   data <- within(data, {
     require(nestcolor)
-    ADSL <- rADSL
+    ADSL <- teal.data::rADSL
   })
   teal.data::join_keys(data) <- teal.data::default_cdisc_join_keys[names(data)]
 

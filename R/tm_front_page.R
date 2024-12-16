@@ -25,7 +25,7 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
-#'   ADSL <- rADSL
+#'   ADSL <- teal.data::rADSL
 #'   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]

@@ -61,8 +61,8 @@
 #' library(sparkline)
 #' data <- teal_data()
 #' data <- within(data, {
-#'   ADSL <- rADSL
-#'   ADTTE <- rADTTE
+#'   ADSL <- teal.data::rADSL
+#'   ADTTE <- teal.data::rADTTE
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
