@@ -39,7 +39,7 @@ simple_cdisc_data <- function(datasets = c("ADSL", "ADRS", "ADTTE")) {
 
   data <- Reduce(
     x = datasets,
-    function(u, x) eval_code(u, sprintf("%1$s <- teal.modules.general::r%1$s", x)),
+    function(u, x) eval_code(u, sprintf("%1$s <- teal.data::r%1$s", x)),
     init = within(teal.data::teal_data(), require(nestcolor))
   )
 
