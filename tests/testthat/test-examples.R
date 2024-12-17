@@ -151,6 +151,7 @@ for (i in rd_files()) {
   testthat::test_that(
     paste0("example-", basename(i)),
     {
+      testthat::skip_on_cran()
       skip_if_too_deep(5)
       if (basename(i) %in% strict_exceptions) {
         op <- options()
