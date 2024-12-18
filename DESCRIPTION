@@ -82,21 +82,21 @@ Suggests:
 VignetteBuilder:
     knitr,
     rmarkdown
-Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2, 
+Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal, insightsengineering/teal.transform,
-    mllg/checkmate, daattali/colourpicker, tidyverse/dplyr, rstudio/DT, 
-    tidyverse/forcats, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp, 
-    slowkow/ggrepel, baddstats/goftest, ramnathv/htmlwidgets, jeroen/jsonlite, 
-    deepayan/lattice, insightsengineering/rtables, r-lib/lifecycle, 
-    r-lib/scales, daattali/shinyjs, shinyTree/shinyTree, rstudio/shinyvalidate, 
-    dreamRs/shinyWidgets, htmlwidgets/sparkline, tidyverse/stringr, 
-    insightsengineering/teal.code, insightsengineering/teal.data, 
-    insightsengineering/teal.logger, insightsengineering/teal.reporter, 
-    insightsengineering/teal.widgets, insightsengineering/tern, 
-    tidyverse/tibble, tidyverse/tidyr, yihui/knitr, daroczig/logger, 
-    insightsengineering/nestcolor, r-lib/pkgload, r-lib/rlang, 
-    rstudio/rmarkdown, insightsengineering/roxy.shinylive, tidyverse/rvest, 
-    rstudio/shinytest2, r-lib/testthat, r-lib/withr    
+    mllg/checkmate, daattali/colourpicker, tidyverse/dplyr, rstudio/DT,
+    tidyverse/forcats, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
+    slowkow/ggrepel, baddstats/goftest, ramnathv/htmlwidgets, jeroen/jsonlite,
+    deepayan/lattice, insightsengineering/rtables, r-lib/lifecycle,
+    r-lib/scales, daattali/shinyjs, shinyTree/shinyTree, rstudio/shinyvalidate,
+    dreamRs/shinyWidgets, htmlwidgets/sparkline, tidyverse/stringr,
+    insightsengineering/teal.code, insightsengineering/teal.data,
+    insightsengineering/teal.logger, insightsengineering/teal.reporter,
+    insightsengineering/teal.widgets, insightsengineering/tern,
+    tidyverse/tibble, tidyverse/tidyr, yihui/knitr, daroczig/logger,
+    insightsengineering/nestcolor, r-lib/pkgload, r-lib/rlang,
+    rstudio/rmarkdown, insightsengineering/roxy.shinylive, tidyverse/rvest,
+    rstudio/shinytest2, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 Language: en-US
