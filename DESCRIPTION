@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9040
-Date: 2024-08-14
+Version: 0.3.0.9061
+Date: 2024-12-17
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -27,8 +27,8 @@ Depends:
     ggplot2 (>= 3.4.0),
     R (>= 3.6),
     shiny (>= 1.6.0),
-    teal (>= 0.15.2.9052),
-    teal.transform (>= 0.5.0)
+    teal (>= 0.15.2.9091),
+    teal.transform (>= 0.5.0.9015)
 Imports:
     checkmate (>= 2.1.0),
     colourpicker,
@@ -48,6 +48,7 @@ Imports:
     lattice (>= 0.18-4),
     MASS,
     rtables (>= 0.6.8),
+    lifecycle (>= 0.2.0),
     scales,
     shinyjs,
     shinyTree (>= 0.2.8),
@@ -56,8 +57,8 @@ Imports:
     sparkline,
     stats,
     stringr (>= 1.4.1),
-    teal.code (>= 0.5.0),
-    teal.data (>= 0.5.0),
+    teal.code (>= 0.5.0.9012),
+    teal.data (>= 0.6.0.9015),
     teal.logger (>= 0.2.0.9004),
     teal.reporter (>= 0.3.0),
     teal.widgets (>= 0.4.0),
@@ -73,12 +74,14 @@ Suggests:
     pkgload,
     rlang (>= 1.0.0),
     rmarkdown (>= 2.23),
+    roxy.shinylive,
     rvest,
     shinytest2,
     testthat (>= 3.1.9),
     withr (>= 2.0.0)
 VignetteBuilder:
-    knitr
+    knitr,
+    rmarkdown
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
@@ -98,5 +101,5 @@ Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, packages = c("roxy.shinylive"))
 RoxygenNote: 7.3.2

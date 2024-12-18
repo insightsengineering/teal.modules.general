@@ -47,14 +47,21 @@ with_mocked_app_bindings <- function(code) {
     args <- list(...)
     args[["launch.browser"]] <- FALSE # needed for RStudio
 
-    app_driver <- shinytest2::AppDriver$new(
-      x,
-      shiny_args = args,
-      timeout = 20 * 1000,
-      load_timeout = 30 * 1000,
-      check_names = FALSE, # explicit check below
-      options = options() # https://github.com/rstudio/shinytest2/issues/377
+    app_driver <- tryCatch(
+      shinytest2::AppDriver$new(
+        x,
+        shiny_args = args,
+        timeout = 20 * 1000,
+        load_timeout = 30 * 1000,
+        check_names = FALSE, # explicit check below
+        options = options() # https://github.com/rstudio/shinytest2/issues/377
+      ),
+      error = function(e) {
+        e$app$stop() # Ensure the R instance is stopped
+        stop(e)
+      }
     )
+
     on.exit(app_driver$stop(), add = TRUE)
     app_driver$wait_for_idle()
 
@@ -144,6 +151,7 @@ for (i in rd_files()) {
   testthat::test_that(
     paste0("example-", basename(i)),
     {
+      testthat::skip_on_cran()
       skip_if_too_deep(5)
       testthat::skip_if_not_installed("pkgload")
       if (basename(i) %in% strict_exceptions) {
