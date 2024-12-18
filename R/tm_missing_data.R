@@ -51,7 +51,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("gridExtra", quietly = TRUE) && require("rlang", quietly = TRUE)
+#' @examples
 #' # general example data
 #' data <- teal_data()
 #' data <- within(data, {
@@ -85,7 +85,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("gridExtra", quietly = TRUE) && require("rlang", quietly = TRUE)
+#' @examples
 #' # CDISC example data
 #' data <- teal_data()
 #' data <- within(data, {

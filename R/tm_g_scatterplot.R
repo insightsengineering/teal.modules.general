@@ -45,7 +45,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # general data example
 #' data <- teal_data()
@@ -134,7 +134,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # CDISC data example
 #' data <- teal_data()
