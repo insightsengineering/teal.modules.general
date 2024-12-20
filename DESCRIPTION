@@ -82,7 +82,7 @@ Suggests:
 VignetteBuilder:
     knitr,
     rmarkdown
-Config/Needs/verdepcheck: tidyverse/ggplot2,
+Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal, insightsengineering/teal.transform,
     mllg/checkmate, daattali/colourpicker, tidyverse/dplyr, rstudio/DT,
     tidyverse/forcats, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
