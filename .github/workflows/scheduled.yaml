@@ -33,7 +33,7 @@ jobs:
           - { test-strategy: "min_isolated", test-additional-repos: "" }
           - { test-strategy: "release", test-additional-repos: "" }
           - { test-strategy: "max", test-additional-repos: "https://pharmaverse.r-universe.dev" }
-    uses: insightsengineering/r.pkg.template/.github/workflows/verdepcheck.yaml@main
+    uses: insightsengineering/r.pkg.template/.github/workflows/verdepcheck.yaml@allow_custom_repos
     name: Dependency Test - ${{ matrix.test-strategy }} 🔢
     secrets:
       REPO_GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}
