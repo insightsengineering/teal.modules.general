@@ -1368,9 +1368,12 @@ srv_distribution <- function(id,
       expr = tests_r()
     )
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
+      verbatim_content = source_code_r,
       title = "R Code for distribution"
     )
 
@@ -1402,7 +1405,7 @@ srv_distribution <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_output_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
