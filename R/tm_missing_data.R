@@ -1148,7 +1148,7 @@ srv_missing_data <- function(id,
         )
       }
 
-      within(qenv, table <- DT::datatable(summary_data))
+      within(qenv, table <- rlistings::as_listing(summary_data))
     })
 
     by_subject_plot_q <- reactive({
@@ -1315,7 +1315,7 @@ srv_missing_data <- function(id,
           options = list(language = list(zeroRecords = "No variable selected."), pageLength = input$levels_table_rows)
         )
       } else {
-        decorated_summary_table_q()[["table"]]
+        DT::datatable(decorated_summary_table_q()[["summary_data"]])
       }
     })
 
@@ -1392,7 +1392,7 @@ srv_missing_data <- function(id,
           card$append_plot(combination_plot_r(), dim = pws2$dim())
         } else if (sum_type == "By Variable Levels") {
           card$append_text("Table", "header3")
-          card$append_table(summary_table_r[["summary_data"]])
+          card$append_table(decorated_summary_table_q()[["table"]])
         } else if (sum_type == "Grouped by Subject") {
           card$append_text("Plot", "header3")
           card$append_plot(by_subject_plot_r(), dim = pws3$dim())
