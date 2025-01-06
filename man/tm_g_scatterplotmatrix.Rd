@@ -57,7 +57,7 @@ providing the overview of correlations and distributions across selected data.
 For more examples, please see the vignette "Using scatterplot matrix" via
 \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
 }
-\section{Decorating \code{tm_g_scatterplotmatrix}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:

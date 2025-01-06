@@ -24,7 +24,7 @@
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_g_association`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`grob` created with [ggplot2::ggplotGrob()])

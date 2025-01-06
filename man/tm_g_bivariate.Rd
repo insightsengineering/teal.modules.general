@@ -125,7 +125,7 @@ This is a general module to visualize 1 & 2 dimensional data.
 For more examples, please see the vignette "Using bivariate plot" via
 \code{vignette("using-bivariate-plot", package = "teal.modules.general")}.
 }
-\section{Decorating \code{tm_g_bivariate}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:

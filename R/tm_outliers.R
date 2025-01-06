@@ -15,7 +15,7 @@
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_outliers`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `box_plot` (`ggplot2`)

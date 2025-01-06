@@ -65,7 +65,7 @@ Module to analyze and identify outliers using different methods
 such as IQR, Z-score, and Percentiles, and offers visualizations including
 box plots, density plots, and cumulative distribution plots to help interpret the outliers.
 }
-\section{Decorating \code{tm_outliers}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:

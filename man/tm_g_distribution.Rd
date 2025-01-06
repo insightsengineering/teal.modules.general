@@ -81,7 +81,7 @@ Module is designed to explore the distribution of a single variable within a giv
 It offers several tools, such as histograms, Q-Q plots, and various statistical tests to
 visually and statistically analyze the variable's distribution.
 }
-\section{Decorating \code{tm_g_distribution}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators::

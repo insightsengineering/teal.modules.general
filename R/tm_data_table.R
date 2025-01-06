@@ -29,7 +29,7 @@
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_data_table`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `table` ([DT::datatable()])

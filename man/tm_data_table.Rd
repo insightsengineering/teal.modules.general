@@ -71,7 +71,7 @@ Configure the \code{DT.TOJSON_ARGS} option via
 \code{options(DT.TOJSON_ARGS = list(na = "string"))} before running the module.
 Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be lexicographic not numerical.
 }
-\section{Decorating \code{tm_data_table}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:

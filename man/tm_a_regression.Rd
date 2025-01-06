@@ -118,7 +118,7 @@ visualize residuals, and identify outliers.
 For more examples, please see the vignette "Using regression plots" via
 \code{vignette("using-regression-plots", package = "teal.modules.general")}.
 }
-\section{Decorating \code{tm_a_regression}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:

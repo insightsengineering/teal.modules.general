@@ -18,7 +18,7 @@
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_g_scatterplotmatrix`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`trellis` - output of `lattice::splom`)

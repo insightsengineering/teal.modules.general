@@ -17,7 +17,7 @@
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_missing_data`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `summary_plot` (`grob` created with [ggplot2::ggplotGrob()])

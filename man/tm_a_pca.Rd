@@ -90,7 +90,7 @@ ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and
 Additionally, it enables dynamic customization of plot aesthetics, such as opacity, size, and
 font size, through UI inputs.
 }
-\section{Decorating \code{tm_a_pca}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:

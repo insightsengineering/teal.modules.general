@@ -43,7 +43,7 @@
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_a_regression`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)

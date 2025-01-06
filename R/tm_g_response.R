@@ -39,7 +39,7 @@
 #' @note For more examples, please see the vignette "Using response plot" via
 #' `vignette("using-response-plot", package = "teal.modules.general")`.
 #'
-#' @section Decorating `tm_g_response`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)

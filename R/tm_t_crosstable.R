@@ -25,7 +25,7 @@
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_t_crosstable`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `table` (`ElementaryTable` - output of `rtables::build_table`)

@@ -71,7 +71,7 @@ options for showing percentages and sub-totals.
 For more examples, please see the vignette "Using cross table" via
 \code{vignette("using-cross-table", package = "teal.modules.general")}.
 }
-\section{Decorating \code{tm_t_crosstable}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:

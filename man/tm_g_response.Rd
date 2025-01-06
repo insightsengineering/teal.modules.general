@@ -106,7 +106,7 @@ as frequency or density.
 For more examples, please see the vignette "Using response plot" via
 \code{vignette("using-response-plot", package = "teal.modules.general")}.
 }
-\section{Decorating \code{tm_g_response}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:

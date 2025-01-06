@@ -117,7 +117,7 @@ trend line additions, and dynamic adjustments of point opacity and size through 
 For more examples, please see the vignette "Using scatterplot" via
 \code{vignette("using-scatterplot", package = "teal.modules.general")}.
 }
-\section{Decorating \code{tm_g_scatterplot}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:

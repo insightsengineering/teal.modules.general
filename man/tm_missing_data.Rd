@@ -65,7 +65,7 @@ gain insights into the completeness of their data.
 It is useful for clinical data analysis within the context of \code{CDISC} standards and
 adaptable for general data analysis purposes.
 }
-\section{Decorating \code{tm_missing_data}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:

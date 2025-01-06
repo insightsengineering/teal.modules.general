@@ -78,7 +78,7 @@ It supports configuring the appearance of the plots, including themes and whethe
 For more examples, please see the vignette "Using association plot" via
 \code{vignette("using-association-plot", package = "teal.modules.general")}.
 }
-\section{Decorating \code{tm_g_association}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:
