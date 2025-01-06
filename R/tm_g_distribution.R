@@ -23,7 +23,6 @@
 #' Defaults to `c(30L, 1L, 100L)`.
 #'
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Histogram", "QQplot")`
-#' @param decorators `r roxygen_decorators_param("tm_g_distribution")`
 #'
 #' @inherit shared_params return
 #'

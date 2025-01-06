@@ -15,7 +15,6 @@
 #' Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 #' `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
 #' rendered according to selection order.
-#' @param decorators `r roxygen_decorators_param("tm_g_scatterplotmatrix")`
 #'
 #' @inherit shared_params return
 #'

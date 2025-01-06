@@ -14,7 +14,6 @@
 #' - If vector of `length == 1` then the font sizes will have a fixed size.
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")`
-#' @param decorators `r roxygen_decorators_param("tm_a_pca")`
 #'
 #' @inherit shared_params return
 #'

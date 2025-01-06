@@ -21,7 +21,6 @@
 #' Default to `"gray"`.
 #'
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Bivariate1", "Bivariate2")`
-#' @param decorators `r roxygen_decorators_param("tm_g_association")`
 #'
 #' @inherit shared_params return
 #'

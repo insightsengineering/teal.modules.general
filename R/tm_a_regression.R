@@ -40,7 +40,6 @@
 # nolint start: line_length.
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage")`
 # nolint end: line_length.
-#' @param decorators `r roxygen_decorators_param("tm_a_regression")`
 #'
 #' @inherit shared_params return
 #'

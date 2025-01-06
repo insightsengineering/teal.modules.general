@@ -27,7 +27,6 @@
 #' `vignette("ggplot2-specs", package="ggplot2")`.
 #' @param max_deg (`integer`) optional, maximum degree for the polynomial trend line. Must not be less than 1.
 #' @param table_dec (`integer`) optional, number of decimal places used to round numeric values in the table.
-#' @param decorators `r roxygen_decorators_param("tm_g_scatterplot")`
 #'
 #' @inherit shared_params return
 #'
