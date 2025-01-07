@@ -87,9 +87,9 @@ visually and statistically analyze the variable's distribution.
 This module generates the following objects, which can be modified in place using decorators::
 \itemize{
 \item \code{histogram_plot} (\code{ggplot2})
-\item \code{qq_plot} (\code{data.frame})
-\item \code{summary_table} (\code{data.frame})
-\item \code{test_table} (\code{data.frame})
+\item \code{qq_plot} (\code{ggplot2})
+\item \code{summary_table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
+\item \code{test_table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
 }
 
 Decorators can be applied to all outputs or only to specific objects using a

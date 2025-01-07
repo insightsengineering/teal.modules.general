@@ -1021,7 +1021,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           expr_is_reactive = TRUE
         )
       },
-      rlang::set_names(c("box_plot", "density_plot", "cumulative_plot")),
+      setNames(c("box_plot", "density_plot", "cumulative_plot")),
       c(box_plot_q, density_plot_q, cumulative_plot_q)
     )
 

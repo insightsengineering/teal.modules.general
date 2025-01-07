@@ -7,7 +7,7 @@ roxygen_ggplot2_args_param <- function(...) {
     "The argument is merged with options variable `teal.ggplot2_args` and default module setup.\n\n",
     sprintf(
       "List names should match the following: `c(\"default\", %s)`.\n\n",
-      paste("\"", unlist(rlang::list2(...)), "\"", collapse = ", ", sep = "")
+      paste("\"", unlist(list(...)), "\"", collapse = ", ", sep = "")
     ),
     "For more details see the vignette: `vignette(\"custom-ggplot2-arguments\", package = \"teal.widgets\")`."
   )
