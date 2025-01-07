@@ -73,7 +73,7 @@ This module generates the following objects, which can be modified in place usin
 \item \code{summary_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
 \item \code{combination_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
 \item \code{by_subject_plot} (\code{ggplot2})
-\item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
+\item \code{table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
 }
 
 Decorators can be applied to all outputs or only to specific objects using a
