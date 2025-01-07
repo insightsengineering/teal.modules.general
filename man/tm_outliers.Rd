@@ -73,7 +73,7 @@ This module generates the following objects, which can be modified in place usin
 \item \code{box_plot} (\code{ggplot2})
 \item \code{density_plot} (\code{ggplot2})
 \item \code{cumulative_plot} (\code{ggplot2})
-\item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
+\item \code{table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
 }
 
 Decorators can be applied to all outputs or only to specific objects using a

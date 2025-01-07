@@ -21,7 +21,7 @@
 #' - `box_plot` (`ggplot2`)
 #' - `density_plot` (`ggplot2`)
 #' - `cumulative_plot` (`ggplot2`)
-#' - `table` ([DT::datatable()])
+#' - `table` (`listing_df` created with [rlistings::as_listing()])
 #'
 #' Decorators can be applied to all outputs or only to specific objects using a
 #' named list of `teal_transform_module` objects.
@@ -719,15 +719,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         within(qenv, summary_table <- data.frame())
       }
 
-      # Datatable is generated in qenv to allow for output decoration
+      # Generate decoratable object from data
       qenv <- within(qenv, {
-        table <- DT::datatable(
-          summary_table,
-          options = list(
-            dom = "t",
-            autoWidth = TRUE,
-            columnDefs = list(list(width = "200px", targets = "_all"))
-          )
+        table <- rlistings::as_listing(
+          tibble::rownames_to_column(summary_table, var = " ")
         )
       })
 
@@ -1044,7 +1039,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         if (iv_r()$is_valid()) {
           categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
           if (!is.null(categorical_var)) {
-            decorated_final_q()[["table"]]
+            DT::datatable(
+              decorated_final_q()[["summary_table"]],
+              options = list(
+                dom = "t",
+                autoWidth = TRUE,
+                columnDefs = list(list(width = "200px", targets = "_all"))
+              )
+            )
           }
         }
       }
@@ -1319,7 +1321,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         )
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
         if (length(categorical_var) > 0) {
-          summary_table <- common_code_q()[["summary_table"]]
+          summary_table <- decorated_final_q()[["table"]]
           card$append_text("Summary Table", "header3")
           card$append_table(summary_table)
         }
