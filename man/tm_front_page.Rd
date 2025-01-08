@@ -10,7 +10,8 @@ tm_front_page(
   tables = list(),
   additional_tags = tagList(),
   footnotes = character(0),
-  show_metadata = FALSE
+  show_metadata = FALSE,
+  datasets_selected = character(0L)
 )
 }
 \arguments{
@@ -31,6 +32,11 @@ for example to include an image, \code{tagList(tags$img(src = "image.png"))} or 
 element, if named the name is shown first in bold, followed by the value.}
 
 \item{show_metadata}{(\code{logical}) indicating whether the metadata of the datasets be available on the module.}
+
+\item{datasets_selected}{(\code{character}) A vector of datasets which should be
+shown and in what order. Names in the vector have to correspond with datasets names.
+If vector of \code{length == 0} (default) then all datasets are shown.
+Note: Only datasets of the \code{data.frame} class are compatible.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.

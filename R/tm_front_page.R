@@ -14,6 +14,7 @@
 #' @param footnotes (`character` vector) of text to be shown at the bottom of the module, for each
 #' element, if named the name is shown first in bold, followed by the value.
 #' @param show_metadata (`logical`) indicating whether the metadata of the datasets be available on the module.
+#' @inheritParams tm_variable_browser
 #'
 #' @inherit shared_params return
 #'
@@ -69,7 +70,8 @@ tm_front_page <- function(label = "Front page",
                           tables = list(),
                           additional_tags = tagList(),
                           footnotes = character(0),
-                          show_metadata = FALSE) {
+                          show_metadata = FALSE,
+                          datasets_selected = character(0L)) {
   message("Initializing tm_front_page")
 
   # Start of assertions
@@ -79,10 +81,19 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_multi_class(additional_tags, classes = c("shiny.tag.list", "html"))
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
   checkmate::assert_flag(show_metadata)
+  checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
+
   # End of assertions
 
   # Make UI args
   args <- as.list(environment())
+  datanames <- if (show_metadata && length(datasets_selected) > 0L) {
+    datasets_selected
+  } else if (show_metadata) {
+    "all"
+  } else {
+    NULL
+  }
 
   ans <- module(
     label = label,
@@ -90,7 +101,7 @@ tm_front_page <- function(label = "Front page",
     ui = ui_front_page,
     ui_args = args,
     server_args = list(tables = tables, show_metadata = show_metadata),
-    datanames = if (show_metadata) "all" else NULL
+    datanames = datanames
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
