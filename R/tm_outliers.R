@@ -722,7 +722,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       # Generate decoratable object from data
       qenv <- within(qenv, {
         table <- rlistings::as_listing(
-          tibble::rownames_to_column(summary_table, var = " ")
+          tibble::rownames_to_column(summary_table, var = " "),
+          key_cols = character(0L)
         )
       })
 
@@ -1021,7 +1022,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           expr_is_reactive = TRUE
         )
       },
-      setNames(c("box_plot", "density_plot", "cumulative_plot")),
+      stats::setNames(nm = c("box_plot", "density_plot", "cumulative_plot")),
       c(box_plot_q, density_plot_q, cumulative_plot_q)
     )
 
