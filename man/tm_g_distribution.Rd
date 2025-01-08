@@ -65,7 +65,7 @@ with text placed before the output to put the output into context. For example a
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-" (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or" \code{NULL}) optional,
+(\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional,
 if not \code{NULL}, decorator for tables or plots included in the module.
 When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
 
