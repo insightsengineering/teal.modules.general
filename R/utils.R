@@ -34,7 +34,7 @@
 #' - When the length of `size` is three: the plot points size are dynamically adjusted based on
 #' vector of `value`, `min`, and `max`.
 #' @param decorators `r lifecycle::badge("experimental")`
-#' " (`list` of `teal_transform_module`, named `list` of `teal_transform_module` or" `NULL`) optional,
+#' (`list` of `teal_transform_module`, named `list` of `teal_transform_module` or `NULL`) optional,
 #' if not `NULL`, decorator for tables or plots included in the module.
 #' When a named list of `teal_transform_module`, the decorators are applied to the respective output objects.
 #'
