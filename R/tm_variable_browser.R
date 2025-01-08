@@ -114,7 +114,7 @@ tm_variable_browser <- function(label = "Variable Browser",
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
-    datanames = "all",
+    datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
     server_args = list(
       datasets_selected = datasets_selected,
       parent_dataname = parent_dataname,
