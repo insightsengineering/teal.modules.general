@@ -145,7 +145,7 @@ tm_missing_data <- function(label = "Missing data",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
-  checkmate::assert_character(datasets_selected)
+  checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
   checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   ggtheme <- match.arg(ggtheme)
 
