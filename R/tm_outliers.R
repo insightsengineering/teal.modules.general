@@ -889,10 +889,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     # Cumulative distribution plot
     cumulative_plot_q <- reactive({
-      ANL <- common_code_q()[["ANL"]]
-      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]]
-
       qenv <- common_code_q()
+
+      ANL <- qenv[["ANL"]]
+      ANL_OUTLIER <- qenv[["ANL_OUTLIER"]]
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
