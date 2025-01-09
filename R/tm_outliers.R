@@ -12,17 +12,16 @@
 #' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
 #' specifies the categorical variable(s) to split the selected outlier variables on.
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Boxplot", "Density Plot", "Cumulative Distribution Plot")`
-#' @param decorators `r roxygen_decorators_param("tm_outliers")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_outliers`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `box_plot` (`ggplot2`)
 #' - `density_plot` (`ggplot2`)
 #' - `cumulative_plot` (`ggplot2`)
-#' - `table` ([DT::datatable()])
+#' - `table` (`listing_df` created with [rlistings::as_listing()])
 #'
 #' Decorators can be applied to all outputs or only to specific objects using a
 #' named list of `teal_transform_module` objects.
@@ -720,15 +719,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         within(qenv, summary_table <- data.frame())
       }
 
-      # Datatable is generated in qenv to allow for output decoration
+      # Generate decoratable object from data
       qenv <- within(qenv, {
-        table <- DT::datatable(
-          summary_table,
-          options = list(
-            dom = "t",
-            autoWidth = TRUE,
-            columnDefs = list(list(width = "200px", targets = "_all"))
-          )
+        table <- rlistings::as_listing(
+          tibble::rownames_to_column(summary_table, var = " "),
+          key_cols = character(0L)
         )
       })
 
@@ -894,10 +889,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     # Cumulative distribution plot
     cumulative_plot_q <- reactive({
-      ANL <- common_code_q()[["ANL"]]
-      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]]
-
       qenv <- common_code_q()
+
+      ANL <- qenv[["ANL"]]
+      ANL_OUTLIER <- qenv[["ANL_OUTLIER"]]
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
@@ -1027,7 +1022,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           expr_is_reactive = TRUE
         )
       },
-      rlang::set_names(c("box_plot", "density_plot", "cumulative_plot")),
+      stats::setNames(nm = c("box_plot", "density_plot", "cumulative_plot")),
       c(box_plot_q, density_plot_q, cumulative_plot_q)
     )
 
@@ -1045,7 +1040,14 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         if (iv_r()$is_valid()) {
           categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
           if (!is.null(categorical_var)) {
-            decorated_final_q()[["table"]]
+            DT::datatable(
+              decorated_final_q()[["summary_table"]],
+              options = list(
+                dom = "t",
+                autoWidth = TRUE,
+                columnDefs = list(list(width = "200px", targets = "_all"))
+              )
+            )
           }
         }
       }
@@ -1299,9 +1301,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
     })
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_final_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_final_q()))),
+      verbatim_content = source_code_r,
       title = "Show R Code for Outlier"
     )
 
@@ -1317,7 +1322,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         )
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
         if (length(categorical_var) > 0) {
-          summary_table <- common_code_q()[["summary_table"]]
+          summary_table <- decorated_final_q()[["table"]]
           card$append_text("Summary Table", "header3")
           card$append_table(summary_table)
         }
@@ -1333,7 +1338,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_final_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

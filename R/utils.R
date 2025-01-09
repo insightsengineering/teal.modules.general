@@ -33,6 +33,14 @@
 #' - When the length of `size` is one: the plot point sizes will have a fixed size.
 #' - When the length of `size` is three: the plot points size are dynamically adjusted based on
 #' vector of `value`, `min`, and `max`.
+#' @param decorators `r lifecycle::badge("experimental")`
+#' (`list` of `teal_transform_module`, named `list` of `teal_transform_module` or `NULL`) optional,
+#' if not `NULL`, decorator for tables or plots included in the module.
+#' When a named list of `teal_transform_module`, the decorators are applied to the respective output objects.
+#'
+#' Otherwise, the decorators are applied to all objects, which is equivalent as using the name `default`.
+#'
+#' See section "Decorating Module" below for more details.
 #'
 #' @return Object of class `teal_module` to be used in `teal` applications.
 #'
@@ -299,21 +307,26 @@ srv_decorate_teal_data <- function(id, data, decorators, expr, expr_is_reactive 
 
   missing_expr <- missing(expr)
   if (!missing_expr && !expr_is_reactive) {
-    expr <- rlang::enexpr(expr)
+    expr <- dplyr::enexpr(expr) # Using dplyr re-export to avoid adding rlang to Imports
   }
 
   moduleServer(id, function(input, output, session) {
     decorated_output <- srv_transform_teal_data("inner", data = data, transformators = decorators)
 
     reactive({
-      # ensure original errors are displayed and `eval_code` is never executed with NULL
-      req(data(), decorated_output())
-      if (missing_expr) {
-        decorated_output()
-      } else if (expr_is_reactive) {
-        teal.code::eval_code(decorated_output(), expr())
+      data_out <- try(data(), silent = TRUE)
+      if (inherits(data_out, "qenv.error")) {
+        data()
       } else {
-        teal.code::eval_code(decorated_output(), expr)
+        # ensure original errors are displayed and `eval_code` is never executed with NULL
+        req(data(), decorated_output())
+        if (missing_expr) {
+          decorated_output()
+        } else if (expr_is_reactive) {
+          teal.code::eval_code(decorated_output(), expr())
+        } else {
+          teal.code::eval_code(decorated_output(), expr)
+        }
       }
     })
   })
