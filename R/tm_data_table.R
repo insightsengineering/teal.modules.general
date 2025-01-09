@@ -20,6 +20,10 @@
 #' shown and in what order. Names in the vector have to correspond with datasets names.
 #' If vector of `length == 0` (default) then all datasets are shown.
 #' Note: Only datasets of the `data.frame` class are compatible.
+#' @param datanames (`character`) A vector of datasets which should be
+#' shown and in what order. Names in the vector have to correspond with datasets names.
+#' If vector of `length == 0` (default) then all datasets are shown.
+#' *Note*: Only datasets of the `data.frame` class are compatible.
 #' @param dt_args (`named list`) Additional arguments to be passed to [DT::datatable()]
 #' (must not include `data` or `options`).
 #' @param dt_options (`named list`) The `options` argument to `DT::datatable`. By default
@@ -95,7 +99,8 @@
 #'
 tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
-                          datasets_selected = character(0),
+                          datasets_selected = NULL
+                          datanames = character(0L)
                           dt_args = list(),
                           dt_options = list(
                             searching = FALSE,
@@ -122,7 +127,7 @@ tm_data_table <- function(label = "Data Table",
     })
   }
 
-  checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1)
   checkmate::assert(
     checkmate::check_list(dt_args, len = 0),
     checkmate::check_subset(names(dt_args), choices = names(formals(DT::datatable)))
@@ -140,10 +145,10 @@ tm_data_table <- function(label = "Data Table",
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
-    datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
+    datanames = if (length(datanames) == 0) "all" else datanames,
     server_args = list(
       variables_selected = variables_selected,
-      datasets_selected = datasets_selected,
+      datanames = datanames,
       dt_args = dt_args,
       dt_options = dt_options,
       server_rendering = server_rendering,
@@ -193,7 +198,7 @@ ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
 # Server page module
 srv_page_data_table <- function(id,
                                 data,
-                                datasets_selected,
+                                datanames,
                                 variables_selected,
                                 dt_args,
                                 dt_options,
@@ -212,9 +217,9 @@ srv_page_data_table <- function(id,
       is.data.frame(isolate(data())[[name]])
     }, datanames)
 
-    if (!identical(datasets_selected, character(0))) {
-      checkmate::assert_subset(datasets_selected, datanames)
-      datanames <- datasets_selected
+    if (!identical(datanames, character(0))) {
+      checkmate::assert_subset(datanames, datanames)
+      datanames <- datanames
     }
 
     output$dataset_table <- renderUI({
