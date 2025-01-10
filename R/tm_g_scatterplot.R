@@ -27,11 +27,10 @@
 #' `vignette("ggplot2-specs", package="ggplot2")`.
 #' @param max_deg (`integer`) optional, maximum degree for the polynomial trend line. Must not be less than 1.
 #' @param table_dec (`integer`) optional, number of decimal places used to round numeric values in the table.
-#' @param decorators `r roxygen_decorators_param("tm_g_scatterplot")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_g_scatterplot`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)
@@ -1055,9 +1054,12 @@ srv_g_scatterplot <- function(id,
       }
     })
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_plot_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_output_plot_q()))),
+      verbatim_content = source_code_r,
       title = "R Code for scatterplot"
     )
 
@@ -1076,7 +1078,7 @@ srv_g_scatterplot <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_output_plot_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
