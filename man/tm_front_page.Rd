@@ -10,7 +10,7 @@ tm_front_page(
   tables = list(),
   additional_tags = tagList(),
   footnotes = character(0),
-  show_metadata = TRUE,
+  show_metadata = FALSE,
   datanames = if (isTRUE(show_metadata)) "all" else NULL
 )
 }
