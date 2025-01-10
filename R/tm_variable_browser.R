@@ -109,7 +109,8 @@ tm_variable_browser <- function(label = "Variable Browser",
       with = "tm_variable_browser(datanames)",
       details = c(
         "If both `datasets_selected` and `datanames` are set `datasets_selected` will be silently ignored.",
-        i = 'Use `tm_variable_browser(datanames = "all")` to keep the previous behavior and avoid this warning.')
+        i = 'Use `tm_variable_browser(datanames = "all")` to keep the previous behavior and avoid this warning.'
+      )
     )
   }
   checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)

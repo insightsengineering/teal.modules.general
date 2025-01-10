@@ -89,7 +89,8 @@ tm_front_page <- function(label = "Front page",
       with = "tm_front_page(datanames)",
       details = c(
         "With `datanames` you can select which datasets are displayed.",
-        i = "Use `tm_front_page(datanames = 'all')` to keep the previous behavior and avoid this warning.")
+        i = "Use `tm_front_page(datanames = 'all')` to keep the previous behavior and avoid this warning."
+      )
     )
   }
   checkmate::assert_character(datanames,
@@ -143,7 +144,8 @@ ui_front_page <- function(id, ...) {
           id = "front_page_metabutton",
           class = "m-4",
           actionButton(ns("metadata_button"), "Show metadata")
-        )},
+        )
+      },
       tags$footer(
         class = ".small",
         get_footer_tags(args$footnotes)
