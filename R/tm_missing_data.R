@@ -163,7 +163,7 @@ tm_missing_data <- function(label = "Missing data",
   ans <- module(
     label,
     server = srv_page_missing_data,
-    datanames = union(datanames, parent_dataname), 
+    datanames = union(datanames, parent_dataname),
     server_args = list(
       parent_dataname = parent_dataname,
       plot_height = plot_height,
