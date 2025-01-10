@@ -31,7 +31,8 @@ for example to include an image, \code{tagList(tags$img(src = "image.png"))} or 
 \item{footnotes}{(\code{character} vector) of text to be shown at the bottom of the module, for each
 element, if named the name is shown first in bold, followed by the value.}
 
-\item{show_metadata}{(\code{logical}) \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} indicating whether the metadata of the datasets be available on the module.}
+\item{show_metadata}{(\code{logical}) \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} indicating
+whether the metadata of the datasets be available on the module.}
 
 \item{datanames}{(\code{character}) Names of the datasets relevant to the item.
 There are 2 reserved values that have specific behaviors:

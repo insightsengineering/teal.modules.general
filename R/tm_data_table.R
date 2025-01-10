@@ -113,7 +113,7 @@ tm_data_table <- function(label = "Data Table",
     })
   }
   if (!is.null(datasets_selected)) {
-    lifecycle::deprecate_stop(
+    lifecycle::deprecate_soft(
       when = "0.4.0",
       what = "tm_data_table(datasets_selected = 'is deprecated, use `datanames`')"
     )

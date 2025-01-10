@@ -6,8 +6,8 @@
 \usage{
 tm_variable_browser(
   label = "Variable Browser",
-  datasets_selected = NULL,
-  datanames = NULL,
+  datasets_selected = "all",
+  datanames = datasets_selected,
   parent_dataname = "ADSL",
   pre_output = NULL,
   post_output = NULL,

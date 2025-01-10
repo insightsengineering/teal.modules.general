@@ -81,8 +81,8 @@
 #' @export
 #'
 tm_variable_browser <- function(label = "Variable Browser",
-                                datasets_selected = NULL,
-                                datanames = NULL,
+                                datasets_selected = "all",
+                                datanames = datasets_selected,
                                 parent_dataname = "ADSL",
                                 pre_output = NULL,
                                 post_output = NULL,
@@ -103,7 +103,7 @@ tm_variable_browser <- function(label = "Variable Browser",
   # Start of assertions
   checkmate::assert_string(label)
   if (!is.null(datasets_selected)) {
-    lifecycle::deprecate_stop(
+    lifecycle::deprecate_soft(
       when = "0.4.0",
       what = "tm_variable_browser(datasets_selected = 'is deprecated, use `datanames`')"
     )
