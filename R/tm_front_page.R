@@ -71,7 +71,7 @@ tm_front_page <- function(label = "Front page",
                           tables = list(),
                           additional_tags = tagList(),
                           footnotes = character(0),
-                          show_metadata = TRUE,
+                          show_metadata = FALSE,
                           datanames = if (isTRUE(show_metadata)) "all" else NULL) {
   message("Initializing tm_front_page")
 
@@ -81,11 +81,15 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_list(tables, types = "data.frame", names = "named", any.missing = FALSE)
   checkmate::assert_multi_class(additional_tags, classes = c("shiny.tag.list", "html"))
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
-  if (!is.null(show_metadata)) {
+  checkmate::assert_flag(show_metadata)
+  if (!missing(show_metadata)) {
     lifecycle::deprecate_soft(
       when = "0.4.0",
       what = "tm_front_page(show_metadata)",
-      with = "tm_front_page(datanames)"
+      with = "tm_front_page(datanames)",
+      details = c(
+        "With `datanames` you can select which datasets are displayed.",
+        i = "Use `tm_front_page(datanames = 'all')` to keep the previous behavior and avoid this warning.")
     )
   }
   checkmate::assert_character(datanames,
@@ -134,11 +138,12 @@ ui_front_page <- function(id, ...) {
         class = "my-4",
         args$additional_tags
       ),
-      tags$div(
-        id = "front_page_metabutton",
-        class = "m-4",
-        actionButton(ns("metadata_button"), "Show metadata")
-      ),
+      if (length(args$datanames) > 0L) {
+        tags$div(
+          id = "front_page_metabutton",
+          class = "m-4",
+          actionButton(ns("metadata_button"), "Show metadata")
+        )},
       tags$footer(
         class = ".small",
         get_footer_tags(args$footnotes)
@@ -166,30 +171,31 @@ srv_front_page <- function(id, data, tables) {
         caption.placement = "top"
       )
     })
-
-    observeEvent(
-      input$metadata_button, showModal(
-        modalDialog(
-          title = "Metadata",
-          dataTableOutput(ns("metadata_table")),
-          size = "l",
-          easyClose = TRUE
+    if (length(isolate(names(data()))) > 0L) {
+      observeEvent(
+        input$metadata_button, showModal(
+          modalDialog(
+            title = "Metadata",
+            dataTableOutput(ns("metadata_table")),
+            size = "l",
+            easyClose = TRUE
+          )
         )
       )
-    )
 
-    metadata_data_frame <- reactive({
-      datanames <- names(data())
-      convert_metadata_to_dataframe(
-        lapply(datanames, function(dataname) attr(data()[[dataname]], "metadata")),
-        datanames
-      )
-    })
+      metadata_data_frame <- reactive({
+        datanames <- names(data())
+        convert_metadata_to_dataframe(
+          lapply(datanames, function(dataname) attr(data()[[dataname]], "metadata")),
+          datanames
+        )
+      })
 
-    output$metadata_table <- renderDataTable({
-      validate(need(nrow(metadata_data_frame()) > 0, "The data has no associated metadata"))
-      metadata_data_frame()
-    })
+      output$metadata_table <- renderDataTable({
+        validate(need(nrow(metadata_data_frame()) > 0, "The data has no associated metadata"))
+        metadata_data_frame()
+      })
+    }
   })
 }
 
