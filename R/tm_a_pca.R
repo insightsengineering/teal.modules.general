@@ -14,11 +14,10 @@
 #' - If vector of `length == 1` then the font sizes will have a fixed size.
 #' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")`
-#' @param decorators `r roxygen_decorators_param("tm_a_pca")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_a_pca`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `elbow_plot` (`ggplot2`)
@@ -1121,9 +1120,12 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     })
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
+      verbatim_content = source_code_r,
       title = "R Code for PCA"
     )
 
@@ -1146,7 +1148,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_output_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

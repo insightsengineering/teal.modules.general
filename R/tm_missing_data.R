@@ -14,17 +14,16 @@
 #' @param ggtheme (`character`) optional, specifies the default `ggplot2` theme for plots. Defaults to `classic`.
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")`
 # nolint end: line_length.
-#' @param decorators `r roxygen_decorators_param("tm_missing_data")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_missing_data`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `summary_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `combination_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `by_subject_plot` (`ggplot2`)
-#' - `table` ([DT::datatable()])
+#' - `table` (`listing_df` created with [rlistings::as_listing()])
 #'
 #' Decorators can be applied to all outputs or only to specific objects using a
 #' named list of `teal_transform_module` objects.
@@ -1152,7 +1151,7 @@ srv_missing_data <- function(id,
         )
       }
 
-      within(qenv, table <- DT::datatable(summary_data))
+      within(qenv, table <- rlistings::as_listing(summary_data))
     })
 
     by_subject_plot_q <- reactive({
@@ -1319,7 +1318,7 @@ srv_missing_data <- function(id,
           options = list(language = list(zeroRecords = "No variable selected."), pageLength = input$levels_table_rows)
         )
       } else {
-        decorated_summary_table_q()[["table"]]
+        DT::datatable(decorated_summary_table_q()[["summary_data"]])
       }
     })
 
@@ -1364,9 +1363,12 @@ srv_missing_data <- function(id,
       }
     })
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_final_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_final_q()))),
+      verbatim_content = source_code_r,
       title = "Show R Code for Missing Data"
     )
 
@@ -1393,7 +1395,12 @@ srv_missing_data <- function(id,
           card$append_plot(combination_plot_r(), dim = pws2$dim())
         } else if (sum_type == "By Variable Levels") {
           card$append_text("Table", "header3")
-          card$append_table(summary_table_r[["summary_data"]])
+          table <- decorated_summary_table_q()[["table"]]
+          if (nrow(table) == 0L) {
+            card$append_text("No data available for table.")
+          } else {
+            card$append_table(table)
+          }
         } else if (sum_type == "Grouped by Subject") {
           card$append_text("Plot", "header3")
           card$append_plot(by_subject_plot_r(), dim = pws3$dim())
@@ -1402,7 +1409,7 @@ srv_missing_data <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_final_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

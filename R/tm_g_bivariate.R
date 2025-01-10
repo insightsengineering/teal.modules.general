@@ -43,11 +43,10 @@
 #' @param free_y_scales (`logical`) optional, whether Y scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).
 #' @param swap_axes (`logical`) optional, whether to swap X and Y axes. Defaults to `FALSE`.
-#' @param decorators `r roxygen_decorators_param("tm_g_bivariate")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_g_bivariate`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)
@@ -715,9 +714,12 @@ srv_g_bivariate <- function(id,
       width = plot_width
     )
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q_facets())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q_facets()))),
+      verbatim_content = source_code_r,
       title = "Bivariate Plot"
     )
 
@@ -736,7 +738,7 @@ srv_g_bivariate <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_output_q_facets)))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
