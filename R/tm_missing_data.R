@@ -159,7 +159,6 @@ tm_missing_data <- function(label = "Missing data",
   assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
   # End of assertions
 
-  datanames <- unique(datanames)
   ans <- module(
     label,
     server = srv_page_missing_data,
