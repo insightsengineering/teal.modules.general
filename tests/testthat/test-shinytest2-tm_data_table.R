@@ -6,7 +6,7 @@ app_driver_tm_data_table <- function() {
       variables_selected = list(
         iris = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
       ),
-      datasets_selected = c("iris", "mtcars"),
+      datanames = c("iris", "mtcars"),
       dt_args = list(caption = "Table Caption"),
       dt_options = list(
         searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
@@ -98,4 +98,30 @@ test_that("e2e - tm_data_table: Verify default variable selection and set new se
   )
 
   app_driver$stop()
+})
+
+test_that("e2e - tm_data_table: Verify error on datasets_selected", {
+  skip_if_too_deep(5)
+  app_driver <- function() {
+    init_teal_app_driver(
+    data = simple_teal_data(),
+    modules = tm_data_table(
+      label = "Data Table",
+      variables_selected = list(
+        iris = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
+      ),
+      datasets_selected = c("iris", "mtcars"),
+      dt_args = list(caption = "Table Caption"),
+      dt_options = list(
+        searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
+        scrollX = TRUE
+      ),
+      server_rendering = FALSE,
+      pre_output = NULL,
+      post_output = NULL
+    ),
+    timeout = 3000
+  )
+  }
+  expect_error(app_driver())
 })
