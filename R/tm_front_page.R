@@ -51,11 +51,11 @@
 #'       ),
 #'       tables = table_input,
 #'       additional_tags = HTML("Additional HTML or shiny tags go here <br>"),
-#'       footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
+#'       footnotes = c("X" = "is the first footnote", "Y is the second footnote")
 #'     )
 #'   ),
 #'   header = tags$h1("Sample Application"),
-#'   footer = tags$p("Application footer"),
+#'   footer = tags$p("Application footer")
 #' )
 #'
 #' if (interactive()) {
