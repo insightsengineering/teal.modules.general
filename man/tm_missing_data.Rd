@@ -8,7 +8,7 @@ tm_missing_data(
   label = "Missing data",
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
-  datanames = NULL,
+  datanames = "all",
   parent_dataname = "ADSL",
   ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
   ggplot2_args = list(`Combinations Hist` = teal.widgets::ggplot2_args(labs =
