@@ -1,9 +1,13 @@
 # teal.modules.general 0.3.0.9061
 
 * Removed `Show Warnings` modals from modules.
+* Hard deprecated `datasets_selected` argument of modules in favor of `datanames`.
+* Hard deprecated `show_metadata` argument of tm_front_page in favor of `datanames`.
 
 ### Enhancements
+
 * Added `teal.logger` functionality for logging changes in shiny inputs in all modules.
+* Now all modules control which datasets are shown on the modules.
 
 ### Bug fixes
 * Fixed a bug in `tm_missing_data` in "Group by Subject" that was not using reactive data call.
