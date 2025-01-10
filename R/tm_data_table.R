@@ -86,8 +86,8 @@
 #'
 tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
-                          datasets_selected = "all",
-                          datanames = datasets_selected,
+                          datasets_selected = character(0),
+                          datanames = if (!length(datasets_selected)) "all" else datasets_selected,
                           dt_args = list(),
                           dt_options = list(
                             searching = FALSE,
@@ -112,11 +112,12 @@ tm_data_table <- function(label = "Data Table",
       }
     })
   }
-  if (!is.null(datasets_selected)) {
+  if (!missing(datasets_selected)) {
     lifecycle::deprecate_soft(
       when = "0.4.0",
-      what = "tm_data_table(datasets_selected",
-      with = "tm_data_table(datanames)"
+      what = "tm_data_table(datasets_selected)",
+      with = "tm_data_table(datanames)",
+      details = 'Use tm_data_table(datanames = "all") to keep the previous behavior and avoid this warning.',
     )
   }
   checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
