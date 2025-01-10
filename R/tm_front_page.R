@@ -13,7 +13,7 @@
 #' `HTML("html text here")`.
 #' @param footnotes (`character` vector) of text to be shown at the bottom of the module, for each
 #' element, if named the name is shown first in bold, followed by the value.
-#' @param show_metadata (`logical`) indicating whether the metadata of the datasets be available on the module.
+#' @param show_metadata (`logical`) `r lifecycle::badge("deprecated")` indicating whether the metadata of the datasets be available on the module.
 #' @inheritParams tm_variable_browser
 #'
 #' @inherit shared_params return
@@ -52,7 +52,6 @@
 #'       tables = table_input,
 #'       additional_tags = HTML("Additional HTML or shiny tags go here <br>"),
 #'       footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
-#'       show_metadata = TRUE
 #'     )
 #'   ),
 #'   header = tags$h1("Sample Application"),
@@ -70,8 +69,8 @@ tm_front_page <- function(label = "Front page",
                           tables = list(),
                           additional_tags = tagList(),
                           footnotes = character(0),
-                          show_metadata = FALSE,
-                          datasets_selected = character(0L)) {
+                          show_metadata = NULL,
+                          datanames = NULL) {
   message("Initializing tm_front_page")
 
   # Start of assertions
@@ -80,27 +79,24 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_list(tables, types = "data.frame", names = "named", any.missing = FALSE)
   checkmate::assert_multi_class(additional_tags, classes = c("shiny.tag.list", "html"))
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
-  checkmate::assert_flag(show_metadata)
-  checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
+  if (!is.null(show_metadata)) {
+    lifecycle::deprecate_stop(when = "0.4.0",
+                              what = "tm_front_page(show_metadata = 'is deprecated, use `datanames`')")
+  }
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1,
+                              null.ok = TRUE)
 
   # End of assertions
 
   # Make UI args
   args <- as.list(environment())
-  datanames <- if (show_metadata && length(datasets_selected) > 0L) {
-    datasets_selected
-  } else if (show_metadata) {
-    "all"
-  } else {
-    NULL
-  }
 
   ans <- module(
     label = label,
     server = srv_front_page,
     ui = ui_front_page,
     ui_args = args,
-    server_args = list(tables = tables, show_metadata = show_metadata),
+    server_args = list(tables = tables),
     datanames = datanames
   )
   attr(ans, "teal_bookmarkable") <- TRUE
@@ -131,13 +127,11 @@ ui_front_page <- function(id, ...) {
         class = "my-4",
         args$additional_tags
       ),
-      if (args$show_metadata) {
-        tags$div(
-          id = "front_page_metabutton",
-          class = "m-4",
-          actionButton(ns("metadata_button"), "Show metadata")
-        )
-      },
+      tags$div(
+        id = "front_page_metabutton",
+        class = "m-4",
+        actionButton(ns("metadata_button"), "Show metadata")
+      ),
       tags$footer(
         class = ".small",
         get_footer_tags(args$footnotes)
@@ -147,7 +141,7 @@ ui_front_page <- function(id, ...) {
 }
 
 # Server function for the front page module
-srv_front_page <- function(id, data, tables, show_metadata) {
+srv_front_page <- function(id, data, tables) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -166,31 +160,29 @@ srv_front_page <- function(id, data, tables, show_metadata) {
       )
     })
 
-    if (show_metadata) {
-      observeEvent(
-        input$metadata_button, showModal(
-          modalDialog(
-            title = "Metadata",
-            dataTableOutput(ns("metadata_table")),
-            size = "l",
-            easyClose = TRUE
-          )
+    observeEvent(
+      input$metadata_button, showModal(
+        modalDialog(
+          title = "Metadata",
+          dataTableOutput(ns("metadata_table")),
+          size = "l",
+          easyClose = TRUE
         )
       )
+    )
 
-      metadata_data_frame <- reactive({
-        datanames <- names(data())
-        convert_metadata_to_dataframe(
-          lapply(datanames, function(dataname) attr(data()[[dataname]], "metadata")),
-          datanames
-        )
-      })
+    metadata_data_frame <- reactive({
+      datanames <- names(data())
+      convert_metadata_to_dataframe(
+        lapply(datanames, function(dataname) attr(data()[[dataname]], "metadata")),
+        datanames
+      )
+    })
 
-      output$metadata_table <- renderDataTable({
-        validate(need(nrow(metadata_data_frame()) > 0, "The data has no associated metadata"))
-        metadata_data_frame()
-      })
-    }
+    output$metadata_table <- renderDataTable({
+      validate(need(nrow(metadata_data_frame()) > 0, "The data has no associated metadata"))
+      metadata_data_frame()
+    })
   })
 }
 
