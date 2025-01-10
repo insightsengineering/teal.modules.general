@@ -116,7 +116,6 @@ tm_variable_browser <- function(label = "Variable Browser",
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
   # End of assertions
 
-  datanames <- unique(datanames)
 
   ans <- module(
     label,

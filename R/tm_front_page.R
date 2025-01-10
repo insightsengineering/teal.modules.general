@@ -104,7 +104,7 @@ tm_front_page <- function(label = "Front page",
     ui = ui_front_page,
     ui_args = args,
     server_args = list(tables = tables),
-    datanames = unique(datanames)
+    datanames = datanames
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
