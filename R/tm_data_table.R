@@ -115,7 +115,8 @@ tm_data_table <- function(label = "Data Table",
   if (!is.null(datasets_selected)) {
     lifecycle::deprecate_soft(
       when = "0.4.0",
-      what = "tm_data_table(datasets_selected = 'is deprecated, use `datanames`')"
+      what = "tm_data_table(datasets_selected",
+      with = "tm_data_table(datanames)"
     )
   }
   checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
@@ -134,7 +135,7 @@ tm_data_table <- function(label = "Data Table",
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
-    datanames = if (length(datanames) == 0) "all" else datanames,
+    datanames = datanames,
     server_args = list(
       variables_selected = variables_selected,
       datanames = datanames,

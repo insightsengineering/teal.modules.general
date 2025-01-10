@@ -105,7 +105,8 @@ tm_variable_browser <- function(label = "Variable Browser",
   if (!is.null(datasets_selected)) {
     lifecycle::deprecate_soft(
       when = "0.4.0",
-      what = "tm_variable_browser(datasets_selected = 'is deprecated, use `datanames`')"
+      what = "tm_variable_browser(datasets_selected",
+      with = "tm_variable_browser(datanames)"
     )
   }
   checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
@@ -121,7 +122,7 @@ tm_variable_browser <- function(label = "Variable Browser",
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
-    datanames = if (length(datanames) == 0) "all" else datanames,
+    datanames = datanames,
     server_args = list(
       datanames = datanames,
       parent_dataname = parent_dataname,

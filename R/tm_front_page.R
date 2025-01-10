@@ -71,8 +71,8 @@ tm_front_page <- function(label = "Front page",
                           tables = list(),
                           additional_tags = tagList(),
                           footnotes = character(0),
-                          show_metadata = NULL,
-                          datanames = NULL) {
+                          show_metadata = TRUE,
+                          datanames = if(isTRUE(show_metadata)) "all" else NULL) {
   message("Initializing tm_front_page")
 
   # Start of assertions
@@ -84,7 +84,8 @@ tm_front_page <- function(label = "Front page",
   if (!is.null(show_metadata)) {
     lifecycle::deprecate_soft(
       when = "0.4.0",
-      what = "tm_front_page(show_metadata = 'is deprecated, use `datanames`')"
+      what = "tm_front_page(show_metadata)",
+      with = "tm_front_page(datanames)"
     )
   }
   checkmate::assert_character(datanames,
@@ -103,7 +104,7 @@ tm_front_page <- function(label = "Front page",
     ui = ui_front_page,
     ui_args = args,
     server_args = list(tables = tables),
-    datanames = datanames
+    datanames = unique(datanames)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
