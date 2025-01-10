@@ -13,7 +13,8 @@
 #' `HTML("html text here")`.
 #' @param footnotes (`character` vector) of text to be shown at the bottom of the module, for each
 #' element, if named the name is shown first in bold, followed by the value.
-#' @param show_metadata (`logical`) `r lifecycle::badge("deprecated")` indicating whether the metadata of the datasets be available on the module.
+#' @param show_metadata (`logical`) `r lifecycle::badge("deprecated")` indicating
+#' whether the metadata of the datasets be available on the module.
 #' @inheritParams tm_variable_browser
 #'
 #' @inherit shared_params return
