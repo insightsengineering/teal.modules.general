@@ -32,7 +32,8 @@ for example to include an image, \code{tagList(tags$img(src = "image.png"))} or 
 element, if named the name is shown first in bold, followed by the value.}
 
 \item{show_metadata}{(\code{logical}) \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} indicating
-whether the metadata of the datasets be available on the module.}
+whether the metadata of the datasets be available on the module.
+Metadata shown automatically when \code{datanames} set.}
 
 \item{datanames}{(\code{character}) Names of the datasets relevant to the item.
 There are 2 reserved values that have specific behaviors:

@@ -15,6 +15,7 @@
 #' element, if named the name is shown first in bold, followed by the value.
 #' @param show_metadata (`logical`) `r lifecycle::badge("deprecated")` indicating
 #' whether the metadata of the datasets be available on the module.
+#' Metadata shown automatically when `datanames` set.
 #' @inheritParams tm_variable_browser
 #'
 #' @inherit shared_params return
