@@ -81,8 +81,8 @@
 #' @export
 #'
 tm_variable_browser <- function(label = "Variable Browser",
-                                datasets_selected = "all",
-                                datanames = datasets_selected,
+                                datasets_selected = character(0),
+                                datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
                                 parent_dataname = "ADSL",
                                 pre_output = NULL,
                                 post_output = NULL,
@@ -102,11 +102,14 @@ tm_variable_browser <- function(label = "Variable Browser",
 
   # Start of assertions
   checkmate::assert_string(label)
-  if (!is.null(datasets_selected)) {
+  if (!missing(datasets_selected)) {
     lifecycle::deprecate_soft(
       when = "0.4.0",
-      what = "tm_variable_browser(datasets_selected",
-      with = "tm_variable_browser(datanames)"
+      what = "tm_variable_browser(datasets_selected)",
+      with = "tm_variable_browser(datanames)",
+      details = c(
+        "If both `datasets_selected` and `datanames` are set `datasets_selected` will be silently ignored.",
+        i = 'Use `tm_variable_browser(datanames = "all")` to keep the previous behavior and avoid this warning.')
     )
   }
   checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
@@ -121,7 +124,7 @@ tm_variable_browser <- function(label = "Variable Browser",
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
-    datanames = datanames,
+    datanames = union(datanames, parent_dataname),
     server_args = list(
       datanames = datanames,
       parent_dataname = parent_dataname,
@@ -234,12 +237,6 @@ srv_variable_browser <- function(id,
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
     }, datanames)
-
-    checkmate::assert_character(datanames)
-    checkmate::assert_subset(datanames, datanames)
-    if (!identical(datanames, character(0))) {
-      checkmate::assert_subset(datanames, datanames)
-    }
 
     output$ui_variable_browser <- renderUI({
       ns <- session$ns
