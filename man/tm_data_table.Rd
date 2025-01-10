@@ -7,8 +7,8 @@
 tm_data_table(
   label = "Data Table",
   variables_selected = list(),
-  datasets_selected = NULL,
-  datanames = NULL,
+  datasets_selected = "all",
+  datanames = datasets_selected,
   dt_args = list(),
   dt_options = list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
     scrollX = TRUE),
