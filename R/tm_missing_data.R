@@ -7,7 +7,6 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @inheritParams tm_data_table
 #' @param parent_dataname (`character(1)`) Specifies the parent dataset name. Default is `ADSL` for `CDISC` data.
 #' If provided and exists, enables additional analysis "by subject". For non-`CDISC` data, this parameter can be
 #' ignored.
@@ -111,7 +110,7 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
-                            datasets_selected = character(0L),
+                            datanames = NULL,
                             parent_dataname = "ADSL",
                             ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
                             ggplot2_args = list(
@@ -145,7 +144,7 @@ tm_missing_data <- function(label = "Missing data",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
-  checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   ggtheme <- match.arg(ggtheme)
 
@@ -161,11 +160,11 @@ tm_missing_data <- function(label = "Missing data",
   assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
   # End of assertions
 
-  datasets_selected <- unique(datasets_selected)
+  datanames <- unique(datanames)
   ans <- module(
     label,
     server = srv_page_missing_data,
-    datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
+    datanames = if (length(datanames) == 0) "all" else datanames,
     server_args = list(
       parent_dataname = parent_dataname,
       plot_height = plot_height,

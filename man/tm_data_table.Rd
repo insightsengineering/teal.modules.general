@@ -7,7 +7,8 @@
 tm_data_table(
   label = "Data Table",
   variables_selected = list(),
-  datasets_selected = character(0),
+  datasets_selected = NULL,
+  datanames = NULL,
   dt_args = list(),
   dt_options = list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
     scrollX = TRUE),
@@ -27,10 +28,19 @@ Names of list elements should correspond to the names of the datasets available 
 If no entry is specified for a dataset, the first six variables from that
 dataset will initially be shown.}
 
-\item{datasets_selected}{(\code{character}) A vector of datasets which should be
+\item{datasets_selected}{(\code{character}) \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} A vector of datasets which should be
 shown and in what order. Names in the vector have to correspond with datasets names.
 If vector of \code{length == 0} (default) then all datasets are shown.
 Note: Only datasets of the \code{data.frame} class are compatible.}
+
+\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
+There are 2 reserved values that have specific behaviors:
+\itemize{
+\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
+\item \code{NULL} hides the sidebar panel completely.
+\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
+argument.
+}}
 
 \item{dt_args}{(\verb{named list}) Additional arguments to be passed to \code{\link[DT:datatable]{DT::datatable()}}
 (must not include \code{data} or \code{options}).}
@@ -116,7 +126,8 @@ app <- init(
   modules = modules(
     tm_data_table(
       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
-      dt_args = list(caption = "ADSL Table Caption")
+      dt_args = list(caption = "ADSL Table Caption"),
+     datasets_selected = "whatever"
     )
   )
 )
@@ -133,8 +144,8 @@ if (interactive()) {
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjAMrk0uF6CJ0ZjMVoWLQoASxGlRHARBo4PwkXRRKR2AtxpCCMCwAE7I4fABNPw+BR4XSixwBRwAIQAUsLRVVRVK5Qqxcq-HZnGqlWBBgBxVzqnnOAAaorkchhGOJ-EuLAkiMhzNZBDQmhISNF7PsFJE3ndVggFpBdX6YaU-VoJl07BU5GYlh0NlsNQxojKEFYg3Q7DQqAAJC0qvmCzTGDo+sslGAll8gA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjAMrk0uF6CJ0ZjMVoWLQoASxGlRHARBo4PwkXRRKR2AtxpCCMCwAE7I4fABNPw+BR4XSixwBRwAIQAUsLRVVRVK5Qqxcq-HZnGqlWBBgBxVzqnnOAAaorkchhGOJ-EuLAkiMhzNZBDQmhISNF7PsFJE3ndVggFpBdX6YaU-VoJl07BU5GYlh0NlsNQxojKEFYg3Q7DQqAAJC0qvmCzTGDo+sslGAll8gA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjAMrk0uF6CJ0ZjMVoWLQoASxGlRHARBo4PwkXRRKR2AtxpCCMCwAE7I4fABNPw+BR4XSixwBRwAIQAUsLRVVRVK5Qqxcq-HZnGqlWBBgBxVzqnnOAAaorkchhGOJ-EuLAkiMhzNZBDQmhISNF7PsFJE3ndVggFutxKhUBppFE1NpcHpjMhooKJTCcB0jFFILq-WzSn6tBMunYKnIzEsOhsthqGNEZQgrEG6HYaFQABIWlUW62aYx0-0lkowEsvkA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjAMrk0uF6CJ0ZjMVoWLQoASxGlRHARBo4PwkXRRKR2AtxpCCMCwAE7I4fABNPw+BR4XSixwBRwAIQAUsLRVVRVK5Qqxcq-HZnGqlWBBgBxVzqnnOAAaorkchhGOJ-EuLAkiMhzNZBDQmhISNF7PsFJE3ndVggFutxKhUBppFE1NpcHpjMhooKJTCcB0jFFILq-WzSn6tBMunYKnIzEsOhsthqGNEZQgrEG6HYaFQABIWlUW62aYx0-0lkowEsvkA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

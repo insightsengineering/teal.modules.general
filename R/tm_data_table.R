@@ -16,14 +16,10 @@
 #' Names of list elements should correspond to the names of the datasets available in the app.
 #' If no entry is specified for a dataset, the first six variables from that
 #' dataset will initially be shown.
-#' @param datasets_selected (`character`) A vector of datasets which should be
+#' @param datasets_selected (`character`) `r lifecycle::badge("deprecated")` A vector of datasets which should be
 #' shown and in what order. Names in the vector have to correspond with datasets names.
 #' If vector of `length == 0` (default) then all datasets are shown.
 #' Note: Only datasets of the `data.frame` class are compatible.
-#' @param datanames (`character`) A vector of datasets which should be
-#' shown and in what order. Names in the vector have to correspond with datasets names.
-#' If vector of `length == 0` (default) then all datasets are shown.
-#' *Note*: Only datasets of the `data.frame` class are compatible.
 #' @param dt_args (`named list`) Additional arguments to be passed to [DT::datatable()]
 #' (must not include `data` or `options`).
 #' @param dt_options (`named list`) The `options` argument to `DT::datatable`. By default
@@ -87,7 +83,8 @@
 #'   modules = modules(
 #'     tm_data_table(
 #'       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
-#'       dt_args = list(caption = "ADSL Table Caption")
+#'       dt_args = list(caption = "ADSL Table Caption"),
+#'      datasets_selected = "whatever"
 #'     )
 #'   )
 #' )
@@ -99,8 +96,8 @@
 #'
 tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
-                          datasets_selected = NULL
-                          datanames = character(0L)
+                          datasets_selected = NULL,
+                          datanames = NULL,
                           dt_args = list(),
                           dt_options = list(
                             searching = FALSE,
@@ -126,8 +123,11 @@ tm_data_table <- function(label = "Data Table",
       }
     })
   }
-
-  checkmate::assert_character(datanames, min.len = 0, min.chars = 1)
+  if (!is.null(datasets_selected)) {
+    lifecycle::deprecate_stop(when = "0.4.0",
+                              what = "tm_data_table(datasets_selected = 'is deprecated, use `datanames`')")
+  }
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert(
     checkmate::check_list(dt_args, len = 0),
     checkmate::check_subset(names(dt_args), choices = names(formals(DT::datatable)))
@@ -219,7 +219,6 @@ srv_page_data_table <- function(id,
 
     if (!identical(datanames, character(0))) {
       checkmate::assert_subset(datanames, datanames)
-      datanames <- datanames
     }
 
     output$dataset_table <- renderUI({

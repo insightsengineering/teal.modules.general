@@ -8,7 +8,7 @@ tm_missing_data(
   label = "Missing data",
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
-  datasets_selected = character(0L),
+  datanames = NULL,
   parent_dataname = "ADSL",
   ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
   ggplot2_args = list(`Combinations Hist` = teal.widgets::ggplot2_args(labs =
@@ -29,10 +29,14 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 \item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{datasets_selected}{(\code{character}) A vector of datasets which should be
-shown and in what order. Names in the vector have to correspond with datasets names.
-If vector of \code{length == 0} (default) then all datasets are shown.
-Note: Only datasets of the \code{data.frame} class are compatible.}
+\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
+There are 2 reserved values that have specific behaviors:
+\itemize{
+\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
+\item \code{NULL} hides the sidebar panel completely.
+\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
+argument.
+}}
 
 \item{parent_dataname}{(\code{character(1)}) Specifies the parent dataset name. Default is \code{ADSL} for \code{CDISC} data.
 If provided and exists, enables additional analysis "by subject". For non-\code{CDISC} data, this parameter can be

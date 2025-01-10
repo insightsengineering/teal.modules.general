@@ -10,11 +10,11 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param parent_dataname (`character(1)`) string specifying a parent dataset.
-#' If it exists in `datasets_selected`then an extra checkbox will be shown to
+#' If it exists in `datanames`then an extra checkbox will be shown to
 #' allow users to not show variables in other datasets which exist in this `dataname`.
 #' This is typically used to remove `ADSL` columns in `CDISC` data.
 #' In non `CDISC` data this can be ignored. Defaults to `"ADSL"`.
-#' @param datasets_selected (`character`) vector of datasets which should be
+#' @param datasets_selected (`character`) `r lifecycle::badge("deprecated")` vector of datasets which should be
 #' shown, in order. Names must correspond with datasets names.
 #' If vector of length zero (default) then all datasets are shown.
 #' Note: Only `data.frame` objects are compatible; using other types will cause an error.
@@ -81,7 +81,8 @@
 #' @export
 #'
 tm_variable_browser <- function(label = "Variable Browser",
-                                datasets_selected = character(0),
+                                datasets_selected = NULL,
+                                datanames = NULL,
                                 parent_dataname = "ADSL",
                                 pre_output = NULL,
                                 post_output = NULL,
@@ -101,22 +102,26 @@ tm_variable_browser <- function(label = "Variable Browser",
 
   # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_character(datasets_selected)
+  if (!is.null(datasets_selected)) {
+    lifecycle::deprecate_stop(when = "0.4.0",
+                              what = "tm_variable_browser(datasets_selected = 'is deprecated, use `datanames`')")
+  }
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
   # End of assertions
 
-  datasets_selected <- unique(datasets_selected)
+  datanames <- unique(datanames)
 
   ans <- module(
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
-    datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
+    datanames = if (length(datanames) == 0) "all" else datanames,
     server_args = list(
-      datasets_selected = datasets_selected,
+      datanames = datanames,
       parent_dataname = parent_dataname,
       ggplot2_args = ggplot2_args
     ),
@@ -205,7 +210,7 @@ srv_variable_browser <- function(id,
                                  data,
                                  reporter,
                                  filter_panel_api,
-                                 datasets_selected, parent_dataname, ggplot2_args) {
+                                 datanames, parent_dataname, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -228,11 +233,10 @@ srv_variable_browser <- function(id,
       is.data.frame(isolate(data())[[name]])
     }, datanames)
 
-    checkmate::assert_character(datasets_selected)
-    checkmate::assert_subset(datasets_selected, datanames)
-    if (!identical(datasets_selected, character(0))) {
-      checkmate::assert_subset(datasets_selected, datanames)
-      datanames <- datasets_selected
+    checkmate::assert_character(datanames)
+    checkmate::assert_subset(datanames, datanames)
+    if (!identical(datanames, character(0))) {
+      checkmate::assert_subset(datanames, datanames)
     }
 
     output$ui_variable_browser <- renderUI({
