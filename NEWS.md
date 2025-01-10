@@ -1,8 +1,8 @@
 # teal.modules.general 0.3.0.9062
 
 * Removed `Show Warnings` modals from modules.
-* Hard deprecated `datasets_selected` argument of modules in favor of `datanames`.
-* Hard deprecated `show_metadata` argument of `tm_front_page()` in favor of `datanames`.
+* Soft deprecated `datasets_selected` argument of modules in favor of `datanames`.
+* Soft deprecated `show_metadata` argument of `tm_front_page()` in favor of `datanames`.
 
 ### Enhancements
 
