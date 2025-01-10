@@ -86,8 +86,8 @@
 #'
 tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
-                          datasets_selected = NULL,
-                          datanames = NULL,
+                          datasets_selected = "all",
+                          datanames = datasets_selected,
                           dt_args = list(),
                           dt_options = list(
                             searching = FALSE,

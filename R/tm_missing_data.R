@@ -109,7 +109,7 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
-                            datanames = NULL,
+                            datanames = "all",
                             parent_dataname = "ADSL",
                             ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
                             ggplot2_args = list(
@@ -163,7 +163,7 @@ tm_missing_data <- function(label = "Missing data",
   ans <- module(
     label,
     server = srv_page_missing_data,
-    datanames = if (length(datanames) == 0) "all" else datanames,
+    datanames = datanames,
     server_args = list(
       parent_dataname = parent_dataname,
       plot_height = plot_height,
