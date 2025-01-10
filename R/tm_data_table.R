@@ -123,8 +123,10 @@ tm_data_table <- function(label = "Data Table",
     })
   }
   if (!is.null(datasets_selected)) {
-    lifecycle::deprecate_stop(when = "0.4.0",
-                              what = "tm_data_table(datasets_selected = 'is deprecated, use `datanames`')")
+    lifecycle::deprecate_stop(
+      when = "0.4.0",
+      what = "tm_data_table(datasets_selected = 'is deprecated, use `datanames`')"
+    )
   }
   checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert(

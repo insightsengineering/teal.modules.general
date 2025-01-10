@@ -103,8 +103,10 @@ tm_variable_browser <- function(label = "Variable Browser",
   # Start of assertions
   checkmate::assert_string(label)
   if (!is.null(datasets_selected)) {
-    lifecycle::deprecate_stop(when = "0.4.0",
-                              what = "tm_variable_browser(datasets_selected = 'is deprecated, use `datanames`')")
+    lifecycle::deprecate_stop(
+      when = "0.4.0",
+      what = "tm_variable_browser(datasets_selected = 'is deprecated, use `datanames`')"
+    )
   }
   checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)

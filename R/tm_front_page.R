@@ -80,11 +80,15 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_multi_class(additional_tags, classes = c("shiny.tag.list", "html"))
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
   if (!is.null(show_metadata)) {
-    lifecycle::deprecate_stop(when = "0.4.0",
-                              what = "tm_front_page(show_metadata = 'is deprecated, use `datanames`')")
+    lifecycle::deprecate_stop(
+      when = "0.4.0",
+      what = "tm_front_page(show_metadata = 'is deprecated, use `datanames`')"
+    )
   }
-  checkmate::assert_character(datanames, min.len = 0, min.chars = 1,
-                              null.ok = TRUE)
+  checkmate::assert_character(datanames,
+    min.len = 0, min.chars = 1,
+    null.ok = TRUE
+  )
 
   # End of assertions
 
