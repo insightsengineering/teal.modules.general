@@ -83,8 +83,7 @@
 #'   modules = modules(
 #'     tm_data_table(
 #'       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
-#'       dt_args = list(caption = "ADSL Table Caption"),
-#'      datasets_selected = "whatever"
+#'       dt_args = list(caption = "ADSL Table Caption")
 #'     )
 #'   )
 #' )

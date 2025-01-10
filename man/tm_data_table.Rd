@@ -126,8 +126,7 @@ app <- init(
   modules = modules(
     tm_data_table(
       variables_selected = list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX")),
-      dt_args = list(caption = "ADSL Table Caption"),
-     datasets_selected = "whatever"
+      dt_args = list(caption = "ADSL Table Caption")
     )
   )
 )
@@ -144,8 +143,8 @@ if (interactive()) {
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjAMrk0uF6CJ0ZjMVoWLQoASxGlRHARBo4PwkXRRKR2AtxpCCMCwAE7I4fABNPw+BR4XSixwBRwAIQAUsLRVVRVK5Qqxcq-HZnGqlWBBgBxVzqnnOAAaorkchhGOJ-EuLAkiMhzNZBDQmhISNF7PsFJE3ndVggFutxKhUBppFE1NpcHpjMhooKJTCcB0jFFILq-WzSn6tBMunYKnIzEsOhsthqGNEZQgrEG6HYaFQABIWlUW62aYx0-0lkowEsvkA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjAMrk0uF6CJ0ZjMVoWLQoASxGlRHARBo4PwkXRRKR2AtxpCCMCwAE7I4fABNPw+BR4XSixwBRwAIQAUsLRVVRVK5Qqxcq-HZnGqlWBBgBxVzqnnOAAaorkchhGOJ-EuLAkiMhzNZBDQmhISNF7PsFJE3ndVggFutxKhUBppFE1NpcHpjMhooKJTCcB0jFFILq-WzSn6tBMunYKnIzEsOhsthqGNEZQgrEG6HYaFQABIWlUW62aYx0-0lkowEsvkA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjAMrk0uF6CJ0ZjMVoWLQoASxGlRHARBo4PwkXRRKR2AtxpCCMCwAE7I4fABNPw+BR4XSixwBRwAIQAUsLRVVRVK5Qqxcq-HZnGqlWBBgBxVzqnnOAAaorkchhGOJ-EuLAkiMhzNZBDQmhISNF7PsFJE3ndVggFpBdX6YaU-VoJl07BU5GYlh0NlsNQxojKEFYg3Q7DQqAAJC0qvmCzTGDo+sslGAll8gA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjAMrk0uF6CJ0ZjMVoWLQoASxGlRHARBo4PwkXRRKR2AtxpCCMCwAE7I4fABNPw+BR4XSixwBRwAIQAUsLRVVRVK5Qqxcq-HZnGqlWBBgBxVzqnnOAAaorkchhGOJ-EuLAkiMhzNZBDQmhISNF7PsFJE3ndVggFpBdX6YaU-VoJl07BU5GYlh0NlsNQxojKEFYg3Q7DQqAAJC0qvmCzTGDo+sslGAll8gA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }
