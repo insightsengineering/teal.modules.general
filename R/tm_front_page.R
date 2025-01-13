@@ -93,10 +93,7 @@ tm_front_page <- function(label = "Front page",
       )
     )
   }
-  checkmate::assert_character(datanames,
-    min.len = 0, min.chars = 1,
-    null.ok = TRUE
-  )
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
 
   # End of assertions
 
