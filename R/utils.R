@@ -421,3 +421,6 @@ normalize_decorators <- function(decorators) {
     decorators
   }
 }
+
+#' @importFrom lifecycle deprecated
+deprecated <- lifecycle::deprecated
