@@ -125,7 +125,7 @@ tm_variable_browser <- function(label = "Variable Browser",
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
-    datanames = union(datanames, parent_dataname),
+    datanames = if (all(datanames != "all")) union(datanames, parent_dataname) else "all",
     server_args = list(
       datanames = datanames,
       parent_dataname = parent_dataname,
