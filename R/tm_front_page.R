@@ -53,10 +53,11 @@
 #'       footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
 #'       show_metadata = TRUE
 #'     )
-#'   ),
-#'   header = tags$h1("Sample Application"),
-#'   footer = tags$p("Application footer"),
+#'   )
 #' )
+#'
+#' app <- modify_header(app, tags$h1("Sample Application"))
+#' app <- modify_footer(app, tags$p("Application footer"))
 #'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
