@@ -71,8 +71,8 @@ tm_front_page <- function(label = "Front page",
                           tables = list(),
                           additional_tags = tagList(),
                           footnotes = character(0),
-                          show_metadata = FALSE,
-                          datanames = if (isTRUE(show_metadata)) "all" else NULL) {
+                          show_metadata = deprecated(),
+                          datanames = if (missing(show_metadata)) "all" else character(0)) {
   message("Initializing tm_front_page")
 
   # Start of assertions
@@ -81,7 +81,6 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_list(tables, types = "data.frame", names = "named", any.missing = FALSE)
   checkmate::assert_multi_class(additional_tags, classes = c("shiny.tag.list", "html"))
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
-  checkmate::assert_flag(show_metadata)
   if (!missing(show_metadata)) {
     lifecycle::deprecate_soft(
       when = "0.4.0",

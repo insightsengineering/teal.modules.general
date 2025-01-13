@@ -7,8 +7,8 @@
 tm_data_table(
   label = "Data Table",
   variables_selected = list(),
-  datasets_selected = character(0),
-  datanames = if (!length(datasets_selected)) "all" else datasets_selected,
+  datasets_selected = deprecated(),
+  datanames = if (missing(datasets_selected)) "all" else datasets_selected,
   dt_args = list(),
   dt_options = list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
     scrollX = TRUE),

@@ -81,8 +81,8 @@
 #' @export
 #'
 tm_variable_browser <- function(label = "Variable Browser",
-                                datasets_selected = character(0),
-                                datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
+                                datasets_selected = deprecated(),
+                                datanames = if (missing(datasets_selected)) "all" else datasets_selected,
                                 parent_dataname = "ADSL",
                                 pre_output = NULL,
                                 post_output = NULL,
