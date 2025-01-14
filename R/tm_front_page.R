@@ -72,7 +72,7 @@ tm_front_page <- function(label = "Front page",
                           additional_tags = tagList(),
                           footnotes = character(0),
                           show_metadata = deprecated(),
-                          datanames = if (missing(show_metadata)) "all" else character(0)) {
+                          datanames = if (missing(show_metadata)) "all" else NULL) {
   message("Initializing tm_front_page")
 
   # Start of assertions
