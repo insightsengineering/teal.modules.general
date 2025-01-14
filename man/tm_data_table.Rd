@@ -28,9 +28,7 @@ If no entry is specified for a dataset, the first six variables from that
 dataset will initially be shown.}
 
 \item{datasets_selected}{(\code{character}) \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} A vector of datasets which should be
-shown and in what order. Names in the vector have to correspond with datasets names.
-If vector of \code{length == 0} (default) then all datasets are shown.
-Note: Only datasets of the \code{data.frame} class are compatible.}
+shown and in what order. Use \code{datanames} instead.}
 
 \item{datanames}{(\code{character}) Names of the datasets relevant to the item.
 There are 2 reserved values that have specific behaviors:

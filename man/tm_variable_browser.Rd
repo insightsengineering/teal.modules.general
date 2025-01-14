@@ -18,10 +18,8 @@ tm_variable_browser(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{datasets_selected}{(\code{character}) \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} vector of datasets which should be
-shown, in order. Names must correspond with datasets names.
-If vector of length zero (default) then all datasets are shown.
-Note: Only \code{data.frame} objects are compatible; using other types will cause an error.}
+\item{datasets_selected}{(\code{character}) \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} vector of datasets to show, please
+use the \code{datanames} argument.}
 
 \item{datanames}{(\code{character}) Names of the datasets relevant to the item.
 There are 2 reserved values that have specific behaviors:
@@ -33,7 +31,7 @@ argument.
 }}
 
 \item{parent_dataname}{(\code{character(1)}) string specifying a parent dataset.
-If it exists in \code{datanames}then an extra checkbox will be shown to
+If it exists in \code{datanames} then an extra checkbox will be shown to
 allow users to not show variables in other datasets which exist in this \code{dataname}.
 This is typically used to remove \code{ADSL} columns in \code{CDISC} data.
 In non \code{CDISC} data this can be ignored. Defaults to \code{"ADSL"}.}
