@@ -143,6 +143,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             pre_output = NULL,
                             post_output = NULL,
                             basic_table_args = teal.widgets::basic_table_args(),
+                            transformators = list(),
                             decorators = NULL) {
   message("Initializing tm_t_crosstable")
 
@@ -189,6 +190,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     ui = ui_t_crosstable,
     ui_args = ui_args,
     server_args = server_args,
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(list(x = x, y = y))
   )
   attr(ans, "teal_bookmarkable") <- TRUE

@@ -138,6 +138,7 @@ tm_g_association <- function(label = "Association",
                              pre_output = NULL,
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args(),
+                             transformators = list(),
                              decorators = NULL) {
   message("Initializing tm_g_association")
 
@@ -196,6 +197,7 @@ tm_g_association <- function(label = "Association",
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args, decorators = decorators)
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

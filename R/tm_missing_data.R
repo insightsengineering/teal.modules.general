@@ -117,6 +117,7 @@ tm_missing_data <- function(label = "Missing data",
                             ),
                             pre_output = NULL,
                             post_output = NULL,
+                            transformators = list(),
                             decorators = NULL) {
   message("Initializing tm_missing_data")
 
@@ -169,6 +170,7 @@ tm_missing_data <- function(label = "Missing data",
       decorators = decorators
     ),
     ui = ui_page_missing_data,
+    transformators = transformators,
     datanames = "all",
     ui_args = list(pre_output = pre_output, post_output = post_output)
   )

@@ -195,6 +195,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            ggplot2_args = teal.widgets::ggplot2_args(),
                            pre_output = NULL,
                            post_output = NULL,
+                           transformators = list(),
                            decorators = NULL) {
   message("Initializing tm_g_bivariate")
 
@@ -303,6 +304,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
       data_extract_list,
       list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args, decorators = decorators)
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

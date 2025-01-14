@@ -51,7 +51,9 @@ vector of \code{value}, \code{min}, and \code{max}.
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional,
 if not \code{NULL}, decorator for tables or plots included in the module.
-When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
+When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
 
 Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
 

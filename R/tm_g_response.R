@@ -156,6 +156,7 @@ tm_g_response <- function(label = "Response Plot",
                           ggplot2_args = teal.widgets::ggplot2_args(),
                           pre_output = NULL,
                           post_output = NULL,
+                          transformators = list(),
                           decorators = NULL) {
   message("Initializing tm_g_response")
 
@@ -229,6 +230,7 @@ tm_g_response <- function(label = "Response Plot",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

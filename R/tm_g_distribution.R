@@ -150,6 +150,7 @@ tm_g_distribution <- function(label = "Distribution Module",
                               plot_width = NULL,
                               pre_output = NULL,
                               post_output = NULL,
+                              transformators = list(),
                               decorators = NULL) {
   message("Initializing tm_g_distribution")
 
@@ -231,6 +232,7 @@ tm_g_distribution <- function(label = "Distribution Module",
     ),
     ui = ui_distribution,
     ui_args = args,
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

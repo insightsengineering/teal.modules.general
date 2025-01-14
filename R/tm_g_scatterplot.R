@@ -239,6 +239,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              post_output = NULL,
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args(),
+                             transformators = list(),
                              decorators = NULL) {
   message("Initializing tm_g_scatterplot")
 
@@ -340,6 +341,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

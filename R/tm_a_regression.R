@@ -157,6 +157,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
                             label_segment_threshold = c(0.5, 0, 10),
+                            transformators = list(),
                             decorators = NULL) {
   message("Initializing tm_a_regression")
 
@@ -251,6 +252,7 @@ tm_a_regression <- function(label = "Regression Analysis",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- FALSE

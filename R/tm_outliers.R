@@ -157,6 +157,7 @@ tm_outliers <- function(label = "Outliers Module",
                         plot_width = NULL,
                         pre_output = NULL,
                         post_output = NULL,
+                        transformators = list(),
                         decorators = NULL) {
   message("Initializing tm_outliers")
 
@@ -221,6 +222,7 @@ tm_outliers <- function(label = "Outliers Module",
     ),
     ui = ui_outliers,
     ui_args = args,
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

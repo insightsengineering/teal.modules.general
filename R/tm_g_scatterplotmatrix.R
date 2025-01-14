@@ -177,6 +177,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    plot_width = NULL,
                                    pre_output = NULL,
                                    post_output = NULL,
+                                   transformators = list(),
                                    decorators = NULL) {
   message("Initializing tm_g_scatterplotmatrix")
 

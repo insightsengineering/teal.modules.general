@@ -37,6 +37,7 @@
 #' (`list` of `teal_transform_module`, named `list` of `teal_transform_module` or `NULL`) optional,
 #' if not `NULL`, decorator for tables or plots included in the module.
 #' When a named list of `teal_transform_module`, the decorators are applied to the respective output objects.
+#' @param transformators (`list` of `teal_transform_module`) that will be applied to transform module's data input.
 #'
 #' Otherwise, the decorators are applied to all objects, which is equivalent as using the name `default`.
 #'

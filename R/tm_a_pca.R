@@ -133,6 +133,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      size = c(2, 1, 8),
                      pre_output = NULL,
                      post_output = NULL,
+                     transformators = list(),
                      decorators = NULL) {
   message("Initializing tm_a_pca")
 
@@ -208,6 +209,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- FALSE
