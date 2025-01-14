@@ -17,9 +17,7 @@
 #' If no entry is specified for a dataset, the first six variables from that
 #' dataset will initially be shown.
 #' @param datasets_selected (`character`) `r lifecycle::badge("deprecated")` A vector of datasets which should be
-#' shown and in what order. Names in the vector have to correspond with datasets names.
-#' If vector of `length == 0` (default) then all datasets are shown.
-#' Note: Only datasets of the `data.frame` class are compatible.
+#' shown and in what order. Use `datanames` instead.
 #' @param dt_args (`named list`) Additional arguments to be passed to [DT::datatable()]
 #' (must not include `data` or `options`).
 #' @param dt_options (`named list`) The `options` argument to `DT::datatable`. By default
@@ -139,7 +137,6 @@ tm_data_table <- function(label = "Data Table",
     datanames = datanames,
     server_args = list(
       variables_selected = variables_selected,
-      datanames = datanames,
       dt_args = dt_args,
       dt_options = dt_options,
       server_rendering = server_rendering
@@ -188,7 +185,6 @@ ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
 # Server page module
 srv_page_data_table <- function(id,
                                 data,
-                                datanames,
                                 variables_selected,
                                 dt_args,
                                 dt_options,
@@ -205,10 +201,6 @@ srv_page_data_table <- function(id,
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
     }, datanames)
-
-    if (!identical(datanames, character(0))) {
-      checkmate::assert_subset(datanames, datanames)
-    }
 
     output$dataset_table <- renderUI({
       do.call(
