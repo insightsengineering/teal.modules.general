@@ -222,6 +222,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
       plot_width = plot_width,
       decorators = decorators
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(variables)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
