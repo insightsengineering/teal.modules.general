@@ -100,7 +100,7 @@ test_that("e2e - tm_data_table: Verify default variable selection and set new se
   app_driver$stop()
 })
 
-test_that("e2e - tm_data_table: Verify error on datasets_selected", {
+test_that("e2e - tm_data_table: Verify warning on deprecated datasets_selected", {
   skip_if_too_deep(5)
   app_driver <- function() {
     init_teal_app_driver(
@@ -123,5 +123,5 @@ test_that("e2e - tm_data_table: Verify error on datasets_selected", {
       timeout = 3000
     )
   }
-  expect_error(app_driver())
+  expect_warning(app_driver())
 })
