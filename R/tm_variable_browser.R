@@ -123,7 +123,7 @@ tm_variable_browser <- function(label = "Variable Browser",
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
-    datanames = if (all(datanames != "all")) union(datanames, parent_dataname) else "all",
+    datanames = if (identical(datanames, "all")) "all" else union(datanames, parent_dataname),
     server_args = list(
       parent_dataname = parent_dataname,
       ggplot2_args = ggplot2_args
