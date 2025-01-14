@@ -10,14 +10,12 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param parent_dataname (`character(1)`) string specifying a parent dataset.
-#' If it exists in `datanames`then an extra checkbox will be shown to
+#' If it exists in `datanames` then an extra checkbox will be shown to
 #' allow users to not show variables in other datasets which exist in this `dataname`.
 #' This is typically used to remove `ADSL` columns in `CDISC` data.
 #' In non `CDISC` data this can be ignored. Defaults to `"ADSL"`.
-#' @param datasets_selected (`character`) `r lifecycle::badge("deprecated")` vector of datasets which should be
-#' shown, in order. Names must correspond with datasets names.
-#' If vector of length zero (default) then all datasets are shown.
-#' Note: Only `data.frame` objects are compatible; using other types will cause an error.
+#' @param datasets_selected (`character`) `r lifecycle::badge("deprecated")` vector of datasets to show, please
+#' use the `datanames` argument.
 #'
 #' @inherit shared_params return
 #'
@@ -127,7 +125,6 @@ tm_variable_browser <- function(label = "Variable Browser",
     ui = ui_variable_browser,
     datanames = if (all(datanames != "all")) union(datanames, parent_dataname) else "all",
     server_args = list(
-      datanames = datanames,
       parent_dataname = parent_dataname,
       ggplot2_args = ggplot2_args
     ),
