@@ -7,7 +7,6 @@
 ### Enhancements
 
 * Added `teal.logger` functionality for logging changes in shiny inputs in all modules.
-* Now all modules control which datasets are shown on the modules.
 
 ### Bug fixes
 * Fixed a bug in `tm_missing_data` in "Group by Subject" that was not using reactive data call.
