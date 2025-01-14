@@ -33,7 +33,6 @@
 #' - When the length of `size` is one: the plot point sizes will have a fixed size.
 #' - When the length of `size` is three: the plot points size are dynamically adjusted based on
 #' vector of `value`, `min`, and `max`.
-#' @param transformators (`list` of `teal_transform_module`) that will be applied to transform module's data input.
 #' @param decorators `r lifecycle::badge("experimental")`
 #' (`list` of `teal_transform_module`, named `list` of `teal_transform_module` or `NULL`) optional,
 #' if not `NULL`, decorator for tables or plots included in the module.
