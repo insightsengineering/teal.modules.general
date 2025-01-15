@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9061
-Date: 2024-12-17
+Version: 0.3.0.9063
+Date: 2025-01-15
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -48,6 +48,7 @@ Imports:
     lattice (>= 0.18-4),
     MASS,
     rtables (>= 0.6.8),
+    rlistings (>= 0.2.8),
     lifecycle (>= 0.2.0),
     scales,
     shinyjs,
@@ -59,7 +60,7 @@ Imports:
     stringr (>= 1.4.1),
     teal.code (>= 0.5.0.9012),
     teal.data (>= 0.6.0.9015),
-    teal.logger (>= 0.2.0.9004),
+    teal.logger (>= 0.3.0.9003),
     teal.reporter (>= 0.3.0),
     teal.widgets (>= 0.4.0),
     tern (>= 0.9.5),
@@ -83,19 +84,21 @@ VignetteBuilder:
     knitr,
     rmarkdown
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
-    rstudio/shiny, insightsengineering/teal, insightsengineering/teal.transform,
-    mllg/checkmate, daattali/colourpicker, tidyverse/dplyr, rstudio/DT,
-    tidyverse/forcats, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
-    slowkow/ggrepel, baddstats/goftest, ramnathv/htmlwidgets, jeroen/jsonlite,
-    deepayan/lattice, insightsengineering/rtables, r-lib/lifecycle,
-    r-lib/scales, daattali/shinyjs, shinyTree/shinyTree, rstudio/shinyvalidate,
-    dreamRs/shinyWidgets, htmlwidgets/sparkline, tidyverse/stringr,
+    rstudio/shiny, insightsengineering/teal,
+    insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
+    rstudio/DT, tidyverse/forcats, r-lib/lifecycle, r-lib/scales,
+    daattali/shinyjs, shinyTree/shinyTree, rstudio/shinyvalidate,
+    dreamRs/shinyWidgets, tidyverse/stringr,
     insightsengineering/teal.code, insightsengineering/teal.data,
     insightsengineering/teal.logger, insightsengineering/teal.reporter,
     insightsengineering/teal.widgets, insightsengineering/tern,
-    tidyverse/tibble, tidyverse/tidyr, yihui/knitr, daroczig/logger,
+    tidyverse/tibble, tidyverse/tidyr,
+    daattali/colourpicker, daattali/ggExtra, aphalo/ggpmisc, aphalo/ggpp,
+    slowkow/ggrepel, baddstats/goftest, ramnathv/htmlwidgets,
+    jeroen/jsonlite, yihui/knitr, daroczig/logger, deepayan/lattice,
     insightsengineering/nestcolor, r-lib/pkgload, r-lib/rlang,
-    rstudio/rmarkdown, insightsengineering/roxy.shinylive, tidyverse/rvest,
+    rstudio/rmarkdown, insightsengineering/roxy.shinylive,
+    insightsengineering/rtables, tidyverse/rvest, htmlwidgets/sparkline,
     rstudio/shinytest2, r-lib/testthat, r-lib/withr
 Config/Needs/website: insightsengineering/nesttemplate
 Encoding: UTF-8

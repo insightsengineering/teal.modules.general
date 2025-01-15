@@ -19,14 +19,13 @@
 #' @param show_total (`logical(1)`)
 #' Indicates whether to show total column.
 #' Defaults to `TRUE`.
-#' @param decorators `r roxygen_decorators_param("tm_t_crosstable")`
 #'
 #' @note For more examples, please see the vignette "Using cross table" via
 #' `vignette("using-cross-table", package = "teal.modules.general")`.
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_t_crosstable`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `table` (`ElementaryTable` - output of `rtables::build_table`)
@@ -424,9 +423,12 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
       table_r = table_r
     )
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
+      verbatim_content = source_code_r,
       title = "Show R Code for Cross-Table"
     )
 
@@ -445,7 +447,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_output_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

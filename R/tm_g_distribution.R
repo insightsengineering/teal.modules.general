@@ -23,17 +23,16 @@
 #' Defaults to `c(30L, 1L, 100L)`.
 #'
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Histogram", "QQplot")`
-#' @param decorators `r roxygen_decorators_param("tm_g_distribution")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_g_distribution`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators::
 #' - `histogram_plot` (`ggplot2`)
-#' - `qq_plot` (`data.frame`)
-#' - `summary_table` (`data.frame`)
-#' - `test_table` (`data.frame`)
+#' - `qq_plot` (`ggplot2`)
+#' - `summary_table` (`listing_df` created with [rlistings::as_listing()])
+#' - `test_table` (`listing_df` created with [rlistings::as_listing()])
 #'
 #' Decorators can be applied to all outputs or only to specific objects using a
 #' named list of `teal_transform_module` objects.
@@ -703,7 +702,7 @@ srv_distribution <- function(id,
         )
       }
 
-      qenv <- if (length(s_var) == 0 && length(g_var) == 0) {
+      if (length(s_var) == 0 && length(g_var) == 0) {
         teal.code::eval_code(
           qenv,
           substitute(
@@ -748,20 +747,6 @@ srv_distribution <- function(id,
             )
           )
         )
-      }
-      if (iv_r()$is_valid()) {
-        within(qenv, {
-          summary_table <- DT::datatable(
-            summary_table_data,
-            options = list(
-              autoWidth = TRUE,
-              columnDefs = list(list(width = "200px", targets = "_all"))
-            ),
-            rownames = FALSE
-          )
-        })
-      } else {
-        within(qenv, summary_table <- NULL)
       }
     })
 
@@ -1258,28 +1243,32 @@ srv_distribution <- function(id,
     )
 
     # outputs ----
-    ## building main qenv
-    output_common_q <- reactive({
+    output_dist_q <- reactive(c(common_q(), req(dist_q())))
+    output_qq_q <- reactive(c(common_q(), req(qq_q())))
+
+    # Summary table listing has to be created separately to allow for qenv join
+    output_summary_q <- reactive({
+      if (iv_r()$is_valid()) {
+        within(common_q(), summary_table <- rlistings::as_listing(summary_table_data))
+      } else {
+        within(common_q(), summary_table <- rlistings::as_listing(summary_table_data[0L, ]))
+      }
+    })
+
+    output_test_q <- reactive({
       # wrapped in if since could lead into validate error - we do want to continue
       test_q_out <- try(test_q(), silent = TRUE)
       if (!inherits(test_q_out, c("try-error", "error"))) {
         c(
           common_q(),
           within(test_q_out, {
-            test_table <- DT::datatable(
-              test_table_data,
-              options = list(scrollX = TRUE),
-              rownames = FALSE
-            )
+            test_table <- rlistings::as_listing(test_table_data)
           })
         )
       } else {
-        within(common_q(), test_table <- NULL)
+        within(common_q(), test_table <- rlistings::as_listing(data.frame(missing = character(0L))))
       }
     })
-
-    output_dist_q <- reactive(c(output_common_q(), req(dist_q())))
-    output_qq_q <- reactive(c(output_common_q(), req(qq_q())))
 
     decorated_output_dist_q <- srv_decorate_teal_data(
       "d_density",
@@ -1297,14 +1286,14 @@ srv_distribution <- function(id,
 
     decorated_output_summary_q <- srv_decorate_teal_data(
       "d_summary",
-      data = output_common_q,
+      data = output_summary_q,
       decorators = select_decorators(decorators, "summary_table"),
       expr = summary_table
     )
 
     decorated_output_test_q <- srv_decorate_teal_data(
       "d_test",
-      data = output_common_q,
+      data = output_test_q,
       decorators = select_decorators(decorators, "test_table"),
       expr = test_table
     )
@@ -1329,13 +1318,24 @@ srv_distribution <- function(id,
 
     qq_r <- reactive(req(decorated_output_qq_q())[["qq_plot"]])
 
-    output$summary_table <- DT::renderDataTable(expr = decorated_output_summary_q()[["summary_table"]])
+    output$summary_table <- DT::renderDataTable(
+      expr = decorated_output_summary_q()[["summary_table_data"]],
+      options = list(
+        autoWidth = TRUE,
+        columnDefs = list(list(width = "200px", targets = "_all"))
+      ),
+      rownames = FALSE
+    )
 
     tests_r <- reactive({
       req(iv_r()$is_valid())
       teal::validate_inputs(iv_r_dist())
       req(test_q()) # Ensure original errors are displayed
-      decorated_output_test_q()[["test_table"]]
+      DT::datatable(
+        data = decorated_output_test_q()[["test_table_data"]],
+        options = list(scrollX = TRUE),
+        rownames = FALSE
+      )
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
@@ -1354,13 +1354,14 @@ srv_distribution <- function(id,
       brushing = FALSE
     )
 
-    output$t_stats <- DT::renderDataTable(
-      expr = tests_r()
-    )
+    output$t_stats <- DT::renderDataTable(expr = tests_r())
+
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
+      verbatim_content = source_code_r,
       title = "R Code for distribution"
     )
 
@@ -1380,8 +1381,7 @@ srv_distribution <- function(id,
           card$append_plot(qq_r(), dim = pws2$dim())
         }
         card$append_text("Statistics table", "header3")
-
-        card$append_table(common_q()[["summary_table"]])
+        card$append_table(decorated_output_summary_q()[["summary_table"]])
         tests_error <- tryCatch(expr = tests_r(), error = function(e) "error")
         if (inherits(tests_error, "data.frame")) {
           card$append_text("Tests table", "header3")
@@ -1392,7 +1392,7 @@ srv_distribution <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_output_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
