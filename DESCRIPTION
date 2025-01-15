@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9062
-Date: 2025-01-09
+Version: 0.3.0.9063
+Date: 2025-01-15
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -45,7 +45,7 @@ Imports:
     stringr (>= 1.4.1),
     teal.code (>= 0.5.0.9012),
     teal.data (>= 0.6.0.9015),
-    teal.logger (>= 0.2.0.9004),
+    teal.logger (>= 0.3.0.9003),
     teal.reporter (>= 0.3.0),
     teal.widgets (>= 0.4.0),
     tern (>= 0.9.5),
