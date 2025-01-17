@@ -134,7 +134,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      pre_output = NULL,
                      post_output = NULL,
                      transformators = list(),
-                     decorators = NULL) {
+                     decorators = list()) {
   message("Initializing tm_a_pca")
 
   # Normalize the parameters

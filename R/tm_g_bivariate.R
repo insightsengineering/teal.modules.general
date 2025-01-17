@@ -196,7 +196,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            pre_output = NULL,
                            post_output = NULL,
                            transformators = list(),
-                           decorators = NULL) {
+                           decorators = list()) {
   message("Initializing tm_g_bivariate")
 
   # Normalize the parameters

@@ -158,7 +158,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_outlier_label = "USUBJID",
                             label_segment_threshold = c(0.5, 0, 10),
                             transformators = list(),
-                            decorators = NULL) {
+                            decorators = list()) {
   message("Initializing tm_a_regression")
 
   # Normalize the parameters

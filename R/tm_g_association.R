@@ -139,7 +139,7 @@ tm_g_association <- function(label = "Association",
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args(),
                              transformators = list(),
-                             decorators = NULL) {
+                             decorators = list()) {
   message("Initializing tm_g_association")
 
   # Normalize the parameters

@@ -118,7 +118,7 @@ tm_missing_data <- function(label = "Missing data",
                             pre_output = NULL,
                             post_output = NULL,
                             transformators = list(),
-                            decorators = NULL) {
+                            decorators = list()) {
   message("Initializing tm_missing_data")
 
   # Normalize the parameters

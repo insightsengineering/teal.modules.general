@@ -18,7 +18,7 @@ tm_g_distribution(
   pre_output = NULL,
   post_output = NULL,
   transformators = list(),
-  decorators = NULL
+  decorators = list()
 )
 }
 \arguments{
@@ -59,18 +59,18 @@ Defaults to \code{c(30L, 1L, 100L)}.
 \item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
 
-\item{pre_output}{(\code{shiny.tag}, optional)\cr
+\item{pre_output}{(\code{shiny.tag}) optional,\cr
 with text placed before the output to put the output into context. For example a title.}
 
-\item{post_output}{(\code{shiny.tag}, optional) with text placed after the output to put the output
+\item{post_output}{(\code{shiny.tag}) optional, with text placed after the output to put the output
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 
 \item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
 To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-(\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional,
-if not \code{NULL}, decorator for tables or plots included in the module.
+(\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
+decorator for tables or plots included in the module.
 When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
 
 Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
@@ -190,13 +190,13 @@ if (interactive()) {
 \describe{
   \item{example-1}{
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiSgC+ihBKaKj1KnnsFf4ZugC8A0G4-XxCInUjdKKkfRCVlaQwiRLJtaQ19IKa1v3L-luJWizDo1CJYdvqpImiqHAEi0dHKdDwFwpg1bU-4yWb0qojgIg0F1B4Puj2e7DONSg9BEiQI+SItAIYj6v0aPzkpR+AAU4EEeAAZCgSAr4w7LNpHBm6NptWgmXTsFTkZiWHQ2WzlIGiQoQVgAQXQ7E6ABJBLRSjLQYwdIw2s0lGBmgBdIA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiSgC+ihBKaKj1KnnsFf4ZugC8A0G4-XxCInUjdKKkfRCVlaQwiRLJtaQ19IKa1v3L-luJWizDo1CJYdvqpImiqHAEi0dHKdDwFwpg1bU-4yWb0qojgIg0F1B4Puj2e7DONSg9BEiQI+SItAIYj6v0aPzkpR+AAU4EEeAAZCgSAr4w7LNpHBm6NptWgmXTsFTkZiWHQ2WzlIGiQoQVgAQXQ7E6ABJBLRSjLQYwdIw2s0lGBmgBdIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
-    \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
+    \if{html}{\out{<script type="text/javascript">$(function() {  var if_pkgdown = [...document.scripts].filter(x => x.src.includes("pkgdown.js")).length > 0;  if (if_pkgdown) {    $("iframe.iframe_shinylive").css("width", "150\%");  }});</script>}}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiSgC+ihBKaKj1KnnsFf4ZugC8A0G4-XxCInUjdKKkfRCVlaQwiRLJtaQ19IKa1v3L-luJWizDo1CJYdvqpImiqHAEi0dHKdDwFwpg1bU-4yWb0qojgIg0F1B4Puj2e7DONSg9BEiQI+SItAIYj6v0aPzkpR+AAU4EEeAAZCgSAr4w7LNpHBm6NptWgmXTsFTkZiWHQ2WzlIGiQoQVgAQXQ7E6ABJBLRSjLQYwdIw2s0lGBmgBdIA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
   }
   \item{example-2}{
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTcILRZRAEY2ghLxgjE00TgRDTh+dlqujujFoUHoIk2r1o73OuWAwAUYD6zURl0uVQIAKRWAAsoiqoivAB5RwAOQcAE18bpEQFnAANRFyOS4QFfH7kfi6AC8ulJjmaKIgwyUaFQbRUxQBEDqmR5IVyrJluj4QhEonlquEYmldTqpBgaQkGR2pBB9EEmmsgL1IVNaWB8syaWiZvUG1EqDgmJttoV4VOel5iOR+N9tvZ3tI8sjGk+Xp9yr9epebzE8uBoPBcEhadh4XhIaaKLAaIxWPqAHFXHgaWAAEI4rAAaSwDyZLPDftjnPliMbLbbYaTyZV61ocSDugAYvVmnSlaO9SZaFE-vLZ-PXCPbcNk52d7pRG7wg6WE7ci6om6457vbrR5lA32kcXh0uV9RyIx5Z-v-H7y7W1gQ1XkQIeRclzHL8JxEeUHBcIDdD3P0D2TCRGCIQRUDPH9eWdV1mFvBMH2TJ9YCnIt+jwJC-xkX9aC-GQAMTKCgXuDN7ggpC6hgcdJ3gpxtyXFDd19FDhmGWgTF0dgVG-d1tDgGxbBqZVRDKCBWHqdB2DFAASQRaCqAyvkYHRGGGAYlDAAZLiAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTcILRZRAEY2ghLxgjE00TgRDTh+dlqujujFoUHoIk2r1o73OuWAwAUYD6zURl0uVQIAKRWAAsoiqoivAB5RwAOQcAE18bpEQFnAANRFyOS4QFfH7kfi6AC8ulJjmaKIgwyUaFQbRUxQBEDqmR5IVyrJluj4QhEonlquEYmldTqpBgaQkGR2pBB9EEmmsgL1IVNaWB8syaWiZvUG1EqDgmJttoV4VOel5iOR+N9tvZ3tI8sjGk+Xp9yr9epebzE8uBoPBcEhadh4XhIaaKLAaIxWPqAHFXHgaWAAEI4rAAaSwDyZLPDftjnPliMbLbbYaTyZV61ocSDugAYvVmnSlaO9SZaFE-vLZ-PXCPbcNk52d7pRG7wg6WE7ci6om6457vbrR5lA32kcXh0uV9RyIx5Z-v-H7y7W1gQ1XkQIeRclzHL8JxEeUHBcIDdD3P0D2TCRGCIQRUDPH9eWdV1mFvBMH2TJ9YCnIt+jwJC-xkX9aC-GQAMTKCgXuDN7ggpC6hgcdJ3gpxtyXFDd19FDhmGWgTF0dgVG-d1tDgGxbBqZVRDKCBWHqdB2DFAASQRaCqAyvkYHRGGGAYlDAAZLiAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
-    \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
+    \if{html}{\out{<script type="text/javascript">$(function() {  var if_pkgdown = [...document.scripts].filter(x => x.src.includes("pkgdown.js")).length > 0;  if (if_pkgdown) {    $("iframe.iframe_shinylive").css("width", "150\%");  }});</script>}}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTcILRZRAEY2ghLxgjE00TgRDTh+dlqujujFoUHoIk2r1o73OuWAwAUYD6zURl0uVQIAKRWAAsoiqoivAB5RwAOQcAE18bpEQFnAANRFyOS4QFfH7kfi6AC8ulJjmaKIgwyUaFQbRUxQBEDqmR5IVyrJluj4QhEonlquEYmldTqpBgaQkGR2pBB9EEmmsgL1IVNaWB8syaWiZvUG1EqDgmJttoV4VOel5iOR+N9tvZ3tI8sjGk+Xp9yr9epebzE8uBoPBcEhadh4XhIaaKLAaIxWPqAHFXHgaWAAEI4rAAaSwDyZLPDftjnPliMbLbbYaTyZV61ocSDugAYvVmnSlaO9SZaFE-vLZ-PXCPbcNk52d7pRG7wg6WE7ci6om6457vbrR5lA32kcXh0uV9RyIx5Z-v-H7y7W1gQ1XkQIeRclzHL8JxEeUHBcIDdD3P0D2TCRGCIQRUDPH9eWdV1mFvBMH2TJ9YCnIt+jwJC-xkX9aC-GQAMTKCgXuDN7ggpC6hgcdJ3gpxtyXFDd19FDhmGWgTF0dgVG-d1tDgGxbBqZVRDKCBWHqdB2DFAASQRaCqAyvkYHRGGGAYlDAAZLiAA" style="height: 800px; width: 100\%; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: relative; z-index: 1"></iframe>}}
   }
 }
 }

@@ -157,7 +157,7 @@ tm_g_response <- function(label = "Response Plot",
                           pre_output = NULL,
                           post_output = NULL,
                           transformators = list(),
-                          decorators = NULL) {
+                          decorators = list()) {
   message("Initializing tm_g_response")
 
   # Normalize the parameters

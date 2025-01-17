@@ -178,7 +178,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    pre_output = NULL,
                                    post_output = NULL,
                                    transformators = list(),
-                                   decorators = NULL) {
+                                   decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
 
   # Normalize the parameters

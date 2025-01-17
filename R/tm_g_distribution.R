@@ -151,7 +151,7 @@ tm_g_distribution <- function(label = "Distribution Module",
                               pre_output = NULL,
                               post_output = NULL,
                               transformators = list(),
-                              decorators = NULL) {
+                              decorators = list()) {
   message("Initializing tm_g_distribution")
 
   # Normalize the parameters

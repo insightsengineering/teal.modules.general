@@ -158,7 +158,7 @@ tm_outliers <- function(label = "Outliers Module",
                         pre_output = NULL,
                         post_output = NULL,
                         transformators = list(),
-                        decorators = NULL) {
+                        decorators = list()) {
   message("Initializing tm_outliers")
 
   # Normalize the parameters

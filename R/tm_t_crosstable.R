@@ -144,7 +144,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             post_output = NULL,
                             basic_table_args = teal.widgets::basic_table_args(),
                             transformators = list(),
-                            decorators = NULL) {
+                            decorators = list()) {
   message("Initializing tm_t_crosstable")
 
   # Normalize the parameters

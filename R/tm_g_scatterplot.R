@@ -240,7 +240,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args(),
                              transformators = list(),
-                             decorators = NULL) {
+                             decorators = list()) {
   message("Initializing tm_g_scatterplot")
 
   # Normalize the parameters
