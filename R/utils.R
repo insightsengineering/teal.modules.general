@@ -35,7 +35,7 @@
 #' vector of `value`, `min`, and `max`.
 #' @param decorators `r lifecycle::badge("experimental")`
 #' (`list` of `teal_transform_module`, named `list` of `teal_transform_module`) optional,
-#' decorator for tables or plots included in the module.
+#' decorator for tables or plots included in the module output reported.
 #' When a named list of `teal_transform_module`, the decorators are applied to the respective output objects.
 #'
 #' Otherwise, the decorators are applied to all objects, which is equivalent as using the name `default`.
