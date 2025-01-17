@@ -30,7 +30,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("lattice", quietly = TRUE)
+#' @examples
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -117,7 +117,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("lattice", quietly = TRUE)
+#' @examples
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -180,11 +180,6 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    transformators = list(),
                                    decorators = NULL) {
   message("Initializing tm_g_scatterplotmatrix")
-
-  # Requires Suggested packages
-  if (!requireNamespace("lattice", quietly = TRUE)) {
-    stop("Cannot load lattice - please install the package or restart your session.")
-  }
 
   # Normalize the parameters
   if (inherits(variables, "data_extract_spec")) variables <- list(variables)

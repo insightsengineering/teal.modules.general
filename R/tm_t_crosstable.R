@@ -37,7 +37,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("rtables", quietly = TRUE)
+#' @examples
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -86,7 +86,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("rtables", quietly = TRUE)
+#' @examples
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -146,11 +146,6 @@ tm_t_crosstable <- function(label = "Cross Table",
                             transformators = list(),
                             decorators = NULL) {
   message("Initializing tm_t_crosstable")
-
-  # Requires Suggested packages
-  if (!requireNamespace("rtables", quietly = TRUE)) {
-    stop("Cannot load rtables - please install the package or restart your session.")
-  }
 
   # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)

@@ -44,7 +44,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # general data example
 #' data <- teal_data()
@@ -133,7 +133,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # CDISC data example
 #' data <- teal_data()
@@ -242,16 +242,6 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              transformators = list(),
                              decorators = NULL) {
   message("Initializing tm_g_scatterplot")
-
-  # Requires Suggested packages
-  extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
-  missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
-  if (length(missing_packages) > 0L) {
-    stop(sprintf(
-      "Cannot load package(s): %s.\nInstall or restart your session.",
-      toString(missing_packages)
-    ))
-  }
 
   # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
