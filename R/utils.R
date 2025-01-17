@@ -405,13 +405,9 @@ select_decorators <- function(decorators, scope) {
 #' @return A named list of lists with `teal_transform_module` objects.
 #' @keywords internal
 normalize_decorators <- function(decorators) {
-  if (checkmate::test_list(decorators, "teal_transform_module")) {
-    if (checkmate::test_names(names(decorators))) {
-      lapply(decorators, list)
-    } else {
-      list(default = decorators)
-    }
+  if (checkmate::test_names(names(decorators))) {
+    lapply(decorators, list)
   } else {
-    decorators
+    list(default = decorators)
   }
 }
