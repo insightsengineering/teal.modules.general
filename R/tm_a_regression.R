@@ -212,7 +212,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_choice(default_plot_type, seq.int(1L, length(plot_choices)))
   checkmate::assert_string(default_outlier_label)
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+  checkmate::assert_list(decorators, "teal_transform_module")
 
   if (length(label_segment_threshold) == 1) {
     checkmate::assert_numeric(label_segment_threshold, any.missing = FALSE, finite = TRUE)
@@ -226,7 +226,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     )
   }
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, "plot", null.ok = TRUE)
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
