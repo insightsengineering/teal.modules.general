@@ -60,7 +60,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggpp", quietly = TRUE) && require("goftest", quietly = TRUE) && require("MASS", quietly = TRUE) && require("broom", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # general data example
 #' data <- teal_data()
@@ -88,7 +88,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggpp", quietly = TRUE) && require("goftest", quietly = TRUE) && require("MASS", quietly = TRUE) && require("broom", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # CDISC data example
 #' data <- teal_data()
@@ -152,16 +152,6 @@ tm_g_distribution <- function(label = "Distribution Module",
                               post_output = NULL,
                               decorators = NULL) {
   message("Initializing tm_g_distribution")
-
-  # Requires Suggested packages
-  extra_packages <- c("ggpmisc", "ggpp", "goftest", "MASS", "broom")
-  missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
-  if (length(missing_packages) > 0L) {
-    stop(sprintf(
-      "Cannot load package(s): %s.\nInstall or restart your session.",
-      toString(missing_packages)
-    ))
-  }
 
   # Normalize the parameters
   if (inherits(dist_var, "data_extract_spec")) dist_var <- list(dist_var)
@@ -1227,7 +1217,7 @@ srv_distribution <- function(id,
               expr = {
                 test_table_data <- ANL %>%
                   dplyr::select(dist_var) %>%
-                  with(., broom::glance(do.call(test, args))) %>%
+                  with(., generics::glance(do.call(test, args))) %>%
                   dplyr::mutate_if(is.numeric, round, 3)
               },
               env = env
@@ -1241,7 +1231,7 @@ srv_distribution <- function(id,
                 test_table_data <- ANL %>%
                   dplyr::select(dist_var, s_var, g_var) %>%
                   dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
-                  dplyr::do(tests = broom::glance(do.call(test, args))) %>%
+                  dplyr::do(tests = generics::glance(do.call(test, args))) %>%
                   tidyr::unnest(tests) %>%
                   dplyr::mutate_if(is.numeric, round, 3)
               },
