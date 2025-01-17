@@ -136,6 +136,7 @@ tm_data_table <- function(label = "Data Table",
     ui = ui_page_data_table,
     datanames = datanames,
     server_args = list(
+      datanames = datanames,
       variables_selected = variables_selected,
       dt_args = dt_args,
       dt_options = dt_options,
@@ -185,6 +186,7 @@ ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
 # Server page module
 srv_page_data_table <- function(id,
                                 data,
+                                datanames,
                                 variables_selected,
                                 dt_args,
                                 dt_options,
@@ -197,7 +199,6 @@ srv_page_data_table <- function(id,
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
 
-    datanames <- isolate(names(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
     }, datanames)

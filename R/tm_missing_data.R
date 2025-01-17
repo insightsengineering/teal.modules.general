@@ -73,7 +73,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_missing_data(parent_dataname  = "mtcars")
+#'     tm_missing_data(parent_dataname = "mtcars")
 #'   )
 #' )
 #' if (interactive()) {
