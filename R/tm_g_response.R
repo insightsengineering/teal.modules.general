@@ -203,7 +203,7 @@ tm_g_response <- function(label = "Response Plot",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args

@@ -198,7 +198,7 @@ tm_outliers <- function(label = "Outliers Module",
 
   available_decorators <- c("box_plot", "density_plot", "cumulative_plot", "table")
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
+  assert_decorators(decorators, names = available_decorators)
   # End of assertions
 
   # Make UI args

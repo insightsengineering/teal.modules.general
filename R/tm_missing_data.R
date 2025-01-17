@@ -147,7 +147,7 @@ tm_missing_data <- function(label = "Missing data",
 
   available_decorators <- c("summary_plot", "combination_plot", "by_subject_plot", "summary_table")
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
+  assert_decorators(decorators, names = available_decorators)
   # End of assertions
 
   ans <- module(

@@ -165,7 +165,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args

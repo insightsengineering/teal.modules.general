@@ -300,7 +300,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
 
   # End of assertions
 

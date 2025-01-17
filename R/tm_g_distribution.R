@@ -195,7 +195,7 @@ tm_g_distribution <- function(label = "Distribution Module",
 
   available_decorators <- c("histogram_plot", "qq_plot", "test_table", "summary_table")
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
+  assert_decorators(decorators, names = available_decorators)
 
   # End of assertions
 

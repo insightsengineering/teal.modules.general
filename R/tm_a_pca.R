@@ -187,7 +187,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 
   available_decorators <- c("elbow_plot", "circle_plot", "biplot", "eigenvector_plot")
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, available_decorators)
+  assert_decorators(decorators, available_decorators)
   # End of assertions
 
   # Make UI args
