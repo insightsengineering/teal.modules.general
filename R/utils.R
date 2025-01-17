@@ -344,7 +344,7 @@ ui_decorate_teal_data <- function(id, decorators, ...) {
 #' @noRd
 check_decorators <- function(x, names = NULL) { # nolint: object_name.
 
-  check_message <- checkmate::check_list(x, names = "named" )
+  check_message <- checkmate::check_list(x, names = "named")
 
   if (!is.null(names)) {
     check_message <- if (isTRUE(check_message)) {
