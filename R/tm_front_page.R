@@ -55,10 +55,10 @@
 #'       additional_tags = HTML("Additional HTML or shiny tags go here <br>"),
 #'       footnotes = c("X" = "is the first footnote", "Y is the second footnote")
 #'     )
-#'   ),
-#'   header = tags$h1("Sample Application"),
-#'   footer = tags$p("Application footer")
-#' )
+#'   )
+#' ) |>
+#'   modify_header(tags$h1("Sample Application")) |>
+#'   modify_footer(tags$p("Application footer"))
 #'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)

@@ -25,7 +25,7 @@ BugReports:
 Depends:
     ggmosaic (>= 0.3.0),
     ggplot2 (>= 3.4.0),
-    R (>= 3.6),
+    R (>= 4.1),
     shiny (>= 1.6.0),
     teal (>= 0.15.2.9103),
     teal.transform (>= 0.5.0.9015)
