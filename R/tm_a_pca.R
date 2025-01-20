@@ -133,7 +133,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      size = c(2, 1, 8),
                      pre_output = NULL,
                      post_output = NULL,
-                     decorators = NULL) {
+                     transformators = list(),
+                     decorators = list()) {
   message("Initializing tm_a_pca")
 
   # Normalize the parameters
@@ -186,7 +187,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 
   available_decorators <- c("elbow_plot", "circle_plot", "biplot", "eigenvector_plot")
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, available_decorators)
+  assert_decorators(decorators, available_decorators)
   # End of assertions
 
   # Make UI args
@@ -208,6 +209,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- FALSE

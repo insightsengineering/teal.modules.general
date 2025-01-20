@@ -143,7 +143,8 @@ tm_t_crosstable <- function(label = "Cross Table",
                             pre_output = NULL,
                             post_output = NULL,
                             basic_table_args = teal.widgets::basic_table_args(),
-                            decorators = NULL) {
+                            transformators = list(),
+                            decorators = list()) {
   message("Initializing tm_t_crosstable")
 
   # Normalize the parameters
@@ -164,7 +165,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -184,6 +185,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     ui = ui_t_crosstable,
     ui_args = ui_args,
     server_args = server_args,
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(list(x = x, y = y))
   )
   attr(ans, "teal_bookmarkable") <- TRUE

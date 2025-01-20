@@ -150,7 +150,8 @@ tm_g_distribution <- function(label = "Distribution Module",
                               plot_width = NULL,
                               pre_output = NULL,
                               post_output = NULL,
-                              decorators = NULL) {
+                              transformators = list(),
+                              decorators = list()) {
   message("Initializing tm_g_distribution")
 
   # Normalize the parameters
@@ -194,7 +195,7 @@ tm_g_distribution <- function(label = "Distribution Module",
 
   available_decorators <- c("histogram_plot", "qq_plot", "test_table", "summary_table")
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
+  assert_decorators(decorators, names = available_decorators)
 
   # End of assertions
 
@@ -221,6 +222,7 @@ tm_g_distribution <- function(label = "Distribution Module",
     ),
     ui = ui_distribution,
     ui_args = args,
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

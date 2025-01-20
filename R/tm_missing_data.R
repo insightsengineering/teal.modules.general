@@ -118,7 +118,8 @@ tm_missing_data <- function(label = "Missing data",
                             ),
                             pre_output = NULL,
                             post_output = NULL,
-                            decorators = NULL) {
+                            transformators = list(),
+                            decorators = list()) {
   message("Initializing tm_missing_data")
 
   # Normalize the parameters
@@ -148,7 +149,7 @@ tm_missing_data <- function(label = "Missing data",
 
   available_decorators <- c("summary_plot", "combination_plot", "by_subject_plot", "summary_table")
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
+  assert_decorators(decorators, names = available_decorators)
   # End of assertions
 
   ans <- module(
@@ -164,6 +165,7 @@ tm_missing_data <- function(label = "Missing data",
       decorators = decorators
     ),
     ui = ui_page_missing_data,
+    transformators = transformators,
     ui_args = list(pre_output = pre_output, post_output = post_output)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

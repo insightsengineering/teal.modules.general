@@ -156,7 +156,8 @@ tm_g_response <- function(label = "Response Plot",
                           ggplot2_args = teal.widgets::ggplot2_args(),
                           pre_output = NULL,
                           post_output = NULL,
-                          decorators = NULL) {
+                          transformators = list(),
+                          decorators = list()) {
   message("Initializing tm_g_response")
 
   # Normalize the parameters
@@ -202,7 +203,7 @@ tm_g_response <- function(label = "Response Plot",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -229,6 +230,7 @@ tm_g_response <- function(label = "Response Plot",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

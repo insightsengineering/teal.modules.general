@@ -239,7 +239,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              post_output = NULL,
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args(),
-                             decorators = NULL) {
+                             transformators = list(),
+                             decorators = list()) {
   message("Initializing tm_g_scatterplot")
 
   # Normalize the parameters
@@ -299,7 +300,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
 
   # End of assertions
 
@@ -330,6 +331,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
