@@ -30,7 +30,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("lattice", quietly = TRUE)
+#' @examples
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -117,7 +117,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("lattice", quietly = TRUE)
+#' @examples
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -177,13 +177,9 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    plot_width = NULL,
                                    pre_output = NULL,
                                    post_output = NULL,
-                                   decorators = NULL) {
+                                   transformators = list(),
+                                   decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
-
-  # Requires Suggested packages
-  if (!requireNamespace("lattice", quietly = TRUE)) {
-    stop("Cannot load lattice - please install the package or restart your session.")
-  }
 
   # Normalize the parameters
   if (inherits(variables, "data_extract_spec")) variables <- list(variables)
@@ -204,7 +200,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -221,6 +217,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
       plot_width = plot_width,
       decorators = decorators
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(variables)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

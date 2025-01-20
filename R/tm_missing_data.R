@@ -50,7 +50,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("gridExtra", quietly = TRUE) && require("rlang", quietly = TRUE)
+#' @examples
 #' # general example data
 #' data <- teal_data()
 #' data <- within(data, {
@@ -73,7 +73,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_missing_data()
+#'     tm_missing_data(parent_dataname = "mtcars")
 #'   )
 #' )
 #' if (interactive()) {
@@ -84,7 +84,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("gridExtra", quietly = TRUE) && require("rlang", quietly = TRUE)
+#' @examples
 #' # CDISC example data
 #' data <- teal_data()
 #' data <- within(data, {
@@ -109,6 +109,7 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
+                            datanames = "all",
                             parent_dataname = "ADSL",
                             ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
                             ggplot2_args = list(
@@ -117,16 +118,9 @@ tm_missing_data <- function(label = "Missing data",
                             ),
                             pre_output = NULL,
                             post_output = NULL,
-                            decorators = NULL) {
+                            transformators = list(),
+                            decorators = list()) {
   message("Initializing tm_missing_data")
-
-  # Requires Suggested packages
-  if (!requireNamespace("gridExtra", quietly = TRUE)) {
-    stop("Cannot load gridExtra - please install the package or restart your session.")
-  }
-  if (!requireNamespace("rlang", quietly = TRUE)) {
-    stop("Cannot load rlang - please install the package or restart your session.")
-  }
 
   # Normalize the parameters
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
@@ -142,6 +136,7 @@ tm_missing_data <- function(label = "Missing data",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   ggtheme <- match.arg(ggtheme)
 
@@ -154,12 +149,13 @@ tm_missing_data <- function(label = "Missing data",
 
   available_decorators <- c("summary_plot", "combination_plot", "by_subject_plot", "summary_table")
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
+  assert_decorators(decorators, names = available_decorators)
   # End of assertions
 
   ans <- module(
     label,
     server = srv_page_missing_data,
+    datanames = if (identical(datanames, "all")) union(datanames, parent_dataname) else "all",
     server_args = list(
       parent_dataname = parent_dataname,
       plot_height = plot_height,
@@ -169,7 +165,7 @@ tm_missing_data <- function(label = "Missing data",
       decorators = decorators
     ),
     ui = ui_page_missing_data,
-    datanames = "all",
+    transformators = transformators,
     ui_args = list(pre_output = pre_output, post_output = post_output)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
@@ -1173,6 +1169,13 @@ srv_missing_data <- function(id,
         ggtheme = input$ggtheme
       )
 
+      # Unlikely that `rlang` is not available, new hashing may be expensive
+      hashing_function <- if (requireNamespace("rlang", quietly = TRUE)) {
+        quote(rlang::hash)
+      } else {
+        function(x) paste(as.integer(x), collapse = "")
+      }
+
       teal.code::eval_code(
         common_code_q(),
         substitute(
@@ -1187,41 +1190,44 @@ srv_missing_data <- function(id,
           )
         ) %>%
         teal.code::eval_code(
-          quote({
-            summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
-              dplyr::group_by_at(parent_keys) %>%
-              dplyr::mutate(id = dplyr::cur_group_id()) %>%
-              dplyr::ungroup() %>%
-              dplyr::group_by_at(c(parent_keys, "id")) %>%
-              dplyr::summarise_all(anyNA) %>%
-              dplyr::ungroup()
+          substitute(
+            expr = {
+              summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
+                dplyr::group_by_at(parent_keys) %>%
+                dplyr::mutate(id = dplyr::cur_group_id()) %>%
+                dplyr::ungroup() %>%
+                dplyr::group_by_at(c(parent_keys, "id")) %>%
+                dplyr::summarise_all(anyNA) %>%
+                dplyr::ungroup()
 
-            # order subjects by decreasing number of missing and then by
-            # missingness pattern (defined using sha1)
-            order_subjects <- summary_plot_patients %>%
-              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
-              dplyr::transmute(
-                id = dplyr::row_number(),
-                number_NA = apply(., 1, sum),
-                sha = apply(., 1, rlang::hash)
-              ) %>%
-              dplyr::arrange(dplyr::desc(number_NA), sha) %>%
-              getElement(name = "id")
+              # order subjects by decreasing number of missing and then by
+              # missingness pattern (defined using sha1)
+              order_subjects <- summary_plot_patients %>%
+                dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
+                dplyr::transmute(
+                  id = dplyr::row_number(),
+                  number_NA = apply(., 1, sum),
+                  sha = apply(., 1, hashing_function)
+                ) %>%
+                dplyr::arrange(dplyr::desc(number_NA), sha) %>%
+                getElement(name = "id")
 
-            # order columns by decreasing percent of missing values
-            ordered_columns <- summary_plot_patients %>%
-              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
-              dplyr::summarise(
-                column = create_cols_labels(colnames(.)),
-                na_count = apply(., MARGIN = 2, FUN = sum),
-                na_percent = na_count / nrow(.) * 100
-              ) %>%
-              dplyr::arrange(na_percent, dplyr::desc(column))
+              # order columns by decreasing percent of missing values
+              ordered_columns <- summary_plot_patients %>%
+                dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
+                dplyr::summarise(
+                  column = create_cols_labels(colnames(.)),
+                  na_count = apply(., MARGIN = 2, FUN = sum),
+                  na_percent = na_count / nrow(.) * 100
+                ) %>%
+                dplyr::arrange(na_percent, dplyr::desc(column))
 
-            summary_plot_patients <- summary_plot_patients %>%
-              tidyr::gather("col", "isna", -"id", -dplyr::all_of(parent_keys)) %>%
-              dplyr::mutate(col = create_cols_labels(col))
-          })
+              summary_plot_patients <- summary_plot_patients %>%
+                tidyr::gather("col", "isna", -"id", -dplyr::all_of(parent_keys)) %>%
+                dplyr::mutate(col = create_cols_labels(col))
+            },
+            env = list(hashing_function = hashing_function)
+          )
         ) %>%
         teal.code::eval_code(
           substitute(

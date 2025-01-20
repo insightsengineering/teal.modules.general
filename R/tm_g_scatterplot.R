@@ -44,7 +44,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # general data example
 #' data <- teal_data()
@@ -133,7 +133,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # CDISC data example
 #' data <- teal_data()
@@ -239,18 +239,9 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              post_output = NULL,
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args(),
-                             decorators = NULL) {
+                             transformators = list(),
+                             decorators = list()) {
   message("Initializing tm_g_scatterplot")
-
-  # Requires Suggested packages
-  extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
-  missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
-  if (length(missing_packages) > 0L) {
-    stop(sprintf(
-      "Cannot load package(s): %s.\nInstall or restart your session.",
-      toString(missing_packages)
-    ))
-  }
 
   # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
@@ -309,7 +300,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
 
   # End of assertions
 
@@ -340,6 +331,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

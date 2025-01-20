@@ -157,7 +157,8 @@ tm_outliers <- function(label = "Outliers Module",
                         plot_width = NULL,
                         pre_output = NULL,
                         post_output = NULL,
-                        decorators = NULL) {
+                        transformators = list(),
+                        decorators = list()) {
   message("Initializing tm_outliers")
 
   # Normalize the parameters
@@ -197,7 +198,7 @@ tm_outliers <- function(label = "Outliers Module",
 
   available_decorators <- c("box_plot", "density_plot", "cumulative_plot", "table")
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
+  assert_decorators(decorators, names = available_decorators)
   # End of assertions
 
   # Make UI args
@@ -221,6 +222,7 @@ tm_outliers <- function(label = "Outliers Module",
     ),
     ui = ui_outliers,
     ui_args = args,
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
