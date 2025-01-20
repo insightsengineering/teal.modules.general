@@ -7,7 +7,8 @@
 tm_data_table(
   label = "Data Table",
   variables_selected = list(),
-  datasets_selected = character(0),
+  datasets_selected = deprecated(),
+  datanames = if (missing(datasets_selected)) "all" else datasets_selected,
   dt_args = list(),
   dt_options = list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
     scrollX = TRUE),
@@ -26,10 +27,17 @@ Names of list elements should correspond to the names of the datasets available 
 If no entry is specified for a dataset, the first six variables from that
 dataset will initially be shown.}
 
-\item{datasets_selected}{(\code{character}) A vector of datasets which should be
-shown and in what order. Names in the vector have to correspond with datasets names.
-If vector of \code{length == 0} (default) then all datasets are shown.
-Note: Only datasets of the \code{data.frame} class are compatible.}
+\item{datasets_selected}{(\code{character}) \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} A vector of datasets which should be
+shown and in what order. Use \code{datanames} instead.}
+
+\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
+There are 2 reserved values that have specific behaviors:
+\itemize{
+\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
+\item \code{NULL} hides the sidebar panel completely.
+\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
+argument.
+}}
 
 \item{dt_args}{(\verb{named list}) Additional arguments to be passed to \code{\link[DT:datatable]{DT::datatable()}}
 (must not include \code{data} or \code{options}).}

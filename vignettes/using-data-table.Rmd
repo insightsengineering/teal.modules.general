@@ -72,7 +72,7 @@ mod2 <- tm_data_table(
       "PARAM", "PARAMCD", "AVISIT", "AVISITN", "AVAL", "CHG"
     )
   ),
-  datasets_selected = c("ADTTE", "ADLB", "ADSL")
+  datanames = c("ADTTE", "ADLB", "ADSL")
 )
 
 # configuration for the advanced usage of DT options and extensions

@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.3.0.9064
-Date: 2025-01-17
+Version: 0.3.0.9065
+Date: 2025-01-20
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -46,6 +46,7 @@ Imports:
     htmlwidgets (>= 1.6.4),
     jsonlite (>= 1.8.9),
     lattice (>= 0.18-4),
+    lifecycle (>= 0.2.0),
     MASS (>= 7.3-61),
     rlistings (>= 0.2.8),
     rtables (>= 0.6.8),
@@ -69,7 +70,6 @@ Imports:
     utils
 Suggests:
     knitr (>= 1.42),
-    lifecycle (>= 0.2.0),
     logger (>= 0.2.0),
     nestcolor (>= 0.1.0),
     pkgload,

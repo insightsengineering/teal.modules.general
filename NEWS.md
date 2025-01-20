@@ -1,8 +1,11 @@
-# teal.modules.general 0.3.0.9064
+# teal.modules.general 0.3.0.9065
 
 * Removed `Show Warnings` modals from modules.
+* Soft deprecated `datasets_selected` argument of modules in favor of `datanames`.
+* Soft deprecated `show_metadata` argument of `tm_front_page()` in favor of `datanames`.
 
 ### Enhancements
+
 * Added `teal.logger` functionality for logging changes in shiny inputs in all modules.
 
 ### Bug fixes

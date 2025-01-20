@@ -6,7 +6,7 @@ app_driver_tm_data_table <- function() {
       variables_selected = list(
         iris = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", "Species")
       ),
-      datasets_selected = c("iris", "mtcars"),
+      datanames = c("iris", "mtcars"),
       dt_args = list(caption = "Table Caption"),
       dt_options = list(
         searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),

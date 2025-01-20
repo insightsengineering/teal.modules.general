@@ -16,10 +16,8 @@
 #' Names of list elements should correspond to the names of the datasets available in the app.
 #' If no entry is specified for a dataset, the first six variables from that
 #' dataset will initially be shown.
-#' @param datasets_selected (`character`) A vector of datasets which should be
-#' shown and in what order. Names in the vector have to correspond with datasets names.
-#' If vector of `length == 0` (default) then all datasets are shown.
-#' Note: Only datasets of the `data.frame` class are compatible.
+#' @param datasets_selected (`character`) `r lifecycle::badge("deprecated")` A vector of datasets which should be
+#' shown and in what order. Use `datanames` instead.
 #' @param dt_args (`named list`) Additional arguments to be passed to [DT::datatable()]
 #' (must not include `data` or `options`).
 #' @param dt_options (`named list`) The `options` argument to `DT::datatable`. By default
@@ -86,7 +84,8 @@
 #'
 tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
-                          datasets_selected = character(0),
+                          datasets_selected = deprecated(),
+                          datanames = if (missing(datasets_selected)) "all" else datasets_selected,
                           dt_args = list(),
                           dt_options = list(
                             searching = FALSE,
@@ -111,8 +110,15 @@ tm_data_table <- function(label = "Data Table",
       }
     })
   }
-
-  checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
+  if (!missing(datasets_selected)) {
+    lifecycle::deprecate_soft(
+      when = "0.4.0",
+      what = "tm_data_table(datasets_selected)",
+      with = "tm_data_table(datanames)",
+      details = 'Use tm_data_table(datanames = "all") to keep the previous behavior and avoid this warning.',
+    )
+  }
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert(
     checkmate::check_list(dt_args, len = 0),
     checkmate::check_subset(names(dt_args), choices = names(formals(DT::datatable)))
@@ -128,10 +134,10 @@ tm_data_table <- function(label = "Data Table",
     label,
     server = srv_page_data_table,
     ui = ui_page_data_table,
-    datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
+    datanames = datanames,
     server_args = list(
+      datanames = datanames,
       variables_selected = variables_selected,
-      datasets_selected = datasets_selected,
       dt_args = dt_args,
       dt_options = dt_options,
       server_rendering = server_rendering
@@ -180,7 +186,7 @@ ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
 # Server page module
 srv_page_data_table <- function(id,
                                 data,
-                                datasets_selected,
+                                datanames,
                                 variables_selected,
                                 dt_args,
                                 dt_options,
@@ -193,15 +199,9 @@ srv_page_data_table <- function(id,
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
 
-    datanames <- isolate(names(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
     }, datanames)
-
-    if (!identical(datasets_selected, character(0))) {
-      checkmate::assert_subset(datasets_selected, datanames)
-      datanames <- datasets_selected
-    }
 
     output$dataset_table <- renderUI({
       do.call(
