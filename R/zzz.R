@@ -6,4 +6,5 @@
 ### global variables
 ggplot_themes <- c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void")
 
+#' @importFrom lifecycle deprecated
 interactive <- NULL

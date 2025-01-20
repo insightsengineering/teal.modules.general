@@ -73,7 +73,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_missing_data()
+#'     tm_missing_data(parent_dataname = "mtcars")
 #'   )
 #' )
 #' if (interactive()) {
@@ -109,6 +109,7 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
+                            datanames = "all",
                             parent_dataname = "ADSL",
                             ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
                             ggplot2_args = list(
@@ -134,6 +135,7 @@ tm_missing_data <- function(label = "Missing data",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   ggtheme <- match.arg(ggtheme)
 
@@ -152,6 +154,7 @@ tm_missing_data <- function(label = "Missing data",
   ans <- module(
     label,
     server = srv_page_missing_data,
+    datanames = if (identical(datanames, "all")) union(datanames, parent_dataname) else "all",
     server_args = list(
       parent_dataname = parent_dataname,
       plot_height = plot_height,
@@ -161,7 +164,6 @@ tm_missing_data <- function(label = "Missing data",
       decorators = decorators
     ),
     ui = ui_page_missing_data,
-    datanames = "all",
     ui_args = list(pre_output = pre_output, post_output = post_output)
   )
   attr(ans, "teal_bookmarkable") <- TRUE

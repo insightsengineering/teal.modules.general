@@ -8,6 +8,7 @@ tm_missing_data(
   label = "Missing data",
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
+  datanames = "all",
   parent_dataname = "ADSL",
   ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
   ggplot2_args = list(`Combinations Hist` = teal.widgets::ggplot2_args(labs =
@@ -27,6 +28,15 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
+
+\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
+There are 2 reserved values that have specific behaviors:
+\itemize{
+\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
+\item \code{NULL} hides the sidebar panel completely.
+\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
+argument.
+}}
 
 \item{parent_dataname}{(\code{character(1)}) Specifies the parent dataset name. Default is \code{ADSL} for \code{CDISC} data.
 If provided and exists, enables additional analysis "by subject". For non-\code{CDISC} data, this parameter can be
@@ -120,7 +130,7 @@ data <- within(data, {
 app <- init(
   data = data,
   modules = modules(
-    tm_missing_data()
+    tm_missing_data(parent_dataname = "mtcars")
   )
 )
 if (interactive()) {
@@ -150,8 +160,8 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrquuAAesKgiuvxQpFBK4ZEGxlzUAPoxUDbREVBxugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQFbpQ-PyJ0KJZZhaa1gG25RCVlQHAosEi7KK1idwkEuyTpSbtHewiEBIF27YAVFXmtCbsAIylGAAMAKyPdwDsct8AulkAcgBBHpzHoAXzcM10DVowyM0MYsJ6MFaLDhxhRBDRkMqMNEwD+8OoaBCHDxpT6AyGXUqmLRBKyxPQ1A4dMYogp-UGUFENN0bPxwAUhFY1GFP0Jxh5GBM6lIBwFwCFIrFYAlfMVyqkLHFkt64llGgVqPZSuF2sYuq6YK6ShJWRUeXYPRSugAvGEMrhkQJhGJ3fzfSJRM6oZVSDBEjBYaIVBJkhk0lCul0brp2CpyMxLDobFMeqJChBWID0OwSQASeoU9AV1aMHSdJQQiBgME-IA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrquuAAesKgiuvxQpFBK4ZEGxlzUAPoxUDbREVBxugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQFbpQ-PyJ0KJZZhaa1gG25RCVlQHAosEi7KK1idwkEuyTpSbtHewiEBIF27YAVFXmtCbsAIylGAAMAKyPdwDsct8AulkAcgBBHpzHoAXzcM10DVowyM0MYsJ6MFaLDhxhRBDRkMqMNEwD+8OoaBCHDxpT6AyGXUqmLRBKyxPQ1A4dMYogp-UGUFENN0bPxwAUhFY1GFP0Jxh5GBM6lIBwFwCFIrFYAlfMVyqkLHFkt64llGgVqPZSuF2sYuq6YK6ShJWRUeXYPRSugAvGEMrhkQJhGJ3fzfSJRM6oZVSDBEjBYaIVBJkhk0lCul0brp2CpyMxLDobFMeqJChBWID0OwSQASeoU9AV1aMHSdJQQiBgME-IA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrquuAAesKgiuvxQpFBK4ZEGxlzUAPoxUDbREVBxugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQFbpQ-PyJ0KJZZhaa1gG25RCVlQHAosEi7KK1idwkEuyTpSbtHewiEBIF27YAVFXmtCbsAIylGAAMAKyPdwDsct8AulkAcgBBHpzHoAXzcM10DVowyM0MYsJ6MFaLDhxhRBDRkMqMNEwD+8OoaBCHDxpT6AyGXUqmLRBKyxPQ1A4dMYogp-UGUFENN0bPxwAUhFY1GFP0Jxh5GBM6lIBwFwCFIrFYAlfMVyqkLHFkt64llGgVqPZSuF2sYuq6YK6ShJWRUeXYPRSugAvGEMrhkQJhGJ3fzfSJRM6oZVSDBEjBYaIVBJkhl2KgWBRSAnItB4AHhQLhXyul0brp2CpyMxLDobFMeqJChBWID0OwSQASeoU9At1aMHSdJQQiBgME-IA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrquuAAesKgiuvxQpFBK4ZEGxlzUAPoxUDbREVBxugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQFbpQ-PyJ0KJZZhaa1gG25RCVlQHAosEi7KK1idwkEuyTpSbtHewiEBIF27YAVFXmtCbsAIylGAAMAKyPdwDsct8AulkAcgBBHpzHoAXzcM10DVowyM0MYsJ6MFaLDhxhRBDRkMqMNEwD+8OoaBCHDxpT6AyGXUqmLRBKyxPQ1A4dMYogp-UGUFENN0bPxwAUhFY1GFP0Jxh5GBM6lIBwFwCFIrFYAlfMVyqkLHFkt64llGgVqPZSuF2sYuq6YK6ShJWRUeXYPRSugAvGEMrhkQJhGJ3fzfSJRM6oZVSDBEjBYaIVBJkhl2KgWBRSAnItB4AHhQLhXyul0brp2CpyMxLDobFMeqJChBWID0OwSQASeoU9At1aMHSdJQQiBgME-IA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
