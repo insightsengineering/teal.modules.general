@@ -107,8 +107,8 @@ tm_variable_browser <- function(label = "Variable Browser",
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
   # End of assertions
 
-  datanames <- if (identical(datanames, "all")) {
-    "all"
+  datanames_module <- if (identical(datanames, "all") || is.null(datanames)) {
+    datanames
   } else {
     union(datanames, parent_dataname)
   }
@@ -117,9 +117,9 @@ tm_variable_browser <- function(label = "Variable Browser",
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
-    datanames = datanames,
+    datanames = datanames_module,
     server_args = list(
-      datanames = datanames,
+      datanames = if (is.null(datanames)) "all" else datanames,
       parent_dataname = parent_dataname,
       ggplot2_args = ggplot2_args
     ),
@@ -228,7 +228,7 @@ srv_variable_browser <- function(id,
 
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
-    }, datanames)
+    }, if (identical(datanames, "all")) names(isolate(data())) else datanames)
 
     output$ui_variable_browser <- renderUI({
       ns <- session$ns
