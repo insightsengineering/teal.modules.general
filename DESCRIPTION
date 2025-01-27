@@ -83,6 +83,12 @@ Suggests:
 VignetteBuilder:
     knitr,
     rmarkdown
+Remotes:
+    insightsengineering/teal,
+    insightsengineering/teal.transform,
+    insightsengineering/teal.code,
+    insightsengineering/teal.data,
+    insightsengineering/teal.reporter
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.slice, insightsengineering/teal.transform,
