@@ -8,6 +8,7 @@ app_driver_tm_front_page <- function() {
     data = data,
     modules = tm_front_page(
       label = "Front page",
+      datanames = "all",
       header_text = c(
         "Important information" = "It can go here.",
         "Other information" = "Can go here."

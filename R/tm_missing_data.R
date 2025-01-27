@@ -152,11 +152,18 @@ tm_missing_data <- function(label = "Missing data",
   assert_decorators(decorators, names = available_decorators)
   # End of assertions
 
+  datanames_module <- if (identical(datanames, "all") || is.null(datanames)) {
+    datanames
+  } else {
+    union(datanames, parent_dataname)
+  }
+
   ans <- module(
     label,
     server = srv_page_missing_data,
-    datanames = if (identical(datanames, "all")) union(datanames, parent_dataname) else "all",
+    datanames = datanames_module,
     server_args = list(
+      datanames = if (is.null(datanames)) "all" else datanames,
       parent_dataname = parent_dataname,
       plot_height = plot_height,
       plot_width = plot_width,
@@ -198,18 +205,17 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
 }
 
 # Server function for the missing data module (all datasets)
-srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
+srv_page_missing_data <- function(id, data, reporter, filter_panel_api, datanames, parent_dataname,
                                   plot_height, plot_width, ggplot2_args, ggtheme, decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    datanames <- isolate(names(data()))
-    datanames <- Filter(
-      function(name) is.data.frame(isolate(data())[[name]]),
-      datanames
-    )
+    datanames <- Filter(function(name) {
+      is.data.frame(isolate(data())[[name]])
+    }, if (identical(datanames, "all")) names(isolate(data())) else datanames)
+
     if_subject_plot <- length(parent_dataname) > 0 && parent_dataname %in% datanames
 
     ns <- session$ns

@@ -136,7 +136,7 @@ tm_data_table <- function(label = "Data Table",
     ui = ui_page_data_table,
     datanames = datanames,
     server_args = list(
-      datanames = datanames,
+      datanames = if (is.null(datanames)) "all" else datanames,
       variables_selected = variables_selected,
       dt_args = dt_args,
       dt_options = dt_options,
@@ -201,7 +201,8 @@ srv_page_data_table <- function(id,
 
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
-    }, datanames)
+    }, if (identical(datanames, "all")) names(isolate(data())) else datanames)
+
 
     output$dataset_table <- renderUI({
       do.call(
