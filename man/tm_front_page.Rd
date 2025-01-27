@@ -11,7 +11,7 @@ tm_front_page(
   additional_tags = tagList(),
   footnotes = character(0),
   show_metadata = deprecated(),
-  datanames = if (missing(show_metadata)) "all" else NULL
+  datanames = if (missing(show_metadata)) NULL else "all"
 )
 }
 \arguments{

@@ -19,7 +19,7 @@ app_driver_tm_missing_data <- function() {
       label = "Missing data",
       plot_height = c(600, 400, 5000),
       plot_width = NULL,
-      datanames = "mtcars",
+      datanames = "all",
       ggtheme = "gray",
       ggplot2_args = list(
         "Combinations Hist" = teal.widgets::ggplot2_args(
