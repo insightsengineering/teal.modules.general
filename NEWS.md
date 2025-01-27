@@ -1,4 +1,4 @@
-# teal.modules.general 0.3.0.9072
+# teal.modules.general 0.3.0.9073
 
 * Removed `Show Warnings` modals from modules.
 * Soft deprecated `datasets_selected` argument of modules in favor of `datanames`.
