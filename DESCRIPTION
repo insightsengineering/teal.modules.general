@@ -61,7 +61,7 @@ Imports:
     teal.code (>= 0.5.0.9012),
     teal.data (>= 0.6.0.9015),
     teal.logger (>= 0.3.1),
-    teal.reporter (>= 0.3.1.9023),
+    teal.reporter (>= 0.4.0),
     teal.widgets (>= 0.4.0),
     tern (>= 0.9.5),
     tibble (>= 2.0.0),
@@ -87,8 +87,7 @@ Remotes:
     insightsengineering/teal,
     insightsengineering/teal.transform,
     insightsengineering/teal.code,
-    insightsengineering/teal.data,
-    insightsengineering/teal.reporter
+    insightsengineering/teal.data
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.slice, insightsengineering/teal.transform,
