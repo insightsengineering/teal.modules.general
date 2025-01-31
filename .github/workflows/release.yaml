@@ -17,20 +17,6 @@ jobs:
     with:
       default-landing-page: latest-tag
       deps-installation-method: setup-r-dependencies
-      lookup-refs: |
-        insightsengineering/teal
-        insightsengineering/teal.transform
-        insightsengineering/teal.code
-        insightsengineering/teal.data
-        insightsengineering/teal.logger
-        insightsengineering/teal.reporter
-        insightsengineering/teal.widgets
-        insightsengineering/tern
-        insightsengineering/nestcolor
-        insightsengineering/roxy.shinylive
-        insightsengineering/formatters
-        insightsengineering/rtables
-        insightsengineering/rtables.officer
   validation:
     name: R Package Validation report 📃
     needs: release
@@ -39,20 +25,6 @@ jobs:
       REPO_GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}
     with:
       deps-installation-method: setup-r-dependencies
-      lookup-refs: |
-        insightsengineering/teal
-        insightsengineering/teal.transform
-        insightsengineering/teal.code
-        insightsengineering/teal.data
-        insightsengineering/teal.logger
-        insightsengineering/teal.reporter
-        insightsengineering/teal.widgets
-        insightsengineering/tern
-        insightsengineering/nestcolor
-        insightsengineering/roxy.shinylive
-        insightsengineering/formatters
-        insightsengineering/rtables
-        insightsengineering/rtables.officer
   release:
     name: Create release 🎉
     uses: insightsengineering/r.pkg.template/.github/workflows/release.yaml@main
@@ -78,20 +50,6 @@ jobs:
       unit-test-report-brand: >-
         https://raw.githubusercontent.com/insightsengineering/hex-stickers/main/thumbs/teal.png
       deps-installation-method: setup-r-dependencies
-      lookup-refs: |
-        insightsengineering/roxy.shinylive
-        insightsengineering/teal
-        insightsengineering/teal.transform
-        insightsengineering/teal.code
-        insightsengineering/teal.data
-        insightsengineering/teal.logger
-        insightsengineering/teal.reporter
-        insightsengineering/teal.widgets
-        insightsengineering/tern
-        insightsengineering/formatters
-        insightsengineering/rtables
-        insightsengineering/rtables.officer
-        insightsengineering/nestcolor
   coverage:
     name: Coverage 📔
     needs: [release, docs]
@@ -102,21 +60,6 @@ jobs:
       additional-env-vars: |
         NOT_CRAN=true
       deps-installation-method: setup-r-dependencies
-      lookup-refs: |
-        insightsengineering/roxy.shinylive
-        insightsengineering/teal
-        insightsengineering/teal.transform
-        insightsengineering/teal.code
-        insightsengineering/teal.data
-        insightsengineering/teal.logger
-        insightsengineering/teal.reporter
-        insightsengineering/teal.widgets
-        insightsengineering/teal.slice
-        insightsengineering/tern
-        insightsengineering/formatters
-        insightsengineering/rtables
-        insightsengineering/rtables.officer
-        insightsengineering/nestcolor
   wasm:
     name: Build WASM packages 🧑‍🏭
     needs: release
