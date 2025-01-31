@@ -430,12 +430,10 @@ normalize_decorators <- function(decorators) {
     }
 
     # Flatten the structure
-    lapply(named_list, function(item){
+    lapply(named_list, function(item) {
       lapply(unlist(item), list)
     })
   } else {
     decorators
   }
 }
-
-
