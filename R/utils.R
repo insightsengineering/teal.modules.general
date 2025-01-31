@@ -414,25 +414,14 @@ select_decorators <- function(decorators, scope) {
 #' @keywords internal
 normalize_decorators <- function(decorators) {
   if (checkmate::test_list(decorators, "teal_transform_module")) {
-    named <- which(names(decorators) != "")
-    unnamed <- setdiff(seq_along(decorators), named)
-
-    named_list <- lapply(decorators[named], list)
-
-    if ("default" %in% names(named_list)) {
-      # Merge unnamed elements into existing "default"
-      named_list$default <- c(named_list$default, decorators[unnamed])
+    decorators_names <- setdiff(names(decorators), "")
+    if (length(decorators_names) == 0) {
+      list(default = decorators)
+    } else if (length(decorators_names) == length(decorators)) {
+      lapply(decorators, list)
     } else {
-      if (length(decorators[unnamed]) > 0) {
-        # Create a new "default" entry
-        named_list <- c(list(default = decorators[unnamed]), named_list)
-      }
+      stop("All decorators should either be named or unnamed.")
     }
-
-    # Flatten the structure
-    lapply(named_list, function(item){
-      lapply(unlist(item), list)
-    })
   } else {
     decorators
   }
