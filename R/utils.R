@@ -426,5 +426,3 @@ normalize_decorators <- function(decorators) {
     decorators
   }
 }
-
-
