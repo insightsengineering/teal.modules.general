@@ -11,7 +11,8 @@ tm_front_page(
   additional_tags = tagList(),
   footnotes = character(0),
   show_metadata = deprecated(),
-  datanames = if (missing(show_metadata)) NULL else "all"
+  datanames = if (missing(show_metadata)) NULL else "all",
+  transformators = list()
 )
 }
 \arguments{
@@ -43,6 +44,9 @@ There are 2 reserved values that have specific behaviors:
 \item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
 argument.
 }}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.

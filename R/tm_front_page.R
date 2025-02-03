@@ -72,7 +72,8 @@ tm_front_page <- function(label = "Front page",
                           additional_tags = tagList(),
                           footnotes = character(0),
                           show_metadata = deprecated(),
-                          datanames = if (missing(show_metadata)) NULL else "all") {
+                          datanames = if (missing(show_metadata)) NULL else "all",
+                          transformators = list()) {
   message("Initializing tm_front_page")
 
   # Start of assertions
@@ -105,7 +106,8 @@ tm_front_page <- function(label = "Front page",
     ui = ui_front_page,
     ui_args = args,
     server_args = list(tables = tables),
-    datanames = datanames
+    datanames = datanames, ,
+    transformators = transformators
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
