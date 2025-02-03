@@ -107,11 +107,9 @@ app <- init(
 A simple `shiny::shinyApp()` call will let you run the app.
 Note that app is only displayed when running this code inside an `R` session.
 
-```{r shinyapp, echo=TRUE, results="hide", eval=base::interactive()}
+```{r shinyapp, eval=FALSE}
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
-
-<img src="images/app-using-data-table.png" style = "display: block; margin: 0px; width: 100%"/>
 
 ## 5 - Try it out in Shinylive
 
