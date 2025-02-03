@@ -246,14 +246,14 @@ ui_distribution <- function(id, ...) {
       DT::dataTableOutput(ns("summary_table")),
       tags$h3("Tests"),
       conditionalPanel(
-        "input['teal-teal_modules-distribution_module-module-dist_tests'].length === 0",
+        sprintf("input['%s'].length === 0", ns("dist_tests")),
         div(
           id = ns("please_select_a_test"),
           "Please select a test"
         )
       ),
       conditionalPanel(
-        "input['teal-teal_modules-distribution_module-module-dist_tests'].length > 0",
+        sprintf("input['%s'].length > 0", ns("dist_tests")),
         DT::dataTableOutput(ns("t_stats"))
       )
     ),
