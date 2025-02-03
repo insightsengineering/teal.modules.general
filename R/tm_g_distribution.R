@@ -245,7 +245,17 @@ ui_distribution <- function(id, ...) {
       tags$h3("Statistics Table"),
       DT::dataTableOutput(ns("summary_table")),
       tags$h3("Tests"),
-      DT::dataTableOutput(ns("t_stats"))
+      conditionalPanel(
+        "input['teal-teal_modules-distribution_module-module-dist_tests'].length === 0",
+        div(
+          id = ns("please_select_a_test"),
+          "Please select a test"
+        )
+      ),
+      conditionalPanel(
+        "input['teal-teal_modules-distribution_module-module-dist_tests'].length > 0",
+        DT::dataTableOutput(ns("t_stats"))
+      )
     ),
     encoding = tags$div(
       ### Reporter
