@@ -1101,7 +1101,7 @@ srv_distribution <- function(id,
         dist_tests <- input$dist_tests
         t_dist <- input$t_dist
 
-        validate(need(dist_tests, "Please select a test"))
+        req(dist_tests)
 
         teal::validate_inputs(iv_dist)
 
