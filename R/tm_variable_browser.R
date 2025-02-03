@@ -84,7 +84,8 @@ tm_variable_browser <- function(label = "Variable Browser",
                                 parent_dataname = "ADSL",
                                 pre_output = NULL,
                                 post_output = NULL,
-                                ggplot2_args = teal.widgets::ggplot2_args()) {
+                                ggplot2_args = teal.widgets::ggplot2_args(),
+                                transformators = list()) {
   message("Initializing tm_variable_browser")
 
   # Start of assertions
@@ -126,7 +127,8 @@ tm_variable_browser <- function(label = "Variable Browser",
     ui_args = list(
       pre_output = pre_output,
       post_output = post_output
-    )
+    ),
+    transformators = transformators
   )
   # `shiny` inputs are stored properly but the majority of the module is state of `datatable` which is not stored.
   attr(ans, "teal_bookmarkable") <- NULL
