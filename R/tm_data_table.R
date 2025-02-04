@@ -95,7 +95,8 @@ tm_data_table <- function(label = "Data Table",
                           ),
                           server_rendering = FALSE,
                           pre_output = NULL,
-                          post_output = NULL) {
+                          post_output = NULL,
+                          transformators = list()) {
   message("Initializing tm_data_table")
 
   # Start of assertions
@@ -145,7 +146,8 @@ tm_data_table <- function(label = "Data Table",
     ui_args = list(
       pre_output = pre_output,
       post_output = post_output
-    )
+    ),
+    transformators = transformators
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans

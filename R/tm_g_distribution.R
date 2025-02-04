@@ -245,7 +245,17 @@ ui_distribution <- function(id, ...) {
       tags$h3("Statistics Table"),
       DT::dataTableOutput(ns("summary_table")),
       tags$h3("Tests"),
-      DT::dataTableOutput(ns("t_stats"))
+      conditionalPanel(
+        sprintf("input['%s'].length === 0", ns("dist_tests")),
+        div(
+          id = ns("please_select_a_test"),
+          "Please select a test"
+        )
+      ),
+      conditionalPanel(
+        sprintf("input['%s'].length > 0", ns("dist_tests")),
+        DT::dataTableOutput(ns("t_stats"))
+      )
     ),
     encoding = tags$div(
       ### Reporter
@@ -1101,7 +1111,7 @@ srv_distribution <- function(id,
         dist_tests <- input$dist_tests
         t_dist <- input$t_dist
 
-        validate(need(dist_tests, "Please select a test"))
+        req(dist_tests)
 
         teal::validate_inputs(iv_dist)
 
