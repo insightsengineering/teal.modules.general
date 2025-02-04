@@ -39,7 +39,7 @@ See [package functions / modules](https://insightsengineering.github.io/teal.mod
 ### Example application
 
 A simple application featuring the `tm_variable_browser()` module:
-```{r app, message = FALSE, results = "hide", eval = requireNamespace("sparkline", quietly = TRUE)}
+```{r app, eval=FALSE}
 # load libraries
 library(teal.modules.general)
 library(teal.widgets)
@@ -66,20 +66,15 @@ app <- init(
   data = data,
   modules = modules(tm_variable_browser_module)
 )
-```
 
-```{r shinyapp, eval = FALSE}
 shinyApp(app$ui, app$server)
 ```
 
-<img src="images/app-teal-modules-general.png" style = "display: block; margin: 0px; width: 100%"/>
-
 ### Try it out in Shinylive
 
-```{r shinylive_url, echo = FALSE, results = 'asis', eval = requireNamespace("roxy.shinylive", quietly = TRUE)}
+```{r shinylive_url, echo = FALSE, results = 'asis'}
 code <- paste0(c(
-  knitr::knit_code$get("app"),
-  knitr::knit_code$get("shinyapp")
+  knitr::knit_code$get("app")
 ), collapse = "\n")
 
 url <- roxy.shinylive::create_shinylive_url(code)
@@ -93,7 +88,7 @@ knitr::include_url(url, height = "800px")
 Let's break the above app into pieces:
 
 1: Load the necessary libraries and data.
-```r
+```{r warning=FALSE, message=FALSE}
 library(teal.modules.general)
 library(teal.widgets)
 ```
@@ -103,7 +98,7 @@ To do this, we create an empty `teal_data` object and evaluate code to produce t
 
 Following this, we set the `datanames` and `join_keys`.
 
-```r
+```{r warning=FALSE, message=FALSE}
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.data::rADSL
@@ -117,7 +112,7 @@ join_keys(data) <- default_cdisc_join_keys[names(data)]
 `shiny::shinyApp()` use the `ui` and `server` component to initialize the `teal` app.
 
 
-```r
+```{r warning=FALSE, message=FALSE}
 tm_variable_browser_module <- tm_variable_browser(
   # module name to display in the GUI
   label = "Variable browser",
@@ -133,7 +128,9 @@ app <- init(
   modules = modules(tm_variable_browser_module)
 )
 
-shinyApp(app$ui, app$server)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
 ```
 
 In a `teal` app, data and modules are decoupled. In the app above:
