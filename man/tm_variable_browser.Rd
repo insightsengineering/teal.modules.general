@@ -11,7 +11,8 @@ tm_variable_browser(
   parent_dataname = "ADSL",
   pre_output = NULL,
   post_output = NULL,
-  ggplot2_args = teal.widgets::ggplot2_args()
+  ggplot2_args = teal.widgets::ggplot2_args(),
+  transformators = list()
 )
 }
 \arguments{
@@ -48,6 +49,9 @@ with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
