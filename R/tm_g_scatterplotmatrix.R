@@ -23,8 +23,9 @@
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`trellis` - output of `lattice::splom`)
 #'
-#' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' For additional details and examples of decorators, refer to the vignettes:
+#' `vignette("customizing-module-output, package = "teal.modules.general")`,
+#' `vignette("TODO to be added", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)

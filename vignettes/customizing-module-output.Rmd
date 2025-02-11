@@ -1,0 +1,288 @@
+---
+title: "Customizing Module Output"
+author: "NEST CoreDev"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Customizing Module Output}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+library(teal.modules.general)
+library(teal.data)
+```
+
+
+## Introduction
+
+The outputs produced by `teal` modules, like graphs or tables, are created by the module developer and look a certain way.
+It is impossible to design an output that will satisfy every possible user, so the form of the output should be considered a default value that can be customized.
+Here we describe the concept of _decoration_, enabling you to tailor outputs to your specific requirements without rewriting the original module code.
+
+The decoration process is build upon transformation procedures, introduced in `teal`. While transformators are meant to edit module's input, decorators are meant to adjust the module's output. To distinguish the difference, modules in 
+`teal.modules.general` have 2 separate parameters: `transformators` and `decorators`. 
+
+To get a fuller understanding, read more about :
+- changing the input data
+[in this vignette](https://insightsengineering.github.io/teal/main/articles/data-transform-as-shiny-modulehtml),
+- the concept of changing module output in [this vignette](TODO: link to vignette in teal).
+
+## Decorators
+
+Decorators are created with `teal_transform_module` and thus they are `shiny` modules.
+In `teal.modules.general`, they are passed to `teal` modules through `decorators` argument (see below).
+Their server logic will be used to modify objects such as plots or tables that exist in the server function of a module.
+An `ui` function can provide interactivity but that is optional. An app developer is free to use decorator modules that do not require user input.
+
+### Requirements and Limitations
+
+Using decorators requires the following:
+
+1. **Matching Object Names**:<br>
+Decorators will reference variables that exist in the `teal` module server function and therefore must use the appropriate variable names. The relevant object names available in each module are included in modules' documentations.
+2. **Maintaining Object Classes**:<br>
+A decorator must not alter the class of the object that it modifies.
+This is because a different class may require a different rendering function and that is part of the module structure, which beyond the control of decorators.
+
+## Building Decorators
+
+### Server
+
+Here we create a simple decorator that does not provide user input. We will use `tm_g_bivariate` module, to illustrate
+the example. Knowing that the module contains an object of class `ggplot2` named `plot`, we will modify its title and x-axis title:
+
+```{r static_decorator}
+static_decorator <- teal_transform_module(
+  label = "Static decorator",
+  server = function(id, data) {
+    moduleServer(id, function(input, output, session) {
+      reactive({
+        req(data())
+        within(data(), {
+          plot <- plot +
+            ggtitle("This is a better title") +
+            xlab("the real x axis")
+        })
+      })
+    })
+  }
+)
+```
+
+
+### UI
+
+If decoration requires user input, a `ui` function can be added.
+Here, the x-axis title is obtained from a `textInput` widget, giving the user some flexibility.
+Note how the input values are passed to the `within()` function using its `...` argument.
+See `?teal.code::within.qenv` for more examples.
+
+```{r interactive_decorator}
+interactive_decorator <- teal_transform_module(
+  label = "Interactive decorator",
+  ui = function(id) {
+    ns <- NS(id)
+    div(
+      textInput(ns("x_axis_title"), "X axis title", value = "the suggested x axis")
+    )
+  },
+  server = function(id, data) {
+    moduleServer(id, function(input, output, session) {
+      reactive({
+        req(data())
+        within(data(),
+          {
+            plot <- plot +
+              ggtitle("This is a better title") +
+              xlab(my_title)
+          },
+          my_title = input$x_axis_title
+        )
+      })
+    })
+  }
+)
+```
+
+
+### Variable Names as Arguments
+
+The server function of a decorating `teal_transform_module` must conform to the names of the variables that exist in the server function of the decorated `teal` module.
+Writing a universal decorator that applies to any module is impossible because different modules may use different variable names for their output elements.
+It is possible, however, to create a decorator that will take the relevant variable names as arguments.
+Here, the `output_name` variable name is passed to a decorator, allowing it to work with multiple modules.
+
+```{r dynamic_decorator}
+dynamic_decorator <- function(output_name) {
+  teal_transform_module(
+    label = "Dynamic decorator",
+    ui = function(id) {
+      ns <- NS(id)
+      div(
+        textInput(ns("x_axis_title"), "X axis title", value = "the syggested x axis")
+      )
+    },
+    server = function(id, data) {
+      moduleServer(id, function(input, output, session) {
+        reactive({
+          req(data())
+          within(data(),
+            {
+              output_name <- output_name +
+                xlab(x_axis_title)
+            },
+            output_name = as.name(output_name),
+            x_axis_title = input$x_axis_title
+          )
+        })
+      })
+    }
+  )
+}
+```
+
+Note that when the function is used, `output_name` will be passed a character string but the expression passed to `within` needs a `name`/`symbol`, a language object, hence the argument value must be converted to a `name`.
+
+
+## Using Decorators
+
+### Single decoration
+
+Here is a minimal illustration, where decorators are passed to the module through `decorators` argument. We create a helper function `tm_g_bivariate_decorated` that works on `tm_g_bivariate` with some custom setup, so that we can illustrate multiple decorators on the same module with the same setup.
+
+
+```{r tm_g_bivariate_decorated}
+tm_g_bivariate_decorated <- function(label, decorators = list()) {
+  tm_g_bivariate(
+    label = label,
+    x = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]]),
+        selected = "conc",
+        fixed = FALSE
+      )
+    ),
+    y = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]]),
+        selected = "uptake",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    ),
+    row_facet = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]]),
+        selected = "Type",
+        fixed = FALSE
+      )
+    ),
+    col_facet = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]]),
+        selected = "Treatment",
+        fixed = FALSE
+      )
+    ),
+    decorators = decorators
+  )
+}
+```
+
+#### Application
+
+Note that every call to the module (`tm_g_bivariate_decorated`) takes a list containing _one_ decorator.
+
+```{r app_1}
+data <- teal_data()
+data <- within(data, {
+  require(nestcolor)
+  CO2 <- data.frame(CO2)
+})
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_g_bivariate_decorated("undecorated"),
+    tm_g_bivariate_decorated("static", decorators = list(static_decorator)),
+    tm_g_bivariate_decorated("interactive", decorators = list(interactive_decorator)),
+    tm_g_bivariate_decorated("dynamic", decorators = list(dynamic_decorator("plot")))
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+```
+
+```{r shinylive_iframe_1, echo = FALSE, out.width = '150%', out.extra = 'style = "position: relative; z-index:1"', eval = requireNamespace("roxy.shinylive", quietly = TRUE) && knitr::is_html_output() && identical(Sys.getenv("IN_PKGDOWN"), "true")}
+code <- paste0(c(
+  "interactive <- function() TRUE",
+  knitr::knit_code$get("setup"),
+  knitr::knit_code$get("static_decorator"),
+  knitr::knit_code$get("interactive_decorator"),
+  knitr::knit_code$get("dynamic_decorator"),
+  knitr::knit_code$get("tm_g_bivariate_decorated"),
+  knitr::knit_code$get("app_1")
+), collapse = "\n")
+url <- roxy.shinylive::create_shinylive_url(code)
+knitr::include_url(url, height = "800px")
+```
+
+### Decorating Multiple Outputs
+
+Here we will apply decoration to two outputs in one module. We will use `tm_g_distribution` module
+to illustrate the example. You can check module's documentation `?tm_g_distribution` to see that it allows
+to adjust objects called: `histogram_plot`, `qq_plot`, `summary_table` and `test_table`. In this example we will modify `histogram_plot` and `qq_plot`. Those names need to be explicitly used in the decorators. Those also need to be used as names of the list passed to `decorators` argument. See `Application` section below.
+
+#### Application
+
+Pay attention to how `decorators` are passed. This is a named list (where names corresponds to the objects existing inside module) of lists of `teal_transform_module`s. We will use `dynamic_decorator` to edit both objects.
+
+```{r app_2}
+data <- teal_data()
+data <- within(data, {
+  iris <- iris
+})
+
+app <- init(
+  data = data,
+  modules = list(
+    tm_g_distribution(
+      dist_var = data_extract_spec(
+        dataname = "iris",
+        select = select_spec(variable_choices("iris"), "Petal.Length")
+      ),
+      decorators = list(
+        histogram_plot = list(dynamic_decorator('histogram_plot')), 
+        qq_plot = list(dynamic_decorator('qq_plot'))
+      )
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+```
+
+```{r shinylive_iframe_2, echo = FALSE, out.width = '150%', out.extra = 'style = "position: relative; z-index:1"', eval = requireNamespace("roxy.shinylive", quietly = TRUE) && knitr::is_html_output() && identical(Sys.getenv("IN_PKGDOWN"), "true")}
+code <- paste0(c(
+  "interactive <- function() TRUE",
+  knitr::knit_code$get("setup"),
+  knitr::knit_code$get("dynamic_decorator"),
+  knitr::knit_code$get("app_2")
+), collapse = "\n")
+url <- roxy.shinylive::create_shinylive_url(code)
+knitr::include_url(url, height = "800px")
+```
