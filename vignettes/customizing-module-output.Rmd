@@ -264,8 +264,8 @@ app <- init(
         select = select_spec(variable_choices("iris"), "Petal.Length")
       ),
       decorators = list(
-        histogram_plot = list(dynamic_decorator('histogram_plot')), 
-        qq_plot = list(dynamic_decorator('qq_plot'))
+        histogram_plot = list(dynamic_decorator("histogram_plot")),
+        qq_plot = list(dynamic_decorator("qq_plot"))
       )
     )
   )
@@ -273,7 +273,6 @@ app <- init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
-
 ```
 
 ```{r shinylive_iframe_2, echo = FALSE, out.width = '150%', out.extra = 'style = "position: relative; z-index:1"', eval = requireNamespace("roxy.shinylive", quietly = TRUE) && knitr::is_html_output() && identical(Sys.getenv("IN_PKGDOWN"), "true")}
