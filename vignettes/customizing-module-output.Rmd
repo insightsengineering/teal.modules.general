@@ -1,11 +1,11 @@
 ---
-title: "Customizing Module Output"
+title: "Decorate Module Output"
 author: "NEST CoreDev"
 output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Customizing Module Output}
+  %\VignetteIndexEntry{Decorate Module Output}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

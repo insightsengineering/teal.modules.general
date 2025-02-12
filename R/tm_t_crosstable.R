@@ -31,8 +31,8 @@
 #' - `table` (`ElementaryTable` - output of `rtables::build_table`)
 #'
 #' For additional details and examples of decorators, refer to the vignettes:
-#' `vignette("customizing-module-output, package = "teal.modules.general")`,
-#' `vignette("TODO to be added", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' `vignette("decorate-module-output, package = "teal.modules.general")`,
+#' `vignette("decorate-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)

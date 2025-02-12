@@ -120,8 +120,8 @@ This module generates the following objects, which can be modified in place usin
 }
 
 For additional details and examples of decorators, refer to the vignettes:
-\verb{vignette("customizing-module-output, package = "teal.modules.general")},
-\code{vignette("TODO to be added", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
+\verb{vignette("decorate-module-output, package = "teal.modules.general")},
+\code{vignette("decorate-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
 \examples{
