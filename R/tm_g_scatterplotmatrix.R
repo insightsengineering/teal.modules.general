@@ -15,23 +15,22 @@
 #' Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 #' `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
 #' rendered according to selection order.
-#' @param decorators `r roxygen_decorators_param("tm_g_scatterplotmatrix")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_g_scatterplotmatrix`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`trellis` - output of `lattice::splom`)
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("lattice", quietly = TRUE)
+#' @examples
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -118,12 +117,12 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("lattice", quietly = TRUE)
+#' @examples
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
-#'   ADSL <- rADSL
-#'   ADRS <- rADRS
+#'   ADSL <- teal.data::rADSL
+#'   ADRS <- teal.data::rADRS
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
@@ -178,13 +177,9 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    plot_width = NULL,
                                    pre_output = NULL,
                                    post_output = NULL,
-                                   decorators = NULL) {
+                                   transformators = list(),
+                                   decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
-
-  # Requires Suggested packages
-  if (!requireNamespace("lattice", quietly = TRUE)) {
-    stop("Cannot load lattice - please install the package or restart your session.")
-  }
 
   # Normalize the parameters
   if (inherits(variables, "data_extract_spec")) variables <- list(variables)
@@ -205,7 +200,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -222,6 +217,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
       plot_width = plot_width,
       decorators = decorators
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(variables)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
@@ -486,9 +482,12 @@ srv_g_scatterplotmatrix <- function(id,
       }
     })
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
+      verbatim_content = source_code_r,
       title = "Show R Code for Scatterplotmatrix"
     )
 
@@ -507,7 +506,7 @@ srv_g_scatterplotmatrix <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_output_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

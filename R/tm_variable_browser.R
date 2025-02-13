@@ -10,14 +10,12 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param parent_dataname (`character(1)`) string specifying a parent dataset.
-#' If it exists in `datasets_selected`then an extra checkbox will be shown to
+#' If it exists in `datanames` then an extra checkbox will be shown to
 #' allow users to not show variables in other datasets which exist in this `dataname`.
 #' This is typically used to remove `ADSL` columns in `CDISC` data.
 #' In non `CDISC` data this can be ignored. Defaults to `"ADSL"`.
-#' @param datasets_selected (`character`) vector of datasets which should be
-#' shown, in order. Names must correspond with datasets names.
-#' If vector of length zero (default) then all datasets are shown.
-#' Note: Only `data.frame` objects are compatible; using other types will cause an error.
+#' @param datasets_selected (`character`) `r lifecycle::badge("deprecated")` vector of datasets to show, please
+#' use the `datanames` argument.
 #'
 #' @inherit shared_params return
 #'
@@ -26,7 +24,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("sparkline", quietly = TRUE) && require("htmlwidgets", quietly = TRUE) && require("jsonlite", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # general data example
 #' data <- teal_data()
@@ -55,14 +53,14 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("sparkline", quietly = TRUE) && require("htmlwidgets", quietly = TRUE) && require("jsonlite", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # CDISC example data
 #' library(sparkline)
 #' data <- teal_data()
 #' data <- within(data, {
-#'   ADSL <- rADSL
-#'   ADTTE <- rADTTE
+#'   ADSL <- teal.data::rADSL
+#'   ADTTE <- teal.data::rADTTE
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
@@ -81,49 +79,56 @@
 #' @export
 #'
 tm_variable_browser <- function(label = "Variable Browser",
-                                datasets_selected = character(0),
+                                datasets_selected = deprecated(),
+                                datanames = if (missing(datasets_selected)) "all" else datasets_selected,
                                 parent_dataname = "ADSL",
                                 pre_output = NULL,
                                 post_output = NULL,
-                                ggplot2_args = teal.widgets::ggplot2_args()) {
+                                ggplot2_args = teal.widgets::ggplot2_args(),
+                                transformators = list()) {
   message("Initializing tm_variable_browser")
-
-  # Requires Suggested packages
-  if (!requireNamespace("sparkline", quietly = TRUE)) {
-    stop("Cannot load sparkline - please install the package or restart your session.")
-  }
-  if (!requireNamespace("htmlwidgets", quietly = TRUE)) {
-    stop("Cannot load htmlwidgets - please install the package or restart your session.")
-  }
-  if (!requireNamespace("jsonlite", quietly = TRUE)) {
-    stop("Cannot load jsonlite - please install the package or restart your session.")
-  }
 
   # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_character(datasets_selected)
+  if (!missing(datasets_selected)) {
+    lifecycle::deprecate_soft(
+      when = "0.4.0",
+      what = "tm_variable_browser(datasets_selected)",
+      with = "tm_variable_browser(datanames)",
+      details = c(
+        "If both `datasets_selected` and `datanames` are set `datasets_selected` will be silently ignored.",
+        i = 'Use `tm_variable_browser(datanames = "all")` to keep the previous behavior and avoid this warning.'
+      )
+    )
+  }
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
   # End of assertions
 
-  datasets_selected <- unique(datasets_selected)
+  datanames_module <- if (identical(datanames, "all") || is.null(datanames)) {
+    datanames
+  } else {
+    union(datanames, parent_dataname)
+  }
 
   ans <- module(
     label,
     server = srv_variable_browser,
     ui = ui_variable_browser,
-    datanames = "all",
+    datanames = datanames_module,
     server_args = list(
-      datasets_selected = datasets_selected,
+      datanames = if (is.null(datanames)) "all" else datanames,
       parent_dataname = parent_dataname,
       ggplot2_args = ggplot2_args
     ),
     ui_args = list(
       pre_output = pre_output,
       post_output = post_output
-    )
+    ),
+    transformators = transformators
   )
   # `shiny` inputs are stored properly but the majority of the module is state of `datatable` which is not stored.
   attr(ans, "teal_bookmarkable") <- NULL
@@ -205,7 +210,7 @@ srv_variable_browser <- function(id,
                                  data,
                                  reporter,
                                  filter_panel_api,
-                                 datasets_selected, parent_dataname, ggplot2_args) {
+                                 datanames, parent_dataname, ggplot2_args) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -223,17 +228,9 @@ srv_variable_browser <- function(id,
 
     varname_numeric_as_factor <- reactiveValues()
 
-    datanames <- isolate(names(data()))
     datanames <- Filter(function(name) {
       is.data.frame(isolate(data())[[name]])
-    }, datanames)
-
-    checkmate::assert_character(datasets_selected)
-    checkmate::assert_subset(datasets_selected, datanames)
-    if (!identical(datasets_selected, character(0))) {
-      checkmate::assert_subset(datasets_selected, datanames)
-      datanames <- datasets_selected
-    }
+    }, if (identical(datanames, "all")) names(isolate(data())) else datanames)
 
     output$ui_variable_browser <- renderUI({
       ns <- session$ns
@@ -1289,7 +1286,6 @@ create_sparklines.POSIXlt <- function(arr, width = 150, bar_spacing = 5, bar_wid
 create_sparklines.default <- function(arr, width = 150, ...) {
   as.character(tags$code("unsupported variable type", class = "text-blue"))
 }
-
 
 custom_sparkline_formatter <- function(labels, counts) {
   htmlwidgets::JS(

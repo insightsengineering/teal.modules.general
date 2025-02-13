@@ -40,17 +40,16 @@
 # nolint start: line_length.
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage")`
 # nolint end: line_length.
-#' @param decorators `r roxygen_decorators_param("tm_a_regression")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_a_regression`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -106,7 +105,7 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
-#'   ADSL <- rADSL
+#'   ADSL <- teal.data::rADSL
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
@@ -158,7 +157,8 @@ tm_a_regression <- function(label = "Regression Analysis",
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
                             label_segment_threshold = c(0.5, 0, 10),
-                            decorators = NULL) {
+                            transformators = list(),
+                            decorators = list()) {
   message("Initializing tm_a_regression")
 
   # Normalize the parameters
@@ -212,7 +212,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_choice(default_plot_type, seq.int(1L, length(plot_choices)))
   checkmate::assert_string(default_outlier_label)
-  checkmate::assert_list(decorators, "teal_transform_module", null.ok = TRUE)
+  checkmate::assert_list(decorators, "teal_transform_module")
 
   if (length(label_segment_threshold) == 1) {
     checkmate::assert_numeric(label_segment_threshold, any.missing = FALSE, finite = TRUE)
@@ -226,7 +226,7 @@ tm_a_regression <- function(label = "Regression Analysis",
     )
   }
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, "plot", null.ok = TRUE)
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -252,6 +252,7 @@ tm_a_regression <- function(label = "Regression Analysis",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- FALSE
@@ -1004,9 +1005,12 @@ srv_a_regression <- function(id,
       )
     })
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_output_q()))),
+      verbatim_content = source_code_r,
       title = "R code for the regression plot",
     )
 
@@ -1025,7 +1029,7 @@ srv_a_regression <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_output_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

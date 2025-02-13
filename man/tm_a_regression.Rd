@@ -19,7 +19,8 @@ tm_a_regression(
   default_plot_type = 1,
   default_outlier_label = "USUBJID",
   label_segment_threshold = c(0.5, 0, 10),
-  decorators = NULL
+  transformators = list(),
+  decorators = list()
 )
 }
 \arguments{
@@ -96,11 +97,17 @@ It takes the form of \code{c(value, min, max)} and it is passed to the \code{val
 argument in \code{teal.widgets::optionalSliderInputValMinMax}.
 }}
 
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}  (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional, if not \code{NULL}, decorator for tables or plots included in the module. When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
+
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+(\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
+decorator for tables or plots included in the module output reported.
+When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
 
 Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
 
-See section "Decorating \code{tm_a_regression}" below for more details.}
+See section "Decorating Module" below for more details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -115,7 +122,7 @@ visualize residuals, and identify outliers.
 For more examples, please see the vignette "Using regression plots" via
 \code{vignette("using-regression-plots", package = "teal.modules.general")}.
 }
-\section{Decorating \code{tm_a_regression}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:
@@ -124,7 +131,7 @@ This module generates the following objects, which can be modified in place usin
 }
 
 For additional details and examples of decorators, refer to the vignette
-\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
+\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
 \examples{
@@ -172,7 +179,7 @@ if (interactive()) {
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
-  ADSL <- rADSL
+  ADSL <- teal.data::rADSL
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 
@@ -217,8 +224,8 @@ if (interactive()) {
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI0xeW1jeBoeE3MuQBdN2h0CZVi9lqQ3N0AF5-uFcH8+EIRKIgboIcIxL8BnVdKQYGkoGkGhIGqJRFYIIjkcjqFB6HBqDCFGAsHBsWI8SQqWCkUScagSKI9MDMmloqRmBo0qJUHACISicjMg8uboqVNRky-hLdJyRBoYarRcdhaLxcq6iSyRTgVSAuStbotCxaKSRIhFSz9QQSksCGJKWAAEIAWSwAGksABGB365GajRwfgen3+oMh0Owo60OIygBig1GAWczITploUUjMIcLiVEv6yrkOYlWJxol6MJ5fIF2pFYtLRKlsBlcpGCrw7bD5vVwPDLd1A6JhvJHrNatIluttrE9v7juVztd7uBVsYNvoIhOLtobqeuWAwB70zALxeVTbYEGAHFXHhZWAswANJlvrCDLwvuRKwnQc50LE0H2feNQxgJMUyLJxs2AuoTHzMDdHTTNXDXZFyzLUtcP6fpaBMXR2BUchm20OAbFsGokVEMoIFYQZ0HYNBUAAEhaKp2I4zlGB0PpZiUMAZheIA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI0xeW1jeBoeE3MuQBdN2h0CZVi9lqQ3N0AF5-uFcH8+EIRKIgboIcIxL8BnVdKQYGkoGkGhIGqJRFYIIjkcjqFB6HBqDCFGAsHBsWI8SQqWCkUScagSKI9MDMmloqRmBo0qJUHACISicjMg8uboqVNRky-hLdJyRBoYarRcdhaLxcq6iSyRTgVSAuStbotCxaKSRIhFSz9QQSksCGJKWAAEIAWSwAGksABGB365GajRwfgen3+oMh0Owo60OIygBig1GAWczITploUUjMIcLiVEv6yrkOYlWJxol6MJ5fIF2pFYtLRKlsBlcpGCrw7bD5vVwPDLd1A6JhvJHrNatIluttrE9v7juVztd7uBVsYNvoIhOLtobqeuWAwB70zALxeVTbYEGAHFXHhZWAswANJlvrCDLwvuRKwnQc50LE0H2feNQxgJMUyLJxs2AuoTHzMDdHTTNXDXZFyzLUtcP6fpaBMXR2BUchm20OAbFsGokVEMoIFYQZ0HYNBUAAEhaKp2I4zlGB0PpZiUMAZheIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0lA0g0JA1RKIrBB0ZjMdQoPQ4NQkQowFg4ASxMSSPSYRjyYTUCRRHpIZk0tFSMwNGlRKg4AQyeTMZk3vzdPSFqN2SDZbo+SINEitVLLhKpTKNXVKdTaZD6QEafrdFoWLQqSJEGrOSaCCUNgQxHSwAAhACyWAA0lgAIyuk2YvUaOD8X2BkPhyNR5EXWhxRUAMUGowCzg5qdMtCicaRDhc6tl-Q1ckLsvxhNEvSRguFooNkulVfJ8tgiuVI1VeB70ZtOshMc7RtH5LNNN91u1pDtDqdYhdI7dGo9Xp9kPtjEd9BEV09tG9H1ywGAg8WYC+Xyq3bAgwA4q48EqwPmABrs78sEGLxPzkOtZzHZcy0tV8PxTKMYHTTNyycAsILqEwS2g3QczzVxt0xGtqyrIj+n6WgTF0dgVHIDttDgGxbBqDFRDKCBWEGdB2DQVAABIWiqHjeL5RgdD6ZYlDAJYviAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0lA0g0JA1RKIrBB0ZjMdQoPQ4NQkQowFg4ASxMSSPSYRjyYTUCRRHpIZk0tFSMwNGlRKg4AQyeTMZk3vzdPSFqN2SDZbo+SINEitVLLhKpTKNXVKdTaZD6QEafrdFoWLQqSJEGrOSaCCUNgQxHSwAAhACyWAA0lgAIyuk2YvUaOD8X2BkPhyNR5EXWhxRUAMUGowCzg5qdMtCicaRDhc6tl-Q1ckLsvxhNEvSRguFooNkulVfJ8tgiuVI1VeB70ZtOshMc7RtH5LNNN91u1pDtDqdYhdI7dGo9Xp9kPtjEd9BEV09tG9H1ywGAg8WYC+Xyq3bAgwA4q48EqwPmABrs78sEGLxPzkOtZzHZcy0tV8PxTKMYHTTNyycAsILqEwS2g3QczzVxt0xGtqyrIj+n6WgTF0dgVHIDttDgGxbBqDFRDKCBWEGdB2DQVAABIWiqHjeL5RgdD6ZYlDAJYviAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

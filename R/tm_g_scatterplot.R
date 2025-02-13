@@ -27,17 +27,16 @@
 #' `vignette("ggplot2-specs", package="ggplot2")`.
 #' @param max_deg (`integer`) optional, maximum degree for the polynomial trend line. Must not be less than 1.
 #' @param table_dec (`integer`) optional, number of decimal places used to round numeric values in the table.
-#' @param decorators `r roxygen_decorators_param("tm_g_scatterplot")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_g_scatterplot`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #'
 #' @examplesShinylive
@@ -45,7 +44,7 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # general data example
 #' data <- teal_data()
@@ -134,13 +133,13 @@
 #' interactive <- function() TRUE
 #' {{ next_example }}
 # nolint start: line_length_linter.
-#' @examplesIf require("ggpmisc", quietly = TRUE) && require("ggExtra", quietly = TRUE) && require("colourpicker", quietly = TRUE)
+#' @examples
 # nolint end: line_length_linter.
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
-#'   ADSL <- rADSL
+#'   ADSL <- teal.data::rADSL
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
@@ -240,18 +239,9 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              post_output = NULL,
                              table_dec = 4,
                              ggplot2_args = teal.widgets::ggplot2_args(),
-                             decorators = NULL) {
+                             transformators = list(),
+                             decorators = list()) {
   message("Initializing tm_g_scatterplot")
-
-  # Requires Suggested packages
-  extra_packages <- c("ggpmisc", "ggExtra", "colourpicker")
-  missing_packages <- Filter(function(x) !requireNamespace(x, quietly = TRUE), extra_packages)
-  if (length(missing_packages) > 0L) {
-    stop(sprintf(
-      "Cannot load package(s): %s.\nInstall or restart your session.",
-      toString(missing_packages)
-    ))
-  }
 
   # Normalize the parameters
   if (inherits(x, "data_extract_spec")) x <- list(x)
@@ -310,7 +300,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
 
   # End of assertions
 
@@ -341,6 +331,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
@@ -1055,9 +1046,12 @@ srv_g_scatterplot <- function(id,
       }
     })
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_plot_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_output_plot_q()))),
+      verbatim_content = source_code_r,
       title = "R Code for scatterplot"
     )
 
@@ -1076,7 +1070,7 @@ srv_g_scatterplot <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_output_plot_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

@@ -1,6 +1,6 @@
 app_driver_tm_g_distribution <- function() {
   data <- teal.data::teal_data()
-  data <- within(data, ADSL <- rADSL)
+  data <- within(data, ADSL <- teal.data::rADSL)
   teal.data::join_keys(data) <- teal.data::default_cdisc_join_keys[names(data)]
 
   vars1 <- teal.transform::choices_selected(
@@ -74,7 +74,7 @@ testthat::test_that("e2e - tm_g_distribution: Histogram encoding inputs produce 
   app_driver <- app_driver_tm_g_distribution()
 
   app_driver$set_active_module_input("main_type", "Density")
-  app_driver$expect_validation_error() # test needs to be updated to remove validation error
+  app_driver$expect_no_validation_error()
   app_driver$set_active_module_input("dist_tests", "Shapiro-Wilk")
 
   # Encodings in the Histogram tab
@@ -112,8 +112,6 @@ testthat::test_that("e2e - tm_g_distribution: QQ plot encoding inputs produce ou
 
   # Encodings in the QQplot tab
   app_driver$set_active_module_input("main_type", "Density")
-  app_driver$expect_validation_error() # test needs to be updated to remove validation error
-  app_driver$set_active_module_input("dist_tests", "Shapiro-Wilk")
   app_driver$expect_no_validation_error()
 
   app_driver$set_active_module_input("tabs", "QQplot")

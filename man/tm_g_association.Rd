@@ -18,7 +18,8 @@ tm_g_association(
   pre_output = NULL,
   post_output = NULL,
   ggplot2_args = teal.widgets::ggplot2_args(),
-  decorators = NULL
+  transformators = list(),
+  decorators = list()
 )
 }
 \arguments{
@@ -57,11 +58,17 @@ List names should match the following: \code{c("default", "Bivariate1", "Bivaria
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}  (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional, if not \code{NULL}, decorator for tables or plots included in the module. When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
+
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+(\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
+decorator for tables or plots included in the module output reported.
+When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
 
 Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
 
-See section "Decorating \code{tm_g_association}" below for more details.}
+See section "Decorating Module" below for more details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -75,7 +82,7 @@ It supports configuring the appearance of the plots, including themes and whethe
 For more examples, please see the vignette "Using association plot" via
 \code{vignette("using-association-plot", package = "teal.modules.general")}.
 }
-\section{Decorating \code{tm_g_association}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:
@@ -84,7 +91,7 @@ This module generates the following objects, which can be modified in place usin
 }
 
 For additional details and examples of decorators, refer to the vignette
-\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
+\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
 \examples{
@@ -131,7 +138,7 @@ if (interactive()) {
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
-  ADSL <- rADSL
+  ADSL <- teal.data::rADSL
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 
@@ -180,8 +187,8 @@ if (interactive()) {
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI0xeW1jeBoeE3MuQBdN2h0CZVi9lqQ3N0AF5-uFcH8+EIRKIgboIcIxL8BnVdKQYGkJGkoKJREQCLQwlYIIjkciGiYYZk0tFSMwNGlRKg4ARiSTkZkHnpgQowFNRtywUjWbpRHARBoYSKxccGUyWUK6tQoPRRTDuQFRUzSLotCx8fQRIh+X95boCCUlgQxDCdYw9SITubaJbNsaTSCoMBgNzedyXi8BW7kcy1c4ABr83TcrCDLyuPCRsBeADyjgAcg4AJoR71YACy2bAAQcgzsgwAjAWi9HSwAmAt+Ox2ABifPj3IAQrmsABpLB1sD9QNyANuyWauD8VVgaOxo2C+UmWhRCcwpuDUYBVzzkmD1nD111G3Q4GU6m06WM4Pbtm5DlTn14A-Isfi4Evi+yp8kxXK6hT9VStqupKlChqPteJJmhaVrAjadpwA60EuhBrKZJ63ojK2fojoGwaFmGBYznGVTcsmaaZgWgx5pWxalhWbaFrRgz9iRYANs2rasZ2PZ9tyu4mvuKF1O+K5cmA3G9ixX7IjARy0HEnL2E4zg4QuS6iboa4bluAlPvxui7v0-S0OS7AqOQ57aHANi2DUSKiGUECsIM6DsGgqAACQtFU7keSKjA6H0sxKGAMwvEAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI0xeW1jeBoeE3MuQBdN2h0CZVi9lqQ3N0AF5-uFcH8+EIRKIgboIcIxL8BnVdKQYGkJGkoKJREQCLQwlYIIjkciGiYYZk0tFSMwNGlRKg4ARiSTkZkHnpgQowFNRtywUjWbpRHARBoYSKxccGUyWUK6tQoPRRTDuQFRUzSLotCx8fQRIh+X95boCCUlgQxDCdYw9SITubaJbNsaTSCoMBgNzedyXi8BW7kcy1c4ABr83TcrCDLyuPCRsBeADyjgAcg4AJoR71YACy2bAAQcgzsgwAjAWi9HSwAmAt+Ox2ABifPj3IAQrmsABpLB1sD9QNyANuyWauD8VVgaOxo2C+UmWhRCcwpuDUYBVzzkmD1nD111G3Q4GU6m06WM4Pbtm5DlTn14A-Isfi4Evi+yp8kxXK6hT9VStqupKlChqPteJJmhaVrAjadpwA60EuhBrKZJ63ojK2fojoGwaFmGBYznGVTcsmaaZgWgx5pWxalhWbaFrRgz9iRYANs2rasZ2PZ9tyu4mvuKF1O+K5cmA3G9ixX7IjARy0HEnL2E4zg4QuS6iboa4bluAlPvxui7v0-S0OS7AqOQ57aHANi2DUSKiGUECsIM6DsGgqAACQtFU7keSKjA6H0sxKGAMwvEAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0lBRKIiARaGErBB0ZjMQ0TEjMmloqRmBo0qJUHACBTKZjMm89JCFGAFqMBTCMVzdKI4CINEjJdLLqz2ZzxXVqFB6FKkQKAlL2aRdFoWCT6CJECKQSrdAQShsCGIkYbGMaRFcbbQ7fsLZaoVBgMABUKBV8vqLvZiOdrnAANEW6AVYQZeVx4ONgLwAeUcADkHABNWMBrAAWQLYACDkGdkGAEZS+WE1WAEylvx2OwAMWFKYFACEi1gANJYZtgfphuSh71yvVwfhasAJpPmsUqky0KKzpHtwajAKuFeUsdcideuqOxGQukMpkKtkRg-c3K8+eBvCnzHTmWQz+3pXvylqhq1Dzjq8oGka6oImab4PpS1q2vakKOs6cCughnqwVymR+gGIxdsGk5hhGZbRqWi7JlUAoZtmealoMxZ1hWVa1t2ZZMYMI6UWArYdl2XF9oOw4CkelonphdQ-pu-JgAJQ6cf+mIwBctBxHy9hOM4hGruuUm6Nuu77qJ74iboR79P0tA0uwKjkDe2hwDYtg1BiohlBArCDOg7BoKgAAkLRVD5vmSowOh9MsShgEsXxAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0lBRKIiARaGErBB0ZjMQ0TEjMmloqRmBo0qJUHACBTKZjMm89JCFGAFqMBTCMVzdKI4CINEjJdLLqz2ZzxXVqFB6FKkQKAlL2aRdFoWCT6CJECKQSrdAQShsCGIkYbGMaRFcbbQ7fsLZaoVBgMABUKBV8vqLvZiOdrnAANEW6AVYQZeVx4ONgLwAeUcADkHABNWMBrAAWQLYACDkGdkGAEZS+WE1WAEylvx2OwAMWFKYFACEi1gANJYZtgfphuSh71yvVwfhasAJpPmsUqky0KKzpHtwajAKuFeUsdcideuqOxGQukMpkKtkRg-c3K8+eBvCnzHTmWQz+3pXvylqhq1Dzjq8oGka6oImab4PpS1q2vakKOs6cCughnqwVymR+gGIxdsGk5hhGZbRqWi7JlUAoZtmealoMxZ1hWVa1t2ZZMYMI6UWArYdl2XF9oOw4CkelonphdQ-pu-JgAJQ6cf+mIwBctBxHy9hOM4hGruuUm6Nuu77qJ74iboR79P0tA0uwKjkDe2hwDYtg1BiohlBArCDOg7BoKgAAkLRVD5vmSowOh9MsShgEsXxAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

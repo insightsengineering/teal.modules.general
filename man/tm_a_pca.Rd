@@ -17,7 +17,8 @@ tm_a_pca(
   size = c(2, 1, 8),
   pre_output = NULL,
   post_output = NULL,
-  decorators = NULL
+  transformators = list(),
+  decorators = list()
 )
 }
 \arguments{
@@ -72,11 +73,17 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}  (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional, if not \code{NULL}, decorator for tables or plots included in the module. When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
+
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+(\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
+decorator for tables or plots included in the module output reported.
+When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
 
 Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
 
-See section "Decorating \code{tm_a_pca}" below for more details.}
+See section "Decorating Module" below for more details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -87,7 +94,7 @@ ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and
 Additionally, it enables dynamic customization of plot aesthetics, such as opacity, size, and
 font size, through UI inputs.
 }
-\section{Decorating \code{tm_a_pca}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:
@@ -116,7 +123,7 @@ See code snippet below:
 }\if{html}{\out{</div>}}
 
 For additional details and examples of decorators, refer to the vignette
-\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
+\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
 \examples{
@@ -156,7 +163,7 @@ if (interactive()) {
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
-  ADSL <- rADSL
+  ADSL <- teal.data::rADSL
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 
@@ -192,8 +199,8 @@ if (interactive()) {
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpDSPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Usr65vA0PBbWXIAuu5oqJMqJex1oXldABeAERXD-PhCESiYG6SHCMR-Qb1XSkGDpKDpVAEbL-FG6BRgAAK3iGhPByPxSVhWXSMVIzA06VEqDgBCR+KpeUeehBhOmY3JeM5ojgIg0sNF4pOLLZHM5+IIpWWBDEsK0LFoUHoIlOytoqq2woV9SyNLywGA-NGgrAr1e1XZhIAQgBZLAAaSwAEZyQSwEMAOKuPD+5wAeUCvgAmoSBiaUXIKQn6lK2eR+LCnWA3Z6fX7+cG48mUzBjrR4rz7E5XJTOUnjSiTLRqORGLCAHKOMaCuv1eOJ-4DAa0Ey6dgqNvqTQ6Gy2WrI0TlCCsIbodifAAkrWqW9FjB0-TmSjAs1eQA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpDSPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Usr65vA0PBbWXIAuu5oqJMqJex1oXldABeAERXD-PhCESiYG6SHCMR-Qb1XSkGDpKDpVAEbL-FG6BRgAAK3iGhPByPxSVhWXSMVIzA06VEqDgBCR+KpeUeehBhOmY3JeM5ojgIg0sNF4pOLLZHM5+IIpWWBDEsK0LFoUHoIlOytoqq2woV9SyNLywGA-NGgrAr1e1XZhIAQgBZLAAaSwAEZyQSwEMAOKuPD+5wAeUCvgAmoSBiaUXIKQn6lK2eR+LCnWA3Z6fX7+cG48mUzBjrR4rz7E5XJTOUnjSiTLRqORGLCAHKOMaCuv1eOJ-4DAa0Ey6dgqNvqTQ6Gy2WrI0TlCCsIbodifAAkrWqW9FjB0-TmSjAs1eQA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY3QKMAABW8QzJsMxJKSyKy6RipGYGnSolQcAIGJJ9Ly7z0ULJizGNOJfNEcBEGmRUplV053N5fJJBFKmwIYmRWhYtCg9BE1w1tC1BwlqvqWUZeWAwBFozFYG+32qPLJACEALJYADSWAAjDTSWAhgBxVx4EPOADygV8AE0yQNLVi5LTU-V5dzyPxke6wN6-YHgyKI8mM5mYJdaPEhfYnK46Xz0xasSZaNRyIxkQA5RxjMXN+optOggYDWgmXTsFTd9SaHQ2Wy1TGicoQVhDdDsf4AEla1X3UsYOn6KyUYGW3yAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY3QKMAABW8QzJsMxJKSyKy6RipGYGnSolQcAIGJJ9Ly7z0ULJizGNOJfNEcBEGmRUplV053N5fJJBFKmwIYmRWhYtCg9BE1w1tC1BwlqvqWUZeWAwBFozFYG+32qPLJACEALJYADSWAAjDTSWAhgBxVx4EPOADygV8AE0yQNLVi5LTU-V5dzyPxke6wN6-YHgyKI8mM5mYJdaPEhfYnK46Xz0xasSZaNRyIxkQA5RxjMXN+optOggYDWgmXTsFTd9SaHQ2Wy1TGicoQVhDdDsf4AEla1X3UsYOn6KyUYGW3yAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

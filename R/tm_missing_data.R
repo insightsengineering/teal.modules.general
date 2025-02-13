@@ -14,17 +14,16 @@
 #' @param ggtheme (`character`) optional, specifies the default `ggplot2` theme for plots. Defaults to `classic`.
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Summary Obs", "Summary Patients", "Combinations Main", "Combinations Hist", "By Subject")`
 # nolint end: line_length.
-#' @param decorators `r roxygen_decorators_param("tm_missing_data")`
 #'
 #' @inherit shared_params return
 #'
-#' @section Decorating `tm_missing_data`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `summary_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `combination_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `by_subject_plot` (`ggplot2`)
-#' - `table` ([DT::datatable()])
+#' - `table` (`listing_df` created with [rlistings::as_listing()])
 #'
 #' Decorators can be applied to all outputs or only to specific objects using a
 #' named list of `teal_transform_module` objects.
@@ -45,13 +44,13 @@
 #' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("gridExtra", quietly = TRUE) && require("rlang", quietly = TRUE)
+#' @examples
 #' # general example data
 #' data <- teal_data()
 #' data <- within(data, {
@@ -74,7 +73,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_missing_data()
+#'     tm_missing_data(parent_dataname = "mtcars")
 #'   )
 #' )
 #' if (interactive()) {
@@ -85,12 +84,12 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("gridExtra", quietly = TRUE) && require("rlang", quietly = TRUE)
+#' @examples
 #' # CDISC example data
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
-#'   ADSL <- rADSL
+#'   ADSL <- teal.data::rADSL
 #'   ADRS <- rADRS
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
@@ -110,6 +109,7 @@
 tm_missing_data <- function(label = "Missing data",
                             plot_height = c(600, 400, 5000),
                             plot_width = NULL,
+                            datanames = "all",
                             parent_dataname = "ADSL",
                             ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
                             ggplot2_args = list(
@@ -118,16 +118,9 @@ tm_missing_data <- function(label = "Missing data",
                             ),
                             pre_output = NULL,
                             post_output = NULL,
-                            decorators = NULL) {
+                            transformators = list(),
+                            decorators = list()) {
   message("Initializing tm_missing_data")
-
-  # Requires Suggested packages
-  if (!requireNamespace("gridExtra", quietly = TRUE)) {
-    stop("Cannot load gridExtra - please install the package or restart your session.")
-  }
-  if (!requireNamespace("rlang", quietly = TRUE)) {
-    stop("Cannot load rlang - please install the package or restart your session.")
-  }
 
   # Normalize the parameters
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
@@ -143,6 +136,7 @@ tm_missing_data <- function(label = "Missing data",
     lower = plot_width[2], upper = plot_width[3], null.ok = TRUE, .var.name = "plot_width"
   )
 
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert_character(parent_dataname, min.len = 0, max.len = 1)
   ggtheme <- match.arg(ggtheme)
 
@@ -155,13 +149,21 @@ tm_missing_data <- function(label = "Missing data",
 
   available_decorators <- c("summary_plot", "combination_plot", "by_subject_plot", "summary_table")
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, names = available_decorators)
+  assert_decorators(decorators, names = available_decorators)
   # End of assertions
+
+  datanames_module <- if (identical(datanames, "all") || is.null(datanames)) {
+    datanames
+  } else {
+    union(datanames, parent_dataname)
+  }
 
   ans <- module(
     label,
     server = srv_page_missing_data,
+    datanames = datanames_module,
     server_args = list(
+      datanames = if (is.null(datanames)) "all" else datanames,
       parent_dataname = parent_dataname,
       plot_height = plot_height,
       plot_width = plot_width,
@@ -170,7 +172,7 @@ tm_missing_data <- function(label = "Missing data",
       decorators = decorators
     ),
     ui = ui_page_missing_data,
-    datanames = "all",
+    transformators = transformators,
     ui_args = list(pre_output = pre_output, post_output = post_output)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
@@ -203,18 +205,17 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
 }
 
 # Server function for the missing data module (all datasets)
-srv_page_missing_data <- function(id, data, reporter, filter_panel_api, parent_dataname,
+srv_page_missing_data <- function(id, data, reporter, filter_panel_api, datanames, parent_dataname,
                                   plot_height, plot_width, ggplot2_args, ggtheme, decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    datanames <- isolate(names(data()))
-    datanames <- Filter(
-      function(name) is.data.frame(isolate(data())[[name]]),
-      datanames
-    )
+    datanames <- Filter(function(name) {
+      is.data.frame(isolate(data())[[name]])
+    }, if (identical(datanames, "all")) names(isolate(data())) else datanames)
+
     if_subject_plot <- length(parent_dataname) > 0 && parent_dataname %in% datanames
 
     ns <- session$ns
@@ -1149,7 +1150,7 @@ srv_missing_data <- function(id,
         )
       }
 
-      within(qenv, table <- DT::datatable(summary_data))
+      within(qenv, table <- rlistings::as_listing(summary_data))
     })
 
     by_subject_plot_q <- reactive({
@@ -1174,6 +1175,13 @@ srv_missing_data <- function(id,
         ggtheme = input$ggtheme
       )
 
+      # Unlikely that `rlang` is not available, new hashing may be expensive
+      hashing_function <- if (requireNamespace("rlang", quietly = TRUE)) {
+        quote(rlang::hash)
+      } else {
+        function(x) paste(as.integer(x), collapse = "")
+      }
+
       teal.code::eval_code(
         common_code_q(),
         substitute(
@@ -1188,41 +1196,44 @@ srv_missing_data <- function(id,
           )
         ) %>%
         teal.code::eval_code(
-          quote({
-            summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
-              dplyr::group_by_at(parent_keys) %>%
-              dplyr::mutate(id = dplyr::cur_group_id()) %>%
-              dplyr::ungroup() %>%
-              dplyr::group_by_at(c(parent_keys, "id")) %>%
-              dplyr::summarise_all(anyNA) %>%
-              dplyr::ungroup()
+          substitute(
+            expr = {
+              summary_plot_patients <- ANL[, c(parent_keys, analysis_vars)] %>%
+                dplyr::group_by_at(parent_keys) %>%
+                dplyr::mutate(id = dplyr::cur_group_id()) %>%
+                dplyr::ungroup() %>%
+                dplyr::group_by_at(c(parent_keys, "id")) %>%
+                dplyr::summarise_all(anyNA) %>%
+                dplyr::ungroup()
 
-            # order subjects by decreasing number of missing and then by
-            # missingness pattern (defined using sha1)
-            order_subjects <- summary_plot_patients %>%
-              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
-              dplyr::transmute(
-                id = dplyr::row_number(),
-                number_NA = apply(., 1, sum),
-                sha = apply(., 1, rlang::hash)
-              ) %>%
-              dplyr::arrange(dplyr::desc(number_NA), sha) %>%
-              getElement(name = "id")
+              # order subjects by decreasing number of missing and then by
+              # missingness pattern (defined using sha1)
+              order_subjects <- summary_plot_patients %>%
+                dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
+                dplyr::transmute(
+                  id = dplyr::row_number(),
+                  number_NA = apply(., 1, sum),
+                  sha = apply(., 1, hashing_function)
+                ) %>%
+                dplyr::arrange(dplyr::desc(number_NA), sha) %>%
+                getElement(name = "id")
 
-            # order columns by decreasing percent of missing values
-            ordered_columns <- summary_plot_patients %>%
-              dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
-              dplyr::summarise(
-                column = create_cols_labels(colnames(.)),
-                na_count = apply(., MARGIN = 2, FUN = sum),
-                na_percent = na_count / nrow(.) * 100
-              ) %>%
-              dplyr::arrange(na_percent, dplyr::desc(column))
+              # order columns by decreasing percent of missing values
+              ordered_columns <- summary_plot_patients %>%
+                dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
+                dplyr::summarise(
+                  column = create_cols_labels(colnames(.)),
+                  na_count = apply(., MARGIN = 2, FUN = sum),
+                  na_percent = na_count / nrow(.) * 100
+                ) %>%
+                dplyr::arrange(na_percent, dplyr::desc(column))
 
-            summary_plot_patients <- summary_plot_patients %>%
-              tidyr::gather("col", "isna", -"id", -dplyr::all_of(parent_keys)) %>%
-              dplyr::mutate(col = create_cols_labels(col))
-          })
+              summary_plot_patients <- summary_plot_patients %>%
+                tidyr::gather("col", "isna", -"id", -dplyr::all_of(parent_keys)) %>%
+                dplyr::mutate(col = create_cols_labels(col))
+            },
+            env = list(hashing_function = hashing_function)
+          )
         ) %>%
         teal.code::eval_code(
           substitute(
@@ -1316,7 +1327,7 @@ srv_missing_data <- function(id,
           options = list(language = list(zeroRecords = "No variable selected."), pageLength = input$levels_table_rows)
         )
       } else {
-        decorated_summary_table_q()[["table"]]
+        DT::datatable(decorated_summary_table_q()[["summary_data"]])
       }
     })
 
@@ -1361,9 +1372,12 @@ srv_missing_data <- function(id,
       }
     })
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_final_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_final_q()))),
+      verbatim_content = source_code_r,
       title = "Show R Code for Missing Data"
     )
 
@@ -1390,7 +1404,12 @@ srv_missing_data <- function(id,
           card$append_plot(combination_plot_r(), dim = pws2$dim())
         } else if (sum_type == "By Variable Levels") {
           card$append_text("Table", "header3")
-          card$append_table(summary_table_r[["summary_data"]])
+          table <- decorated_summary_table_q()[["table"]]
+          if (nrow(table) == 0L) {
+            card$append_text("No data available for table.")
+          } else {
+            card$append_table(table)
+          }
         } else if (sum_type == "Grouped by Subject") {
           card$append_text("Plot", "header3")
           card$append_plot(by_subject_plot_r(), dim = pws3$dim())
@@ -1399,7 +1418,7 @@ srv_missing_data <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_final_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

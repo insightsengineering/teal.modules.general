@@ -8,14 +8,14 @@ app_driver_tm_front_page <- function() {
     data = data,
     modules = tm_front_page(
       label = "Front page",
+      datanames = "all",
       header_text = c(
         "Important information" = "It can go here.",
         "Other information" = "Can go here."
       ),
       tables = list("MTCARS" = head(mtcars, 5), "IRIS" = head(iris, 5)),
       additional_tags = HTML("Additional HTML or shiny tags go here"),
-      footnotes = "This is a footnote",
-      show_metadata = TRUE
+      footnotes = "This is a footnote"
     ),
     timeout = 3000
   )

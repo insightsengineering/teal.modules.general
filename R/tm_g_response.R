@@ -33,20 +33,19 @@
 #' @param freq (`logical(1)`)
 #' Indicates whether to display frequency (`TRUE`) or density (`FALSE`).
 #' Defaults to density (`FALSE`).
-#' @param decorators `r roxygen_decorators_param("tm_g_response")`
 #'
 #' @inherit shared_params return
 #'
 #' @note For more examples, please see the vignette "Using response plot" via
 #' `vignette("using-response-plot", package = "teal.modules.general")`.
 #'
-#' @section Decorating `tm_g_response`:
+#' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal_transform_module()`] documentation.
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -104,7 +103,7 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
-#'   ADSL <- rADSL
+#'   ADSL <- teal.data::rADSL
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
@@ -157,7 +156,8 @@ tm_g_response <- function(label = "Response Plot",
                           ggplot2_args = teal.widgets::ggplot2_args(),
                           pre_output = NULL,
                           post_output = NULL,
-                          decorators = NULL) {
+                          transformators = list(),
+                          decorators = list()) {
   message("Initializing tm_g_response")
 
   # Normalize the parameters
@@ -203,7 +203,7 @@ tm_g_response <- function(label = "Response Plot",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, null.ok = TRUE, "plot")
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -230,6 +230,7 @@ tm_g_response <- function(label = "Response Plot",
         decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
@@ -571,9 +572,12 @@ srv_g_response <- function(id,
       width = plot_width
     )
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_plot_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(req(decorated_output_plot_q()))),
+      verbatim_content = source_code_r,
       title = "Show R Code for Response"
     )
 
@@ -592,7 +596,7 @@ srv_g_response <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(req(decorated_output_plot_q())))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

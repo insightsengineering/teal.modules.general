@@ -8,6 +8,7 @@ tm_missing_data(
   label = "Missing data",
   plot_height = c(600, 400, 5000),
   plot_width = NULL,
+  datanames = "all",
   parent_dataname = "ADSL",
   ggtheme = c("classic", "gray", "bw", "linedraw", "light", "dark", "minimal", "void"),
   ggplot2_args = list(`Combinations Hist` = teal.widgets::ggplot2_args(labs =
@@ -15,7 +16,8 @@ tm_missing_data(
     list(title = NULL))),
   pre_output = NULL,
   post_output = NULL,
-  decorators = NULL
+  transformators = list(),
+  decorators = list()
 )
 }
 \arguments{
@@ -27,6 +29,15 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
+
+\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
+There are 2 reserved values that have specific behaviors:
+\itemize{
+\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
+\item \code{NULL} hides the sidebar panel completely.
+\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
+argument.
+}}
 
 \item{parent_dataname}{(\code{character(1)}) Specifies the parent dataset name. Default is \code{ADSL} for \code{CDISC} data.
 If provided and exists, enables additional analysis "by subject". For non-\code{CDISC} data, this parameter can be
@@ -47,11 +58,17 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}  (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional, if not \code{NULL}, decorator for tables or plots included in the module. When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
+
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+(\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
+decorator for tables or plots included in the module output reported.
+When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
 
 Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
 
-See section "Decorating \code{tm_missing_data}" below for more details.}
+See section "Decorating Module" below for more details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -62,7 +79,7 @@ gain insights into the completeness of their data.
 It is useful for clinical data analysis within the context of \code{CDISC} standards and
 adaptable for general data analysis purposes.
 }
-\section{Decorating \code{tm_missing_data}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:
@@ -70,7 +87,7 @@ This module generates the following objects, which can be modified in place usin
 \item \code{summary_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
 \item \code{combination_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
 \item \code{by_subject_plot} (\code{ggplot2})
-\item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
+\item \code{table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
 }
 
 Decorators can be applied to all outputs or only to specific objects using a
@@ -91,11 +108,10 @@ See code snippet below:
 }\if{html}{\out{</div>}}
 
 For additional details and examples of decorators, refer to the vignette
-\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
+\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
 \examples{
-\dontshow{if (require("gridExtra", quietly = TRUE) && require("rlang", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # general example data
 data <- teal_data()
 data <- within(data, {
@@ -118,19 +134,18 @@ data <- within(data, {
 app <- init(
   data = data,
   modules = modules(
-    tm_missing_data()
+    tm_missing_data(parent_dataname = "mtcars")
   )
 )
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
-\dontshow{\}) # examplesIf}
-\dontshow{if (require("gridExtra", quietly = TRUE) && require("rlang", quietly = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
 # CDISC example data
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
-  ADSL <- rADSL
+  ADSL <- teal.data::rADSL
   ADRS <- rADRS
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
@@ -144,18 +159,18 @@ app <- init(
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
-\dontshow{\}) # examplesIf}
+
 }
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsBKMtPzOAB6kzP64ul60cKTUrLoAvPZOzrYAZJm67rG+-ozUUBASUTHe8YkpaS6KEADEulIQatS6cKGwqCK6-FCkUEr9gwbGXNQA+iNQNsMDUGO6AO60pAAWKuwz0SBKurme3r6toqTE1ESM9fu6UPz8k9CiS2YWmtahtnsQBwehwFE3RE7FEnkm3BIEnYX2iJkuV3YIlKGxhtgAVLlzLQTOwAIzRDAABgArIS8QB2OTUgC6SwAcgBBW7-W4AXyUtx8tBeRl03NEtxg5xYvOMwoIos5v35QVEwDpfOK6ES7AF0Xuj2e9QOEtFCqWyp6HD1jFEGoeTygoh1ulN8uA-gIrGo-hpiuM1owJnUpER9uAjsILrdNNtAaDUhYoaWXp9Gn9IrNgf8UcYofqbJu0HQSxUaz8MpmNR2QoEwjENT4QhEokLf10pBgkxgPNEKgk0wWcxl9XqON0atUzEsOhs31uok2EFYjPQ7DQqAAJN4Negl2DGDprkoORAwGyaUA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsBKMtPzOAB6kzP64ul60cKTUrLoAvPZOzrYAZJm67rG+-ozUUBASUTHe8YkpaS6KEADEulIQatS6cKGwqCK6-FCkUEr9gwbGXNQA+iNQNsMDUGO6AO60pAAWKuwz0SBKurme3r6toqTE1ESM9fu6UPz8k9CiS2YWmtahtnsQBwehwFE3RE7FEnkm3BIEnYX2iJkuV3YIlKGxhtgAVLlzLQTOwAIzRDAABgArIS8QB2OTUgC6SwAcgBBW7-W4AXyUtx8tBeRl03NEtxg5xYvOMwoIos5v35QVEwDpfOK6ES7AF0Xuj2e9QOEtFCqWyp6HD1jFEGoeTygoh1ulN8uA-gIrGo-hpiuM1owJnUpER9uAjsILrdNNtAaDUhYoaWXp9Gn9IrNgf8UcYofqbJu0HQSxUaz8MpmNR2QoEwjENT4QhEokLf10pBgkxgPNEKgk0wWcxl9XqON0atUzEsOhs31uok2EFYjPQ7DQqAAJN4Negl2DGDprkoORAwGyaUA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrquuAAesKgiuvxQpFBK4ZEGxlzUAPoxUDbREVBxugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQFbpQ-PyJ0KJZZhaa1gG25RCVlQHAosEi7KK1idwkEuyTpSbtHewiEBIF27YAVFXmtCbsAIylGAAMAKyPdwDsct8AulkAcgBBHpzHoAXzcM10DVowyM0MYsJ6MFaLDhxhRBDRkMqMNEwD+8OoaBCHDxpT6AyGXUqmLRBKyxPQ1A4dMYogp-UGUFENN0bPxwAUhFY1GFP0Jxh5GBM6lIBwFwCFIrFYAlfMVyqkLHFkt64llGgVqPZSuF2sYuq6YK6ShJWRUeXYPRSugAvGEMrhkQJhGJ3fzfSJRM6oZVSDBEjBYaIVBJkhl2KgWBRSAnItB4AHhQLhXyul0brp2CpyMxLDobFMeqJChBWID0OwSQASeoU9At1aMHSdJQQiBgME-IA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrquuAAesKgiuvxQpFBK4ZEGxlzUAPoxUDbREVBxugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQFbpQ-PyJ0KJZZhaa1gG25RCVlQHAosEi7KK1idwkEuyTpSbtHewiEBIF27YAVFXmtCbsAIylGAAMAKyPdwDsct8AulkAcgBBHpzHoAXzcM10DVowyM0MYsJ6MFaLDhxhRBDRkMqMNEwD+8OoaBCHDxpT6AyGXUqmLRBKyxPQ1A4dMYogp-UGUFENN0bPxwAUhFY1GFP0Jxh5GBM6lIBwFwCFIrFYAlfMVyqkLHFkt64llGgVqPZSuF2sYuq6YK6ShJWRUeXYPRSugAvGEMrhkQJhGJ3fzfSJRM6oZVSDBEjBYaIVBJkhl2KgWBRSAnItB4AHhQLhXyul0brp2CpyMxLDobFMeqJChBWID0OwSQASeoU9At1aMHSdJQQiBgME-IA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsBKMtPzOAB6kzP64ul60cKTUrLoAvPZOzrYAZJm67rG+-ozUUBASUTHe8YkpaS6KEADEugDCACIAkgDKzbpwobCoIrr8UKRQSiNjBsZc1AD6k1A2E6NQ07oA7rSkABYq7IvRIEq6uZ7evhBipMTURIz1pwCCrZ0AMuuML+8nui9YnU+-06SgAvvUAFZEFRzADWcFYogOq1sRmGcBMUGEpDmBH4tFEBDmUJh8MRwGg8CRizkAF0lEo0Kh1iptn4IKdFjVDr8+EIRKIanzhGJ2adTqQYHMYATRCoJAtVssObp6vVaCZdOwVORmJYdDZbMcVaI9hBWE90OwmQASbzRW2iGQ6B5gpRgUG0oA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsBKMtPzOAB6kzP64ul60cKTUrLoAvPZOzrYAZJm67rG+-ozUUBASUTHe8YkpaS6KEADEugDCACIAkgDKzbpwobCoIrr8UKRQSiNjBsZc1AD6k1A2E6NQ07oA7rSkABYq7IvRIEq6uZ7evhBipMTURIz1pwCCrZ0AMuuML+8nui9YnU+-06SgAvvUAFZEFRzADWcFYogOq1sRmGcBMUGEpDmBH4tFEBDmUJh8MRwGg8CRizkAF0lEo0Kh1iptn4IKdFjVDr8+EIRKIanzhGJ2adTqQYHMYATRCoJAtVssObp6vVaCZdOwVORmJYdDZbMcVaI9hBWE90OwmQASbzRW2iGQ6B5gpRgUG0oA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dOAAPWFQRXX4oUiglGLiDYy5qAH1EqBsE2Khk3QB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGXzUjEzEREZhsdrdYawA-LmfFaUAX36AKyIVNIBrOFZRCtzbI2i4EyhhUjSCflpRAjT9w5Oz4Gh4c8ycgAum5oOh8ipiuxFpldABeaK5XCLPhCESieG6VHCMTQgZ1XSkGBpGCvUQqCQZXLZfH9fq0Ey6dgqcjMSw6Gy2Gr40RlCCsQbodhoVAAEhaVRFotEMh0fW2SjAWyBQA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dOAAPWFQRXX4oUiglGLiDYy5qAH1EqBsE2Khk3QB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGXzUjEzEREZhsdrdYawA-LmfFaUAX36AKyIVNIBrOFZRCtzbI2i4EyhhUjSCflpRAjT9w5Oz4Gh4c8ycgAum5oOh8ipiuxFpldABeaK5XCLPhCESieG6VHCMTQgZ1XSkGBpGCvUQqCQZXLZfH9fq0Ey6dgqcjMSw6Gy2Gr40RlCCsQbodhoVAAEhaVRFotEMh0fW2SjAWyBQA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

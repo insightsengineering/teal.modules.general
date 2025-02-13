@@ -14,7 +14,8 @@ tm_outliers(
   plot_width = NULL,
   pre_output = NULL,
   post_output = NULL,
-  decorators = NULL
+  transformators = list(),
+  decorators = list()
 )
 }
 \arguments{
@@ -48,11 +49,17 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}  (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional, if not \code{NULL}, decorator for tables or plots included in the module. When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
+
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+(\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
+decorator for tables or plots included in the module output reported.
+When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
 
 Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
 
-See section "Decorating \code{tm_outliers}" below for more details.}
+See section "Decorating Module" below for more details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -62,7 +69,7 @@ Module to analyze and identify outliers using different methods
 such as IQR, Z-score, and Percentiles, and offers visualizations including
 box plots, density plots, and cumulative distribution plots to help interpret the outliers.
 }
-\section{Decorating \code{tm_outliers}}{
+\section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:
@@ -70,7 +77,7 @@ This module generates the following objects, which can be modified in place usin
 \item \code{box_plot} (\code{ggplot2})
 \item \code{density_plot} (\code{ggplot2})
 \item \code{cumulative_plot} (\code{ggplot2})
-\item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
+\item \code{table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
 }
 
 Decorators can be applied to all outputs or only to specific objects using a
@@ -91,7 +98,7 @@ See code snippet below:
 }\if{html}{\out{</div>}}
 
 For additional details and examples of decorators, refer to the vignette
-\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
+\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
 \examples{
@@ -144,7 +151,7 @@ if (interactive()) {
 # CDISC data example
 data <- teal_data()
 data <- within(data, {
-  ADSL <- rADSL
+  ADSL <- teal.data::rADSL
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 
@@ -196,8 +203,8 @@ if (interactive()) {
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpuoxNrUoAvooQAFZEKukA1nCsopV5tgX8cCZQwqTpBPy0ogTpQyPjk8DQ8FNZcgC67osa6VosoulQ-KLU7Ydi7ABitNTkjOwbDi5qqI0PEOFlgMAFGAui0oadTtUNhhLqQiIw5BilDdGKJ2gRSsMCGJ0qI4CINHB+OxsbQoPQRKsCbQicc8hCoTC4QjTOoVti7g8npiIO4lCD2ioSuw6qE8roALyyiK4GV8IQiXGKtXCN4y+qkGDpIiCUh0GRTPX1XTG020GTXFgK3R0USkaUQK2epVQdIxUjMK6iVBwAjur1erKvJ0c5qwvCW8Ok8mkJ1JkMrIMhsPhr3UOlk6NgQJk9O6Gl0kSIKEqj05z34wliJ3l+lwRmN1kRdnQ2Nc6qhjkAcVceF0UIAQgBZLAAaSwAEYoRia3XPWmKfxCw1h9WEzmYMtaPE9Ir3g0WoFnCvV-UTLRopSnWeL65a3X+u+93Jr-XwnAJGizLcA6jBOi6bp7vUWS+tE-q8iSwYDm+OaRrAJ5jj23Txsh4Z3t8MhOnhPwIVmkFevyza3D+q4NsyTaKjc1CCG2tEstMXaQphcbwtU-IACTruQ-DfmRa4lhulFMSxTJseCnGcmAPFlrcAniUJIk4fuh7Hk6AKvjeH45oZnrGbohn9P0tAmLofyqAGmg6DYti1LWojlBArANOg7Agnxgi0NUvmkowOjor0ShgD0pxAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpuoxNrUoAvooQAFZEKukA1nCsopV5tgX8cCZQwqTpBPy0ogTpQyPjk8DQ8FNZcgC67osa6VosoulQ-KLU7Ydi7ABitNTkjOwbDi5qqI0PEOFlgMAFGAui0oadTtUNhhLqQiIw5BilDdGKJ2gRSsMCGJ0qI4CINHB+OxsbQoPQRKsCbQicc8hCoTC4QjTOoVti7g8npiIO4lCD2ioSuw6qE8roALyyiK4GV8IQiXGKtXCN4y+qkGDpIiCUh0GRTPX1XTG020GTXFgK3R0USkaUQK2epVQdIxUjMK6iVBwAjur1erKvJ0c5qwvCW8Ok8mkJ1JkMrIMhsPhr3UOlk6NgQJk9O6Gl0kSIKEqj05z34wliJ3l+lwRmN1kRdnQ2Nc6qhjkAcVceF0UIAQgBZLAAaSwAEYoRia3XPWmKfxCw1h9WEzmYMtaPE9Ir3g0WoFnCvV-UTLRopSnWeL65a3X+u+93Jr-XwnAJGizLcA6jBOi6bp7vUWS+tE-q8iSwYDm+OaRrAJ5jj23Txsh4Z3t8MhOnhPwIVmkFevyza3D+q4NsyTaKjc1CCG2tEstMXaQphcbwtU-IACTruQ-DfmRa4lhulFMSxTJseCnGcmAPFlrcAniUJIk4fuh7Hk6AKvjeH45oZnrGbohn9P0tAmLofyqAGmg6DYti1LWojlBArANOg7Agnxgi0NUvmkowOjor0ShgD0pxAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3EpIe0VCV2HVQnldABeJURXCKvhCEREtXa4TfRX1UgwdJEQSkOgyebG+q6C1W2gyB4sVW6OiiUgKiD2v3qqDpGKkZj3USoOAEH3+-1ZL7u3nNJF4O0xqk00ju9ORzbhyPRmP+6jM6kJsCBak53SM5kiRDwzW+wt+klksTumssuBsttciI8hFJ-nVKO8gDirjwunhACEALJYADSWAAjPDcY3m37s7T+GWGhOG6nCzANrR4no1T8Gi1As5N1v6iZaNE6e7r7fXE3myMf8e5A+LbhHAEjYhy3Cuow7qet6x71FkQbRCGQqUhGo7foWcawJe06DgMKYYTGz4AjI7rEYCqH5nB-oih2TyAVurYcu2aqPNQgjdkxnILP2cJ4cmKLVCKAAkO7kPwAHUdula7nR7Gcey3EwnxfJgIJ1ZPKJMniZJhEnmeF7uqCX6Pr+hZmX6Fm6GZIwjLQJi6MCqihpoOg2LYtRNqI5QQKwDToOwkLCYItDVEFVKMDoOJDEoYCDFcQA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3EpIe0VCV2HVQnldABeJURXCKvhCEREtXa4TfRX1UgwdJEQSkOgyebG+q6C1W2gyB4sVW6OiiUgKiD2v3qqDpGKkZj3USoOAEH3+-1ZL7u3nNJF4O0xqk00ju9ORzbhyPRmP+6jM6kJsCBak53SM5kiRDwzW+wt+klksTumssuBsttciI8hFJ-nVKO8gDirjwunhACEALJYADSWAAjPDcY3m37s7T+GWGhOG6nCzANrR4no1T8Gi1As5N1v6iZaNE6e7r7fXE3myMf8e5A+LbhHAEjYhy3Cuow7qet6x71FkQbRCGQqUhGo7foWcawJe06DgMKYYTGz4AjI7rEYCqH5nB-oih2TyAVurYcu2aqPNQgjdkxnILP2cJ4cmKLVCKAAkO7kPwAHUdula7nR7Gcey3EwnxfJgIJ1ZPKJMniZJhEnmeF7uqCX6Pr+hZmX6Fm6GZIwjLQJi6MCqihpoOg2LYtRNqI5QQKwDToOwkLCYItDVEFVKMDoOJDEoYCDFcQA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

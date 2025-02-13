@@ -7,14 +7,15 @@
 tm_data_table(
   label = "Data Table",
   variables_selected = list(),
-  datasets_selected = character(0),
+  datasets_selected = deprecated(),
+  datanames = if (missing(datasets_selected)) "all" else datasets_selected,
   dt_args = list(),
   dt_options = list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100),
     scrollX = TRUE),
   server_rendering = FALSE,
   pre_output = NULL,
   post_output = NULL,
-  decorators = NULL
+  transformators = list()
 )
 }
 \arguments{
@@ -27,10 +28,17 @@ Names of list elements should correspond to the names of the datasets available 
 If no entry is specified for a dataset, the first six variables from that
 dataset will initially be shown.}
 
-\item{datasets_selected}{(\code{character}) A vector of datasets which should be
-shown and in what order. Names in the vector have to correspond with datasets names.
-If vector of \code{length == 0} (default) then all datasets are shown.
-Note: Only datasets of the \code{data.frame} class are compatible.}
+\item{datasets_selected}{(\code{character}) \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} A vector of datasets which should be
+shown and in what order. Use \code{datanames} instead.}
+
+\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
+There are 2 reserved values that have specific behaviors:
+\itemize{
+\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
+\item \code{NULL} hides the sidebar panel completely.
+\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
+argument.
+}}
 
 \item{dt_args}{(\verb{named list}) Additional arguments to be passed to \code{\link[DT:datatable]{DT::datatable()}}
 (must not include \code{data} or \code{options}).}
@@ -48,11 +56,8 @@ with text placed before the output to put the output into context. For example a
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
-\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}  (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module} or \code{NULL}) optional, if not \code{NULL}, decorator for tables or plots included in the module. When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
-
-Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
-
-See section "Decorating \code{tm_data_table}" below for more details.}
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -68,18 +73,6 @@ Configure the \code{DT.TOJSON_ARGS} option via
 \code{options(DT.TOJSON_ARGS = list(na = "string"))} before running the module.
 Note though that sorting of numeric columns with \code{NA}/\code{Inf} will be lexicographic not numerical.
 }
-\section{Decorating \code{tm_data_table}}{
-
-
-This module generates the following objects, which can be modified in place using decorators:
-\itemize{
-\item \code{table} (\code{\link[DT:datatable]{DT::datatable()}})
-}
-
-For additional details and examples of decorators, refer to the vignette
-\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[=teal_transform_module]{teal_transform_module()}} documentation.
-}
-
 \examples{
 # general data example
 data <- teal_data()
@@ -107,7 +100,7 @@ if (interactive()) {
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
-  ADSL <- rADSL
+  ADSL <- teal.data::rADSL
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 
@@ -133,8 +126,8 @@ if (interactive()) {
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI0xeW1jeBoeE3MuQBdN2h0CZVi9lqQ3N0AF5-uFcH8+EIRKIgboIcIxL8BnVdKQYBlcmlwvQRIjkcitCxaFBsWI0qI4CINHB+DC6KJSOwpuNgQRfmAAnZHD4AJp+HwKPC6AWOAKOABCACk+QKqgLRZLpYK5X47M5FbKwIMAOKuJXs5wADQFcjkYKReP4xxYEmhwLpDIIaE0JBhAqZ9mJIm8TqsEGNfzq-UDSn6tBMunYKnIzEsOhsthqSNEZQgrEG6HYaFQABIWlUs9nyYwdH1ZkowDMXkA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWT64bGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI0xeW1jeBoeE3MuQBdN2h0CZVi9lqQ3N0AF5-uFcH8+EIRKIgboIcIxL8BnVdKQYBlcmlwvQRIjkcitCxaFBsWI0qI4CINHB+DC6KJSOwpuNgQRfmAAnZHD4AJp+HwKPC6AWOAKOABCACk+QKqgLRZLpYK5X47M5FbKwIMAOKuJXs5wADQFcjkYKReP4xxYEmhwLpDIIaE0JBhAqZ9mJIm8TqsEGNfzq-UDSn6tBMunYKnIzEsOhsthqSNEZQgrEG6HYaFQABIWlUs9nyYwdH1ZkowDMXkA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjAMrk0uF6CJ0ZjMVoWLQoASxGlRHARBo4PwkXRRKR2AtxpCCMCwAE7I4fABNPw+BR4XSixwBRwAIQAUsLRVVRVK5Qqxcq-HZnGqlWBBgBxVzqnnOAAaorkchhGOJ-EuLAkiMhzNZBDQmhISNF7PsFJE3ndVggFpBdX6YaU-VoJl07BU5GYlh0NlsNQxojKEFYg3Q7DQqAAJC0qvmCzTGDo+sslGAll8gA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjAMrk0uF6CJ0ZjMVoWLQoASxGlRHARBo4PwkXRRKR2AtxpCCMCwAE7I4fABNPw+BR4XSixwBRwAIQAUsLRVVRVK5Qqxcq-HZnGqlWBBgBxVzqnnOAAaorkchhGOJ-EuLAkiMhzNZBDQmhISNF7PsFJE3ndVggFpBdX6YaU-VoJl07BU5GYlh0NlsNQxojKEFYg3Q7DQqAAJC0qvmCzTGDo+sslGAll8gA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }
