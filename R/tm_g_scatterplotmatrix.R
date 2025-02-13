@@ -18,11 +18,19 @@
 #'
 #' @inherit shared_params return
 #'
+#' @section Decorating Module:
+#'
+#' This module generates the following objects, which can be modified in place using decorators:
+#' - `plot` (`trellis` - output of `lattice::splom`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("lattice", quietly = TRUE)
+#' @examples
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -109,12 +117,12 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-#' @examplesIf require("lattice", quietly = TRUE)
+#' @examples
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
-#'   ADSL <- rADSL
-#'   ADRS <- rADRS
+#'   ADSL <- teal.data::rADSL
+#'   ADRS <- teal.data::rADRS
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
@@ -168,13 +176,10 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    plot_height = c(600, 200, 2000),
                                    plot_width = NULL,
                                    pre_output = NULL,
-                                   post_output = NULL) {
+                                   post_output = NULL,
+                                   transformators = list(),
+                                   decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
-
-  # Requires Suggested packages
-  if (!requireNamespace("lattice", quietly = TRUE)) {
-    stop("Cannot load lattice - please install the package or restart your session.")
-  }
 
   # Normalize the parameters
   if (inherits(variables, "data_extract_spec")) variables <- list(variables)
@@ -193,6 +198,9 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
 
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -203,7 +211,13 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
     server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix,
     ui_args = args,
-    server_args = list(variables = variables, plot_height = plot_height, plot_width = plot_width),
+    server_args = list(
+      variables = variables,
+      plot_height = plot_height,
+      plot_width = plot_width,
+      decorators = decorators
+    ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(variables)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
@@ -234,6 +248,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         is_single_dataset = is_single_dataset_value
       ),
       tags$hr(),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -267,7 +282,14 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 }
 
 # Server function for the scatterplot matrix module
-srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variables, plot_height, plot_width) {
+srv_g_scatterplotmatrix <- function(id,
+                                    data,
+                                    reporter,
+                                    filter_panel_api,
+                                    variables,
+                                    plot_height,
+                                    plot_width,
+                                    decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -364,7 +386,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
           qenv,
           substitute(
             expr = {
-              g <- lattice::splom(
+              plot <- lattice::splom(
                 ANL,
                 varnames = varnames_value,
                 panel = function(x, y, ...) {
@@ -388,7 +410,6 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
                 alpha = alpha_value,
                 cex = cex_value
               )
-              print(g)
             },
             env = list(
               varnames_value = varnames,
@@ -407,8 +428,13 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
           qenv,
           substitute(
             expr = {
-              g <- lattice::splom(ANL, varnames = varnames_value, pch = 16, alpha = alpha_value, cex = cex_value)
-              g
+              plot <- lattice::splom(
+                ANL,
+                varnames = varnames_value,
+                pch = 16,
+                alpha = alpha_value,
+                cex = cex_value
+              )
             },
             env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
           )
@@ -417,7 +443,14 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
       qenv
     })
 
-    plot_r <- reactive(output_q()[["g"]])
+    decorated_output_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = select_decorators(decorators, "plot"),
+      expr = print(plot)
+    )
+
+    plot_r <- reactive(req(decorated_output_q())[["plot"]])
 
     # Insert the plot into a plot_with_settings module
     pws <- teal.widgets::plot_with_settings_srv(
@@ -449,9 +482,12 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
       }
     })
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = source_code_r,
       title = "Show R Code for Scatterplotmatrix"
     )
 
@@ -470,7 +506,7 @@ srv_g_scatterplotmatrix <- function(id, data, reporter, filter_panel_api, variab
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)

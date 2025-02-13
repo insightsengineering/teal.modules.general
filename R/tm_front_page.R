@@ -13,7 +13,10 @@
 #' `HTML("html text here")`.
 #' @param footnotes (`character` vector) of text to be shown at the bottom of the module, for each
 #' element, if named the name is shown first in bold, followed by the value.
-#' @param show_metadata (`logical`) indicating whether the metadata of the datasets be available on the module.
+#' @param show_metadata (`logical`) `r lifecycle::badge("deprecated")` indicating
+#' whether the metadata of the datasets be available on the module.
+#' Metadata shown automatically when `datanames` set.
+#' @inheritParams tm_variable_browser
 #'
 #' @inherit shared_params return
 #'
@@ -25,7 +28,7 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
-#'   ADSL <- rADSL
+#'   ADSL <- teal.data::rADSL
 #'   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
@@ -50,13 +53,12 @@
 #'       ),
 #'       tables = table_input,
 #'       additional_tags = HTML("Additional HTML or shiny tags go here <br>"),
-#'       footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
-#'       show_metadata = TRUE
+#'       footnotes = c("X" = "is the first footnote", "Y is the second footnote")
 #'     )
-#'   ),
-#'   header = tags$h1("Sample Application"),
-#'   footer = tags$p("Application footer"),
-#' )
+#'   )
+#' ) |>
+#'   modify_header(tags$h1("Sample Application")) |>
+#'   modify_footer(tags$p("Application footer"))
 #'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
@@ -69,7 +71,9 @@ tm_front_page <- function(label = "Front page",
                           tables = list(),
                           additional_tags = tagList(),
                           footnotes = character(0),
-                          show_metadata = FALSE) {
+                          show_metadata = deprecated(),
+                          datanames = if (missing(show_metadata)) NULL else "all",
+                          transformators = list()) {
   message("Initializing tm_front_page")
 
   # Start of assertions
@@ -78,7 +82,19 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_list(tables, types = "data.frame", names = "named", any.missing = FALSE)
   checkmate::assert_multi_class(additional_tags, classes = c("shiny.tag.list", "html"))
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
-  checkmate::assert_flag(show_metadata)
+  if (!missing(show_metadata)) {
+    lifecycle::deprecate_soft(
+      when = "0.4.0",
+      what = "tm_front_page(show_metadata)",
+      with = "tm_front_page(datanames)",
+      details = c(
+        "With `datanames` you can select which datasets are displayed.",
+        i = "Use `tm_front_page(datanames = 'all')` to keep the previous behavior and avoid this warning."
+      )
+    )
+  }
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
+
   # End of assertions
 
   # Make UI args
@@ -89,8 +105,9 @@ tm_front_page <- function(label = "Front page",
     server = srv_front_page,
     ui = ui_front_page,
     ui_args = args,
-    server_args = list(tables = tables, show_metadata = show_metadata),
-    datanames = if (show_metadata) "all" else NULL
+    server_args = list(tables = tables),
+    datanames = datanames, ,
+    transformators = transformators
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
@@ -120,7 +137,7 @@ ui_front_page <- function(id, ...) {
         class = "my-4",
         args$additional_tags
       ),
-      if (args$show_metadata) {
+      if (length(args$datanames) > 0L) {
         tags$div(
           id = "front_page_metabutton",
           class = "m-4",
@@ -136,7 +153,7 @@ ui_front_page <- function(id, ...) {
 }
 
 # Server function for the front page module
-srv_front_page <- function(id, data, tables, show_metadata) {
+srv_front_page <- function(id, data, tables) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -154,8 +171,7 @@ srv_front_page <- function(id, data, tables, show_metadata) {
         caption.placement = "top"
       )
     })
-
-    if (show_metadata) {
+    if (length(isolate(names(data()))) > 0L) {
       observeEvent(
         input$metadata_button, showModal(
           modalDialog(

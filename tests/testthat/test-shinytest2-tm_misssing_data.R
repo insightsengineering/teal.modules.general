@@ -19,7 +19,7 @@ app_driver_tm_missing_data <- function() {
       label = "Missing data",
       plot_height = c(600, 400, 5000),
       plot_width = NULL,
-      parent_dataname = "",
+      datanames = "all",
       ggtheme = "gray",
       ggplot2_args = list(
         "Combinations Hist" = teal.widgets::ggplot2_args(
@@ -109,7 +109,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
     )
   )
 
-  testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 1L)
+  testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 2L)
   app_driver$set_active_module_input("iris-combination_cutoff", 10L)
   app_driver$expect_no_validation_error()
 

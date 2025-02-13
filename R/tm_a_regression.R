@@ -37,16 +37,26 @@
 #'     It takes the form of `c(value, min, max)` and it is passed to the `value_min_max`
 #'     argument in `teal.widgets::optionalSliderInputValMinMax`.
 #'
-#' @templateVar ggnames `r regression_names`
-#' @template ggplot2_args_multi
+# nolint start: line_length.
+#' @param ggplot2_args `r roxygen_ggplot2_args_param("Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage")`
+# nolint end: line_length.
 #'
 #' @inherit shared_params return
+#'
+#' @section Decorating Module:
+#'
+#' This module generates the following objects, which can be modified in place using decorators:
+#' - `plot` (`ggplot2`)
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#'
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -95,7 +105,7 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
-#'   ADSL <- rADSL
+#'   ADSL <- teal.data::rADSL
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
@@ -146,7 +156,9 @@ tm_a_regression <- function(label = "Regression Analysis",
                             post_output = NULL,
                             default_plot_type = 1,
                             default_outlier_label = "USUBJID",
-                            label_segment_threshold = c(0.5, 0, 10)) {
+                            label_segment_threshold = c(0.5, 0, 10),
+                            transformators = list(),
+                            decorators = list()) {
   message("Initializing tm_a_regression")
 
   # Normalize the parameters
@@ -200,6 +212,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_choice(default_plot_type, seq.int(1L, length(plot_choices)))
   checkmate::assert_string(default_outlier_label)
+  checkmate::assert_list(decorators, "teal_transform_module")
 
   if (length(label_segment_threshold) == 1) {
     checkmate::assert_numeric(label_segment_threshold, any.missing = FALSE, finite = TRUE)
@@ -212,6 +225,8 @@ tm_a_regression <- function(label = "Regression Analysis",
       .var.name = "label_segment_threshold"
     )
   }
+  decorators <- normalize_decorators(decorators)
+  assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -233,9 +248,11 @@ tm_a_regression <- function(label = "Regression Analysis",
         plot_height = plot_height,
         plot_width = plot_width,
         default_outlier_label = default_outlier_label,
-        ggplot2_args = ggplot2_args
+        ggplot2_args = ggplot2_args,
+        decorators = decorators
       )
     ),
+    transformators = transformators,
     datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- FALSE
@@ -247,7 +264,6 @@ ui_a_regression <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$regressor, args$response)
-
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(tags$div(
       teal.widgets::plot_with_settings_ui(id = ns("myplot")),
@@ -306,6 +322,7 @@ ui_a_regression <- function(id, ...) {
           label = "Outlier label"
         )
       ),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
       teal.widgets::panel_group(
         teal.widgets::panel_item(
           title = "Plot settings",
@@ -362,7 +379,8 @@ srv_a_regression <- function(id,
                              plot_height,
                              plot_width,
                              ggplot2_args,
-                             default_outlier_label) {
+                             default_outlier_label,
+                             decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -537,450 +555,441 @@ srv_a_regression <- function(id,
       )
     })
 
-    output_q <- reactive({
-      alpha <- input$alpha
-      size <- input$size
-      ggtheme <- input$ggtheme
-      input_type <- input$plot_type
-      show_outlier <- input$show_outlier
+    output_plot_base <- reactive({
+      base_fit <- fit_r()
+      teal.code::eval_code(
+        base_fit,
+        quote({
+          class(fit$residuals) <- NULL
 
-      teal::validate_inputs(iv_r())
+          data <- ggplot2::fortify(fit)
 
-      plot_type_0 <- function() {
-        fit <- fit_r()[["fit"]]
-        ANL <- anl_merged_q()[["ANL"]]
-
-        stopifnot(ncol(fit$model) == 2)
-
-        if (!is.factor(ANL[[regression_var()$regressor]])) {
-          shinyjs::show("size")
-          shinyjs::show("alpha")
-          plot <- substitute(
-            env = list(
-              regressor = regression_var()$regressor,
-              response = regression_var()$response,
-              size = size,
-              alpha = alpha
-            ),
-            expr = ggplot(
-              fit$model[, 2:1],
-              aes_string(regressor, response)
-            ) +
-              geom_point(size = size, alpha = alpha) +
-              stat_smooth(
-                method = "lm",
-                formula = y ~ x,
-                se = FALSE
-              )
-          )
-          if (show_outlier) {
-            plot <- substitute(
-              expr = plot + outlier_label,
-              env = list(plot = plot, outlier_label = outlier_label())
-            )
+          smooth <- function(x, y) {
+            as.data.frame(stats::lowess(x, y, f = 2 / 3, iter = 3))
           }
-        } else {
-          shinyjs::hide("size")
-          shinyjs::hide("alpha")
-          plot <- substitute(
-            expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) +
-              geom_boxplot(),
-            env = list(regressor = regression_var()$regressor, response = regression_var()$response)
-          )
-          if (show_outlier) {
-            plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
-          }
-        }
 
-        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-          teal.widgets::resolve_ggplot2_args(
-            user_plot = ggplot2_args[["Response vs Regressor"]],
-            user_default = ggplot2_args$default,
-            module_plot = teal.widgets::ggplot2_args(
-              labs = list(
-                title = "Response vs Regressor",
-                x = varname_w_label(regression_var()$regressor, ANL),
-                y = varname_w_label(regression_var()$response, ANL)
-              ),
-              theme = list()
-            )
-          ),
-          ggtheme = ggtheme
-        )
+          smoothy_aes <- ggplot2::aes_string(x = "x", y = "y")
 
-        teal.code::eval_code(
-          fit_r(),
-          substitute(
-            expr = {
-              class(fit$residuals) <- NULL
-              data <- fortify(fit)
-              g <- plot
-              print(g)
-            },
-            env = list(
-              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
-            )
-          )
-        )
-      }
-
-      plot_base <- function() {
-        base_fit <- fit_r()
-        teal.code::eval_code(
-          base_fit,
-          quote({
-            class(fit$residuals) <- NULL
-
-            data <- ggplot2::fortify(fit)
-
-            smooth <- function(x, y) {
-              as.data.frame(stats::lowess(x, y, f = 2 / 3, iter = 3))
-            }
-
-            smoothy_aes <- ggplot2::aes_string(x = "x", y = "y")
-
-            reg_form <- deparse(fit$call[[2]])
-          })
-        )
-      }
-
-      plot_type_1 <- function(plot_base) {
-        shinyjs::show("size")
-        shinyjs::show("alpha")
-        plot <- substitute(
-          expr = ggplot(data = data, aes(.fitted, .resid)) +
-            geom_point(size = size, alpha = alpha) +
-            geom_hline(yintercept = 0, linetype = "dashed", size = 1) +
-            geom_line(data = smoothy, mapping = smoothy_aes),
-          env = list(size = size, alpha = alpha)
-        )
-        if (show_outlier) {
-          plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
-        }
-
-        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-          teal.widgets::resolve_ggplot2_args(
-            user_plot = ggplot2_args[["Residuals vs Fitted"]],
-            user_default = ggplot2_args$default,
-            module_plot = teal.widgets::ggplot2_args(
-              labs = list(
-                x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
-                y = "Residuals",
-                title = "Residuals vs Fitted"
-              )
-            )
-          ),
-          ggtheme = ggtheme
-        )
-
-        teal.code::eval_code(
-          plot_base,
-          substitute(
-            expr = {
-              smoothy <- smooth(data$.fitted, data$.resid)
-              g <- plot
-              print(g)
-            },
-            env = list(
-              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
-            )
-          )
-        )
-      }
-
-      plot_type_2 <- function(plot_base) {
-        shinyjs::show("size")
-        shinyjs::show("alpha")
-        plot <- substitute(
-          expr = ggplot(data = data, aes(sample = .stdresid)) +
-            stat_qq(size = size, alpha = alpha) +
-            geom_abline(linetype = "dashed"),
-          env = list(size = size, alpha = alpha)
-        )
-        if (show_outlier) {
-          plot <- substitute(
-            expr = plot +
-              stat_qq(
-                geom = ggrepel::GeomTextRepel,
-                label = label_col %>%
-                  data.frame(label = .) %>%
-                  dplyr::filter(label != "cooksd == NaN") %>%
-                  unlist(),
-                color = "red",
-                hjust = 0,
-                vjust = 0,
-                max.overlaps = Inf,
-                min.segment.length = label_min_segment,
-                segment.alpha = .5,
-                seed = 123
-              ),
-            env = list(plot = plot, label_col = label_col(), label_min_segment = label_min_segment())
-          )
-        }
-
-        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-          teal.widgets::resolve_ggplot2_args(
-            user_plot = ggplot2_args[["Normal Q-Q"]],
-            user_default = ggplot2_args$default,
-            module_plot = teal.widgets::ggplot2_args(
-              labs = list(
-                x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
-                y = "Standardized residuals",
-                title = "Normal Q-Q"
-              )
-            )
-          ),
-          ggtheme = ggtheme
-        )
-
-        teal.code::eval_code(
-          plot_base,
-          substitute(
-            expr = {
-              g <- plot
-              print(g)
-            },
-            env = list(
-              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
-            )
-          )
-        )
-      }
-
-      plot_type_3 <- function(plot_base) {
-        shinyjs::show("size")
-        shinyjs::show("alpha")
-        plot <- substitute(
-          expr = ggplot(data = data, aes(.fitted, sqrt(abs(.stdresid)))) +
-            geom_point(size = size, alpha = alpha) +
-            geom_line(data = smoothy, mapping = smoothy_aes),
-          env = list(size = size, alpha = alpha)
-        )
-        if (show_outlier) {
-          plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
-        }
-
-        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-          teal.widgets::resolve_ggplot2_args(
-            user_plot = ggplot2_args[["Scale-Location"]],
-            user_default = ggplot2_args$default,
-            module_plot = teal.widgets::ggplot2_args(
-              labs = list(
-                x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
-                y = quote(expression(sqrt(abs(`Standardized residuals`)))),
-                title = "Scale-Location"
-              )
-            )
-          ),
-          ggtheme = ggtheme
-        )
-
-        teal.code::eval_code(
-          plot_base,
-          substitute(
-            expr = {
-              smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
-              g <- plot
-              print(g)
-            },
-            env = list(
-              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
-            )
-          )
-        )
-      }
-
-      plot_type_4 <- function(plot_base) {
-        shinyjs::hide("size")
-        shinyjs::show("alpha")
-        plot <- substitute(
-          expr = ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) +
-            geom_col(alpha = alpha),
-          env = list(alpha = alpha)
-        )
-        if (show_outlier) {
-          plot <- substitute(
-            expr = plot +
-              geom_hline(
-                yintercept = c(
-                  outlier * mean(data$.cooksd, na.rm = TRUE),
-                  mean(data$.cooksd, na.rm = TRUE)
-                ),
-                color = "red",
-                linetype = "dashed"
-              ) +
-              geom_text(
-                aes(
-                  x = 0,
-                  y = mean(data$.cooksd, na.rm = TRUE),
-                  label = paste("mu", "=", round(mean(data$.cooksd, na.rm = TRUE), 4)),
-                  vjust = -1,
-                  hjust = 0,
-                  color = "red",
-                  angle = 90
-                ),
-                parse = TRUE,
-                show.legend = FALSE
-              ) +
-              outlier_label,
-            env = list(plot = plot, outlier = input$outlier, outlier_label = outlier_label())
-          )
-        }
-
-        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-          teal.widgets::resolve_ggplot2_args(
-            user_plot = ggplot2_args[["Cook's distance"]],
-            user_default = ggplot2_args$default,
-            module_plot = teal.widgets::ggplot2_args(
-              labs = list(
-                x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
-                y = "Cook's distance",
-                title = "Cook's distance"
-              )
-            )
-          ),
-          ggtheme = ggtheme
-        )
-
-        teal.code::eval_code(
-          plot_base,
-          substitute(
-            expr = {
-              g <- plot
-              print(g)
-            },
-            env = list(
-              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
-            )
-          )
-        )
-      }
-
-
-      plot_type_5 <- function(plot_base) {
-        shinyjs::show("size")
-        shinyjs::show("alpha")
-        plot <- substitute(
-          expr = ggplot(data = data, aes(.hat, .stdresid)) +
-            geom_vline(
-              size = 1,
-              colour = "black",
-              linetype = "dashed",
-              xintercept = 0
-            ) +
-            geom_hline(
-              size = 1,
-              colour = "black",
-              linetype = "dashed",
-              yintercept = 0
-            ) +
-            geom_point(size = size, alpha = alpha) +
-            geom_line(data = smoothy, mapping = smoothy_aes),
-          env = list(size = size, alpha = alpha)
-        )
-        if (show_outlier) {
-          plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
-        }
-
-        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-          teal.widgets::resolve_ggplot2_args(
-            user_plot = ggplot2_args[["Residuals vs Leverage"]],
-            user_default = ggplot2_args$default,
-            module_plot = teal.widgets::ggplot2_args(
-              labs = list(
-                x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
-                y = "Leverage",
-                title = "Residuals vs Leverage"
-              )
-            )
-          ),
-          ggtheme = ggtheme
-        )
-
-        teal.code::eval_code(
-          plot_base,
-          substitute(
-            expr = {
-              smoothy <- smooth(data$.hat, data$.stdresid)
-              g <- plot
-              print(g)
-            },
-            env = list(
-              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
-            )
-          )
-        )
-      }
-
-      plot_type_6 <- function(plot_base) {
-        shinyjs::show("size")
-        shinyjs::show("alpha")
-        plot <- substitute(
-          expr = ggplot(data = data, aes(.hat, .cooksd)) +
-            geom_vline(xintercept = 0, colour = NA) +
-            geom_abline(
-              slope = seq(0, 3, by = 0.5),
-              colour = "black",
-              linetype = "dashed",
-              size = 1
-            ) +
-            geom_line(data = smoothy, mapping = smoothy_aes) +
-            geom_point(size = size, alpha = alpha),
-          env = list(size = size, alpha = alpha)
-        )
-        if (show_outlier) {
-          plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
-        }
-
-        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-          teal.widgets::resolve_ggplot2_args(
-            user_plot = ggplot2_args[["Cook's dist vs Leverage"]],
-            user_default = ggplot2_args$default,
-            module_plot = teal.widgets::ggplot2_args(
-              labs = list(
-                x = quote(paste0("Leverage\nlm(", reg_form, ")")),
-                y = "Cooks's distance",
-                title = "Cook's dist vs Leverage"
-              )
-            )
-          ),
-          ggtheme = ggtheme
-        )
-
-        teal.code::eval_code(
-          plot_base,
-          substitute(
-            expr = {
-              smoothy <- smooth(data$.hat, data$.cooksd)
-              g <- plot
-              print(g)
-            },
-            env = list(
-              plot = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
-            )
-          )
-        )
-      }
-
-      qenv <- if (input_type == "Response vs Regressor") {
-        plot_type_0()
-      } else {
-        plot_base_q <- plot_base()
-        switch(input_type,
-          "Residuals vs Fitted" = plot_base_q %>% plot_type_1(),
-          "Normal Q-Q" = plot_base_q %>% plot_type_2(),
-          "Scale-Location" = plot_base_q %>% plot_type_3(),
-          "Cook's distance" = plot_base_q %>% plot_type_4(),
-          "Residuals vs Leverage" = plot_base_q %>% plot_type_5(),
-          "Cook's dist vs Leverage" = plot_base_q %>% plot_type_6()
-        )
-      }
-      qenv
+          reg_form <- deparse(fit$call[[2]])
+        })
+      )
     })
 
+    output_plot_0 <- reactive({
+      fit <- fit_r()[["fit"]]
+      ANL <- anl_merged_q()[["ANL"]]
 
-    fitted <- reactive(output_q()[["fit"]])
-    plot_r <- reactive(output_q()[["g"]])
+      stopifnot(ncol(fit$model) == 2)
+
+      if (!is.factor(ANL[[regression_var()$regressor]])) {
+        shinyjs::show("size")
+        shinyjs::show("alpha")
+        plot <- substitute(
+          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) +
+            geom_point(size = size, alpha = alpha) +
+            stat_smooth(method = "lm", formula = y ~ x, se = FALSE),
+          env = list(
+            regressor = regression_var()$regressor,
+            response = regression_var()$response,
+            size = input$size,
+            alpha = input$alpha
+          )
+        )
+        if (input$show_outlier) {
+          plot <- substitute(
+            expr = plot + outlier_label,
+            env = list(plot = plot, outlier_label = outlier_label())
+          )
+        }
+      } else {
+        shinyjs::hide("size")
+        shinyjs::hide("alpha")
+        plot <- substitute(
+          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) +
+            geom_boxplot(),
+          env = list(regressor = regression_var()$regressor, response = regression_var()$response)
+        )
+        if (input$show_outlier) {
+          plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
+        }
+      }
+
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        teal.widgets::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Response vs Regressor"]],
+          user_default = ggplot2_args$default,
+          module_plot = teal.widgets::ggplot2_args(
+            labs = list(
+              title = "Response vs Regressor",
+              x = varname_w_label(regression_var()$regressor, ANL),
+              y = varname_w_label(regression_var()$response, ANL)
+            ),
+            theme = list()
+          )
+        ),
+        ggtheme = input$ggtheme
+      )
+
+      teal.code::eval_code(
+        fit_r(),
+        substitute(
+          expr = {
+            class(fit$residuals) <- NULL
+            data <- fortify(fit)
+            plot <- graph
+          },
+          env = list(
+            graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
+          )
+        )
+      )
+    })
+
+    output_plot_1 <- reactive({
+      plot_base <- output_plot_base()
+      shinyjs::show("size")
+      shinyjs::show("alpha")
+      plot <- substitute(
+        expr = ggplot(data = data, aes(.fitted, .resid)) +
+          geom_point(size = size, alpha = alpha) +
+          geom_hline(yintercept = 0, linetype = "dashed", size = 1) +
+          geom_line(data = smoothy, mapping = smoothy_aes),
+        env = list(size = input$size, alpha = input$alpha)
+      )
+      if (input$show_outlier) {
+        plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
+      }
+
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        teal.widgets::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Residuals vs Fitted"]],
+          user_default = ggplot2_args$default,
+          module_plot = teal.widgets::ggplot2_args(
+            labs = list(
+              x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+              y = "Residuals",
+              title = "Residuals vs Fitted"
+            )
+          )
+        ),
+        ggtheme = input$ggtheme
+      )
+
+      teal.code::eval_code(
+        plot_base,
+        substitute(
+          expr = {
+            smoothy <- smooth(data$.fitted, data$.resid)
+            plot <- graph
+          },
+          env = list(
+            graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
+          )
+        )
+      )
+    })
+
+    output_plot_2 <- reactive({
+      shinyjs::show("size")
+      shinyjs::show("alpha")
+      plot_base <- output_plot_base()
+      plot <- substitute(
+        expr = ggplot(data = data, aes(sample = .stdresid)) +
+          stat_qq(size = size, alpha = alpha) +
+          geom_abline(linetype = "dashed"),
+        env = list(size = input$size, alpha = input$alpha)
+      )
+      if (input$show_outlier) {
+        plot <- substitute(
+          expr = plot +
+            stat_qq(
+              geom = ggrepel::GeomTextRepel,
+              label = label_col %>%
+                data.frame(label = .) %>%
+                dplyr::filter(label != "cooksd == NaN") %>%
+                unlist(),
+              color = "red",
+              hjust = 0,
+              vjust = 0,
+              max.overlaps = Inf,
+              min.segment.length = label_min_segment,
+              segment.alpha = .5,
+              seed = 123
+            ),
+          env = list(plot = plot, label_col = label_col(), label_min_segment = label_min_segment())
+        )
+      }
+
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        teal.widgets::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Normal Q-Q"]],
+          user_default = ggplot2_args$default,
+          module_plot = teal.widgets::ggplot2_args(
+            labs = list(
+              x = quote(paste0("Theoretical Quantiles\nlm(", reg_form, ")")),
+              y = "Standardized residuals",
+              title = "Normal Q-Q"
+            )
+          )
+        ),
+        ggtheme = input$ggtheme
+      )
+
+      teal.code::eval_code(
+        plot_base,
+        substitute(
+          expr = {
+            plot <- graph
+          },
+          env = list(
+            graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
+          )
+        )
+      )
+    })
+
+    output_plot_3 <- reactive({
+      shinyjs::show("size")
+      shinyjs::show("alpha")
+      plot_base <- output_plot_base()
+      plot <- substitute(
+        expr = ggplot(data = data, aes(.fitted, sqrt(abs(.stdresid)))) +
+          geom_point(size = size, alpha = alpha) +
+          geom_line(data = smoothy, mapping = smoothy_aes),
+        env = list(size = input$size, alpha = input$alpha)
+      )
+      if (input$show_outlier) {
+        plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
+      }
+
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        teal.widgets::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Scale-Location"]],
+          user_default = ggplot2_args$default,
+          module_plot = teal.widgets::ggplot2_args(
+            labs = list(
+              x = quote(paste0("Fitted values\nlm(", reg_form, ")")),
+              y = quote(expression(sqrt(abs(`Standardized residuals`)))),
+              title = "Scale-Location"
+            )
+          )
+        ),
+        ggtheme = input$ggtheme
+      )
+
+      teal.code::eval_code(
+        plot_base,
+        substitute(
+          expr = {
+            smoothy <- smooth(data$.fitted, sqrt(abs(data$.stdresid)))
+            plot <- graph
+          },
+          env = list(
+            graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
+          )
+        )
+      )
+    })
+
+    output_plot_4 <- reactive({
+      shinyjs::hide("size")
+      shinyjs::show("alpha")
+      plot_base <- output_plot_base()
+      plot <- substitute(
+        expr = ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) +
+          geom_col(alpha = alpha),
+        env = list(alpha = input$alpha)
+      )
+      if (input$show_outlier) {
+        plot <- substitute(
+          expr = plot +
+            geom_hline(
+              yintercept = c(
+                outlier * mean(data$.cooksd, na.rm = TRUE),
+                mean(data$.cooksd, na.rm = TRUE)
+              ),
+              color = "red",
+              linetype = "dashed"
+            ) +
+            geom_text(
+              aes(
+                x = 0,
+                y = mean(data$.cooksd, na.rm = TRUE),
+                label = paste("mu", "=", round(mean(data$.cooksd, na.rm = TRUE), 4)),
+                vjust = -1,
+                hjust = 0,
+                color = "red",
+                angle = 90
+              ),
+              parse = TRUE,
+              show.legend = FALSE
+            ) +
+            outlier_label,
+          env = list(plot = plot, outlier = input$outlier, outlier_label = outlier_label())
+        )
+      }
+
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        teal.widgets::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Cook's distance"]],
+          user_default = ggplot2_args$default,
+          module_plot = teal.widgets::ggplot2_args(
+            labs = list(
+              x = quote(paste0("Obs. number\nlm(", reg_form, ")")),
+              y = "Cook's distance",
+              title = "Cook's distance"
+            )
+          )
+        ),
+        ggtheme = input$ggtheme
+      )
+
+      teal.code::eval_code(
+        plot_base,
+        substitute(
+          expr = {
+            plot <- graph
+          },
+          env = list(
+            graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
+          )
+        )
+      )
+    })
+
+    output_plot_5 <- reactive({
+      shinyjs::show("size")
+      shinyjs::show("alpha")
+      plot_base <- output_plot_base()
+      plot <- substitute(
+        expr = ggplot(data = data, aes(.hat, .stdresid)) +
+          geom_vline(
+            size = 1,
+            colour = "black",
+            linetype = "dashed",
+            xintercept = 0
+          ) +
+          geom_hline(
+            size = 1,
+            colour = "black",
+            linetype = "dashed",
+            yintercept = 0
+          ) +
+          geom_point(size = size, alpha = alpha) +
+          geom_line(data = smoothy, mapping = smoothy_aes),
+        env = list(size = input$size, alpha = input$alpha)
+      )
+      if (input$show_outlier) {
+        plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
+      }
+
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        teal.widgets::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Residuals vs Leverage"]],
+          user_default = ggplot2_args$default,
+          module_plot = teal.widgets::ggplot2_args(
+            labs = list(
+              x = quote(paste0("Standardized residuals\nlm(", reg_form, ")")),
+              y = "Leverage",
+              title = "Residuals vs Leverage"
+            )
+          )
+        ),
+        ggtheme = input$ggtheme
+      )
+
+      teal.code::eval_code(
+        plot_base,
+        substitute(
+          expr = {
+            smoothy <- smooth(data$.hat, data$.stdresid)
+            plot <- graph
+          },
+          env = list(
+            graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
+          )
+        )
+      )
+    })
+
+    output_plot_6 <- reactive({
+      shinyjs::show("size")
+      shinyjs::show("alpha")
+      plot_base <- output_plot_base()
+      plot <- substitute(
+        expr = ggplot(data = data, aes(.hat, .cooksd)) +
+          geom_vline(xintercept = 0, colour = NA) +
+          geom_abline(
+            slope = seq(0, 3, by = 0.5),
+            colour = "black",
+            linetype = "dashed",
+            size = 1
+          ) +
+          geom_line(data = smoothy, mapping = smoothy_aes) +
+          geom_point(size = size, alpha = alpha),
+        env = list(size = input$size, alpha = input$alpha)
+      )
+      if (input$show_outlier) {
+        plot <- substitute(expr = plot + outlier_label, env = list(plot = plot, outlier_label = outlier_label()))
+      }
+
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        teal.widgets::resolve_ggplot2_args(
+          user_plot = ggplot2_args[["Cook's dist vs Leverage"]],
+          user_default = ggplot2_args$default,
+          module_plot = teal.widgets::ggplot2_args(
+            labs = list(
+              x = quote(paste0("Leverage\nlm(", reg_form, ")")),
+              y = "Cooks's distance",
+              title = "Cook's dist vs Leverage"
+            )
+          )
+        ),
+        ggtheme = input$ggtheme
+      )
+
+      teal.code::eval_code(
+        plot_base,
+        substitute(
+          expr = {
+            smoothy <- smooth(data$.hat, data$.cooksd)
+            plot <- graph
+          },
+          env = list(
+            graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
+          )
+        )
+      )
+    })
+
+    output_q <- reactive({
+      teal::validate_inputs(iv_r())
+      switch(input$plot_type,
+        "Response vs Regressor" = output_plot_0(),
+        "Residuals vs Fitted" = output_plot_1(),
+        "Normal Q-Q" = output_plot_2(),
+        "Scale-Location" = output_plot_3(),
+        "Cook's distance" = output_plot_4(),
+        "Residuals vs Leverage" = output_plot_5(),
+        "Cook's dist vs Leverage" = output_plot_6()
+      )
+    })
+
+    decorated_output_q <- srv_decorate_teal_data(
+      "decorator",
+      data = output_q,
+      decorators = select_decorators(decorators, "plot"),
+      expr = print(plot)
+    )
+
+    fitted <- reactive({
+      req(output_q())
+      decorated_output_q()[["fit"]]
+    })
+    plot_r <- reactive({
+      req(output_q())
+      decorated_output_q()[["plot"]]
+    })
 
     # Insert the plot into a plot_with_settings module from teal.widgets
     pws <- teal.widgets::plot_with_settings_srv(
@@ -998,9 +1007,12 @@ srv_a_regression <- function(id,
       )
     })
 
+    # Render R code.
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
+
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
-      verbatim_content = reactive(teal.code::get_code(output_q())),
+      verbatim_content = source_code_r,
       title = "R code for the regression plot",
     )
 
@@ -1019,7 +1031,7 @@ srv_a_regression <- function(id,
           card$append_text("Comment", "header3")
           card$append_text(comment)
         }
-        card$append_src(teal.code::get_code(output_q()))
+        card$append_src(source_code_r())
         card
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
@@ -1027,8 +1039,3 @@ srv_a_regression <- function(id,
     ###
   })
 }
-
-regression_names <- paste0(
-  '"Response vs Regressor", "Residuals vs Fitted", ',
-  '"Scale-Location", "Cook\'s distance", "Residuals vs Leverage"", "Cook\'s dist vs Leverage"'
-)

@@ -13,7 +13,9 @@ tm_outliers(
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
-  post_output = NULL
+  post_output = NULL,
+  transformators = list(),
+  decorators = list()
 )
 }
 \arguments{
@@ -28,11 +30,9 @@ specifies the categorical variable(s) to split the selected outlier variables on
 
 \item{ggtheme}{(\code{character}) optional, \code{ggplot2} theme to be used by default. Defaults to \code{"gray"}.}
 
-\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}}
-with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings.
-The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
+\item{ggplot2_args}{(\code{ggplot2_args}) optional, object created by \code{\link[teal.widgets:ggplot2_args]{teal.widgets::ggplot2_args()}} with settings for all the plots or named list of \code{ggplot2_args} objects for plot-specific settings. The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
-List names should match the following: \code{c("default", "Boxplot","Density Plot","Cumulative Distribution Plot")}.
+List names should match the following: \code{c("default", "Boxplot", "Density Plot", "Cumulative Distribution Plot")}.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}.}
 
@@ -48,6 +48,18 @@ with text placed before the output to put the output into context. For example a
 
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
+
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+(\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
+decorator for tables or plots included in the module output reported.
+When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
+
+Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
+
+See section "Decorating Module" below for more details.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -57,7 +69,40 @@ Module to analyze and identify outliers using different methods
 such as IQR, Z-score, and Percentiles, and offers visualizations including
 box plots, density plots, and cumulative distribution plots to help interpret the outliers.
 }
+\section{Decorating Module}{
+
+
+This module generates the following objects, which can be modified in place using decorators:
+\itemize{
+\item \code{box_plot} (\code{ggplot2})
+\item \code{density_plot} (\code{ggplot2})
+\item \code{cumulative_plot} (\code{ggplot2})
+\item \code{table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
+}
+
+Decorators can be applied to all outputs or only to specific objects using a
+named list of \code{teal_transform_module} objects.
+The \code{"default"} name is reserved for decorators that are applied to all outputs.
+See code snippet below:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{tm_outliers(
+   ..., # arguments for module
+   decorators = list(
+     default = list(teal_transform_module(...)), # applied to all outputs
+     box_plot = list(teal_transform_module(...)), # applied only to `box_plot` output
+     density_plot = list(teal_transform_module(...)) # applied only to `density_plot` output
+     cumulative_plot = list(teal_transform_module(...)) # applied only to `cumulative_plot` output
+     table = list(teal_transform_module(...)) # applied only to `table` output
+   )
+)
+}\if{html}{\out{</div>}}
+
+For additional details and examples of decorators, refer to the vignette
+\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
+}
+
 \examples{
+
 # general data example
 data <- teal_data()
 data <- within(data, {
@@ -102,15 +147,18 @@ if (interactive()) {
   shinyApp(app$ui, app$server)
 }
 
+
 # CDISC data example
 data <- teal_data()
 data <- within(data, {
-  ADSL <- rADSL
+  ADSL <- teal.data::rADSL
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 
 fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
+
+
 
 app <- init(
   data = data,
@@ -150,6 +198,7 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
+<<<<<<< HEAD
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6ugDCAPIATHHV9RVNdcDACmCojLQwLKyJANZwrJ0AumONonAAjokiEOwQjETZ7LV1cooQAL7bAFZEKkMjosUZtlmHx8OsZ9cQJxydG52lL814up3dvf1PnS2bggWhYokaBHyRwIYkS0xEGjg-HYoJ6UHoIkSkOhYnOQXaHzq4zGpQI7E6AAVqFAyG9vmA7KxUHA6Z07Iw4IF4LSwFttko0KhGio8uSIJUUroALz+DK4Fp8IQicEyxXCXEtSqkGCJIiCUh0GRnTWVXR6g20GSJVHS3R0USkMWm52yoKJMKkZgaOHMskml2ummwPQywlvf0u+FwDS2qPe0S+p0Bl3U+hwPyhsAAZXT0dIulRtHRIkQ4fFyed2NoMJVBZYRYxcCxUOruJSBLArzAE1J5MIJAIrLAglQQWGgLk8vLFcqcfI-FtnRHY5ZeAjAZgwk0kRDugAYgBBAAyWecU5nppMtFCSNth5Prmnye2FZfLsnEYIgTgEiIPS-SQ2jK9qOuugbuqEnrqKQPrRkmFYpNA8CLp2nznjOV7UOQjC2ph2GwX6T4VqitYkehF5VjWtqgtQghNpRbYZB2XY9nWjCiAAJHOSIfkRybcQuMo0XRzY4mc7YdKhRLdiSbGcQJvEXpUm5YbQO62g4LhgZUb4Brppr6W+2zbLQJi6OwKjYdB2hwDYtjlOWoiFBArAHug7CChxgi0KUnnTIwOiMNsOxKGAOxjEAA}{Open in Shinylive}
     \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6ugDCAPIATHHV9RVNdcDACmCojLQwLKyJANZwrJ0AumONonAAjokiEOwQjETZ7LV1cooQAL7bAFZEKkMjosUZtlmHx8OsZ9cQJxydG52lL814up3dvf1PnS2bggWhYokaBHyRwIYkS0xEGjg-HYoJ6UHoIkSkOhYnOQXaHzq4zGpQI7E6AAVqFAyG9vmA7KxUHA6Z07Iw4IF4LSwFttko0KhGio8uSIJUUroALz+DK4Fp8IQicEyxXCXEtSqkGCJIiCUh0GRnTWVXR6g20GSJVHS3R0USkMWm52yoKJMKkZgaOHMskml2ummwPQywlvf0u+FwDS2qPe0S+p0Bl3U+hwPyhsAAZXT0dIulRtHRIkQ4fFyed2NoMJVBZYRYxcCxUOruJSBLArzAE1J5MIJAIrLAglQQWGgLk8vLFcqcfI-FtnRHY5ZeAjAZgwk0kRDugAYgBBAAyWecU5nppMtFCSNth5Prmnye2FZfLsnEYIgTgEiIPS-SQ2jK9qOuugbuqEnrqKQPrRkmFYpNA8CLp2nznjOV7UOQjC2ph2GwX6T4VqitYkehF5VjWtqgtQghNpRbYZB2XY9nWjCiAAJHOSIfkRybcQuMo0XRzY4mc7YdKhRLdiSbGcQJvEXpUm5YbQO62g4LhgZUb4Brppr6W+2zbLQJi6OwKjYdB2hwDYtjlOWoiFBArAHug7CChxgi0KUnnTIwOiMNsOxKGAOxjEAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
@@ -157,6 +206,15 @@ if (interactive()) {
   \item{example-2}{
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdRkaWpQBfRQgAKyIVNIBrOFZRCtzbfP44EyhhUjSCflpRAjTB4bGJ4Gh4Scy5AF03CAWNNK0WUTSoflFqNoOxdgAxWmpyRnZ1hxcVVEaDiHEywGACjAnWaUJOJyq6wwl1IREYcgxShujFEbQIJSGBDEaVEcBEGjg-HY2NoUHoIhWBNoRKOuQhUJhcIRpnUy2xdweT0xECUILaKmK7FqIVyugAvDLwrhpXwhCJcQrVcI3tK6qQYGkiIJSHQZJNdXVdEaTbQZNcWPLdHRRKQpRBLR7FVA0tFSMwrqJUHACG7PZ7Mq9HRymrC8Baw6TyaRHYng8tA8HQ2HPdQ6WSo2AAmS07oaXSRIgocr3dmPfjCWJHWX6XBGQ3WeF2dCY1yqiGOQBxVx4XRQgBCAFksABpLAARihGOrtY9qYp-AL9SHVfj2ZgS1ocT0Cve9WaAWcy5XdRMtCilMdp-Prhrtb6b93civdbCcAkaOZbh7UYR1nVdXc6kyH0oj9XkSSDftX2zCNYGPUduy6OMkLDW9vhkR1cJ+eDMwgz1+SbW5vxXetmUbBUbmoQRWxolkpk7SEMNjeEqn5AASNdyH4L9SNXYt1woxjmKZVjwQ4zkwG40tbn4sTBOE7C9wPI9HQBF9r3fbMDI9IzdAMvo+loExdD+VR-U0HQbFsGoa1EMoIFYep0HYEFeMEWgqh80lGB0dEeiUMBuhOIA}{Open in Shinylive}
     \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdRkaWpQBfRQgAKyIVNIBrOFZRCtzbfP44EyhhUjSCflpRAjTB4bGJ4Gh4Scy5AF03CAWNNK0WUTSoflFqNoOxdgAxWmpyRnZ1hxcVVEaDiHEywGACjAnWaUJOJyq6wwl1IREYcgxShujFEbQIJSGBDEaVEcBEGjg-HY2NoUHoIhWBNoRKOuQhUJhcIRpnUy2xdweT0xECUILaKmK7FqIVyugAvDLwrhpXwhCJcQrVcI3tK6qQYGkiIJSHQZJNdXVdEaTbQZNcWPLdHRRKQpRBLR7FVA0tFSMwrqJUHACG7PZ7Mq9HRymrC8Baw6TyaRHYng8tA8HQ2HPdQ6WSo2AAmS07oaXSRIgocr3dmPfjCWJHWX6XBGQ3WeF2dCY1yqiGOQBxVx4XRQgBCAFksABpLAARihGOrtY9qYp-AL9SHVfj2ZgS1ocT0Cve9WaAWcy5XdRMtCilMdp-Prhrtb6b93civdbCcAkaOZbh7UYR1nVdXc6kyH0oj9XkSSDftX2zCNYGPUduy6OMkLDW9vhkR1cJ+eDMwgz1+SbW5vxXetmUbBUbmoQRWxolkpk7SEMNjeEqn5AASNdyH4L9SNXYt1woxjmKZVjwQ4zkwG40tbn4sTBOE7C9wPI9HQBF9r3fbMDI9IzdAMvo+loExdD+VR-U0HQbFsGoa1EMoIFYep0HYEFeMEWgqh80lGB0dEeiUMBuhOIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+=======
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cWhYoiaBAKxwIYiSMxEGjg-HYoN6UHoIiSkOhYguwQ6n3qE3GZQI7C6AAVqFAyO8fmA7KxUHA6V07Iw4EF4LSwNsdko0Kgmip8uSIFVUroALwBTK4Vp8IQicEyxXCXGtKqkGBJIiCUh0GTnTVVXR6g20GRJVHS3R0USkMWm52y4JJcKkZgaOHMskml2ummwPQywnvf0u+FwDS2qPe0S+p0Bl3U+hwfyhsAAZXT0dIulRtHRIkQ4fFyed2NoMJVBZYRYxcCxUOruNSBLAbzAk1J5MIJAIrLAglQwRGQLk8vLFaqcfI-FtXRHY5ZeAjAZgwk0URDugAYgBBAAyWecU5nppMtDCSNth5PrmnyZ2FZfLsnEYIQTgEiIvS-yQ2jK9qOuugbumEnrqKQPrRkmFapNA8CLp2XznjOV7UOQjC2ph2GwX6T4VqitYkehF5VjWtqgtQghNpRbaZB2XY9nWjCiAAJHOSIfkRybcQuMo0XRzY4uc7adKhRLdiSbGcQJvEXlUm5YbQO62g4LhgVUb4Brppr6W+Ow7LQJi6OwKjYdB2hwDYtgVOWohFBArAHug7CChxgi0GUnkzIwOiMDsuxKGAuzjEAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cWhYoiaBAKxwIYiSMxEGjg-HYoN6UHoIiSkOhYguwQ6n3qE3GZQI7C6AAVqFAyO8fmA7KxUHA6V07Iw4EF4LSwNsdko0Kgmip8uSIFVUroALwBTK4Vp8IQicEyxXCXGtKqkGBJIiCUh0GTnTVVXR6g20GRJVHS3R0USkMWm52y4JJcKkZgaOHMskml2ummwPQywnvf0u+FwDS2qPe0S+p0Bl3U+hwfyhsAAZXT0dIulRtHRIkQ4fFyed2NoMJVBZYRYxcCxUOruNSBLAbzAk1J5MIJAIrLAglQwRGQLk8vLFaqcfI-FtXRHY5ZeAjAZgwk0URDugAYgBBAAyWecU5nppMtDCSNth5PrmnyZ2FZfLsnEYIQTgEiIvS-yQ2jK9qOuugbumEnrqKQPrRkmFapNA8CLp2XznjOV7UOQjC2ph2GwX6T4VqitYkehF5VjWtqgtQghNpRbaZB2XY9nWjCiAAJHOSIfkRybcQuMo0XRzY4uc7adKhRLdiSbGcQJvEXlUm5YbQO62g4LhgVUb4Brppr6W+Ow7LQJi6OwKjYdB2hwDYtgVOWohFBArAHug7CChxgi0GUnkzIwOiMDsuxKGAuzjEAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
+  }
+  \item{example-2}{
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3EpIe0VCV2HVQnldABeJURXCKvhCEREtXa4TfRX1UgwdJEQSkOgyebG+q6C1W2gyB4sVW6OiiUgKiD2v3qqDpGKkZj3USoOAEH3+-1ZL7u3nNJF4O0xqk00ju9ORzbhyPRmP+6jM6kJsCBak53SM5kiRDwzW+wt+klksTumssuBsttciI8hFJ-nVKO8gDirjwunhACEALJYADSWAAjPDcY3m37s7T+GWGhOG6nCzANrR4no1T8Gi1As5N1v6iZaNE6e7r7fXE3myMf8e5A+LbhHAEjYhy3Cuow7qet6x71FkQbRCGQqUhGo7foWcawJe06DgMKYYTGz4AjI7rEYCqH5nB-oih2TyAVurYcu2aqPNQgjdkxnILP2cJ4cmKLVCKAAkO7kPwAHUdula7nR7Gcey3EwnxfJgIJ1ZPKJMniZJhEnmeF7uqCX6Pr+hZmX6Fm6GZIwjLQJi6MCqihpoOg2LYtRNqI5QQKwDToOwkLCYItDVEFVKMDoOJDEoYCDFcQA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3EpIe0VCV2HVQnldABeJURXCKvhCEREtXa4TfRX1UgwdJEQSkOgyebG+q6C1W2gyB4sVW6OiiUgKiD2v3qqDpGKkZj3USoOAEH3+-1ZL7u3nNJF4O0xqk00ju9ORzbhyPRmP+6jM6kJsCBak53SM5kiRDwzW+wt+klksTumssuBsttciI8hFJ-nVKO8gDirjwunhACEALJYADSWAAjPDcY3m37s7T+GWGhOG6nCzANrR4no1T8Gi1As5N1v6iZaNE6e7r7fXE3myMf8e5A+LbhHAEjYhy3Cuow7qet6x71FkQbRCGQqUhGo7foWcawJe06DgMKYYTGz4AjI7rEYCqH5nB-oih2TyAVurYcu2aqPNQgjdkxnILP2cJ4cmKLVCKAAkO7kPwAHUdula7nR7Gcey3EwnxfJgIJ1ZPKJMniZJhEnmeF7uqCX6Pr+hZmX6Fm6GZIwjLQJi6MCqihpoOg2LYtRNqI5QQKwDToOwkLCYItDVEFVKMDoOJDEoYCDFcQA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+>>>>>>> main
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

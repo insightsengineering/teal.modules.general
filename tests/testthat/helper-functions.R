@@ -10,3 +10,17 @@ mock_data_extract_spec <- function(dataname = "MOCK_DATASET",
     )
   )
 }
+
+normalize_math_italic_text <- function(text) {
+  # Unicode range for mathematical italic (uppercase/lowercase)
+  math_italic <- intToUtf8(seq(0x1D434, 0x1D467)) # A-z
+
+  # Standard letters
+  latin <- c(LETTERS, letters)
+
+  # Replace math italic letters with standard ones
+  stringr::str_replace_all(
+    text,
+    setNames(latin, unlist(stringr::str_split(math_italic, "")))
+  )
+}

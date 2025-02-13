@@ -10,7 +10,9 @@ tm_front_page(
   tables = list(),
   additional_tags = tagList(),
   footnotes = character(0),
-  show_metadata = FALSE
+  show_metadata = deprecated(),
+  datanames = if (missing(show_metadata)) NULL else "all",
+  transformators = list()
 )
 }
 \arguments{
@@ -30,7 +32,21 @@ for example to include an image, \code{tagList(tags$img(src = "image.png"))} or 
 \item{footnotes}{(\code{character} vector) of text to be shown at the bottom of the module, for each
 element, if named the name is shown first in bold, followed by the value.}
 
-\item{show_metadata}{(\code{logical}) indicating whether the metadata of the datasets be available on the module.}
+\item{show_metadata}{(\code{logical}) \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} indicating
+whether the metadata of the datasets be available on the module.
+Metadata shown automatically when \code{datanames} set.}
+
+\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
+There are 2 reserved values that have specific behaviors:
+\itemize{
+\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
+\item \code{NULL} hides the sidebar panel completely.
+\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
+argument.
+}}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -43,7 +59,7 @@ introductory text, tables, additional \code{html} or \code{shiny} tags, and foot
 data <- teal_data()
 data <- within(data, {
   require(nestcolor)
-  ADSL <- rADSL
+  ADSL <- teal.data::rADSL
   attr(ADSL, "metadata") <- list("Author" = "NEST team", "data_source" = "synthetic data")
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
@@ -68,13 +84,12 @@ app <- init(
       ),
       tables = table_input,
       additional_tags = HTML("Additional HTML or shiny tags go here <br>"),
-      footnotes = c("X" = "is the first footnote", "Y is the second footnote"),
-      show_metadata = TRUE
+      footnotes = c("X" = "is the first footnote", "Y is the second footnote")
     )
-  ),
-  header = tags$h1("Sample Application"),
-  footer = tags$p("Application footer"),
-)
+  )
+) |>
+  modify_header(tags$h1("Sample Application")) |>
+  modify_footer(tags$p("Application footer"))
 
 if (interactive()) {
   shinyApp(app$ui, app$server)
@@ -84,8 +99,13 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
+<<<<<<< HEAD
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXUY4AEdBWiz2CDFSYmoiRkUIDIBBABEAZQAZH0y6pvTdT1JGdjbGlIUweC8kwdsIulFSdkHqwTjywd0AXl1BgDlnertdLhhBgbAk-1EiQUYCOCXVwdFWMli4TQJdUbBKgF9KgCsiFX8ANZwViiRJhcbGfhwExQYSkfwEfi0UQEfy-f5AkHAaDwUFJOQAXTcZCg9BE-gAjC0khgTMx4OwAJIQExEFa6AgzMDVA5rMAAITGKTscAAHqR2ZzZrzBoL3pUvGS4P4AEzUsK0+lwdgAAwAwkRqIIYFUKTrJVy9TKwLUhbp9YbjVUVebVpyAKwYd0pABsGB9chSDqNJt0AGZXRyuTy8Hy5XIFaTyWH1V5NbBtczWRbBq5Y4MAGJ2kXinNgADi1oAEmNKkpFeSVKh5i1JtMOoM7Em9BTrrtu5TcB2wF2lboVX2G8qVUOqnzRyJw5OB2GlHXoOgWioYjM50l2UlZxk+EIRKJ2SfhGJdxkMqQYP46SR4agoFIb7eMo8oFDGP5yKWbofp+GSDIyMCoOUXhkLoKisowMCeFYEB9mBEoEFAVQSGyjxZBgBwdCBfIAPJxDIsEsuUiGaCQqFgHqmG6Nhui4XA+FgIRt6Bpxd7dueqxTv4TbzEeIE-kiNHQAEXgSPxuhVnYACyjTRvwEnIdw8lKc05S6KI8QQKw-ayUxOEyHo+hMAAfEKPGmEQRCkBAjliGWAAadHIrsjymPkUz2Y5znkNaACasHnmRelwMQED8AFTkubZc6fvpRCRP4ww-mE7IOC4nGVBk3Fzt+v7sjJogACSxBSXL1LAqCLtU6B0BhklJRkrIuYwZVvpVqDRs1tCtch8UyEl660CYujsCo5DMJYOg2LYaRzvpKisE1-VoKgFV5Ck20VaIMg6BUSgfEoYAfASQA}{Open in Shinylive}
     \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXUY4AEdBWiz2CDFSYmoiRkUIDIBBABEAZQAZH0y6pvTdT1JGdjbGlIUweC8kwdsIulFSdkHqwTjywd0AXl1BgDlnertdLhhBgbAk-1EiQUYCOCXVwdFWMli4TQJdUbBKgF9KgCsiFX8ANZwViiRJhcbGfhwExQYSkfwEfi0UQEfy-f5AkHAaDwUFJOQAXTcZCg9BE-gAjC0khgTMx4OwAJIQExEFa6AgzMDVA5rMAAITGKTscAAHqR2ZzZrzBoL3pUvGS4P4AEzUsK0+lwdgAAwAwkRqIIYFUKTrJVy9TKwLUhbp9YbjVUVebVpyAKwYd0pABsGB9chSDqNJt0AGZXRyuTy8Hy5XIFaTyWH1V5NbBtczWRbBq5Y4MAGJ2kXinNgADi1oAEmNKkpFeSVKh5i1JtMOoM7Em9BTrrtu5TcB2wF2lboVX2G8qVUOqnzRyJw5OB2GlHXoOgWioYjM50l2UlZxk+EIRKJ2SfhGJdxkMqQYP46SR4agoFIb7eMo8oFDGP5yKWbofp+GSDIyMCoOUXhkLoKisowMCeFYEB9mBEoEFAVQSGyjxZBgBwdCBfIAPJxDIsEsuUiGaCQqFgHqmG6Nhui4XA+FgIRt6Bpxd7dueqxTv4TbzEeIE-kiNHQAEXgSPxuhVnYACyjTRvwEnIdw8lKc05S6KI8QQKw-ayUxOEyHo+hMAAfEKPGmEQRCkBAjliGWAAadHIrsjymPkUz2Y5znkNaACasHnmRelwMQED8AFTkubZc6fvpRCRP4ww-mE7IOC4nGVBk3Fzt+v7sjJogACSxBSXL1LAqCLtU6B0BhklJRkrIuYwZVvpVqDRs1tCtch8UyEl660CYujsCo5DMJYOg2LYaRzvpKisE1-VoKgFV5Ck20VaIMg6BUSgfEoYAfASQA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+=======
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXUY4AEdBWiz2CDFSYmoiRkUIDIBBABEAZQAZH10-DCTEREY6pvTdT1JGdh7GlIUweC8k8dsIulFSdnHqwTjy8d0AXl1xgDlnertWuFhxsbAk-1EiQUYCOA3t8dFWMli4TQJdabBKgF9KgArIgqfwAazgrFEiTCs2M-DgJigwlI-gI-FoogI-mBoIhUOA0Hg0KScgAum4yFB6CJ-ABGFpJDAmZjwdgASQgJiIW10BCWYGqZx2YAAQjMUnY4AAPUi8-nLYXjcW-SpeGlwfwAJkZYWZrLg7AABgBhIjUQQwKp0o3ygUmpVgWoS3Sm82Wqpa23bfkAVgwvpSADYMEG5Ck3RarboAMzevkCoV4EUquRq6m0mO6rz62CGzncu3jVzJ8YAMRdUtlRbAAHFHQAJGaVJTq2kqVCrFrzRZ9cZ2DN6OmPVqD+m4PtgAca3RakdtzVaidVEXTkSx+djmNKFvQdAtFQxJYrpK8pLLjJ8IQiUS8q-CMTHjIZUgwfwskio1BQKRP58Zd4oARRh-HIasfT-f8MnGdkYFQcovDIXQVG5RgYE8KwIBHGC5QIKAqgkHl3iyDAzj6KCRQAeTiGRkK5cp0M0EhsLAE18N0QjdGIuBSLAcjn3DfiX0HW9tgXfwO1WC8oKAjEmOgAIvAkUTdAbOwAFlGkTfg5Mw7hVI05pyl0UR4ggVhR2UjiiJkPR9CYAA+CUhNMIgiFICB3LEGsAA0WMxVp3lMfIFlc9zPPIR0AE1kNvGiTLgYgIH4MKPK8mZ+MqDJKlsAAfJyVyvWgTFYfxAOAzgf1EAASWI6QFepYFQddqnQOg8Pk5tdHyvoipK983PIIYlJq1BEza2gOsw1KZGbSlit0dgVCG9RNB0GxbDSFdTJUVhWrGtBUGqvIUkO6rRBkHQKiUP4lDAP4ySAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXUY4AEdBWiz2CDFSYmoiRkUIDIBBABEAZQAZH10-DCTEREY6pvTdT1JGdh7GlIUweC8k8dsIulFSdnHqwTjy8d0AXl1xgDlnertWuFhxsbAk-1EiQUYCOA3t8dFWMli4TQJdabBKgF9KgArIgqfwAazgrFEiTCs2M-DgJigwlI-gI-FoogI-mBoIhUOA0Hg0KScgAum4yFB6CJ-ABGFpJDAmZjwdgASQgJiIW10BCWYGqZx2YAAQjMUnY4AAPUi8-nLYXjcW-SpeGlwfwAJkZYWZrLg7AABgBhIjUQQwKp0o3ygUmpVgWoS3Sm82Wqpa23bfkAVgwvpSADYMEG5Ck3RarboAMzevkCoV4EUquRq6m0mO6rz62CGzncu3jVzJ8YAMRdUtlRbAAHFHQAJGaVJTq2kqVCrFrzRZ9cZ2DN6OmPVqD+m4PtgAca3RakdtzVaidVEXTkSx+djmNKFvQdAtFQxJYrpK8pLLjJ8IQiUS8q-CMTHjIZUgwfwskio1BQKRP58Zd4oARRh-HIasfT-f8MnGdkYFQcovDIXQVG5RgYE8KwIBHGC5QIKAqgkHl3iyDAzj6KCRQAeTiGRkK5cp0M0EhsLAE18N0QjdGIuBSLAcjn3DfiX0HW9tgXfwO1WC8oKAjEmOgAIvAkUTdAbOwAFlGkTfg5Mw7hVI05pyl0UR4ggVhR2UjiiJkPR9CYAA+CUhNMIgiFICB3LEGsAA0WMxVp3lMfIFlc9zPPIR0AE1kNvGiTLgYgIH4MKPK8mZ+MqDJKlsAAfJyVyvWgTFYfxAOAzgf1EAASWI6QFepYFQddqnQOg8Pk5tdHyvoipK983PIIYlJq1BEza2gOsw1KZGbSlit0dgVCG9RNB0GxbDSFdTJUVhWrGtBUGqvIUkO6rRBkHQKiUP4lDAP4ySAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+>>>>>>> main
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

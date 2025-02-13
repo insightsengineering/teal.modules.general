@@ -16,10 +16,8 @@
 #' Names of list elements should correspond to the names of the datasets available in the app.
 #' If no entry is specified for a dataset, the first six variables from that
 #' dataset will initially be shown.
-#' @param datasets_selected (`character`) A vector of datasets which should be
-#' shown and in what order. Names in the vector have to correspond with datasets names.
-#' If vector of `length == 0` (default) then all datasets are shown.
-#' Note: Only datasets of the `data.frame` class are compatible.
+#' @param datasets_selected (`character`) `r lifecycle::badge("deprecated")` A vector of datasets which should be
+#' shown and in what order. Use `datanames` instead.
 #' @param dt_args (`named list`) Additional arguments to be passed to [DT::datatable()]
 #' (must not include `data` or `options`).
 #' @param dt_options (`named list`) The `options` argument to `DT::datatable`. By default
@@ -65,7 +63,7 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   require(nestcolor)
-#'   ADSL <- rADSL
+#'   ADSL <- teal.data::rADSL
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
@@ -86,7 +84,8 @@
 #'
 tm_data_table <- function(label = "Data Table",
                           variables_selected = list(),
-                          datasets_selected = character(0),
+                          datasets_selected = deprecated(),
+                          datanames = if (missing(datasets_selected)) "all" else datasets_selected,
                           dt_args = list(),
                           dt_options = list(
                             searching = FALSE,
@@ -96,7 +95,8 @@ tm_data_table <- function(label = "Data Table",
                           ),
                           server_rendering = FALSE,
                           pre_output = NULL,
-                          post_output = NULL) {
+                          post_output = NULL,
+                          transformators = list()) {
   message("Initializing tm_data_table")
 
   # Start of assertions
@@ -111,8 +111,15 @@ tm_data_table <- function(label = "Data Table",
       }
     })
   }
-
-  checkmate::assert_character(datasets_selected, min.len = 0, min.chars = 1)
+  if (!missing(datasets_selected)) {
+    lifecycle::deprecate_soft(
+      when = "0.4.0",
+      what = "tm_data_table(datasets_selected)",
+      with = "tm_data_table(datanames)",
+      details = 'Use tm_data_table(datanames = "all") to keep the previous behavior and avoid this warning.',
+    )
+  }
+  checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert(
     checkmate::check_list(dt_args, len = 0),
     checkmate::check_subset(names(dt_args), choices = names(formals(DT::datatable)))
@@ -121,16 +128,17 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_flag(server_rendering)
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+
   # End of assertions
 
   ans <- module(
     label,
-    server = srv_data_table,
-    ui = ui_data_table,
-    datanames = if (length(datasets_selected) == 0) "all" else datasets_selected,
+    server = srv_page_data_table,
+    ui = ui_page_data_table,
+    datanames = datanames,
     server_args = list(
+      datanames = if (is.null(datanames)) "all" else datanames,
       variables_selected = variables_selected,
-      datasets_selected = datasets_selected,
       dt_args = dt_args,
       dt_options = dt_options,
       server_rendering = server_rendering
@@ -138,16 +146,15 @@ tm_data_table <- function(label = "Data Table",
     ui_args = list(
       pre_output = pre_output,
       post_output = post_output
-    )
+    ),
+    transformators = transformators
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
 
 # UI page module
-ui_data_table <- function(id,
-                               pre_output = NULL,
-                               post_output = NULL) {
+ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
 
   tagList(
@@ -181,8 +188,8 @@ ui_data_table <- function(id,
 # Server page module
 srv_data_table <- function(id,
                                 data,
+                                datanames,
                                 variables_selected = list(),
-                                datasets_selected = character(0),
                                 dt_args = list(),
                                 dt_options = list(
                                   searching = FALSE,
@@ -199,32 +206,13 @@ srv_data_table <- function(id,
 
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
-    
-    datanames <- reactive({
-      df_datanames <- Filter(
-        function(name) is.data.frame(isolate(data())[[name]]), 
-        names(data())
-      )
-      if (!identical(datasets_selected, character(0))) {
-        missing_datanames <- setdiff(datasets_selected, df_datanames)
-        if (length(missing_datanames)) {
-          shiny::showNotification(
-            sprintf(
-              "Some datasets specified `datasets_selected` are missing or are not inheriting from data.frame, those are: %s",
-              toString(missing_datanames)
-            )
-          )
-        }
-        df_datanames <- intersect(datasets_selected, df_datanames)
-      }
-      
-      df_datanames
-    })
-    
-    
-    
-    output$data_tables <- renderUI({
-      req(datanames())
+
+    datanames <- Filter(function(name) {
+      is.data.frame(isolate(data())[[name]])
+    }, if (identical(datanames, "all")) names(isolate(data())) else datanames)
+
+
+    output$dataset_table <- renderUI({
       do.call(
         tabsetPanel,
         c(
@@ -295,9 +283,7 @@ srv_data_table <- function(id,
 }
 
 # UI function for the data_table module
-ui_dataset_table <- function(id,
-                          choices,
-                          selected) {
+ui_data_table <- function(id, choices, selected) {
   ns <- NS(id)
 
   if (!is.null(selected)) {
@@ -343,27 +329,44 @@ srv_dataset_table <- function(id,
     ))
     iv$enable()
 
-    output$data_table <- DT::renderDataTable(server = server_rendering, {
-      teal::validate_inputs(iv)
-
+    data_table_data <- reactive({
       df <- data()[[dataname]]
-      variables <- input$variables
 
       teal::validate_has_data(df, min_nrow = 1L, msg = paste("data", dataname, "is empty"))
 
-      dataframe_selected <- if (if_distinct()) {
-        dplyr::count(df, dplyr::across(dplyr::all_of(variables)))
-      } else {
-        df[variables]
-      }
+      teal.code::eval_code(
+        data(),
+        substitute(
+          expr = {
+            variables <- vars
+            dataframe_selected <- if (if_distinct) {
+              dplyr::count(dataname, dplyr::across(dplyr::all_of(variables)))
+            } else {
+              dataname[variables]
+            }
+            dt_args <- args
+            dt_args$options <- dt_options
+            if (!is.null(dt_rows)) {
+              dt_args$options$pageLength <- dt_rows
+            }
+            dt_args$data <- dataframe_selected
+            table <- do.call(DT::datatable, dt_args)
+          },
+          env = list(
+            dataname = as.name(dataname),
+            if_distinct = if_distinct(),
+            vars = input$variables,
+            args = dt_args,
+            dt_options = dt_options,
+            dt_rows = input$dt_rows
+          )
+        )
+      )
+    })
 
-      dt_args$options <- dt_options
-      if (!is.null(input$dt_rows)) {
-        dt_args$options$pageLength <- input$dt_rows
-      }
-      dt_args$data <- dataframe_selected
-
-      do.call(DT::datatable, dt_args)
+    output$data_table <- DT::renderDataTable(server = server_rendering, {
+      teal::validate_inputs(iv)
+      req(data_table_data())[["table"]]
     })
 
     observeEvent(input$data_table_rows_selected, ignoreNULL = FALSE, {

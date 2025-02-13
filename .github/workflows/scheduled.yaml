@@ -3,7 +3,7 @@ name: Scheduled 🕰️
 
 on:
   schedule:
-    - cron: '45 3 * * 0'
+    - cron: "45 3 * * 0"
   workflow_dispatch:
     inputs:
       chosen-workflow:
@@ -38,6 +38,8 @@ jobs:
       strategy: ${{ matrix.test-strategy }}
       additional-env-vars: |
         PKG_SYSREQS_DRY_RUN=true
+      extra-deps: |
+        matrixStats (>= 1.5.0)
   branch-cleanup:
     if: >
       github.event_name == 'schedule' || (
@@ -56,19 +58,6 @@ jobs:
       )
     name: revdepcheck ↩️
     uses: insightsengineering/r.pkg.template/.github/workflows/revdepcheck.yaml@main
-    with:
-      lookup-refs: |
-        insightsengineering/roxy.shinylive
-        insightsengineering/teal
-        insightsengineering/teal.transform
-        insightsengineering/teal.code
-        insightsengineering/teal.data
-        insightsengineering/teal.slice
-        insightsengineering/teal.logger
-        insightsengineering/teal.reporter
-        insightsengineering/teal.widgets
-        insightsengineering/tern
-        insightsengineering/rtables
   rhub:
     if: >
       github.event_name == 'schedule' || (
@@ -77,16 +66,3 @@ jobs:
       )
     name: R-hub 🌐
     uses: insightsengineering/r.pkg.template/.github/workflows/rhub.yaml@main
-    with:
-      lookup-refs: |
-        insightsengineering/roxy.shinylive
-        insightsengineering/teal
-        insightsengineering/teal.transform
-        insightsengineering/teal.code
-        insightsengineering/teal.data
-        insightsengineering/teal.slice
-        insightsengineering/teal.logger
-        insightsengineering/teal.reporter
-        insightsengineering/teal.widgets
-        insightsengineering/tern
-        insightsengineering/rtables
