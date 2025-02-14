@@ -1,6 +1,5 @@
-
-tm_p_spiderplot <- function(label = "Spiderplot", 
-                            time_var, 
+tm_p_spiderplot <- function(label = "Spiderplot",
+                            time_var,
                             subject_var,
                             value_var,
                             plot_height = 600) {
@@ -70,12 +69,12 @@ ui_p_spiderplot <- function(id, height) {
   )
 }
 
-srv_p_spiderplot <- function(id, 
-                             data, 
+srv_p_spiderplot <- function(id,
+                             data,
                              time_var,
                              subject_var,
                              value_var,
-                             filter_panel_api, 
+                             filter_panel_api,
                              plot_height = 600) {
   moduleServer(id, function(input, output, session) {
     spiderplot_ds <- reactive(data()[["spiderplot_ds"]])
@@ -98,7 +97,7 @@ srv_p_spiderplot <- function(id,
             y_title <- selected_event
             spiderplot_ds_filtered <- spiderplot_ds |>
               filter(event_type == selected_event)
-            
+
             p <- plotly::plot_ly(source = "spiderplot", height = height) |>
               plotly::add_markers(
                 x = ~time_var, y = ~value_var, color = ~subject_var,
@@ -119,76 +118,40 @@ srv_p_spiderplot <- function(id,
           }
         )
     })
-    
+
     output$plot <- plotly::renderPlotly({
       plotly::event_register(
         plotly_q()$p,
         "plotly_selected"
       )
     })
-    
+
     plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "spiderplot"))
-    
-    
-    resp_cols <- .with_tooltips(
-      subject = colDef(name = "Subject"),
-      raise_query = colDef(
-        name = "Raise Query",
-        cell = function(value) {
-          if (!is.na(value) && !is.null(value) && value != "") {
-            htmltools::tags$a(href = value, target = "_blank", "Link")
-          } else {
-            "N/A"
-          }
-        }
-      ),
-      visit_name = colDef(name = "Visit Name"),
-      rspdn = colDef(name = "Assessment Performed"),
-      rspd = colDef(name = "Response Date"),
-      rspd_study_day = colDef(name = "Response Date Study Day"),
-      orsp = colDef(name = "Response"),
-      bma = colDef(name = "Best Marrow Aspirate"),
-      bmb = colDef(name = "Best Marrow Biopsy"),
-      comnts = colDef(name = "Comments")
+
+
+    resp_cols <- c(
+      subject, raise_query, visit_name, rspdn, rspd, rspd_study_day,
+      orsp, bma, bmb, comnts
     )
-    
-    selected_recent_subject <- reactiveVal(NULL)
-    
-    data_w_brushed <- reactive({
-      req(plotly_selected())
-      within(
-        data(), 
-        time_var = str2lang(time_var),
-        subject_var = str2lang(subject_var),
-        value_var = str2lang(value_var),
-        expr = {
-        selected_subjects <- spiderplot_ds |>
-          filter(time_var %in% plotly_selected()$x, value_var %in% plotly_selected()$y) |>
-          pull(subject_var)
-        }
-      )
 
-    })
-    
     plotly_selected_subjects <- reactive({
-      req(data_w_brushed())
-      within(
-        data_w_brushed(), {
-          spiderplot_ds <- spiderplot_ds |>
-          filter(event_type == "latest_response_assessment") |>
-            filter(subject %in% selected_subjects) |>
-            select(all_of(names(resp_cols)))          
-        }
-      )
-
+      data()[["spiderplot_ds"]] |>
+        filter(event_study_day %in% plotly_selected()$x, event_result %in% plotly_selected()$y) |>
+        pull(subject)
     })
-    
+
+    recent_resp_ds <- reactive({
+      data()[["spiderplot_ds"]] |>
+        filter(event_type == "latest_response_assessment") |>
+        filter(subject %in% plotly_selected_subjects()) |>
+        select(all_of(resp_cols))
+    })
+
     output$recent_resp <- renderReactable({
       req(plotly_selected_subjects())
-      
       reactable(
         recent_resp_ds(),
-        columns = resp_cols,
+        # columns = resp_cols,
         selection = "single",
         onClick = "select",
         defaultPageSize = 15,
@@ -203,128 +166,69 @@ srv_p_spiderplot <- function(id,
           ")
       )
     })
-    
+
     table_selected_subjects <- reactive({
       selected_row <- getReactableState("recent_resp", "selected")
       if (!is.null(selected_row)) {
-        recent_resp_ds()[selected_row, ][[subject_var]]
+        recent_resp_ds()[selected_row, ]$subject
       } else {
-        unique(recent_resp_ds()[[subject_var]])
+        unique(recent_resp_ds()$subject)
       }
     })
-    
+
     all_resp <- reactive({
       data()[["spiderplot_ds"]] |>
         filter(event_type == "response_assessment") |>
-        select(all_of(names(resp_cols))) |>
+        select(all_of(resp_cols)) |>
         filter(subject %in% plotly_selected_subjects()) |>
         filter(subject %in% table_selected_subjects())
     })
-    
+
     output$all_resp <- renderReactable({
       if (nrow(all_resp()) == 0) {
         return()
       }
-      
+
       reactable(
         all_resp(),
-        columns = resp_cols,
+        # columns = resp_cols,
         defaultPageSize = 15,
         wrap = FALSE
       )
     })
-    
-    spep_cols <- .with_tooltips(
-      subject = colDef(name = "Subject"),
-      visit_name = colDef(name = "Visit Name"),
-      visit_date = colDef(name = "Visit Date"),
-      form_name = colDef(name = "Form Name"),
-      source_system_url_link = colDef(
-        name = "Source System URL Link",
-        cell = function(value) {
-          if (!is.na(value) && !is.null(value) && value != "") {
-            htmltools::tags$a(href = value, target = "_blank", "Link")
-          } else {
-            "N/A"
-          }
-        }
-      ),
-      rspdn = colDef(name = "Assessment Performed"),
-      rspd = colDef(name = "Response Date"),
-      rspd_study_day = colDef(name = "Response Date Study Day"),
-      orsp = colDef(name = "Response"),
-      bma = colDef(name = "Best Marrow Aspirate"),
-      bmb = colDef(name = "Best Marrow Biopsy"),
-      comnts = colDef(name = "Comments"),
-      asmntdn = colDef(name = "Assessment Not Done"),
-      blq = colDef(name = "Serum M-protein too small to quantify"),
-      coldr = colDef(name = "Collection Date"),
-      cold_study_day = colDef(name = "Collection Study Day"),
-      coltm = colDef(name = "Collection Time"),
-      coltmu = colDef(name = "Collection Time Unknown"),
-      lrspep1 = colDef(name = "Another Form added?"),
-      mprte_raw = colDef(name = "Serum M-protein"),
-      mprtec = colDef(name = "SPEP Serum M-protein detection")
+
+    spep_cols <- with_tooltips(
+      subject, visit_name, visit_date, form_name, source_system_url_link, rspdn, rspd, rspd_study_day, orsp, bma,
+      bmb, comnts, asmntdn, blq, coldr, cold_study_day, coltm, coltmu, lrspep1, mprte_raw, mprtec
     )
-    
+
     spep <- reactive({
       data()[["spiderplot_ds"]] |>
         filter(event_type == "Serum M-protein") |>
         filter(subject %in% table_selected_subjects()) |>
-        select(all_of(names(spep_cols)))
+        select(all_of(spep_cols))
     })
-    
+
     output$spep_listing <- renderReactable({
       if (nrow(spep()) == 0) {
         return()
       }
-      
+
       reactable(
         spep(),
-        columns = spep_cols,
+        # columns = spep_cols,
         defaultPageSize = 5,
         wrap = FALSE
       )
     })
-    
-    
-    sflc_cols <- .with_tooltips(
-      subject = colDef(name = "Subject"),
-      visit_name = colDef(name = "Visit Name"),
-      visit_date = colDef(name = "Visit Date"),
-      form_name = colDef(name = "Form Name"),
-      source_system_url_link = colDef(
-        name = "Source System URL Link",
-        cell = function(value) {
-          if (!is.na(value) && !is.null(value) && value != "") {
-            htmltools::tags$a(href = value, target = "_blank", "Link")
-          } else {
-            "N/A"
-          }
-        }
-      ),
-      rspdn = colDef(name = "Assessment Performed"),
-      rspd = colDef(name = "Response Date"),
-      rspd_study_day = colDef(name = "Response Date Study Day"),
-      orsp = colDef(name = "Response"),
-      bma = colDef(name = "Best Marrow Aspirate"),
-      bmb = colDef(name = "Best Marrow Biopsy"),
-      comnts = colDef(name = "Comments"),
-      asmntdn = colDef(name = "Assessment Not Done"),
-      blq = colDef(name = "Serum M-protein too small to quantify"),
-      coldr = colDef(name = "Collection Date"),
-      cold_study_day = colDef(name = "Collection Study Day"),
-      coltm = colDef(name = "Collection Time"),
-      coltmu = colDef(name = "Collection Time Unknown"),
-      lchfrc = colDef(name = "Presence of Serum free light chains"),
-      lchfr_raw = colDef(name = "Serum free light chain results"),
-      klchf_raw = colDef(name = "Kappa free light chain results"),
-      llchf_raw = colDef(name = "Lambda free light chain results"),
-      klchp_raw = colDef(name = "Kappa-Lambda free light chain ratio"),
-      mprte_raw = colDef(name = "Serum M-protein"),
-      mprtec = colDef(name = "SPEP Serum M-protein detection")
+
+
+    sflc_cols <- with_tooltips(
+      subject, visit_name, visit_date, form_name, source_system_url_link, rspdn, rspd, rspd_study_day, orsp, bma,
+      bmb, comnts, asmntdn, blq, coldr, cold_study_day, coltm, coltmu, lchfrc, lchfr_raw, klchf_raw, llchf_raw,
+      klchp_raw, mprte_raw, mprtec
     )
-    
+
     sflc <- reactive({
       data()[["spiderplot_ds"]] |>
         filter(
@@ -335,17 +239,17 @@ srv_p_spiderplot <- function(id,
           )
         ) |>
         filter(subject %in% table_selected_subjects()) |>
-        select(all_of(names(sflc_cols)))
+        select(all_of(sflc_cols))
     })
-    
+
     output$sflc_listing <- renderReactable({
       if (nrow(sflc()) == 0) {
         return()
       }
-      
+
       reactable(
         sflc(),
-        columns = sflc_cols,
+        # columns = sflc_cols,
         defaultPageSize = 5,
         wrap = FALSE
       )
