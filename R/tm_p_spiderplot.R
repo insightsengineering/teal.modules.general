@@ -130,8 +130,8 @@ srv_p_spiderplot <- function(id,
 
 
     resp_cols <- c(
-      subject, raise_query, visit_name, rspdn, rspd, rspd_study_day,
-      orsp, bma, bmb, comnts
+      "subject", "raise_query", "visit_name", "rspdn", "rspd", "rspd_study_day",
+      "orsp", "bma", "bmb", "comnts"
     )
 
     plotly_selected_subjects <- reactive({
@@ -197,9 +197,11 @@ srv_p_spiderplot <- function(id,
       )
     })
 
-    spep_cols <- with_tooltips(
-      subject, visit_name, visit_date, form_name, source_system_url_link, rspdn, rspd, rspd_study_day, orsp, bma,
-      bmb, comnts, asmntdn, blq, coldr, cold_study_day, coltm, coltmu, lrspep1, mprte_raw, mprtec
+    spep_cols <- c(
+      "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", 
+      "rspdn", "rspd", "rspd_study_day", "orsp", "bma", "bmb", "comnts", 
+      "asmntdn", "blq", "coldr", "cold_study_day", "coltm", "coltmu", "lrspep1", 
+      "mprte_raw", "mprtec"
     )
 
     spep <- reactive({
@@ -223,10 +225,11 @@ srv_p_spiderplot <- function(id,
     })
 
 
-    sflc_cols <- with_tooltips(
-      subject, visit_name, visit_date, form_name, source_system_url_link, rspdn, rspd, rspd_study_day, orsp, bma,
-      bmb, comnts, asmntdn, blq, coldr, cold_study_day, coltm, coltmu, lchfrc, lchfr_raw, klchf_raw, llchf_raw,
-      klchp_raw, mprte_raw, mprtec
+    sflc_cols <- c(
+      "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", "rspdn", "rspd", 
+      "rspd_study_day", "orsp", "bma", "bmb", "comnts", "asmntdn", "blq", "coldr", "cold_study_day", 
+      "coltm", "coltmu", "lchfrc", "lchfr_raw", "klchf_raw", "llchf_raw",
+      "klchp_raw", "mprte_raw", "mprtec"
     )
 
     sflc <- reactive({
