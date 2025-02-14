@@ -19,36 +19,155 @@ library(teal.data)
 ## Introduction
 
 The outputs produced by `teal` modules, like graphs or tables, are created by the module developer and look a certain way.
-It is impossible to design an output that will satisfy every possible user, so the form of the output should be considered a default value that can be customized.
-Here we describe the concept of _decoration_, enabling you to tailor outputs to your specific requirements without rewriting the original module code.
+It is hard to design an output that will satisfy every possible user, so the form of the output should be considered a default value that can be customized.
+Here we describe the concept of _decoration_, enabling the app developer to tailor outputs to their specific requirements without rewriting the original module code.
 
-The decoration process is build upon transformation procedures, introduced in `teal`. While transformators are meant to edit module's input, decorators are meant to adjust the module's output. To distinguish the difference, modules in 
-`teal.modules.general` have 2 separate parameters: `transformators` and `decorators`. 
+The decoration process is build upon transformation procedures, introduced in `teal`.
+While transformators are meant to edit module's input, decorators are meant to adjust the module's output.
+To distinguish the difference, modules in  `teal.modules.general` have 2 separate parameters:
+`transformators` and `decorators`. 
 
-To get a fuller understanding, read more about:
+To get a complete understanding refer the following vignettes:
 
-- changing the input data
-[in this vignette](https://insightsengineering.github.io/teal/latest-tag/articles/transform-input-data.html),
-- the concept of changing module output in [this vignette](https://insightsengineering.github.io/teal/latest-tag/articles/transform-input-data.html).
+- Transforming the input data in
+[this vignette](https://insightsengineering.github.io/teal/latest-tag/articles/transform-input-data.html),
+- Transforming module output in [this vignette](https://insightsengineering.github.io/teal/latest-tag/articles/transform-module-output.html).
 
 ## Decorators
 
 Decorators are created with `teal_transform_module` and thus they are `shiny` modules.
 In `teal.modules.general`, they are passed to `teal` modules through `decorators` argument (see below).
 Their server logic will be used to modify objects such as plots or tables that exist in the server function of a module.
-An `ui` function can provide interactivity but that is optional. An app developer is free to use decorator modules that do not require user input.
+A `ui` function can provide interactivity but that is optional. An app developer is free to use decorator modules that do not require user input.
 
-### Requirements and Limitations
+## Decorating a Module
 
-Using decorators requires the following:
+In order to decorate/modify the output from a module from `teal.modules.general` you need to refer to the
+"Decorating Module" section of the function documentation that tells about the objects that can be decorated.
 
-1. **Matching Object Names**:<br>
-Decorators will reference variables that exist in the `teal` module server function and therefore must use the appropriate variable names. The relevant object names available in each module are included in modules' documentations.
-2. **Maintaining Object Classes**:<br>
-A decorator must not alter the class of the object that it modifies.
-This is because a different class may require a different rendering function and that is part of the module structure, which beyond the control of decorators.
+In this vignette we will decorate the outputs from the `tm_g_distribution` module.
+The [function definition](../reference/tm_g_distribution.html#decorating-module) shows us that there are four output objects that can be decorated:
+`histogram_plot` (`ggplot2`), `qq_plot` (`ggplot2`), `summary_table` (`listing_df`) and `test_table` (`listing_df`).
 
-## Building Decorators
+### Static Decoration
+Here we create a simple decorator that does not provide user.
+We will use this to change the title to a static title that we want.
+
+
+```{r static_decorator}
+static_decorator <- teal_transform_module(
+  label = "Static decorator",
+  server = function(id, data) {
+    moduleServer(id, function(input, output, session) {
+      reactive({
+        req(data())
+        within(data(), {
+          histogram_plot <- histogram_plot +
+            ggtitle("This is a better title")
+        })
+      })
+    })
+  }
+)
+
+default_decorator <- teal_transform_module(
+  label = "Static decorator",
+  ui = function(id) {
+    tags$div(
+      textInput(NS(id, "title"), "Title", value = "This is a better title")
+    )
+  },
+  server = function(id, data) {
+    moduleServer(id, function(input, output, session) {
+      reactive({
+        req(data())
+        within(data(),
+          {
+            if (exists("elbow_plot")) {
+              elbow_plot <- elbow_plot +
+                ggtitle(title)
+            }
+            # if (exists("circle_plot")) {
+            #   circle_plot <- circle_plot +
+            #     ggtitle(title)
+            # }
+            # if (exists("biplot")) {
+            #   biplot <- biplot +
+            #     ggtitle(title)
+            # }
+            # if (exists("eigenvector_plot")) {
+            #   eigenvector_plot <- eigenvector_plot +
+            #     ggtitle(title)
+            # }
+          },
+          title = input$title
+        )
+      })
+    })
+  }
+)
+
+library(teal.modules.general)
+data <- teal_data()
+data <- within(data, {
+  require(nestcolor)
+  USArrests <- USArrests
+})
+devtools::load_all()
+app <- init(
+  data = data,
+  modules = modules(
+    tm_a_pca(
+      "PCA",
+      dat = data_extract_spec(
+        dataname = "USArrests",
+        select = select_spec(
+          choices = variable_choices(
+            data = data[["USArrests"]], c("Murder", "Assault", "UrbanPop", "Rape")
+          ),
+          selected = c("Murder", "Assault"),
+          multiple = TRUE
+        ),
+        filter = NULL
+      ),
+      decorators = list(default_decorator)
+    )
+  )
+)
+#> Initializing tm_a_pca
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+```
+
+
+```{r}
+library(teal.modules.general)
+data <- teal_data()
+data <- within(data, {
+  iris <- iris
+})
+
+app <- init(
+  data = data,
+  modules = list(
+    tm_g_distribution(
+      dist_var = data_extract_spec(
+        dataname = "iris",
+        select = select_spec(variable_choices("iris"), "Petal.Length")
+      ),
+      decorators = list(default_decorator)
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+```
+
+### Dynamic Decoration
+
+### Reusable Variable Decoration
 
 ### Server
 
