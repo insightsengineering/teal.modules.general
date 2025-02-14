@@ -29,6 +29,19 @@
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`grob` created with [ggplot2::ggplotGrob()])
 #'
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
+#' See code snippet below:
+#'
+#' ```
+#' tm_g_association(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      plot = teal_transform_module(...) # applied to the `plot` output
+#'    )
+#' )
+#' ```
+#'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
@@ -176,7 +189,6 @@ tm_g_association <- function(label = "Association",
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, "plot")
   # End of assertions
 

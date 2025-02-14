@@ -59,7 +59,7 @@ with text placed before the output to put the output into context. For example a
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
 \item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
-To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
@@ -90,9 +90,8 @@ This module generates the following objects, which can be modified in place usin
 \item \code{table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
 }
 
-Decorators can be applied to all outputs or only to specific objects using a
-named list of \code{teal_transform_module} objects.
-The \code{"default"} name is reserved for decorators that are applied to all outputs.
+A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
+The name of this list corresponds to the name of the output to which the decorator is applied.
 See code snippet below:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_missing_data(

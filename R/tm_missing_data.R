@@ -25,9 +25,8 @@
 #' - `by_subject_plot` (`ggplot2`)
 #' - `table` (`listing_df` created with [rlistings::as_listing()])
 #'
-#' Decorators can be applied to all outputs or only to specific objects using a
-#' named list of `teal_transform_module` objects.
-#' The `"default"` name is reserved for decorators that are applied to all outputs.
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
 #' See code snippet below:
 #'
 #' ```
@@ -148,7 +147,6 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   available_decorators <- c("summary_plot", "combination_plot", "by_subject_plot", "summary_table")
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, names = available_decorators)
   # End of assertions
 
