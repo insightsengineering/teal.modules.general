@@ -51,12 +51,12 @@ ui_p_spiderplot <- function(id, height) {
         div(
           class = "simple-card",
           h4("Disease Assessment - SFLC"),
-          reactable::reactableOutput(ns("sflc_listing"))
+          ui_t_reactable(ns("sflc_listing"))
         ),
         div(
           class = "simple-card",
           h4("Disease Assessment - SPEP"),
-          reactable::reactableOutput(ns("spep_listing"))
+          ui_t_reactable(ns("spep_listing"))
         )
       ),
       div(
@@ -132,6 +132,18 @@ srv_p_spiderplot <- function(id,
       "subject", "raise_query", "visit_name", "rspdn", "rspd", "rspd_study_day",
       "orsp", "bma", "bmb", "comnts"
     )
+    spep_cols <- c(
+      "subject", "visit_name", "visit_date", "form_name", "source_system_url_link",
+      "rspdn", "rspd", "rspd_study_day", "orsp", "bma", "bmb", "comnts",
+      "asmntdn", "blq", "coldr", "cold_study_day", "coltm", "coltmu", "lrspep1",
+      "mprte_raw", "mprtec"
+    )
+    sflc_cols <- c(
+      "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", "rspdn", "rspd",
+      "rspd_study_day", "orsp", "bma", "bmb", "comnts", "asmntdn", "blq", "coldr", "cold_study_day",
+      "coltm", "coltmu", "lchfrc", "lchfr_raw", "klchf_raw", "llchf_raw",
+      "klchp_raw", "mprte_raw", "mprtec"
+    )
 
     plotly_selected_q <- reactive({
       req(plotly_selected())
@@ -169,8 +181,11 @@ srv_p_spiderplot <- function(id,
       )
     })
     
-    recent_resp_selected_q <- srv_t_reactable("recent_resp", data = recent_resp_q, dataname = "recent_resp")
-    # 
+    recent_resp_selected_q <- srv_t_reactable(
+      "recent_resp", data = recent_resp_q, dataname = "recent_resp", selection = "single"
+    )
+  
+
     all_resp_q <- reactive({
       req(nrow(recent_resp_selected_q()[["recent_resp_selected"]]))
       within(
@@ -178,81 +193,62 @@ srv_p_spiderplot <- function(id,
         dataname = str2lang(dataname),
         subject_var = str2lang(subject_var),
         subject_var_char = subject_var,
+        resp_cols = resp_cols,
         expr = {
-          all_resp <- filter(
+          all_resp <- dplyr::filter(
             dataname, 
             event_type == "response_assessment",
-            subject_var == recent_resp_selected[[subject_var_char]]
-          )
+            subject_var %in% unique(recent_resp_selected[[subject_var_char]])
+          ) |>
+            select(all_of(resp_cols))
+        }
+      )
+    })
+    spep_q <- reactive({
+      req(nrow(recent_resp_selected_q()[["recent_resp_selected"]]))
+      within(
+        recent_resp_selected_q(),
+        dataname = str2lang(dataname),
+        subject_var = str2lang(subject_var),
+        subject_var_char = subject_var,
+        spep_cols = spep_cols,
+        expr = {
+          spep <- dplyr::filter(
+            dataname,
+            event_type == "Serum M-protein",
+            subject_var %in% unique(recent_resp_selected[[subject_var_char]])
+          ) |>
+            select(all_of(spep_cols))
+        }
+      )
+    })
+    sflc_q <- reactive({
+      req(nrow(recent_resp_selected_q()[["recent_resp_selected"]]))
+      within(
+        recent_resp_selected_q(),
+        dataname = str2lang(dataname),
+        subject_var = str2lang(subject_var),
+        subject_var_char = subject_var,
+        sflc_cols = sflc_cols,
+        expr = {
+          sflc <- dplyr::filter(
+            dataname,
+            event_type %in% c(
+              "Kappa free light chain quantity",
+              "Lambda free light chain quantity",
+              "Kappa-Lambda free light chain ratio"
+            ),
+            subject_var %in% unique(recent_resp_selected[[subject_var_char]])
+          ) |>
+            select(all_of(sflc_cols))
         }
       )
     })
   
     #todo: show all_resp only if recent_resp is selected  
-    srv_t_reactable("all_resp", data = all_resp_q, dataname = "all_resp") 
-
-    # 
-    # spep_cols <- c(
-    #   "subject", "visit_name", "visit_date", "form_name", "source_system_url_link",
-    #   "rspdn", "rspd", "rspd_study_day", "orsp", "bma", "bmb", "comnts",
-    #   "asmntdn", "blq", "coldr", "cold_study_day", "coltm", "coltmu", "lrspep1",
-    #   "mprte_raw", "mprtec"
-    # )
-    # 
-    # spep <- reactive({
-    #   req(table_selected_subjects())
-    #   data()[["spiderplot_ds"]] |>
-    #     filter(event_type == "Serum M-protein") |>
-    #     filter(subject %in% table_selected_subjects()) |>
-    #     select(all_of(spep_cols))
-    # })
-    # 
-    # output$spep_listing <- renderReactable({
-    #   if (nrow(spep()) == 0) {
-    #     return()
-    #   }
-    # 
-    #   reactable(
-    #     spep(),
-    #     # columns = spep_cols,
-    #     defaultPageSize = 5,
-    #     wrap = FALSE
-    #   )
-    # })
-    # 
-    # 
-    # sflc_cols <- c(
-    #   "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", "rspdn", "rspd",
-    #   "rspd_study_day", "orsp", "bma", "bmb", "comnts", "asmntdn", "blq", "coldr", "cold_study_day",
-    #   "coltm", "coltmu", "lchfrc", "lchfr_raw", "klchf_raw", "llchf_raw",
-    #   "klchp_raw", "mprte_raw", "mprtec"
-    # )
-    # 
-    # sflc <- reactive({
-    #   data()[["spiderplot_ds"]] |>
-    #     filter(
-    #       event_type %in% c(
-    #         "Kappa free light chain quantity",
-    #         "Lambda free light chain quantity",
-    #         "Kappa-Lambda free light chain ratio"
-    #       )
-    #     ) |>
-    #     filter(subject %in% table_selected_subjects()) |>
-    #     select(all_of(sflc_cols))
-    # })
-    # 
-    # output$sflc_listing <- renderReactable({
-    #   if (nrow(sflc()) == 0) {
-    #     return()
-    #   }
-    # 
-    #   reactable(
-    #     sflc(),
-    #     # columns = sflc_cols,
-    #     defaultPageSize = 5,
-    #     wrap = FALSE
-    #   )
-    # })
+    all_resp_selected_q <- srv_t_reactable("all_resp", data = all_resp_q, dataname = "all_resp") 
+    spep_selected_d <- srv_t_reactable("spep_listing", data = spep_q, dataname = "spep")
+    sflc_selected_d <- srv_t_reactable("sflc_listing", data = sflc_q, dataname = "sflc")
   })
 }
 

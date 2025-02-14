@@ -6,7 +6,7 @@ tm_t_reactables <- function(label = "Table", datanames, transformators = list(),
     ui = ui_t_reactable,
     srv = srv_t_reactable,
     ui_args = list(decorators = decorators),
-    srv_args = c(list(datanames = datanames, decorators = decorators), rlang::list(...)),
+    srv_args = c(list(datanames = datanames, decorators = decorators), rlang::list2(...)),
     datanames = datanames,
     transformers = transformers
   )
@@ -23,33 +23,34 @@ ui_t_reactable <- function(id) {
 srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ...) {
   moduleServer(id, function(input, output, session) {
     dataname_reactable <- sprintf("%s_reactable", dataname)
+    
+    reactable_call <- reactive({
+      default_args <- list(
+        columns = .make_reactable_columns_call(data()[[dataname]]),
+        onClick = "select",
+        defaultPageSize = 15,
+        wrap = FALSE,
+        rowClass = JS("
+          function(rowInfo) {
+              if (rowInfo.selected) {
+                return 'selected-row';
+              }
+          }
+        ")
+      )
+      args <- modifyList(default_args, rlang::list2(...))
+      substitute(
+        lhs <- rhs,
+        list(
+          lhs = dataname_reactable,
+          rhs = .make_reactable_call(dataname = dataname, args = args)          
+        )
+      )
+      
+    })
     table_q <- reactive({
       req(data())
-      within(
-        data(),
-        dataname_reactable = str2lang(dataname_reactable),
-        dataname = str2lang(dataname),
-        {
-          dataname_reactable <- reactable::reactable(
-            dataname,
-            #columns = teal.data::col_labels(dataset), # todo: replace with labels
-            selection = "single",
-            onClick = "select",
-            defaultPageSize = 15,
-            wrap = FALSE,
-            rowClass = JS("
-            function(rowInfo) {
-              console.log(rowInfo);
-                if (rowInfo.selected) {
-                  return 'selected-row';
-                }
-              }
-            ")
-          )
-          dataname_reactable
-          
-        }
-      )
+      eval_code(data(), reactable_call())
     })
     output$table <- reactable::renderReactable(table_q()[[dataname_reactable]])
     table_selected_q <- reactive({
@@ -71,3 +72,33 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
     table_selected_q
   })
 }
+
+.make_reactable_call <- function(dataname, args) {
+  args <- c(
+    list(data = str2lang(dataname)),
+    args
+  )
+  do.call(call, c(list(name = "reactable"), args), quote = TRUE)
+
+}
+
+.make_reactable_columns_call <- function(dataset) {
+  # todo: what to do with urls?
+  args <- lapply(
+    teal.data::col_labels(dataset), 
+    function(label) {
+      if (!is.null(label) && !is.na(label)) {
+        substitute(
+          colDef(name = label),
+          list(label = label)
+        ) 
+      }
+    }
+  )
+  args <- Filter(length, args)
+  if (length(args)) {
+    do.call(call, c(list("list"), args), quote = TRUE)    
+  }
+}
+
+
