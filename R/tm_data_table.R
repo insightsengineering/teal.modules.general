@@ -130,11 +130,10 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   # End of assertions
-
   ans <- module(
     label,
-    server = srv_page_data_table,
-    ui = ui_page_data_table,
+    server = srv_data_table,
+    ui = ui_data_table,
     datanames = datanames,
     server_args = list(
       datanames = if (is.null(datanames)) "all" else datanames,
@@ -154,7 +153,7 @@ tm_data_table <- function(label = "Data Table",
 }
 
 # UI page module
-ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
+ui_data_table <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
 
   tagList(
@@ -187,18 +186,18 @@ ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
 
 # Server page module
 srv_data_table <- function(id,
-                                data,
-                                datanames,
-                                variables_selected = list(),
-                                dt_args = list(),
-                                dt_options = list(
-                                  searching = FALSE,
-                                  pageLength = 30,
-                                  lengthMenu = c(5, 15, 30, 100),
-                                  scrollX = TRUE
-                                ),
-                                server_rendering = FALSE,
-                                filter_panel_api) {
+                            data,
+                            datanames,
+                            variables_selected = list(),
+                            dt_args = list(),
+                            dt_options = list(
+                              searching = FALSE,
+                              pageLength = 30,
+                              lengthMenu = c(5, 15, 30, 100),
+                              scrollX = TRUE
+                            ),
+                            server_rendering = FALSE,
+                            filter_panel_api) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -283,7 +282,7 @@ srv_data_table <- function(id,
 }
 
 # UI function for the data_table module
-ui_data_table <- function(id, choices, selected) {
+ui_dataset_table <- function(id, choices, selected) {
   ns <- NS(id)
 
   if (!is.null(selected)) {
