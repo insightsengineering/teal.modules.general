@@ -51,19 +51,19 @@ ui_p_spiderplot <- function(id, height) {
         div(
           class = "simple-card",
           h4("Disease Assessment - SFLC"),
-          reactableOutput(ns("sflc_listing"))
+          ui_t_reactable(ns("sflc_listing"))
         ),
         div(
           class = "simple-card",
           h4("Disease Assessment - SPEP"),
-          reactableOutput(ns("spep_listing"))
+          ui_t_reactable(ns("spep_listing"))
         )
       ),
       div(
         class = "simple-card",
         style = "width: 50%",
         h4("Multiple Myeloma Response"),
-        reactableOutput(ns("all_resp"))
+        ui_t_reactable(ns("all_resp"))
       )
     )
   )
@@ -198,9 +198,9 @@ srv_p_spiderplot <- function(id,
     })
 
     spep_cols <- c(
-      "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", 
-      "rspdn", "rspd", "rspd_study_day", "orsp", "bma", "bmb", "comnts", 
-      "asmntdn", "blq", "coldr", "cold_study_day", "coltm", "coltmu", "lrspep1", 
+      "subject", "visit_name", "visit_date", "form_name", "source_system_url_link",
+      "rspdn", "rspd", "rspd_study_day", "orsp", "bma", "bmb", "comnts",
+      "asmntdn", "blq", "coldr", "cold_study_day", "coltm", "coltmu", "lrspep1",
       "mprte_raw", "mprtec"
     )
 
@@ -226,8 +226,8 @@ srv_p_spiderplot <- function(id,
 
 
     sflc_cols <- c(
-      "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", "rspdn", "rspd", 
-      "rspd_study_day", "orsp", "bma", "bmb", "comnts", "asmntdn", "blq", "coldr", "cold_study_day", 
+      "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", "rspdn", "rspd",
+      "rspd_study_day", "orsp", "bma", "bmb", "comnts", "asmntdn", "blq", "coldr", "cold_study_day",
       "coltm", "coltmu", "lchfrc", "lchfr_raw", "klchf_raw", "llchf_raw",
       "klchp_raw", "mprte_raw", "mprtec"
     )
