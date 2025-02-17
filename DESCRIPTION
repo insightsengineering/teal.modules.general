@@ -58,6 +58,7 @@ Imports:
     sparkline (>= 2.0),
     stats,
     stringr (>= 1.4.1),
+    styler,
     teal.code (>= 0.6.0),
     teal.data (>= 0.7.0),
     teal.logger (>= 0.3.1),
