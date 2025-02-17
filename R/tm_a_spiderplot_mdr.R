@@ -161,9 +161,9 @@ srv_a_spiderplot_mdr <- function(id,
     })
     
     #todo: show all_resp only if recent_resp is selected  
-    all_resp_selected_q <- srv_t_reactable("all_resp", data = all_resp_q, dataname = "all_resp") 
-    spep_selected_d <- srv_t_reactable("spep_listing", data = spep_q, dataname = "spep")
-    sflc_selected_d <- srv_t_reactable("sflc_listing", data = sflc_q, dataname = "sflc")
+    all_resp_selected_q <- srv_t_reactable("all_resp", data = all_resp_q, dataname = "all_resp", selection = NULL) 
+    spep_selected_d <- srv_t_reactable("spep_listing", data = spep_q, dataname = "spep", selection = NULL)
+    sflc_selected_d <- srv_t_reactable("sflc_listing", data = sflc_q, dataname = "sflc", selection = NULL)
     
     all_q <- reactive({
       # all_resp_selected_q could be nothing and `c` won't work because the result is unavailable before clicking subjects in the table

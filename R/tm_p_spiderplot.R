@@ -78,9 +78,9 @@ srv_p_spiderplot <- function(id,
         time_var = str2lang(time_var),
         subject_var = str2lang(subject_var),
         value_var = str2lang(value_var),
+        event_var = str2lang(event_var),
         selected_event = input$select_event,
         height = input$plot_height,
-        event_var = str2lang(event_var),
         expr = {
           y_title <- selected_event
           dataname_filtered <- filter(dataname, event_var == selected_event)
