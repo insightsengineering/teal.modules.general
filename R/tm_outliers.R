@@ -31,10 +31,10 @@
 #' tm_outliers(
 #'    ..., # arguments for module
 #'    decorators = list(
-#'      box_plot = list(teal_transform_module(...)), # applied only to `box_plot` output
-#'      density_plot = list(teal_transform_module(...)), # applied only to `density_plot` output
-#'      cumulative_plot = list(teal_transform_module(...)), # applied only to `cumulative_plot` output
-#'      table = list(teal_transform_module(...)) # applied only to `table` output
+#'      box_plot = teal_transform_module(...), # applied only to `box_plot` output
+#'      density_plot = teal_transform_module(...), # applied only to `density_plot` output
+#'      cumulative_plot = teal_transform_module(...), # applied only to `cumulative_plot` output
+#'      table = teal_transform_module(...) # applied only to `table` output
 #'    )
 #' )
 #' ```

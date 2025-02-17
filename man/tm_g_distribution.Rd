@@ -103,10 +103,10 @@ See code snippet below:
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_g_distribution(
    ..., # arguments for module
    decorators = list(
-     histogram_plot = list(teal_transform_module(...)), # applied only to `histogram_plot` output
-     qq_plot = list(teal_transform_module(...)), # applied only to `qq_plot` output
-     summary_table = list(teal_transform_module(...)), # applied only to `summary_table` output
-     test_table = list(teal_transform_module(...)) # applied only to `test_table` output
+     histogram_plot = teal_transform_module(...), # applied only to `histogram_plot` output
+     qq_plot = teal_transform_module(...), # applied only to `qq_plot` output
+     summary_table = teal_transform_module(...), # applied only to `summary_table` output
+     test_table = teal_transform_module(...) # applied only to `test_table` output
    )
 )
 }\if{html}{\out{</div>}}

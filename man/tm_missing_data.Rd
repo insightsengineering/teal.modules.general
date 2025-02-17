@@ -97,10 +97,10 @@ See code snippet below:
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_missing_data(
    ..., # arguments for module
    decorators = list(
-     summary_plot = list(teal_transform_module(...)), # applied only to `summary_plot` output
-     combination_plot = list(teal_transform_module(...)), # applied only to `combination_plot` output
-     by_subject_plot = list(teal_transform_module(...)), # applied only to `by_subject_plot` output
-     table = list(teal_transform_module(...)) # applied only to `table` output
+     summary_plot = teal_transform_module(...), # applied only to `summary_plot` output
+     combination_plot = teal_transform_module(...), # applied only to `combination_plot` output
+     by_subject_plot = teal_transform_module(...), # applied only to `by_subject_plot` output
+     table = teal_transform_module(...) # applied only to `table` output
    )
 )
 }\if{html}{\out{</div>}}
