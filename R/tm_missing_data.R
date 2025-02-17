@@ -1241,7 +1241,7 @@ srv_missing_data <- function(id,
         teal.code::eval_code(
           substitute(
             expr = {
-              by_subject_plot <- ggplot2::ggplot(summary_plot_patients, aes(
+              by_subject_plot <- ggplot2::ggplot(summary_plot_patients, ggplot2::aes(
                 x = factor(id, levels = order_subjects),
                 y = factor(col, levels = ordered_columns[["column"]]),
                 fill = isna

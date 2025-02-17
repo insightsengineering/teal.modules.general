@@ -448,9 +448,12 @@ srv_a_regression <- function(id,
       )
     })
 
+    qenv <- teal.code::eval_code(data(),
+                                 "library('ggplot2');")
+
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -585,8 +588,8 @@ srv_a_regression <- function(id,
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
-          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) +
-            geom_point(size = size, alpha = alpha) +
+          expr = ggplot2::ggplot(fit$model[, 2:1], ggplot2::aes_string(regressor, response)) +
+            ggplot2::geom_point(size = size, alpha = alpha) +
             stat_smooth(method = "lm", formula = y ~ x, se = FALSE),
           env = list(
             regressor = regression_var()$regressor,
@@ -605,8 +608,8 @@ srv_a_regression <- function(id,
         shinyjs::hide("size")
         shinyjs::hide("alpha")
         plot <- substitute(
-          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) +
-            geom_boxplot(),
+          expr = ggplot2::ggplot(fit$model[, 2:1], ggplot2::aes_string(regressor, response)) +
+            ggplot2::geom_boxplot(),
           env = list(regressor = regression_var()$regressor, response = regression_var()$response)
         )
         if (input$show_outlier) {
@@ -650,10 +653,10 @@ srv_a_regression <- function(id,
       shinyjs::show("size")
       shinyjs::show("alpha")
       plot <- substitute(
-        expr = ggplot(data = data, aes(.fitted, .resid)) +
-          geom_point(size = size, alpha = alpha) +
-          geom_hline(yintercept = 0, linetype = "dashed", size = 1) +
-          geom_line(data = smoothy, mapping = smoothy_aes),
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(.fitted, .resid)) +
+          ggplot2::geom_point(size = size, alpha = alpha) +
+          ggplot2::geom_hline(yintercept = 0, linetype = "dashed", size = 1) +
+          ggplot2::geom_line(data = smoothy, mapping = smoothy_aes),
         env = list(size = input$size, alpha = input$alpha)
       )
       if (input$show_outlier) {
@@ -694,15 +697,15 @@ srv_a_regression <- function(id,
       shinyjs::show("alpha")
       plot_base <- output_plot_base()
       plot <- substitute(
-        expr = ggplot(data = data, aes(sample = .stdresid)) +
-          stat_qq(size = size, alpha = alpha) +
-          geom_abline(linetype = "dashed"),
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(sample = .stdresid)) +
+          ggplot2::stat_qq(size = size, alpha = alpha) +
+          ggplot2::geom_abline(linetype = "dashed"),
         env = list(size = input$size, alpha = input$alpha)
       )
       if (input$show_outlier) {
         plot <- substitute(
           expr = plot +
-            stat_qq(
+            ggplot2::stat_qq(
               geom = ggrepel::GeomTextRepel,
               label = label_col %>%
                 data.frame(label = .) %>%
@@ -753,9 +756,9 @@ srv_a_regression <- function(id,
       shinyjs::show("alpha")
       plot_base <- output_plot_base()
       plot <- substitute(
-        expr = ggplot(data = data, aes(.fitted, sqrt(abs(.stdresid)))) +
-          geom_point(size = size, alpha = alpha) +
-          geom_line(data = smoothy, mapping = smoothy_aes),
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(.fitted, sqrt(abs(.stdresid)))) +
+          ggplot2::geom_point(size = size, alpha = alpha) +
+          ggplot2::geom_line(data = smoothy, mapping = smoothy_aes),
         env = list(size = input$size, alpha = input$alpha)
       )
       if (input$show_outlier) {
@@ -796,14 +799,14 @@ srv_a_regression <- function(id,
       shinyjs::show("alpha")
       plot_base <- output_plot_base()
       plot <- substitute(
-        expr = ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) +
-          geom_col(alpha = alpha),
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(seq_along(.cooksd), .cooksd)) +
+          ggplot2::geom_col(alpha = alpha),
         env = list(alpha = input$alpha)
       )
       if (input$show_outlier) {
         plot <- substitute(
           expr = plot +
-            geom_hline(
+            ggplot2::geom_hline(
               yintercept = c(
                 outlier * mean(data$.cooksd, na.rm = TRUE),
                 mean(data$.cooksd, na.rm = TRUE)
@@ -811,8 +814,8 @@ srv_a_regression <- function(id,
               color = "red",
               linetype = "dashed"
             ) +
-            geom_text(
-              aes(
+            ggplot2::geom_text(
+              ggplot2::aes(
                 x = 0,
                 y = mean(data$.cooksd, na.rm = TRUE),
                 label = paste("mu", "=", round(mean(data$.cooksd, na.rm = TRUE), 4)),
@@ -862,21 +865,21 @@ srv_a_regression <- function(id,
       shinyjs::show("alpha")
       plot_base <- output_plot_base()
       plot <- substitute(
-        expr = ggplot(data = data, aes(.hat, .stdresid)) +
-          geom_vline(
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(.hat, .stdresid)) +
+          ggplot2::geom_vline(
             size = 1,
             colour = "black",
             linetype = "dashed",
             xintercept = 0
           ) +
-          geom_hline(
+          ggplot2::geom_hline(
             size = 1,
             colour = "black",
             linetype = "dashed",
             yintercept = 0
           ) +
-          geom_point(size = size, alpha = alpha) +
-          geom_line(data = smoothy, mapping = smoothy_aes),
+          ggplot2::geom_point(size = size, alpha = alpha) +
+          ggplot2::geom_line(data = smoothy, mapping = smoothy_aes),
         env = list(size = input$size, alpha = input$alpha)
       )
       if (input$show_outlier) {
@@ -917,16 +920,16 @@ srv_a_regression <- function(id,
       shinyjs::show("alpha")
       plot_base <- output_plot_base()
       plot <- substitute(
-        expr = ggplot(data = data, aes(.hat, .cooksd)) +
-          geom_vline(xintercept = 0, colour = NA) +
-          geom_abline(
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(.hat, .cooksd)) +
+          ggplot2::geom_vline(xintercept = 0, colour = NA) +
+          ggplot2::geom_abline(
             slope = seq(0, 3, by = 0.5),
             colour = "black",
             linetype = "dashed",
             size = 1
           ) +
-          geom_line(data = smoothy, mapping = smoothy_aes) +
-          geom_point(size = size, alpha = alpha),
+          ggplot2::geom_line(data = smoothy, mapping = smoothy_aes) +
+          ggplot2::geom_point(size = size, alpha = alpha),
         env = list(size = input$size, alpha = input$alpha)
       )
       if (input$show_outlier) {

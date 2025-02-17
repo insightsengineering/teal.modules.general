@@ -330,9 +330,11 @@ srv_tm_g_association <- function(id,
       selector_list = selector_list
     )
 
+    qenv <- teal.code::eval_code(data(),
+                                 'library("ggplot2");library("dplyr")')
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>% teal.code::eval_code(as.expression(anl_merged_input()$expr))
+      qenv %>% teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
     merged <- list(

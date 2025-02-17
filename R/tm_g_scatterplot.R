@@ -574,10 +574,11 @@ srv_g_scatterplot <- function(id,
       datasets = data,
       merge_function = "dplyr::inner_join"
     )
+    qenv <- teal.code::eval_code(data(),"library('ggplot2');library('dplyr')")
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr)) %>%
         teal.code::eval_code(quote(ANL)) # used to display table when running show-r-code code
     })
@@ -786,7 +787,7 @@ srv_g_scatterplot <- function(id,
         "ANL"
       }
 
-      plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
+      plot_call <- substitute(expr = pre_pro_anl %>% ggplot2::ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
       plot_call <- if (length(color_by_var) == 0) {
         substitute(
@@ -954,7 +955,7 @@ srv_g_scatterplot <- function(id,
       )
 
       if (rotate_xaxis_labels) {
-        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1))
+        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(ggplot2::element_text(angle = 45, hjust = 1))
       }
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(

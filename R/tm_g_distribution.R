@@ -542,9 +542,12 @@ srv_distribution <- function(id,
       datasets = data
     )
 
+    qenv <- teal.code::eval_code(data(),
+                                 "library('ggplot2');library('forcats');library('dplyr')")
+
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -799,9 +802,9 @@ srv_distribution <- function(id,
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot(ANL, aes(dist_var_name)) +
-              geom_histogram(
-                position = "identity", aes(y = after_stat(m_type)), bins = bins_var, alpha = 0.3
+            expr = ggplot2::ggplot(ANL, ggplot2::aes(dist_var_name)) +
+              ggplot2::geom_histogram(
+                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type)), bins = bins_var, alpha = 0.3
               ),
             env = list(
               m_type = as.name(m_type), bins_var = bins_var, dist_var_name = as.name(dist_var)
@@ -809,9 +812,9 @@ srv_distribution <- function(id,
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
-              geom_histogram(
-                position = "identity", aes(y = after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
+            expr = ggplot2::ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
+              ggplot2::geom_histogram(
+                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
               ),
             env = list(
               m_type = as.name(m_type),
@@ -824,11 +827,11 @@ srv_distribution <- function(id,
         } else if (length(s_var) == 0 && length(g_var) != 0) {
           req(scales_type)
           substitute(
-            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name)) +
-              geom_histogram(
-                position = "identity", aes(y = after_stat(m_type)), bins = bins_var, alpha = 0.3
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes(dist_var_name)) +
+              ggplot2::geom_histogram(
+                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type)), bins = bins_var, alpha = 0.3
               ) +
-              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               m_type = as.name(m_type),
               bins_var = bins_var,
@@ -841,12 +844,12 @@ srv_distribution <- function(id,
         } else {
           req(scales_type)
           substitute(
-            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name, col = s_var_name)) +
-              geom_histogram(
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes(dist_var_name, col = s_var_name)) +
+              ggplot2::geom_histogram(
                 position = "identity",
-                aes(y = after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
+                ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
               ) +
-              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               m_type = as.name(m_type),
               bins_var = bins_var,
@@ -864,7 +867,7 @@ srv_distribution <- function(id,
           plot_call <- substitute(
             expr = plot_call +
               stat_density(
-                aes(y = after_stat(const * m_type2)),
+                ggplot2::aes(y = ggplot2::after_stat(const * m_type2)),
                 geom = "line",
                 position = "identity",
                 alpha = 0.5,
@@ -898,7 +901,7 @@ srv_distribution <- function(id,
           plot_call <- substitute(
             expr = plot_call + ggpp::geom_table_npc(
               data = data,
-              aes(npcx = x, npcy = y, label = label),
+              ggplot2::aes(npcx = x, npcy = y, label = label),
               hjust = 0, vjust = 1, size = 4
             ),
             env = list(plot_call = plot_call, data = datas, label = label)
@@ -919,13 +922,13 @@ srv_distribution <- function(id,
           plot_call <- substitute(
             expr = plot_call + stat_function(
               data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
-              aes(x, color = color),
+              ggplot2::aes(x, color = color),
               fun = mapped_dist_name,
               n = ndensity,
               size = 2,
               args = params
             ) +
-              scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
+              ggplot2::scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
             env = list(
               plot_call = plot_call,
               dist_var = dist_var,
@@ -984,18 +987,18 @@ srv_distribution <- function(id,
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot(ANL, aes_string(sample = dist_var)),
+            expr = ggplot2::ggplot(ANL, ggplot2::aes_string(sample = dist_var)),
             env = list(dist_var = dist_var)
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)),
+            expr = ggplot2::ggplot(ANL, ggplot2::aes_string(sample = dist_var, color = s_var)),
             env = list(dist_var = dist_var, s_var = s_var)
           )
         } else if (length(s_var) == 0 && length(g_var) != 0) {
           substitute(
-            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes_string(sample = dist_var)) +
-              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes_string(sample = dist_var)) +
+              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               dist_var = dist_var,
               g_var = g_var,
@@ -1005,8 +1008,8 @@ srv_distribution <- function(id,
           )
         } else {
           substitute(
-            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes_string(sample = dist_var, color = s_var)) +
-              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes_string(sample = dist_var, color = s_var)) +
+              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               dist_var = dist_var,
               g_var = g_var,
@@ -1024,7 +1027,7 @@ srv_distribution <- function(id,
 
         plot_call <- substitute(
           expr = plot_call +
-            stat_qq(distribution = mapped_dist, dparams = params),
+            ggplot2::stat_qq(distribution = mapped_dist, dparams = params),
           env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
         )
 
@@ -1043,7 +1046,7 @@ srv_distribution <- function(id,
             expr = plot_call +
               ggpp::geom_table_npc(
                 data = data,
-                aes(npcx = x, npcy = y, label = label),
+                ggplot2::aes(npcx = x, npcy = y, label = label),
                 hjust = 0,
                 vjust = 1,
                 size = 4

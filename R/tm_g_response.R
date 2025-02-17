@@ -378,9 +378,12 @@ srv_g_response <- function(id,
       datasets = data
     )
 
+    qenv <- teal.code::eval_code(data(),
+                                 "library('ggplot2');library('dplyr');library('forcats')")
+
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -464,8 +467,8 @@ srv_g_response <- function(id,
         )
 
       plot_call <- substitute(
-        expr = ggplot(ANL2, aes(x = x_cl, y = ns)) +
-          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+        expr = ggplot2::ggplot(ANL2, ggplot2::aes(x = x_cl, y = ns)) +
+          ggplot2::geom_bar(ggplot2::aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
           x_cl = x_cl,
           resp_cl = resp_cl,
@@ -483,16 +486,16 @@ srv_g_response <- function(id,
       if (counts) {
         plot_call <- substitute(
           expr = plot_call +
-            geom_text(
+            ggplot2::geom_text(
               data = ANL2,
-              aes(label = ns, x = x_cl, y = ns, group = resp_cl),
+              ggplot2::aes(label = ns, x = x_cl, y = ns, group = resp_cl),
               col = "white",
               vjust = "middle",
               hjust = "middle",
               position = position_anl2_value
             ) +
-            geom_text(
-              data = ANL3, aes(label = ns, x = x_cl, y = anl3_y),
+            ggplot2::geom_text(
+              data = ANL3, ggplot2::aes(label = ns, x = x_cl, y = anl3_y),
               hjust = hjust_value,
               vjust = vjust_value,
               position = position_anl3_value
@@ -530,7 +533,7 @@ srv_g_response <- function(id,
       )
 
       if (rotate_xaxis_labels) {
-        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1))
+        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(ggplot2::element_text(angle = 45, hjust = 1))
       }
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(

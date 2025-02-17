@@ -3,6 +3,7 @@
 * Removed `Show Warnings` modals from modules.
 * Soft deprecated `datasets_selected` argument of modules in favor of `datanames`.
 * Soft deprecated `show_metadata` argument of `tm_front_page()` in favor of `datanames`.
+* Module's code include library calls and is styled before presenting it to the users.
 
 ### Enhancements
 
