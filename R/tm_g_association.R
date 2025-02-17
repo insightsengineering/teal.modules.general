@@ -530,7 +530,7 @@ srv_tm_g_association <- function(id,
     })
 
     # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_grob_q())))
+    source_code_r <- reactive(prepare_cod(decorated_output_grob_q()))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",

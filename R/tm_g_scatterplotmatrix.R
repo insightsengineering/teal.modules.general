@@ -483,7 +483,7 @@ srv_g_scatterplotmatrix <- function(id,
     })
 
     # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
+    source_code_r <- reactive(prepare_code(decorated_output_q()))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",

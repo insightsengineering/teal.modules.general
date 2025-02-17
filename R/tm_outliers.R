@@ -854,7 +854,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         substitute(expr = plot_call, env = list(plot_call = plot_call))
       } else {
         substitute(
-          expr = plot_call + facet_grid(~ reorder(categorical_var_name, order)),
+          expr = plot_call + ggplot2::facet_grid(~ reorder(categorical_var_name, order)),
           env = list(plot_call = plot_call, categorical_var_name = as.name(categorical_var))
         )
       }
@@ -955,7 +955,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         )
         plot_call <- substitute(
-          expr = plot_call + facet_grid(~ reorder(categorical_var_name, order)),
+          expr = plot_call + ggplot2::facet_grid(~ reorder(categorical_var_name, order)),
           env = list(plot_call = plot_call, categorical_var_name = as.name(categorical_var))
         )
       }
@@ -1304,7 +1304,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_final_q())))
+    source_code_r <- reactive(prepare_code(decorated_final_q()))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",

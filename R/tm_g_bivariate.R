@@ -536,7 +536,7 @@ srv_g_bivariate <- function(id,
       datasets = data
     )
     qenv <- teal.code::eval_code(data(),
-                                 "library('ggplot2')")
+                                 'library("ggplot2");library("dplyr")')
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
@@ -719,7 +719,8 @@ srv_g_bivariate <- function(id,
     )
 
     # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q_facets())))
+
+    source_code_r <- reactive(prepare_code(decorated_output_q_facets()))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
@@ -1009,15 +1010,15 @@ facet_ggplot_call <- function(row_facet = character(0),
     NULL
   } else if (!identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
     call(
-      "facet_grid",
+      "ggplot2::facet_grid",
       rows = call_fun_dots("vars", row_facet),
       cols = call_fun_dots("vars", col_facet),
       scales = scales
     )
   } else if (identical(row_facet, character(0)) && !identical(col_facet, character(0))) {
-    call("facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
+    call("ggplot2::facet_grid", cols = call_fun_dots("vars", col_facet), scales = scales)
   } else if (!identical(row_facet, character(0)) && identical(col_facet, character(0))) {
-    call("facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
+    call("ggplot2::facet_grid", rows = call_fun_dots("vars", row_facet), scales = scales)
   }
 }
 
