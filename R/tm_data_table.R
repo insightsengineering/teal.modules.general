@@ -206,10 +206,14 @@ srv_data_table <- function(id,
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
 
-    datanames <- Filter(function(name) {
-      is.data.frame(isolate(data())[[name]])
-    }, if (identical(datanames, "all")) names(isolate(data())) else datanames)
-
+    datanames_r <- reactive({
+      Filter(
+        function(name) {
+          is.data.frame(data()[[name]])
+        }, 
+        if (identical(datanames, "all")) names(data()) else datanames
+      )
+    })
 
     output$dataset_table <- renderUI({
       do.call(
@@ -217,7 +221,7 @@ srv_data_table <- function(id,
         c(
           list(id = session$ns("dataname_tab")),
           lapply(
-            datanames(),
+            datanames_r(),
             function(x) {
               dataset <- isolate(data()[[x]])
               choices <- names(dataset)
@@ -258,7 +262,7 @@ srv_data_table <- function(id,
     
     # server should be run only once
     modules_run <- reactiveVal()
-    modules_to_run <- reactive(setdiff(datanames(), modules_run()))
+    modules_to_run <- reactive(setdiff(datanames_r(), modules_run()))
     observeEvent(modules_to_run(), {
       lapply(
         modules_to_run(),

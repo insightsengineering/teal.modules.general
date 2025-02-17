@@ -1,30 +1,32 @@
 tm_a_spiderplot_mdr <- function(label = "Spiderplot",
-                            time_var,
-                            subject_var,
-                            value_var,
-                            event_var,
-                            resp_cols = c(
-                              "subject", "raise_query", "visit_name", "rspdn", "rspd", "rspd_study_day",
-                              "orsp", "bma", "bmb", "comnts"
-                            ),
-                            spep_cols = c(
-                              "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", "rspdn", "rspd", 
-                              "rspd_study_day", "orsp", "bma", "bmb", "comnts", "asmntdn", "blq", "coldr", "cold_study_day", 
-                              "coltm", "coltmu", "lrspep1", "mprte_raw", "mprtec"
-                            ),
-                            sflc_cols = c(
-                              "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", "rspdn", "rspd",
-                              "rspd_study_day", "orsp", "bma", "bmb", "comnts", "asmntdn", "blq", "coldr", "cold_study_day",
-                              "coltm", "coltmu", "lchfrc", "lchfr_raw", "klchf_raw", "llchf_raw",
-                              "klchp_raw", "mprte_raw", "mprtec"
-                            ),
-                            plot_height = 600) {
+                                dataname,
+                                time_var,
+                                subject_var,
+                                value_var,
+                                event_var,
+                                resp_cols = c(
+                                  "subject", "raise_query", "visit_name", "rspdn", "rspd", "rspd_study_day",
+                                  "orsp", "bma", "bmb", "comnts"
+                                ),
+                                spep_cols = c(
+                                  "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", "rspdn", "rspd", 
+                                  "rspd_study_day", "orsp", "bma", "bmb", "comnts", "asmntdn", "blq", "coldr", "cold_study_day", 
+                                  "coltm", "coltmu", "lrspep1", "mprte_raw", "mprtec"
+                                ),
+                                sflc_cols = c(
+                                  "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", "rspdn", "rspd",
+                                  "rspd_study_day", "orsp", "bma", "bmb", "comnts", "asmntdn", "blq", "coldr", "cold_study_day",
+                                  "coltm", "coltmu", "lchfrc", "lchfr_raw", "klchf_raw", "llchf_raw",
+                                  "klchp_raw", "mprte_raw", "mprtec"
+                                ),
+                                plot_height = 600) {
   module(
     label = label,
     ui = ui_a_spiderplot_mdr,
     server = srv_a_spiderplot_mdr,
     ui_args = list(height = plot_height),
     server_args = list(
+      dataname = dataname,
       time_var = time_var,
       subject_var = subject_var,
       value_var = value_var,
@@ -33,7 +35,7 @@ tm_a_spiderplot_mdr <- function(label = "Spiderplot",
       spep_cols = spep_cols,
       sflc_cols = sflc_cols
     ),
-    datanames = "all",
+    datanames = dataname,
   )
 }
 
@@ -69,6 +71,7 @@ ui_a_spiderplot_mdr <- function(id, height) {
 
 srv_a_spiderplot_mdr <- function(id,
                                  data,
+                                 dataname,
                                  time_var,
                                  subject_var,
                                  value_var,
@@ -79,10 +82,10 @@ srv_a_spiderplot_mdr <- function(id,
                                  filter_panel_api,
                                  plot_height = 600) {
   moduleServer(id, function(input, output, session) {
-    dataname <- "spiderplot_ds"
     recent_resp_selected_q <- srv_p_spiderplot(
       "spiderplot", 
       data = data,
+      dataname = dataname,
       time_var = time_var,
       subject_var = subject_var,
       value_var = value_var,
@@ -92,6 +95,7 @@ srv_a_spiderplot_mdr <- function(id,
       plot_height = plot_height
     )
     
+    # todo: whattodo with three specific reactives?
     all_resp_q <- reactive({
       req(nrow(recent_resp_selected_q()[["recent_resp_selected"]]))
       within(

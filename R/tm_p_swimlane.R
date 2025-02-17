@@ -28,8 +28,6 @@ srv_p_swimlane <- function(id,
     ggplot_call <- reactive({
       plot_call <- bquote(ggplot2::ggplot())
       points_calls <- lapply(geom_specs, function(x) {
-        # todo: convert $geom, $data, and $mapping elements from character to language
-        #       others can be kept as character
         if (!is.null(x$mapping)) {
           x$mapping <- as.call(c(as.name("aes"), x$mapping))
         }

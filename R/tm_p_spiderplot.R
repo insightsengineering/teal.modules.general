@@ -4,7 +4,8 @@ tm_p_spiderplot <- function(label = "Spiderplot",
                             value_var,
                             event_var,
                             table_cols,
-                            plot_height = 600) {
+                            plot_height = 600,
+                            transformator = transformator) {
   module(
     label = label,
     ui = ui_p_spiderplot,
@@ -38,7 +39,7 @@ ui_p_spiderplot <- function(id, height) {
         class = "simple-card",
         style = "width: 50%",
         tagList(
-          h4("Most Recent Resp and Best Resp"),
+          h4("Most Recent Resp and Best Resp"), # todo: whattodo?
           ui_t_reactable(ns("recent_resp"))
         )
       ),
@@ -53,6 +54,7 @@ ui_p_spiderplot <- function(id, height) {
 
 srv_p_spiderplot <- function(id,
                              data,
+                             dataname,
                              time_var,
                              subject_var,
                              value_var,
@@ -61,8 +63,7 @@ srv_p_spiderplot <- function(id,
                              filter_panel_api,
                              plot_height = 600) {
   moduleServer(id, function(input, output, session) {
-    dataname <- "spiderplot_ds"
-    excl_events <- c("response_assessment", "latest_response_assessment")
+    excl_events <- c("response_assessment", "latest_response_assessment") # todo: whattodo?
     spiderplot_ds <- reactive(data()[[dataname]])
     observeEvent(spiderplot_ds(), {
       event_levels <- setdiff(unique(spiderplot_ds()[[event_var]]), excl_events)
@@ -114,7 +115,7 @@ srv_p_spiderplot <- function(id,
       req(plotly_selected())
       within(
         plotly_q(),
-        dataname = str2lang(dataname),  # todo: replace with argument
+        dataname = str2lang(dataname),
         time_var = str2lang(time_var),
         subject_var = subject_var,
         value_var = str2lang(value_var),
@@ -139,8 +140,8 @@ srv_p_spiderplot <- function(id,
         expr = {
           recent_resp <- dplyr::filter(
             dataname,
-            event_var == "latest_response_assessment",
-            subject_var %in% brushed_subjects # todo: figure this out
+            event_var == "latest_response_assessment",  # todo: whattodo?
+            subject_var %in% brushed_subjects
           ) |>
             select(all_of(table_cols))
         }
