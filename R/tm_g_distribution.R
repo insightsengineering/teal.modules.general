@@ -543,7 +543,7 @@ srv_distribution <- function(id,
     )
 
     qenv <- teal.code::eval_code(data(),
-                                 "library('ggplot2');library('forcats');library('dplyr')")
+                                 'library("ggplot2");library("forcats");library("dplyr")')
 
     anl_merged_q <- reactive({
       req(anl_merged_input())

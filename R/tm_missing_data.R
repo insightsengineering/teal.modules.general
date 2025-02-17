@@ -536,7 +536,7 @@ srv_missing_data <- function(id,
       group_var <- input$group_by_var
       anl <- data_r()
       qenv <- teal.code::eval_code(data(), {
-        "library('dplyr');library('ggplot2');library('tidyr');library('forcats');library('glue')"
+        'library("dplyr");library("ggplot2");library("tidyr");library("forcats");library("glue")'
       })
 
       qenv <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {

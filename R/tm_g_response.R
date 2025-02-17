@@ -379,7 +379,7 @@ srv_g_response <- function(id,
     )
 
     qenv <- teal.code::eval_code(data(),
-                                 "library('ggplot2');library('dplyr');library('forcats')")
+                                 'library("ggplot2");library("dplyr");library("forcats")')
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
