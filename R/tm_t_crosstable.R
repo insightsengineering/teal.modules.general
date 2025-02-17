@@ -35,7 +35,7 @@
 #' See code snippet below:
 #'
 #' ```
-#' tm_g_scatterplotmatrix(
+#' tm_g_crosstable(
 #'    ..., # arguments for module
 #'    decorators = list(
 #'      table = teal_transform_module(...) # applied to the `table` output
@@ -176,7 +176,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
-  assert_decorators(decorators, "plot")
+  assert_decorators(decorators, "table")
   # End of assertions
 
   # Make UI args
@@ -244,7 +244,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot"))
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "table"))
     ),
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
@@ -420,7 +420,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
     decorated_output_q <- srv_decorate_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      decorators = select_decorators(decorators, "table"),
       expr = table
     )
 
