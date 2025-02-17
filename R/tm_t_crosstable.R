@@ -35,7 +35,7 @@
 #' See code snippet below:
 #'
 #' ```
-#' tm_g_crosstable(
+#' tm_t_crosstable(
 #'    ..., # arguments for module
 #'    decorators = list(
 #'      table = teal_transform_module(...) # applied to the `table` output

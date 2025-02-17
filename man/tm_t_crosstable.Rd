@@ -87,7 +87,7 @@ A Decorator is applied to the specific output using a named list of \code{teal_t
 The name of this list corresponds to the name of the output to which the decorator is applied.
 See code snippet below:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{tm_g_crosstable(
+\if{html}{\out{<div class="sourceCode">}}\preformatted{tm_t_crosstable(
    ..., # arguments for module
    decorators = list(
      table = teal_transform_module(...) # applied to the `table` output
