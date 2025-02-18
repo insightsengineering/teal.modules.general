@@ -434,7 +434,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       selector_list = selector_list,
       datasets = data
     )
-    qenv <- teal.code::eval_code(data(), 'library("ggplot2")')
+    qenv <- teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tidyr")') # nolint quotes
     anl_merged_q <- reactive({
       req(anl_merged_input())
       qenv %>%

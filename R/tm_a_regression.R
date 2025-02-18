@@ -462,7 +462,7 @@ srv_a_regression <- function(id,
 
     qenv <- teal.code::eval_code(
       data(),
-      "library('ggplot2');"
+      'library("ggplot2");library("dplyr")' # nolint quotes
     )
 
     anl_merged_q <- reactive({
