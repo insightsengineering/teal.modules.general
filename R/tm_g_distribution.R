@@ -34,20 +34,18 @@
 #' - `summary_table` (`listing_df` created with [rlistings::as_listing()])
 #' - `test_table` (`listing_df` created with [rlistings::as_listing()])
 #'
-#' Decorators can be applied to all outputs or only to specific objects using a
-#' named list of `teal_transform_module` objects.
-#' The `"default"` name is reserved for decorators that are applied to all outputs.
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
 #' See code snippet below:
 #'
 #' ```
 #' tm_g_distribution(
 #'    ..., # arguments for module
 #'    decorators = list(
-#'      default = list(teal_transform_module(...)), # applied to all outputs
-#'      histogram_plot = list(teal_transform_module(...)), # applied only to `histogram_plot` output
-#'      qq_plot = list(teal_transform_module(...)) # applied only to `qq_plot` output
-#'      summary_table = list(teal_transform_module(...)) # applied only to `summary_table` output
-#'      test_table = list(teal_transform_module(...)) # applied only to `test_table` output
+#'      histogram_plot = teal_transform_module(...), # applied only to `histogram_plot` output
+#'      qq_plot = teal_transform_module(...), # applied only to `qq_plot` output
+#'      summary_table = teal_transform_module(...), # applied only to `summary_table` output
+#'      test_table = teal_transform_module(...) # applied only to `test_table` output
 #'    )
 #' )
 #' ```
@@ -194,7 +192,6 @@ tm_g_distribution <- function(label = "Distribution Module",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   available_decorators <- c("histogram_plot", "qq_plot", "test_table", "summary_table")
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, names = available_decorators)
 
   # End of assertions
