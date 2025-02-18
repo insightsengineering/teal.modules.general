@@ -794,7 +794,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         pca_plot_biplot_expr <- c(
           pca_plot_biplot_expr,
           substitute(
-            ggplot2::geom_point(ggplot2::aes_string(x = x_axis, y = y_axis), data = pca_rot, alpha = alpha, size = size),
+            ggplot2::geom_point(ggplot2::aes_string(x = x_axis, y = y_axis),
+              data = pca_rot, alpha = alpha, size = size
+            ),
             list(x_axis = input$x_axis, y_axis = input$y_axis, alpha = input$alpha, size = input$size)
           )
         )

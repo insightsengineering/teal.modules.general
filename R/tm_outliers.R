@@ -980,7 +980,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         qenv,
         substitute(
           expr = cumulative_plot <- plot_call +
-            ggplot2::geom_point(data = outlier_points, ggplot2::aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
+            ggplot2::geom_point(
+              data = outlier_points,
+              ggplot2::aes(x = outlier_var_name, y = y, color = is_outlier_selected)
+            ) +
             ggplot2::scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
           env = list(

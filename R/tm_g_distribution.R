@@ -816,7 +816,8 @@ srv_distribution <- function(id,
           substitute(
             expr = ggplot2::ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
               ggplot2::geom_histogram(
-                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
+                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var),
+                bins = bins_var, alpha = 0.3
               ),
             env = list(
               m_type = as.name(m_type),
