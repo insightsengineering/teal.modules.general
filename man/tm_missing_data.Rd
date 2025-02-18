@@ -90,19 +90,17 @@ This module generates the following objects, which can be modified in place usin
 \item \code{table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
 }
 
-Decorators can be applied to all outputs or only to specific objects using a
-named list of \code{teal_transform_module} objects.
-The \code{"default"} name is reserved for decorators that are applied to all outputs.
+A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
+The name of this list corresponds to the name of the output to which the decorator is applied.
 See code snippet below:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_missing_data(
    ..., # arguments for module
    decorators = list(
-     default = list(teal_transform_module(...)), # applied to all outputs
-     summary_plot = list(teal_transform_module(...)), # applied only to `summary_plot` output
-     combination_plot = list(teal_transform_module(...)) # applied only to `combination_plot` output
-     by_subject_plot = list(teal_transform_module(...)) # applied only to `by_subject_plot` output
-     table = list(teal_transform_module(...)) # applied only to `table` output
+     summary_plot = teal_transform_module(...), # applied only to `summary_plot` output
+     combination_plot = teal_transform_module(...), # applied only to `combination_plot` output
+     by_subject_plot = teal_transform_module(...), # applied only to `by_subject_plot` output
+     table = teal_transform_module(...) # applied only to `table` output
    )
 )
 }\if{html}{\out{</div>}}

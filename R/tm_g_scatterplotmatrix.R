@@ -23,6 +23,19 @@
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`trellis` - output of `lattice::splom`)
 #'
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
+#' See code snippet below:
+#'
+#' ```
+#' tm_g_scatterplotmatrix(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      plot = teal_transform_module(...) # applied to the `plot` output
+#'    )
+#' )
+#' ```
+#'
 #' For additional details and examples of decorators, refer to the vignette
 #' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
@@ -199,7 +212,6 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, "plot")
   # End of assertions
 

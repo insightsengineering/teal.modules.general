@@ -105,19 +105,17 @@ This module generates the following objects, which can be modified in place usin
 \item \code{eigenvector_plot} (\code{ggplot2})
 }
 
-Decorators can be applied to all outputs or only to specific objects using a
-named list of \code{teal_transform_module} objects.
-The \code{"default"} name is reserved for decorators that are applied to all outputs.
+A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
+The name of this list corresponds to the name of the output to which the decorator is applied.
 See code snippet below:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_a_pca(
    ..., # arguments for module
    decorators = list(
-     default = list(teal_transform_module(...)), # applied to all outputs
-     elbow_plot = list(teal_transform_module(...)), # applied only to `elbow_plot` output
-     circle_plot = list(teal_transform_module(...)) # applied only to `circle_plot` output
-     biplot = list(teal_transform_module(...)) # applied only to `biplot` output
-     eigenvector_plot = list(teal_transform_module(...)) # applied only to `eigenvector_plot` output
+     elbow_plot = teal_transform_module(...), # applied to the `elbow_plot` output
+     circle_plot = teal_transform_module(...), # applied to the `circle_plot` output
+     biplot = teal_transform_module(...), # applied to the `biplot` output
+     eigenvector_plot = teal_transform_module(...) # applied to the `eigenvector_plot` output
    )
 )
 }\if{html}{\out{</div>}}

@@ -25,20 +25,18 @@
 #' - `biplot` (`ggplot2`)
 #' - `eigenvector_plot` (`ggplot2`)
 #'
-#' Decorators can be applied to all outputs or only to specific objects using a
-#' named list of `teal_transform_module` objects.
-#' The `"default"` name is reserved for decorators that are applied to all outputs.
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
 #' See code snippet below:
 #'
 #' ```
 #' tm_a_pca(
 #'    ..., # arguments for module
 #'    decorators = list(
-#'      default = list(teal_transform_module(...)), # applied to all outputs
-#'      elbow_plot = list(teal_transform_module(...)), # applied only to `elbow_plot` output
-#'      circle_plot = list(teal_transform_module(...)) # applied only to `circle_plot` output
-#'      biplot = list(teal_transform_module(...)) # applied only to `biplot` output
-#'      eigenvector_plot = list(teal_transform_module(...)) # applied only to `eigenvector_plot` output
+#'      elbow_plot = teal_transform_module(...), # applied to the `elbow_plot` output
+#'      circle_plot = teal_transform_module(...), # applied to the `circle_plot` output
+#'      biplot = teal_transform_module(...), # applied to the `biplot` output
+#'      eigenvector_plot = teal_transform_module(...) # applied to the `eigenvector_plot` output
 #'    )
 #' )
 #' ```
@@ -186,9 +184,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   available_decorators <- c("elbow_plot", "circle_plot", "biplot", "eigenvector_plot")
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, available_decorators)
-  # End of assertions
 
   # Make UI args
   args <- as.list(environment())
