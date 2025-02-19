@@ -869,7 +869,7 @@ srv_distribution <- function(id,
         if (add_dens_var) {
           plot_call <- substitute(
             expr = plot_call +
-              stat_density(
+              ggplot2::stat_density(
                 ggplot2::aes(y = ggplot2::after_stat(const * m_type2)),
                 geom = "line",
                 position = "identity",

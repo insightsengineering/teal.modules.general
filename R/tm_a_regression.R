@@ -604,7 +604,7 @@ srv_a_regression <- function(id,
         plot <- substitute(
           expr = ggplot2::ggplot(fit$model[, 2:1], ggplot2::aes_string(regressor, response)) +
             ggplot2::geom_point(size = size, alpha = alpha) +
-            stat_smooth(method = "lm", formula = y ~ x, se = FALSE),
+            ggplot2::stat_smooth(method = "lm", formula = y ~ x, se = FALSE),
           env = list(
             regressor = regression_var()$regressor,
             response = regression_var()$response,
