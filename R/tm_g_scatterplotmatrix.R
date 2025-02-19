@@ -329,8 +329,8 @@ srv_g_scatterplotmatrix <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+      qenv <- teal.code::eval_code(data(), 'library("dplyr");library("lattice")') # nolint quotes
+      teal.code::eval_code(qenv, as.expression(anl_merged_input()$expr))
     })
 
     merged <- list(
@@ -366,6 +366,7 @@ srv_g_scatterplotmatrix <- function(id,
 
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
+      qenv <- teal.code::eval_code(qenv, 'library("dplyr");library("lattice")') # nolint quotes
       if (any(check_char)) {
         qenv <- teal.code::eval_code(
           qenv,

@@ -818,7 +818,7 @@ plot_var_summary <- function(var,
           theme = do.call("theme", all_ggplot2_args$theme)
         )
     }
-    plot_main <- ggplotGrob(plot_main)
+    plot_main <- ggplot2::ggplotGrob(plot_main)
   }
 
   grid::grid.draw(plot_main)

@@ -533,7 +533,7 @@ srv_missing_data <- function(id,
       group_var <- input$group_by_var
       anl <- data_r()
       qenv <- teal.code::eval_code(data(), {
-        'library("dplyr");library("ggplot2");library("tidyr");library("forcats");library("glue")'
+        'library("dplyr");library("ggplot2");library("tidyr");library("gridExtra")' # nolint quotes
       })
 
       qenv <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
@@ -927,14 +927,14 @@ srv_missing_data <- function(id,
 
       if (isTRUE(input$if_patients_plot)) {
         within(qenv, {
-          g1 <- ggplotGrob(summary_plot_top)
-          g2 <- ggplotGrob(summary_plot_bottom)
+          g1 <- ggplot2::ggplotGrob(summary_plot_top)
+          g2 <- ggplot2::ggplotGrob(summary_plot_bottom)
           summary_plot <- gridExtra::gtable_cbind(g1, g2, size = "first")
           summary_plot$heights <- grid::unit.pmax(g1$heights, g2$heights)
         })
       } else {
         within(qenv, {
-          g1 <- ggplotGrob(summary_plot_top)
+          g1 <- ggplot2::ggplotGrob(summary_plot_top)
           summary_plot <- g1
         })
       }
@@ -1067,8 +1067,8 @@ srv_missing_data <- function(id,
       )
 
       within(qenv, {
-        g1 <- ggplotGrob(combination_plot_top)
-        g2 <- ggplotGrob(combination_plot_bottom)
+        g1 <- ggplot2::ggplotGrob(combination_plot_top)
+        g2 <- ggplot2::ggplotGrob(combination_plot_bottom)
 
         combination_plot <- gridExtra::gtable_rbind(g1, g2, size = "last")
         combination_plot$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
@@ -1112,8 +1112,11 @@ srv_missing_data <- function(id,
       }
 
       qenv <- if (!is.null(group_var)) {
+        common_code_libraries_q <- teal.code::eval_code(common_code_q(),
+                             'library("forcats");library("glue");library("rlistings")' # nolint quotes
+        )
         teal.code::eval_code(
-          common_code_q(),
+          common_code_libraries_q,
           substitute(
             expr = {
               summary_data <- ANL %>%
