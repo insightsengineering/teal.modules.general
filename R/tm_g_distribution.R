@@ -681,7 +681,7 @@ srv_distribution <- function(id,
           )
         )
 
-        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
+        qenv <- teal.code::eval_code(qenv, 'library("forcats");library("ggpp")') # nolint quotes
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -1065,7 +1065,7 @@ srv_distribution <- function(id,
         if (isTRUE(input$qq_line)) {
           plot_call <- substitute(
             expr = plot_call +
-              stat_qq_line(distribution = mapped_dist, dparams = params),
+              ggplot2::stat_qq_line(distribution = mapped_dist, dparams = params),
             env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
           )
         }
