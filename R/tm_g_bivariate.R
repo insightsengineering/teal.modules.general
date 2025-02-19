@@ -549,7 +549,7 @@ srv_g_bivariate <- function(id,
     )
     qenv <- teal.code::eval_code(
       data(),
-      'library("ggplot2");library("dplyr");library("tern");library("ggmosaic");library("grid")' # nolint quotes
+      'library("ggplot2");library("dplyr");library("teal.modules.general")' # nolint quotes
     )
 
     anl_merged_q <- reactive({
