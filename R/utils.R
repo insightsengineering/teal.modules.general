@@ -402,6 +402,5 @@ select_decorators <- function(decorators, scope) {
 
 
 prepare_code <- function(x) {
-  code <- teal.code::get_code(req(x))
-  paste(as.character(styler::style_text(code)), collapse = "\n")
+  teal.code::get_code(req(x)
 }
