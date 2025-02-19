@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0343399106072168" branch-rate="0" lines-covered="315" lines-valid="9173" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2025-02-19 14:00:48.094228">
+<coverage line-rate="0.0343436546009594" branch-rate="0" lines-covered="315" lines-valid="9172" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2025-02-19 14:39:28.658993">
   <sources>
     <source>/__w/teal.modules.general/teal.modules.general/teal.modules.general</source>
   </sources>
   <packages>
-    <package name="teal.modules.general" line-rate="0.0343399106072168" branch-rate="0" complexity="0">
+    <package name="teal.modules.general" line-rate="0.0343436546009594" branch-rate="0" complexity="0">
       <classes>
         <class name="tm_a_pca.R" filename="R/tm_a_pca.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -18461,7 +18461,7 @@
             <line number="1299" hits="0" branch="false"/>
           </lines>
         </class>
-        <class name="utils.R" filename="R/utils.R" line-rate="0.104575163398693" branch-rate="0" complexity="0">
+        <class name="utils.R" filename="R/utils.R" line-rate="0.105263157894737" branch-rate="0" complexity="0">
           <methods>
             <method name="add_facet_labels" signature="" line-rate="0" branch-rate="0" complexity="0">
               <lines>
@@ -18661,7 +18661,6 @@
             <method name="prepare_code" signature="" line-rate="0" branch-rate="0" complexity="0">
               <lines>
                 <line number="405" hits="0" branch="false"/>
-                <line number="406" hits="0" branch="false"/>
               </lines>
             </method>
           </methods>
@@ -18818,7 +18817,6 @@
             <line number="397" hits="0" branch="false"/>
             <line number="399" hits="0" branch="false"/>
             <line number="405" hits="0" branch="false"/>
-            <line number="406" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="zzz.R" filename="R/zzz.R" line-rate="0" branch-rate="0" complexity="0">
