@@ -402,5 +402,5 @@ select_decorators <- function(decorators, scope) {
 
 
 prepare_code <- function(x) {
-  teal.code::get_code(req(x)
+  teal.code::get_code(req(x))
 }
