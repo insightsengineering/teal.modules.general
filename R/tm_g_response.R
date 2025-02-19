@@ -492,7 +492,7 @@ srv_g_response <- function(id,
 
       if (!freq) {
         plot_call <- substitute(
-          plot_call + expand_limits(y = c(0, 1.1)),
+          plot_call + ggplot2::expand_limits(y = c(0, 1.1)),
           env = list(plot_call = plot_call)
         )
       }
