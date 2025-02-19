@@ -366,7 +366,7 @@ srv_g_scatterplotmatrix <- function(id,
 
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
-      qenv <- teal.code::eval_code(qenv, 'library("dplyr");library("lattice")') # nolint quotes
+      qenv <- teal.code::eval_code(qenv, 'library("dplyr")') # nolint quotes
       if (any(check_char)) {
         qenv <- teal.code::eval_code(
           qenv,
