@@ -663,6 +663,7 @@ srv_distribution <- function(id,
             "Group by variable must be `factor`, `character`, or `integer`"
           )
         )
+        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -679,6 +680,8 @@ srv_distribution <- function(id,
             "Stratify by variable must be `factor`, `character`, or `integer`"
           )
         )
+
+        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -1226,6 +1229,7 @@ srv_distribution <- function(id,
         qenv <- common_q()
 
         if (length(s_var) == 0 && length(g_var) == 0) {
+          qenv <- teal.code::eval_code(qenv, 'library("generics")') # nolint quotes
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -1239,6 +1243,7 @@ srv_distribution <- function(id,
             )
           )
         } else {
+          qenv <- teal.code::eval_code(qenv, 'library("tidyr")') # nolint quotes
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
