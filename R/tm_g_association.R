@@ -344,7 +344,7 @@ srv_tm_g_association <- function(id,
 
     qenv <- teal.code::eval_code(
       data(),
-      'library("ggplot2");library("dplyr");library("tern");library("ggmosaic");library("grid")' # nolint quotes
+      'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")' # nolint quotes
     )
     anl_merged_q <- reactive({
       req(anl_merged_input())
@@ -502,8 +502,9 @@ srv_tm_g_association <- function(id,
         teal.code::eval_code(
           substitute(
             expr = {
-              plot_top <- plot_calls[[1]]
-              plot_bottom <- plot_calls[[1]]
+              plots <- plot_calls
+              plot_top <- plots[[1]]
+              plot_bottom <- plots[[2]]
               plot <- tern::stack_grobs(grobs = lapply(list(plot_top, plot_bottom), ggplot2::ggplotGrob))
             },
             env = list(

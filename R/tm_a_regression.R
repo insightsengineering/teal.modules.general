@@ -512,7 +512,7 @@ srv_a_regression <- function(id,
           selected = restoreInput(ns("label_var"), selected)
         )
 
-        data <- fortify(stats::lm(form, data = ANL))
+        data <- ggplot2::fortify(stats::lm(form, data = ANL))
         cooksd <- data$.cooksd[!is.nan(data$.cooksd)]
         max_outlier <- max(ceiling(max(cooksd) / mean(cooksd)), 2)
         cur_outlier <- isolate(input$outlier)
@@ -652,7 +652,7 @@ srv_a_regression <- function(id,
         substitute(
           expr = {
             class(fit$residuals) <- NULL
-            data <- fortify(fit)
+            data <- ggplot2::fortify(fit)
             plot <- graph
           },
           env = list(
