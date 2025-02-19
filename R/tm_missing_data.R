@@ -1112,8 +1112,9 @@ srv_missing_data <- function(id,
       }
 
       qenv <- if (!is.null(group_var)) {
-        common_code_libraries_q <- teal.code::eval_code(common_code_q(),
-                             'library("forcats");library("glue");library("rlistings")' # nolint quotes
+        common_code_libraries_q <- teal.code::eval_code(
+          common_code_q(),
+          'library("forcats");library("glue");library("rlistings")' # nolint quotes
         )
         teal.code::eval_code(
           common_code_libraries_q,

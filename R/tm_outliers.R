@@ -439,10 +439,13 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      teal.code::eval_code(data(),
-                           paste0(
-                             'library("dplyr");library("tidyr");', # nolint quotes
-                             'library("tibble");library("ggplot2");library("rlistings")')) %>% # nolint quotes
+      teal.code::eval_code(
+        data(),
+        paste0(
+          'library("dplyr");library("tidyr");', # nolint quotes
+          'library("tibble");library("ggplot2");library("rlistings")'
+        )
+      ) %>% # nolint quotes
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
