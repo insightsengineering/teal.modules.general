@@ -399,8 +399,3 @@ select_decorators <- function(decorators, scope) {
     list()
   }
 }
-
-
-prepare_code <- function(x) {
-  teal.code::get_code(req(x))
-}

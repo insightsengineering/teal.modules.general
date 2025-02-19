@@ -1121,7 +1121,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     })
 
     # Render R code.
-    source_code_r <- reactive(prepare_code(decorated_output_q()))
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",

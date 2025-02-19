@@ -106,7 +106,7 @@
 #'             label = "Select variable:",
 #'             vars = "country_id",
 #'             choices = value_choices(data[["sales"]], "country_id"),
-#'             selected = c("DE", "FR", "IT", "ES", "PT", "GR", "NL", "BE", "LU", "AT"),
+#'             selected = c("DE", "FR", "IT", "PT", "GR", "NL", "BE", "LU", "AT"),
 #'             multiple = TRUE
 #'           ),
 #'           select = select_spec(
@@ -496,7 +496,7 @@ srv_g_scatterplotmatrix <- function(id,
     })
 
     # Render R code.
-    source_code_r <- reactive(prepare_code(decorated_output_q()))
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",

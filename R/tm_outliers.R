@@ -1310,7 +1310,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     # Render R code.
-    source_code_r <- reactive(prepare_code(decorated_final_q()))
+    source_code_r <- reactive(teal.code::get_code(req(decorated_final_q())))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
