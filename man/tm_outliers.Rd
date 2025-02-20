@@ -77,7 +77,7 @@ This module generates the following objects, which can be modified in place usin
 \item \code{box_plot} (\code{ggplot2})
 \item \code{density_plot} (\code{ggplot2})
 \item \code{cumulative_plot} (\code{ggplot2})
-\item \code{table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
+\item \code{table} (\code{datatable} created with \code{\link[DT:datatable]{DT::datatable()}})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
