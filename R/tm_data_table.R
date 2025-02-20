@@ -318,9 +318,12 @@ srv_data_table <- function(id,
       df <- data()[[dataname]]
 
       teal::validate_has_data(df, min_nrow = 1L, msg = paste("data", dataname, "is empty"))
-
-      teal.code::eval_code(
+      qenv <- teal.code::eval_code(
         data(),
+        'library("dplyr");library("DT")' # nolint quotes
+      )
+      teal.code::eval_code(
+        qenv,
         substitute(
           expr = {
             variables <- vars
