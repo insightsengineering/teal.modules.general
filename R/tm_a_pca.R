@@ -931,6 +931,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot eigenvector_plot ----
     plot_eigenvector <- function(base_q) {
+      req(input$pc)
       pc <- input$pc
       ggtheme <- input$ggtheme
 
