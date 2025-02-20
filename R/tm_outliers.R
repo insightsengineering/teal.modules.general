@@ -21,7 +21,7 @@
 #' - `box_plot` (`ggplot2`)
 #' - `density_plot` (`ggplot2`)
 #' - `cumulative_plot` (`ggplot2`)
-#' - `table` (`listing_df` created with [rlistings::as_listing()])
+#' - `table` (`datatable` created with [DT::datatable()])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -726,9 +726,13 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       # Generate decoratable object from data
       qenv <- within(qenv, {
-        table <- rlistings::as_listing(
-          tibble::rownames_to_column(summary_table, var = " "),
-          key_cols = character(0L)
+        table <- DT::datatable(
+          summary_table,
+          options = list(
+            dom = "t",
+            autoWidth = TRUE,
+            columnDefs = list(list(width = "200px", targets = "_all"))
+          )
         )
       })
 
@@ -1048,14 +1052,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         if (iv_r()$is_valid()) {
           categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
           if (!is.null(categorical_var)) {
-            DT::datatable(
-              decorated_final_q()[["summary_table"]],
-              options = list(
-                dom = "t",
-                autoWidth = TRUE,
-                columnDefs = list(list(width = "200px", targets = "_all"))
-              )
-            )
+            decorated_final_q()[["table"]]
           }
         }
       }
