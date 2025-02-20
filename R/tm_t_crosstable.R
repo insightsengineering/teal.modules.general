@@ -43,7 +43,7 @@
 #' )
 #' ```
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -311,10 +311,10 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
       selector_list = selector_list,
       merge_function = merge_function
     )
-
+    qenv <- teal.code::eval_code(data(), 'library("rtables");library("tern");library("dplyr")') # nolint quotes
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 

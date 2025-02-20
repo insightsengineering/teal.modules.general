@@ -42,7 +42,7 @@
 #' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -434,10 +434,10 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       selector_list = selector_list,
       datasets = data
     )
-
+    qenv <- teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tidyr")') # nolint quotes
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -581,12 +581,12 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         theme = list(
           legend.position = "right",
           legend.spacing.y = quote(grid::unit(-5, "pt")),
-          legend.title = quote(element_text(vjust = 25)),
+          legend.title = quote(ggplot2::element_text(vjust = 25)),
           axis.text.x = substitute(
-            element_text(angle = angle_value, hjust = hjust_value),
+            ggplot2::element_text(angle = angle_value, hjust = hjust_value),
             list(angle_value = angle_value, hjust_value = hjust_value)
           ),
-          text = substitute(element_text(size = font_size), list(font_size = font_size))
+          text = substitute(ggplot2::element_text(size = font_size), list(font_size = font_size))
         )
       )
 
@@ -611,24 +611,24 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               )
 
             cols <- c(getOption("ggplot2.discrete.colour"), c("lightblue", "darkred", "black"))[1:3]
-            elbow_plot <- ggplot(mapping = aes_string(x = "component", y = "value")) +
-              geom_bar(
-                aes(fill = "Single variance"),
+            elbow_plot <- ggplot2::ggplot(mapping = aes_string(x = "component", y = "value")) +
+              ggplot2::geom_bar(
+                ggplot2::aes(fill = "Single variance"),
                 data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),
                 color = "black",
                 stat = "identity"
               ) +
-              geom_point(
-                aes(color = "Cumulative variance"),
+              ggplot2::geom_point(
+                ggplot2::aes(color = "Cumulative variance"),
                 data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")
               ) +
-              geom_line(
-                aes(group = 1, color = "Cumulative variance"),
+              ggplot2::geom_line(
+                ggplot2::aes(group = 1, color = "Cumulative variance"),
                 data = dplyr::filter(elb_dat, metric == "Cumulative Proportion")
               ) +
               labs +
-              scale_color_manual(values = c("Cumulative variance" = cols[2], "Single variance" = cols[3])) +
-              scale_fill_manual(values = c("Cumulative variance" = cols[2], "Single variance" = cols[1])) +
+              ggplot2::scale_color_manual(values = c("Cumulative variance" = cols[2], "Single variance" = cols[3])) +
+              ggplot2::scale_fill_manual(values = c("Cumulative variance" = cols[2], "Single variance" = cols[1])) +
               ggthemes +
               themes
           },
@@ -656,9 +656,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         theme = list(
-          text = substitute(element_text(size = font_size), list(font_size = font_size)),
+          text = substitute(ggplot2::element_text(size = font_size), list(font_size = font_size)),
           axis.text.x = substitute(
-            element_text(angle = angle_val, hjust = hjust_val),
+            ggplot2::element_text(angle = angle_val, hjust = hjust_val),
             list(angle_val = angle, hjust_val = hjust)
           )
         )
@@ -688,15 +688,15 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               y = sin(seq(0, 2 * pi, length.out = 100))
             )
 
-            circle_plot <- ggplot(pca_rot) +
-              geom_point(aes_string(x = x_axis, y = y_axis)) +
-              geom_label(
-                aes_string(x = x_axis, y = y_axis, label = "label"),
+            circle_plot <- ggplot2::ggplot(pca_rot) +
+              ggplot2::geom_point(ggplot2::aes_string(x = x_axis, y = y_axis)) +
+              ggplot2::geom_label(
+                ggplot2::aes_string(x = x_axis, y = y_axis, label = "label"),
                 nudge_x = 0.1, nudge_y = 0.05,
                 fontface = "bold"
               ) +
-              geom_path(aes(x, y, group = 1), data = circle_data) +
-              geom_point(aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
+              ggplot2::geom_path(ggplot2::aes(x, y, group = 1), data = circle_data) +
+              ggplot2::geom_point(ggplot2::aes(x = x, y = y), data = data.frame(x = 0, y = 0), shape = "x", size = 5) +
               labs +
               ggthemes +
               themes
@@ -790,7 +790,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         pca_plot_biplot_expr <- c(
           pca_plot_biplot_expr,
           substitute(
-            geom_point(aes_string(x = x_axis, y = y_axis), data = pca_rot, alpha = alpha, size = size),
+            ggplot2::geom_point(ggplot2::aes_string(x = x_axis, y = y_axis),
+              data = pca_rot, alpha = alpha, size = size
+            ),
             list(x_axis = input$x_axis, y_axis = input$y_axis, alpha = input$alpha, size = input$size)
           )
         )
@@ -801,7 +803,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         response <- ANL[[resp_col]]
 
         aes_biplot <- substitute(
-          aes_string(x = x_axis, y = y_axis, color = "response"),
+          ggplot2::aes_string(x = x_axis, y = y_axis, color = "response"),
           env = list(x_axis = x_axis, y_axis = y_axis)
         )
 
@@ -822,7 +824,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               qenv,
               quote(pca_rot$response <- as.factor(response))
             )
-            quote(scale_color_brewer(palette = "Dark2"))
+            quote(ggplot2::scale_color_brewer(palette = "Dark2"))
           } else if (inherits(response, "Date")) {
             qenv <- teal.code::eval_code(
               qenv,
@@ -830,7 +832,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             )
 
             quote(
-              scale_color_gradient(
+              ggplot2::scale_color_gradient(
                 low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
                 high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1],
                 labels = function(x) as.Date(x, origin = "1970-01-01")
@@ -841,7 +843,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               qenv,
               quote(pca_rot$response <- response)
             )
-            quote(scale_color_gradient(
+            quote(ggplot2::scale_color_gradient(
               low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
               high = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
             ))
@@ -850,7 +852,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         pca_plot_biplot_expr <- c(
           pca_plot_biplot_expr,
           substitute(
-            geom_point(aes_biplot, data = pca_rot, alpha = alpha, size = size),
+            ggplot2::geom_point(aes_biplot, data = pca_rot, alpha = alpha, size = size),
             env = list(aes_biplot = aes_biplot, alpha = alpha, size = size)
           ),
           scales_biplot
@@ -861,8 +863,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         pca_plot_biplot_expr <- c(
           pca_plot_biplot_expr,
           substitute(
-            geom_segment(
-              aes_string(x = "xstart", y = "ystart", xend = x_axis, yend = y_axis),
+            ggplot2::geom_segment(
+              ggplot2::aes_string(x = "xstart", y = "ystart", xend = x_axis, yend = y_axis),
               data = rot_vars,
               lineend = "round", linejoin = "round",
               arrow = grid::arrow(length = grid::unit(0.5, "cm"))
@@ -870,8 +872,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             env = list(x_axis = x_axis, y_axis = y_axis)
           ),
           substitute(
-            geom_label(
-              aes_string(
+            ggplot2::geom_label(
+              ggplot2::aes_string(
                 x = x_axis,
                 y = y_axis,
                 label = "label"
@@ -882,7 +884,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             ),
             env = list(x_axis = x_axis, y_axis = y_axis)
           ),
-          quote(geom_point(aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5))
+          quote(ggplot2::geom_point(ggplot2::aes(x = xstart, y = ystart), data = rot_vars, shape = "x", size = 5))
         )
       }
 
@@ -892,9 +894,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = dev_labs,
         theme = list(
-          text = substitute(element_text(size = font_size), list(font_size = font_size)),
+          text = substitute(ggplot2::element_text(size = font_size), list(font_size = font_size)),
           axis.text.x = substitute(
-            element_text(angle = angle_val, hjust = hjust_val),
+            ggplot2::element_text(angle = angle_val, hjust = hjust_val),
             list(angle_val = angle, hjust_val = hjust)
           )
         )
@@ -931,6 +933,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot eigenvector_plot ----
     plot_eigenvector <- function(base_q) {
+      req(input$pc)
       pc <- input$pc
       ggtheme <- input$ggtheme
 
@@ -942,9 +945,9 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         theme = list(
-          text = substitute(element_text(size = font_size), list(font_size = font_size)),
+          text = substitute(ggplot2::element_text(size = font_size), list(font_size = font_size)),
           axis.text.x = substitute(
-            element_text(angle = angle_val, hjust = hjust_val),
+            ggplot2::element_text(angle = angle_val, hjust = hjust_val),
             list(angle_val = angle, hjust_val = hjust)
           )
         )
@@ -965,8 +968,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         list(
           quote(ggplot(pca_rot)),
           substitute(
-            geom_bar(
-              aes_string(x = "Variable", y = pc),
+            ggplot2::geom_bar(
+              ggplot2::aes_string(x = "Variable", y = pc),
               stat = "identity",
               color = "black",
               fill = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
@@ -974,8 +977,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             env = list(pc = pc)
           ),
           substitute(
-            geom_text(
-              aes(
+            ggplot2::geom_text(
+              ggplot2::aes(
                 x = Variable,
                 y = pc_name,
                 label = round(pc_name, 3),

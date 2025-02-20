@@ -31,8 +31,8 @@
 #' This module generates the following objects, which can be modified in place using decorators::
 #' - `histogram_plot` (`ggplot2`)
 #' - `qq_plot` (`ggplot2`)
-#' - `summary_table` (`listing_df` created with [rlistings::as_listing()])
-#' - `test_table` (`listing_df` created with [rlistings::as_listing()])
+#' - `summary_table` (`datatables` created with [DT::datatable()])
+#' - `test_table` (`datatables` created with [DT::datatable()])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -51,7 +51,7 @@
 #' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -539,9 +539,14 @@ srv_distribution <- function(id,
       datasets = data
     )
 
+    qenv <- teal.code::eval_code(
+      data(),
+      'library("ggplot2");library("rlistings");library("dplyr")' # nolint quotes
+    )
+
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -658,6 +663,7 @@ srv_distribution <- function(id,
             "Group by variable must be `factor`, `character`, or `integer`"
           )
         )
+        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -674,6 +680,8 @@ srv_distribution <- function(id,
             "Stratify by variable must be `factor`, `character`, or `integer`"
           )
         )
+
+        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -796,9 +804,9 @@ srv_distribution <- function(id,
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot(ANL, aes(dist_var_name)) +
-              geom_histogram(
-                position = "identity", aes(y = after_stat(m_type)), bins = bins_var, alpha = 0.3
+            expr = ggplot2::ggplot(ANL, ggplot2::aes(dist_var_name)) +
+              ggplot2::geom_histogram(
+                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type)), bins = bins_var, alpha = 0.3
               ),
             env = list(
               m_type = as.name(m_type), bins_var = bins_var, dist_var_name = as.name(dist_var)
@@ -806,9 +814,10 @@ srv_distribution <- function(id,
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
-              geom_histogram(
-                position = "identity", aes(y = after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
+            expr = ggplot2::ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
+              ggplot2::geom_histogram(
+                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var),
+                bins = bins_var, alpha = 0.3
               ),
             env = list(
               m_type = as.name(m_type),
@@ -821,11 +830,11 @@ srv_distribution <- function(id,
         } else if (length(s_var) == 0 && length(g_var) != 0) {
           req(scales_type)
           substitute(
-            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name)) +
-              geom_histogram(
-                position = "identity", aes(y = after_stat(m_type)), bins = bins_var, alpha = 0.3
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes(dist_var_name)) +
+              ggplot2::geom_histogram(
+                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type)), bins = bins_var, alpha = 0.3
               ) +
-              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               m_type = as.name(m_type),
               bins_var = bins_var,
@@ -838,12 +847,12 @@ srv_distribution <- function(id,
         } else {
           req(scales_type)
           substitute(
-            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes(dist_var_name, col = s_var_name)) +
-              geom_histogram(
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes(dist_var_name, col = s_var_name)) +
+              ggplot2::geom_histogram(
                 position = "identity",
-                aes(y = after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
+                ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
               ) +
-              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               m_type = as.name(m_type),
               bins_var = bins_var,
@@ -860,8 +869,8 @@ srv_distribution <- function(id,
         if (add_dens_var) {
           plot_call <- substitute(
             expr = plot_call +
-              stat_density(
-                aes(y = after_stat(const * m_type2)),
+              ggplot2::stat_density(
+                ggplot2::aes(y = ggplot2::after_stat(const * m_type2)),
                 geom = "line",
                 position = "identity",
                 alpha = 0.5,
@@ -882,6 +891,7 @@ srv_distribution <- function(id,
         }
 
         if (length(t_dist) != 0 && main_type_var == "Density" && length(g_var) == 0 && length(s_var) == 0) {
+          qenv <- teal.code::eval_code(qenv, 'library("ggpp")') # nolint quotes
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -895,7 +905,7 @@ srv_distribution <- function(id,
           plot_call <- substitute(
             expr = plot_call + ggpp::geom_table_npc(
               data = data,
-              aes(npcx = x, npcy = y, label = label),
+              ggplot2::aes(npcx = x, npcy = y, label = label),
               hjust = 0, vjust = 1, size = 4
             ),
             env = list(plot_call = plot_call, data = datas, label = label)
@@ -916,13 +926,13 @@ srv_distribution <- function(id,
           plot_call <- substitute(
             expr = plot_call + stat_function(
               data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
-              aes(x, color = color),
+              ggplot2::aes(x, color = color),
               fun = mapped_dist_name,
               n = ndensity,
               size = 2,
               args = params
             ) +
-              scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
+              ggplot2::scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
             env = list(
               plot_call = plot_call,
               dist_var = dist_var,
@@ -981,18 +991,18 @@ srv_distribution <- function(id,
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot(ANL, aes_string(sample = dist_var)),
+            expr = ggplot2::ggplot(ANL, ggplot2::aes_string(sample = dist_var)),
             env = list(dist_var = dist_var)
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot(ANL, aes_string(sample = dist_var, color = s_var)),
+            expr = ggplot2::ggplot(ANL, ggplot2::aes_string(sample = dist_var, color = s_var)),
             env = list(dist_var = dist_var, s_var = s_var)
           )
         } else if (length(s_var) == 0 && length(g_var) != 0) {
           substitute(
-            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes_string(sample = dist_var)) +
-              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes_string(sample = dist_var)) +
+              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               dist_var = dist_var,
               g_var = g_var,
@@ -1002,8 +1012,8 @@ srv_distribution <- function(id,
           )
         } else {
           substitute(
-            expr = ggplot(ANL[ANL[[g_var]] != "NA", ], aes_string(sample = dist_var, color = s_var)) +
-              facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes_string(sample = dist_var, color = s_var)) +
+              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               dist_var = dist_var,
               g_var = g_var,
@@ -1021,11 +1031,12 @@ srv_distribution <- function(id,
 
         plot_call <- substitute(
           expr = plot_call +
-            stat_qq(distribution = mapped_dist, dparams = params),
+            ggplot2::stat_qq(distribution = mapped_dist, dparams = params),
           env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
         )
 
         if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
+          qenv <- teal.code::eval_code(qenv, 'library("ggpp")') # nolint quotes
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -1040,7 +1051,7 @@ srv_distribution <- function(id,
             expr = plot_call +
               ggpp::geom_table_npc(
                 data = data,
-                aes(npcx = x, npcy = y, label = label),
+                ggplot2::aes(npcx = x, npcy = y, label = label),
                 hjust = 0,
                 vjust = 1,
                 size = 4
@@ -1056,7 +1067,7 @@ srv_distribution <- function(id,
         if (isTRUE(input$qq_line)) {
           plot_call <- substitute(
             expr = plot_call +
-              stat_qq_line(distribution = mapped_dist, dparams = params),
+              ggplot2::stat_qq_line(distribution = mapped_dist, dparams = params),
             env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
           )
         }
@@ -1220,6 +1231,7 @@ srv_distribution <- function(id,
         qenv <- common_q()
 
         if (length(s_var) == 0 && length(g_var) == 0) {
+          qenv <- teal.code::eval_code(qenv, 'library("generics")') # nolint quotes
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -1233,6 +1245,7 @@ srv_distribution <- function(id,
             )
           )
         } else {
+          qenv <- teal.code::eval_code(qenv, 'library("tidyr")') # nolint quotes
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -1258,9 +1271,9 @@ srv_distribution <- function(id,
     # Summary table listing has to be created separately to allow for qenv join
     output_summary_q <- reactive({
       if (iv_r()$is_valid()) {
-        within(common_q(), summary_table <- rlistings::as_listing(summary_table_data))
+        within(common_q(), summary_table <- DT::datatable(summary_table_data))
       } else {
-        within(common_q(), summary_table <- rlistings::as_listing(summary_table_data[0L, ]))
+        within(common_q(), summary_table <- DT::datatable(summary_table_data[0L, ]))
       }
     })
 
@@ -1271,11 +1284,11 @@ srv_distribution <- function(id,
         c(
           common_q(),
           within(test_q_out, {
-            test_table <- rlistings::as_listing(test_table_data)
+            test_table <- DT::datatable(test_table_data)
           })
         )
       } else {
-        within(common_q(), test_table <- rlistings::as_listing(data.frame(missing = character(0L))))
+        within(common_q(), test_table <- DT::datatable(data.frame(missing = character(0L))))
       }
     })
 
@@ -1328,7 +1341,7 @@ srv_distribution <- function(id,
     qq_r <- reactive(req(decorated_output_qq_q())[["qq_plot"]])
 
     output$summary_table <- DT::renderDataTable(
-      expr = decorated_output_summary_q()[["summary_table_data"]],
+      expr = decorated_output_summary_q()[["summary_table"]],
       options = list(
         autoWidth = TRUE,
         columnDefs = list(list(width = "200px", targets = "_all"))
@@ -1340,11 +1353,7 @@ srv_distribution <- function(id,
       req(iv_r()$is_valid())
       teal::validate_inputs(iv_r_dist())
       req(test_q()) # Ensure original errors are displayed
-      DT::datatable(
-        data = decorated_output_test_q()[["test_table_data"]],
-        options = list(scrollX = TRUE),
-        rownames = FALSE
-      )
+      decorated_output_test_q()[["test_table"]]
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
