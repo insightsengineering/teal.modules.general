@@ -439,7 +439,13 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      teal.code::eval_code(
+        data(),
+        paste0(
+          'library("dplyr");library("tidyr");', # nolint quotes
+          'library("tibble");library("ggplot2");library("rlistings")'
+        )
+      ) %>% # nolint quotes
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -751,9 +757,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       plot_call <- quote(ANL %>% ggplot())
 
       plot_call <- if (input$boxplot_alts == "Box plot") {
-        substitute(expr = plot_call + geom_boxplot(outlier.shape = NA), env = list(plot_call = plot_call))
+        substitute(expr = plot_call + ggplot2::geom_boxplot(outlier.shape = NA), env = list(plot_call = plot_call))
       } else if (input$boxplot_alts == "Violin plot") {
-        substitute(expr = plot_call + geom_violin(), env = list(plot_call = plot_call))
+        substitute(expr = plot_call + ggplot2::geom_violin(), env = list(plot_call = plot_call))
       } else {
         NULL
       }
@@ -761,15 +767,15 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       plot_call <- if (identical(categorical_var, character(0)) || is.null(categorical_var)) {
         inner_call <- substitute(
           expr = plot_call +
-            aes(x = "Entire dataset", y = outlier_var_name) +
-            scale_x_discrete(),
+            ggplot2::aes(x = "Entire dataset", y = outlier_var_name) +
+            ggplot2::scale_x_discrete(),
           env = list(plot_call = plot_call, outlier_var_name = as.name(outlier_var))
         )
         if (nrow(ANL_OUTLIER) > 0) {
           substitute(
-            expr = inner_call + geom_point(
+            expr = inner_call + ggplot2::geom_point(
               data = ANL_OUTLIER,
-              aes(x = "Entire dataset", y = outlier_var_name, color = is_outlier_selected)
+              ggplot2::aes(x = "Entire dataset", y = outlier_var_name, color = is_outlier_selected)
             ),
             env = list(inner_call = inner_call, outlier_var_name = as.name(outlier_var))
           )
@@ -779,12 +785,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       } else {
         substitute(
           expr = plot_call +
-            aes(y = outlier_var_name, x = reorder(categorical_var_name, order)) +
-            xlab(categorical_var) +
-            scale_x_discrete() +
-            geom_point(
+            ggplot2::aes(y = outlier_var_name, x = reorder(categorical_var_name, order)) +
+            ggplot2::xlab(categorical_var) +
+            ggplot2::scale_x_discrete() +
+            ggplot2::geom_point(
               data = ANL_OUTLIER,
-              aes(x = as.factor(categorical_var_name), y = outlier_var_name, color = is_outlier_selected)
+              ggplot2::aes(x = as.factor(categorical_var_name), y = outlier_var_name, color = is_outlier_selected)
             ),
           env = list(
             plot_call = plot_call,
@@ -815,7 +821,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         common_code_q(),
         substitute(
           expr = box_plot <- plot_call +
-            scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
+            ggplot2::scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
           env = list(
             plot_call = plot_call,
@@ -840,10 +846,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       # plot
       plot_call <- substitute(
         expr = ANL %>%
-          ggplot(aes(x = outlier_var_name)) +
-          geom_density() +
-          geom_rug(data = ANL_OUTLIER, aes(x = outlier_var_name, color = is_outlier_selected)) +
-          scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")),
+          ggplot2::ggplot(ggplot2::aes(x = outlier_var_name)) +
+          ggplot2::geom_density() +
+          ggplot2::geom_rug(data = ANL_OUTLIER, ggplot2::aes(x = outlier_var_name, color = is_outlier_selected)) +
+          ggplot2::scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")),
         env = list(outlier_var_name = as.name(outlier_var))
       )
 
@@ -851,7 +857,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         substitute(expr = plot_call, env = list(plot_call = plot_call))
       } else {
         substitute(
-          expr = plot_call + facet_grid(~ reorder(categorical_var_name, order)),
+          expr = plot_call + ggplot2::facet_grid(~ reorder(categorical_var_name, order)),
           env = list(plot_call = plot_call, categorical_var_name = as.name(categorical_var))
         )
       }
@@ -901,8 +907,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       # plot
       plot_call <- substitute(
-        expr = ANL %>% ggplot(aes(x = outlier_var_name)) +
-          stat_ecdf(),
+        expr = ANL %>% ggplot2::ggplot(ggplot2::aes(x = outlier_var_name)) +
+          ggplot2::stat_ecdf(),
         env = list(outlier_var_name = as.name(outlier_var))
       )
       if (length(categorical_var) == 0) {
@@ -952,7 +958,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         )
         plot_call <- substitute(
-          expr = plot_call + facet_grid(~ reorder(categorical_var_name, order)),
+          expr = plot_call + ggplot2::facet_grid(~ reorder(categorical_var_name, order)),
           env = list(plot_call = plot_call, categorical_var_name = as.name(categorical_var))
         )
       }
@@ -977,8 +983,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         qenv,
         substitute(
           expr = cumulative_plot <- plot_call +
-            geom_point(data = outlier_points, aes(x = outlier_var_name, y = y, color = is_outlier_selected)) +
-            scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
+            ggplot2::geom_point(
+              data = outlier_points,
+              ggplot2::aes(x = outlier_var_name, y = y, color = is_outlier_selected)
+            ) +
+            ggplot2::scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
             labs + ggthemes + themes,
           env = list(
             plot_call = plot_call,

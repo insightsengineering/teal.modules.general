@@ -92,8 +92,8 @@ This module generates the following objects, which can be modified in place usin
 \itemize{
 \item \code{histogram_plot} (\code{ggplot2})
 \item \code{qq_plot} (\code{ggplot2})
-\item \code{summary_table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
-\item \code{test_table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
+\item \code{summary_table} (\code{datatables} created with \code{\link[DT:datatable]{DT::datatable()}})
+\item \code{test_table} (\code{datatables} created with \code{\link[DT:datatable]{DT::datatable()}})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
