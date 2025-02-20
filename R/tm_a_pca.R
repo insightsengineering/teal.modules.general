@@ -42,7 +42,7 @@
 #' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -933,6 +933,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
     # plot eigenvector_plot ----
     plot_eigenvector <- function(base_q) {
+      req(input$pc)
       pc <- input$pc
       ggtheme <- input$ggtheme
 
