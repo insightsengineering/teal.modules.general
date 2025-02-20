@@ -31,8 +31,8 @@
 #' This module generates the following objects, which can be modified in place using decorators::
 #' - `histogram_plot` (`ggplot2`)
 #' - `qq_plot` (`ggplot2`)
-#' - `summary_table` (`listing_df` created with [rlistings::as_listing()])
-#' - `test_table` (`listing_df` created with [rlistings::as_listing()])
+#' - `summary_table` (`datatables` created with [DT::datatable()])
+#' - `test_table` (`datatables` created with [DT::datatable()])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -1258,9 +1258,9 @@ srv_distribution <- function(id,
     # Summary table listing has to be created separately to allow for qenv join
     output_summary_q <- reactive({
       if (iv_r()$is_valid()) {
-        within(common_q(), summary_table <- rlistings::as_listing(summary_table_data))
+        within(common_q(), summary_table <- DT::datatable(summary_table_data))
       } else {
-        within(common_q(), summary_table <- rlistings::as_listing(summary_table_data[0L, ]))
+        within(common_q(), summary_table <- DT::datatable(summary_table_data[0L, ]))
       }
     })
 
@@ -1271,11 +1271,11 @@ srv_distribution <- function(id,
         c(
           common_q(),
           within(test_q_out, {
-            test_table <- rlistings::as_listing(test_table_data)
+            test_table <- DT::datatable(test_table_data)
           })
         )
       } else {
-        within(common_q(), test_table <- rlistings::as_listing(data.frame(missing = character(0L))))
+        within(common_q(), test_table <- DT::datatable(data.frame(missing = character(0L))))
       }
     })
 
@@ -1328,7 +1328,7 @@ srv_distribution <- function(id,
     qq_r <- reactive(req(decorated_output_qq_q())[["qq_plot"]])
 
     output$summary_table <- DT::renderDataTable(
-      expr = decorated_output_summary_q()[["summary_table_data"]],
+      expr = decorated_output_summary_q()[["summary_table"]],
       options = list(
         autoWidth = TRUE,
         columnDefs = list(list(width = "200px", targets = "_all"))
@@ -1340,11 +1340,7 @@ srv_distribution <- function(id,
       req(iv_r()$is_valid())
       teal::validate_inputs(iv_r_dist())
       req(test_q()) # Ensure original errors are displayed
-      DT::datatable(
-        data = decorated_output_test_q()[["test_table_data"]],
-        options = list(scrollX = TRUE),
-        rownames = FALSE
-      )
+      decorated_output_test_q()[["test_table"]]
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
