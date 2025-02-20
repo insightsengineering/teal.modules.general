@@ -23,7 +23,7 @@
 #' - `summary_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `combination_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `by_subject_plot` (`ggplot2`)
-#' - `table` (`listing_df` created with [rlistings::as_listing()])
+#' - `table` (`datatable` created with [DT::datatable()])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -1147,7 +1147,7 @@ srv_missing_data <- function(id,
         )
       }
 
-      within(qenv, table <- rlistings::as_listing(summary_data))
+      within(qenv, table <- DT::datatable(summary_data))
     })
 
     by_subject_plot_q <- reactive({
@@ -1324,7 +1324,7 @@ srv_missing_data <- function(id,
           options = list(language = list(zeroRecords = "No variable selected."), pageLength = input$levels_table_rows)
         )
       } else {
-        DT::datatable(decorated_summary_table_q()[["summary_data"]])
+        decorated_summary_table_q()[["table"]]
       }
     })
 
