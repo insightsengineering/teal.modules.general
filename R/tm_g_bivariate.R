@@ -893,7 +893,7 @@ bivariate_ggplot_call <- function(x_class,
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(ggplot2::geom_histogram(bins = 30, aes(y = ggplot2::after_stat(density)))),
+        quote(ggplot2::geom_histogram(bins = 30, ggplot2::aes(y = ggplot2::after_stat(density)))),
         quote(ggplot2::geom_density(ggplot2::aes(y = ggplot2::after_stat(density)))),
         quote(ggplot2::ylab("Density"))
       )

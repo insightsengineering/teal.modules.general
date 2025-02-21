@@ -715,7 +715,7 @@ plot_var_summary <- function(var,
       var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
       ggplot2::ggplot(data.frame(var), ggplot2::aes(x = forcats::fct_infreq(as.factor(var)))) +
         ggplot2::geom_bar(
-          stat = "count", aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE
+          stat = "count", ggplot2::aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE
         ) +
         ggplot2::scale_fill_manual(values = c("gray50", "tan"))
     }
