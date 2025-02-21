@@ -35,8 +35,23 @@
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`ggplot2`)
 #'
-#' For additional details and examples of decorators, refer to the vignettes:
-#' `vignette("decorate-module-output, package = "teal.modules.general")`,
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
+#' See code snippet below:
+#'
+#' ```
+#' tm_g_scatterplot(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      plot = teal_transform_module(...) # applied to the `plot` output
+#'    )
+#' )
+#' ```
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-module-output, package = "teal.modules.general")`.
+#'
+#' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #'
@@ -300,7 +315,6 @@ tm_g_scatterplot <- function(label = "Scatterplot",
   checkmate::assert_scalar(table_dec)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, "plot")
 
   # End of assertions
@@ -575,10 +589,11 @@ srv_g_scatterplot <- function(id,
       datasets = data,
       merge_function = "dplyr::inner_join"
     )
+    qenv <- teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr)) %>%
         teal.code::eval_code(quote(ANL)) # used to display table when running show-r-code code
     })
@@ -787,7 +802,7 @@ srv_g_scatterplot <- function(id,
         "ANL"
       }
 
-      plot_call <- substitute(expr = pre_pro_anl %>% ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
+      plot_call <- substitute(expr = pre_pro_anl %>% ggplot2::ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
 
       plot_call <- if (length(color_by_var) == 0) {
         substitute(
@@ -955,7 +970,7 @@ srv_g_scatterplot <- function(id,
       )
 
       if (rotate_xaxis_labels) {
-        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1))
+        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(ggplot2::element_text(angle = 45, hjust = 1))
       }
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(

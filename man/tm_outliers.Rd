@@ -78,28 +78,28 @@ This module generates the following objects, which can be modified in place usin
 \item \code{box_plot} (\code{ggplot2})
 \item \code{density_plot} (\code{ggplot2})
 \item \code{cumulative_plot} (\code{ggplot2})
-\item \code{table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
+\item \code{table} (\code{datatable} created with \code{\link[DT:datatable]{DT::datatable()}})
 }
 
-Decorators can be applied to all outputs or only to specific objects using a
-named list of \code{teal_transform_module} objects.
-The \code{"default"} name is reserved for decorators that are applied to all outputs.
+A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
+The name of this list corresponds to the name of the output to which the decorator is applied.
 See code snippet below:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_outliers(
    ..., # arguments for module
    decorators = list(
-     default = list(teal_transform_module(...)), # applied to all outputs
-     box_plot = list(teal_transform_module(...)), # applied only to `box_plot` output
-     density_plot = list(teal_transform_module(...)) # applied only to `density_plot` output
-     cumulative_plot = list(teal_transform_module(...)) # applied only to `cumulative_plot` output
-     table = list(teal_transform_module(...)) # applied only to `table` output
+     box_plot = teal_transform_module(...), # applied only to `box_plot` output
+     density_plot = teal_transform_module(...), # applied only to `density_plot` output
+     cumulative_plot = teal_transform_module(...), # applied only to `cumulative_plot` output
+     table = teal_transform_module(...) # applied only to `table` output
    )
 )
 }\if{html}{\out{</div>}}
 
-For additional details and examples of decorators, refer to the vignettes:
-\verb{vignette("decorate-module-output, package = "teal.modules.general")},
+For additional details and examples of decorators, refer to the vignette
+\verb{vignette("decorate-module-output, package = "teal.modules.general")}.
+
+To learn more please refer to the vignette
 \code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 

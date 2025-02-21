@@ -119,8 +119,22 @@ This module generates the following objects, which can be modified in place usin
 \item \code{plot} (\code{ggplot2})
 }
 
-For additional details and examples of decorators, refer to the vignettes:
-\verb{vignette("decorate-module-output, package = "teal.modules.general")},
+A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
+The name of this list corresponds to the name of the output to which the decorator is applied.
+See code snippet below:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{tm_g_response(
+   ..., # arguments for module
+   decorators = list(
+     plot = teal_transform_module(...) # applied to the `plot` output
+   )
+)
+}\if{html}{\out{</div>}}
+
+For additional details and examples of decorators, refer to the vignette
+\verb{vignette("decorate-module-output, package = "teal.modules.general")}.
+
+To learn more please refer to the vignette
 \code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 

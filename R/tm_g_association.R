@@ -29,8 +29,23 @@
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`grob` created with [ggplot2::ggplotGrob()])
 #'
-#' For additional details and examples of decorators, refer to the vignettes:
-#' `vignette("decorate-module-output, package = "teal.modules.general")`,
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
+#' See code snippet below:
+#'
+#' ```
+#' tm_g_association(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      plot = teal_transform_module(...) # applied to the `plot` output
+#'    )
+#' )
+#' ```
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-module-output, package = "teal.modules.general")`.
+#'
+#' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
@@ -177,7 +192,6 @@ tm_g_association <- function(label = "Association",
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, "plot")
   # End of assertions
 
@@ -331,9 +345,13 @@ srv_tm_g_association <- function(id,
       selector_list = selector_list
     )
 
+    qenv <- teal.code::eval_code(
+      data(),
+      'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")' # nolint quotes
+    )
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>% teal.code::eval_code(as.expression(anl_merged_input()$expr))
+      qenv %>% teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
     merged <- list(
@@ -487,9 +505,10 @@ srv_tm_g_association <- function(id,
         teal.code::eval_code(
           substitute(
             expr = {
-              plot_top <- plot_calls[[1]]
-              plot_bottom <- plot_calls[[1]]
-              plot <- tern::stack_grobs(grobs = lapply(list(plot_top, plot_bottom), ggplotGrob))
+              plots <- plot_calls
+              plot_top <- plots[[1]]
+              plot_bottom <- plots[[2]]
+              plot <- tern::stack_grobs(grobs = lapply(list(plot_top, plot_bottom), ggplot2::ggplotGrob))
             },
             env = list(
               plot_calls = do.call(

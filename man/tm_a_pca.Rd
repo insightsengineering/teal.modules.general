@@ -100,31 +100,31 @@ font size, through UI inputs.
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{elbow_plot} (\code{ggplot2})
-\item \code{circle_plot} (\code{ggplot2})
-\item \code{biplot} (\code{ggplot2})
-\item \code{eigenvector_plot} (\code{ggplot2})
+\item \code{elbow_plot} (\code{ggplot})
+\item \code{circle_plot} (\code{ggplot})
+\item \code{biplot} (\code{ggplot})
+\item \code{eigenvector_plot} (\code{ggplot})
 }
 
-Decorators can be applied to all outputs or only to specific objects using a
-named list of \code{teal_transform_module} objects.
-The \code{"default"} name is reserved for decorators that are applied to all outputs.
+A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
+The name of this list corresponds to the name of the output to which the decorator is applied.
 See code snippet below:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_a_pca(
    ..., # arguments for module
    decorators = list(
-     default = list(teal_transform_module(...)), # applied to all outputs
-     elbow_plot = list(teal_transform_module(...)), # applied only to `elbow_plot` output
-     circle_plot = list(teal_transform_module(...)) # applied only to `circle_plot` output
-     biplot = list(teal_transform_module(...)) # applied only to `biplot` output
-     eigenvector_plot = list(teal_transform_module(...)) # applied only to `eigenvector_plot` output
+     elbow_plot = teal_transform_module(...), # applied to the `elbow_plot` output
+     circle_plot = teal_transform_module(...), # applied to the `circle_plot` output
+     biplot = teal_transform_module(...), # applied to the `biplot` output
+     eigenvector_plot = teal_transform_module(...) # applied to the `eigenvector_plot` output
    )
 )
 }\if{html}{\out{</div>}}
 
-For additional details and examples of decorators, refer to the vignettes:
-\verb{vignette("decorate-module-output, package = "teal.modules.general")},
+For additional details and examples of decorators, refer to the vignette
+\verb{vignette("decorate-module-output, package = "teal.modules.general")}.
+
+To learn more please refer to the vignette
 \code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 

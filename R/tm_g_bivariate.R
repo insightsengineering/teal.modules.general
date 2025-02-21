@@ -49,10 +49,25 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot` (`ggplot2`)
+#' - `plot` (`ggplot`)
 #'
-#' For additional details and examples of decorators, refer to the vignettes:
-#' `vignette("decorate-module-output, package = "teal.modules.general")`,
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
+#' See code snippet below:
+#'
+#' ```
+#' tm_g_bivariate(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      plot = teal_transform_module(...) # applied to the `plot` output
+#'    )
+#' )
+#' ```
+#'
+#' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-module-output, package = "teal.modules.general")`.
+#'
+#' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #'
@@ -278,7 +293,6 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, "plot")
   # End of assertions
 
@@ -536,10 +550,14 @@ srv_g_bivariate <- function(id,
       selector_list = selector_list,
       datasets = data
     )
+    qenv <- teal.code::eval_code(
+      data(),
+      'library("ggplot2");library("dplyr");library("teal.modules.general")' # nolint quotes
+    )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -718,6 +736,7 @@ srv_g_bivariate <- function(id,
     )
 
     # Render R code.
+
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_q_facets())))
 
     teal.widgets::verbatim_popup_srv(
@@ -845,89 +864,89 @@ bivariate_ggplot_call <- function(x_class,
     Reduce(function(x, y) call("+", x, y), args)
   }
 
-  plot_call <- substitute(ggplot(data_name), env = list(data_name = as.name(data_name)))
+  plot_call <- substitute(ggplot2::ggplot(data_name), env = list(data_name = as.name(data_name)))
 
   # Single data plots
   if (x_class == "numeric" && y_class == "NULL") {
-    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = xval), env = list(xval = x)))
+    plot_call <- reduce_plot_call(plot_call, substitute(ggplot2::aes(x = xval), env = list(xval = x)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_histogram(bins = 30)),
-        quote(ylab("Frequency"))
+        quote(ggplot2::geom_histogram(bins = 30)),
+        quote(ggplot2::ylab("Frequency"))
       )
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_histogram(bins = 30, aes(y = after_stat(density)))),
-        quote(geom_density(aes(y = after_stat(density)))),
-        quote(ylab("Density"))
+        quote(ggplot2::geom_histogram(bins = 30, ggplot2::aes(y = ggplot2::after_stat(density)))),
+        quote(ggplot2::geom_density(ggplot2::aes(y = ggplot2::after_stat(density)))),
+        quote(ggplot2::ylab("Density"))
       )
     }
   } else if (x_class == "NULL" && y_class == "numeric") {
-    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = yval), env = list(yval = y)))
+    plot_call <- reduce_plot_call(plot_call, substitute(ggplot2::aes(x = yval), env = list(yval = y)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_histogram(bins = 30)),
-        quote(ylab("Frequency"))
+        quote(ggplot2::geom_histogram(bins = 30)),
+        quote(ggplot2::ylab("Frequency"))
       )
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_histogram(bins = 30, aes(y = after_stat(density)))),
-        quote(geom_density(aes(y = after_stat(density)))),
-        quote(ylab("Density"))
+        quote(ggplot2::geom_histogram(bins = 30, ggplot2::aes(y = ggplot2::after_stat(density)))),
+        quote(ggplot2::geom_density(ggplot2::aes(y = ggplot2::after_stat(density)))),
+        quote(ggplot2::ylab("Density"))
       )
     }
   } else if (x_class == "factor" && y_class == "NULL") {
-    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = xval), env = list(xval = x)))
+    plot_call <- reduce_plot_call(plot_call, substitute(ggplot2::aes(x = xval), env = list(xval = x)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_bar()),
-        quote(ylab("Frequency"))
+        quote(ggplot2::geom_bar()),
+        quote(ggplot2::ylab("Frequency"))
       )
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_bar(aes(y = after_stat(prop), group = 1))),
-        quote(ylab("Fraction"))
+        quote(ggplot2::geom_bar(ggplot2::aes(y = ggplot2::after_stat(prop), group = 1))),
+        quote(ggplot2::ylab("Fraction"))
       )
     }
   } else if (x_class == "NULL" && y_class == "factor") {
-    plot_call <- reduce_plot_call(plot_call, substitute(aes(x = yval), env = list(yval = y)))
+    plot_call <- reduce_plot_call(plot_call, substitute(ggplot2::aes(x = yval), env = list(yval = y)))
 
     if (freq) {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_bar()),
-        quote(ylab("Frequency"))
+        quote(ggplot2::geom_bar()),
+        quote(ggplot2::ylab("Frequency"))
       )
     } else {
       plot_call <- reduce_plot_call(
         plot_call,
-        quote(geom_bar(aes(y = after_stat(prop), group = 1))),
-        quote(ylab("Fraction"))
+        quote(ggplot2::geom_bar(ggplot2::aes(y = ggplot2::after_stat(prop), group = 1))),
+        quote(ggplot2::ylab("Fraction"))
       )
     }
     # Numeric Plots
   } else if (x_class == "numeric" && y_class == "numeric") {
     plot_call <- reduce_plot_call(
       plot_call,
-      substitute(aes(x = xval, y = yval), env = list(xval = x, yval = y)),
+      substitute(ggplot2::aes(x = xval, y = yval), env = list(xval = x, yval = y)),
       # pch = 21 for consistent coloring behaviour b/w all geoms (outline and fill properties)
       `if`(
         !is.null(size),
         substitute(
-          geom_point(alpha = alphaval, size = sizeval, pch = 21),
+          ggplot2::geom_point(alpha = alphaval, size = sizeval, pch = 21),
           env = list(alphaval = alpha, sizeval = size)
         ),
         substitute(
-          geom_point(alpha = alphaval, pch = 21),
+          ggplot2::geom_point(alpha = alphaval, pch = 21),
           env = list(alphaval = alpha)
         )
       )
@@ -935,8 +954,8 @@ bivariate_ggplot_call <- function(x_class,
   } else if ((x_class == "numeric" && y_class == "factor") || (x_class == "factor" && y_class == "numeric")) {
     plot_call <- reduce_plot_call(
       plot_call,
-      substitute(aes(x = xval, y = yval), env = list(xval = x, yval = y)),
-      quote(geom_boxplot())
+      substitute(ggplot2::aes(x = xval, y = yval), env = list(xval = x, yval = y)),
+      quote(ggplot2::geom_boxplot())
     )
     # Factor and character plots
   } else if (x_class == "factor" && y_class == "factor") {
@@ -965,7 +984,7 @@ bivariate_ggplot_call <- function(x_class,
   dev_ggplot2_args <- teal.widgets::ggplot2_args(labs = labs_base)
 
   if (rotate_xaxis_labels) {
-    dev_ggplot2_args$theme <- list(axis.text.x = quote(element_text(angle = 45, hjust = 1)))
+    dev_ggplot2_args$theme <- list(axis.text.x = quote(ggplot2::element_text(angle = 45, hjust = 1)))
   }
 
   all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
@@ -1031,7 +1050,7 @@ coloring_ggplot_call <- function(colour,
       !identical(size, character(0))
   ) {
     substitute(
-      expr = aes(colour = colour_name, fill = fill_name, size = size_name),
+      expr = ggplot2::aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill), size_name = as.name(size))
     )
   } else if (
@@ -1040,14 +1059,14 @@ coloring_ggplot_call <- function(colour,
       is_point &&
       identical(size, character(0))
   ) {
-    substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
+    substitute(expr = ggplot2::aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (
     !identical(colour, character(0)) &&
       !identical(fill, character(0)) &&
       (!is_point || identical(size, character(0)))
   ) {
     substitute(
-      expr = aes(colour = colour_name, fill = fill_name),
+      expr = ggplot2::aes(colour = colour_name, fill = fill_name),
       env = list(colour_name = as.name(colour), fill_name = as.name(fill))
     )
   } else if (
@@ -1055,20 +1074,20 @@ coloring_ggplot_call <- function(colour,
       identical(fill, character(0)) &&
       (!is_point || identical(size, character(0)))
   ) {
-    substitute(expr = aes(colour = colour_name), env = list(colour_name = as.name(colour)))
+    substitute(expr = ggplot2::aes(colour = colour_name), env = list(colour_name = as.name(colour)))
   } else if (
     identical(colour, character(0)) &&
       !identical(fill, character(0)) &&
       (!is_point || identical(size, character(0)))
   ) {
-    substitute(expr = aes(fill = fill_name), env = list(fill_name = as.name(fill)))
+    substitute(expr = ggplot2::aes(fill = fill_name), env = list(fill_name = as.name(fill)))
   } else if (
     identical(colour, character(0)) &&
       identical(fill, character(0)) &&
       is_point &&
       !identical(size, character(0))
   ) {
-    substitute(expr = aes(size = size_name), env = list(size_name = as.name(size)))
+    substitute(expr = ggplot2::aes(size = size_name), env = list(size_name = as.name(size)))
   } else if (
     !identical(colour, character(0)) &&
       identical(fill, character(0)) &&
@@ -1076,7 +1095,7 @@ coloring_ggplot_call <- function(colour,
       !identical(size, character(0))
   ) {
     substitute(
-      expr = aes(colour = colour_name, size = size_name),
+      expr = ggplot2::aes(colour = colour_name, size = size_name),
       env = list(colour_name = as.name(colour), size_name = as.name(size))
     )
   } else if (
@@ -1086,7 +1105,7 @@ coloring_ggplot_call <- function(colour,
       !identical(size, character(0))
   ) {
     substitute(
-      expr = aes(colour = colour_name, fill = fill_name, size = size_name),
+      expr = ggplot2::aes(colour = colour_name, fill = fill_name, size = size_name),
       env = list(colour_name = as.name(fill), fill_name = as.name(fill), size_name = as.name(size))
     )
   } else {
