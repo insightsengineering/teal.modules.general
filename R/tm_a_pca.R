@@ -611,7 +611,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               )
 
             cols <- c(getOption("ggplot2.discrete.colour"), c("lightblue", "darkred", "black"))[1:3]
-            elbow_plot <- ggplot2::ggplot(mapping = aes_string(x = "component", y = "value")) +
+            elbow_plot <- ggplot2::ggplot(mapping = ggplot2::aes_string(x = "component", y = "value")) +
               ggplot2::geom_bar(
                 ggplot2::aes(fill = "Single variance"),
                 data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),

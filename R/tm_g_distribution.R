@@ -814,7 +814,7 @@ srv_distribution <- function(id,
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot2::ggplot(ANL, aes(dist_var_name, col = s_var_name)) +
+            expr = ggplot2::ggplot(ANL, ggplot2::aes(dist_var_name, col = s_var_name)) +
               ggplot2::geom_histogram(
                 position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var),
                 bins = bins_var, alpha = 0.3
