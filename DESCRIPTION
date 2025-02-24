@@ -79,6 +79,9 @@ Suggests:
     shinytest2,
     testthat (>= 3.1.9),
     withr (>= 2.0.0)
+Remotes:
+    insightsengineering/teal@test@bslib@main,
+    insightsengineering/teal.reporter@redesign_poc@main
 VignetteBuilder:
     knitr,
     rmarkdown
