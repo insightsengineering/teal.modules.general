@@ -54,6 +54,7 @@ You can also refer the table shown below to know which module outputs can be dec
 | `tm_t_crosstable`     | table (ElementaryTable)                            |
 
 Also, note that there are five different types of objects that can be decorated:
+
 1. `ElementaryTable`
 2. `ggplot`
 3. `grob`
