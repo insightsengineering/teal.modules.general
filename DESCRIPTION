@@ -27,7 +27,7 @@ Depends:
     ggplot2 (>= 3.4.0),
     R (>= 4.1),
     shiny (>= 1.6.0),
-    teal (>= 0.15.2.9103),
+    teal (>= 0.16.0),
     teal.transform (>= 0.6.0)
 Imports:
     checkmate (>= 2.1.0),
@@ -82,8 +82,6 @@ Suggests:
 VignetteBuilder:
     knitr,
     rmarkdown
-Remotes:
-    insightsengineering/teal
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.slice, insightsengineering/teal.transform,
