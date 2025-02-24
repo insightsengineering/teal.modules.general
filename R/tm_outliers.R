@@ -536,12 +536,13 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       # this is utils function that converts a %>% NULL %>% b into a %>% b
       remove_pipe_null <- function(x) {
         if (length(x) == 1) {
-          return(x)
+          ans <- x
         }
         if (identical(x[[1]], as.name("%>%")) && is.null(x[[3]])) {
-          return(remove_pipe_null(x[[2]]))
+          ans <- remove_pipe_null(x[[2]])
         }
-        return(as.call(c(x[[1]], lapply(x[-1], remove_pipe_null))))
+        ans <- as.call(c(x[[1]], lapply(x[-1], remove_pipe_null)))
+        ans
       }
 
       qenv <- teal.code::eval_code(
