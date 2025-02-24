@@ -282,9 +282,6 @@ ui_a_regression <- function(id, ...) {
       tags$div(verbatimTextOutput(ns("text")))
     )),
     encoding = tags$div(
-      ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("response", "regressor")]),
       teal.transform::data_extract_ui(
@@ -384,7 +381,6 @@ ui_a_regression <- function(id, ...) {
 # Server function for the regression module
 srv_a_regression <- function(id,
                              data,
-                             reporter,
                              filter_panel_api,
                              response,
                              regressor,
@@ -393,7 +389,6 @@ srv_a_regression <- function(id,
                              ggplot2_args,
                              default_outlier_label,
                              decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -1034,25 +1029,20 @@ srv_a_regression <- function(id,
     )
 
     ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Linear Regression Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
+    card_fun <- reactive({
+      req(plot_r(), source_code_r())
+        function() {
+          card <- teal.reporter::report_document()
+          card <- c(card, c(list("## Plot")))
+          # card <- c(card, c(list("## Plot"), list(plot_r())))
+          # card <- c(card, list(source_code_r()))
+          card
       }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
+    })
     ###
+
+    list(
+      report_card = card_fun
+    )
   })
 }
