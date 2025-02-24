@@ -69,7 +69,7 @@ quickly iterate the decoration you want.
 Here's an example to showcase how you can edit an output of class `ElementaryTable`.
 `rtables` modifiers like `rtables::insert_rrow` can be applied to modify this object.
 
-```{r decorate_ElementaryTable}
+```{r decorate_ElementaryTable, message=FALSE}
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -155,7 +155,7 @@ knitr::include_url(url, height = "800px")
 Here's an example to showcase how you can edit an output of class `ggplot`.
 You can extend them using `ggplot2` functions.
 
-```{r decorate_ggplot}
+```{r decorate_ggplot, message=FALSE}
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -239,7 +239,7 @@ knitr::include_url(url, height = "800px")
 Here's an example to showcase how you can edit an output of class `grob`.
 You can extend them using `grid` and `gridExtra` functions.
 
-```{r decorate_grob}
+```{r decorate_grob, message=FALSE}
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -430,7 +430,7 @@ knitr::include_url(url, height = "800px")
 Here's an example to showcase how you can edit an output of class `trellis`.
 `rtables` modifiers like `rtables::insert_rrow` can be applied to modify this object.
 
-```{r decorate_trellis}
+```{r decorate_trellis, message=FALSE}
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
