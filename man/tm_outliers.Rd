@@ -75,9 +75,9 @@ box plots, density plots, and cumulative distribution plots to help interpret th
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{box_plot} (\code{ggplot2})
-\item \code{density_plot} (\code{ggplot2})
-\item \code{cumulative_plot} (\code{ggplot2})
+\item \code{box_plot} (\code{ggplot})
+\item \code{density_plot} (\code{ggplot})
+\item \code{cumulative_plot} (\code{ggplot})
 \item \code{table} (\code{datatable} created with \code{\link[DT:datatable]{DT::datatable()}})
 }
 

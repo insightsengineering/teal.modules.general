@@ -29,8 +29,8 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators::
-#' - `histogram_plot` (`ggplot2`)
-#' - `qq_plot` (`ggplot2`)
+#' - `histogram_plot` (`ggplot`)
+#' - `qq_plot` (`ggplot`)
 #' - `summary_table` (`datatables` created with [DT::datatable()])
 #' - `test_table` (`datatables` created with [DT::datatable()])
 #'

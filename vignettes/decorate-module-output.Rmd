@@ -12,7 +12,6 @@ vignette: >
 
 ```{r setup, include=FALSE}
 library(teal.modules.general)
-library(teal.data)
 ```
 
 
@@ -33,313 +32,108 @@ To get a complete understanding refer the following vignettes:
 [this vignette](https://insightsengineering.github.io/teal/latest-tag/articles/transform-input-data.html),
 - Transforming module output in [this vignette](https://insightsengineering.github.io/teal/latest-tag/articles/transform-module-output.html).
 
-## Decorators
+## Decoratable outputs
 
-Decorators are created with `teal_transform_module` and thus they are `shiny` modules.
-In `teal.modules.general`, they are passed to `teal` modules through `decorators` argument (see below).
-Their server logic will be used to modify objects such as plots or tables that exist in the server function of a module.
-A `ui` function can provide interactivity but that is optional. An app developer is free to use decorator modules that do not require user input.
+It is important to note which output objects from a given module can be decorated.
+The module function documentation's _Decorating Module_ section has this information.
 
-## Decorating a Module
+You can also refer the table shown below to know which module outputs can be decorated.
 
-In order to decorate/modify the output from a module from `teal.modules.general` you need to refer to the
-"Decorating Module" section of the function documentation that tells about the objects that can be decorated.
+| Module                 | Output (Class)                                      |
+|------------------------|----------------------------------------------------|
+| `tm_a_pca`            | elbow_plot (ggplot), circle_plot (ggplot), biplot (ggplot), eigenvector_plot (ggplot) |
+| `tm_a_regression`     | plot (ggplot)                                      |
+| `tm_g_association`    | plot (grob)                                        |
+| `tm_g_bivariate`      | plot (ggplot)                                      |
+| `tm_g_distribution`   | histogram_plot (ggplot), qq_plot (ggplot), summary_table (datatables), test_table (datatables) |
+| `tm_g_response`       | plot (ggplot)                                      |
+| `tm_g_scatterplot`    | plot (ggplot)                                      |
+| `tm_g_scatterplotmatrix` | plot (trellis)                                  |
+| `tm_missing_data`     | summary_plot (grob), combination_plot (grob), by_subject_plot (ggplot), table (datatables) |
+| `tm_outliers`         | box_plot (ggplot), density_plot (ggplot), cumulative_plot (ggplot), table (datatables) |
+| `tm_t_crosstable`     | table (ElementaryTable)                            |
 
-In this vignette we will decorate the outputs from the `tm_g_distribution` module.
-The [function definition](../reference/tm_g_distribution.html#decorating-module) shows us that there are four output objects that can be decorated:
-`histogram_plot` (`ggplot2`), `qq_plot` (`ggplot2`), `summary_table` (`listing_df`) and `test_table` (`listing_df`).
+Also, note that there are five different types of objects that can be decorated:
+1. `ElementaryTable`
+2. `ggplot`
+3. `grob`
+4. `datatables`
+5. `trellis`
 
-### Static Decoration
-Here we create a simple decorator that does not provide user.
-We will use this to change the title to a static title that we want.
+*Tip:* A general tip before trying to decorate the output from the module is to
+copy the reproducible code and running them in a separate R session to
+quickly iterate the decoration you want.
 
+## Decorating `ElementaryTable`
 
-```{r static_decorator}
-static_decorator <- teal_transform_module(
-  label = "Static decorator",
-  server = function(id, data) {
-    moduleServer(id, function(input, output, session) {
-      reactive({
-        req(data())
-        within(data(), {
-          histogram_plot <- histogram_plot +
-            ggtitle("This is a better title")
-        })
-      })
-    })
-  }
-)
+Here's an example to showcase how you can edit an output of class `ElementaryTable`.
+`rtables` modifiers like `rtables::insert_rrow` can be applied to modify this object.
 
-default_decorator <- teal_transform_module(
-  label = "Static decorator",
-  ui = function(id) {
-    tags$div(
-      textInput(NS(id, "title"), "Title", value = "This is a better title")
-    )
-  },
-  server = function(id, data) {
-    moduleServer(id, function(input, output, session) {
-      reactive({
-        req(data())
-        within(data(),
-          {
-            if (exists("elbow_plot")) {
-              elbow_plot <- elbow_plot +
-                ggtitle(title)
-            }
-            # if (exists("circle_plot")) {
-            #   circle_plot <- circle_plot +
-            #     ggtitle(title)
-            # }
-            # if (exists("biplot")) {
-            #   biplot <- biplot +
-            #     ggtitle(title)
-            # }
-            # if (exists("eigenvector_plot")) {
-            #   eigenvector_plot <- eigenvector_plot +
-            #     ggtitle(title)
-            # }
-          },
-          title = input$title
-        )
-      })
-    })
-  }
-)
-
+```{r decorate_ElementaryTable}
 library(teal.modules.general)
-data <- teal_data()
+
+data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
 data <- within(data, {
   require(nestcolor)
-  USArrests <- USArrests
-})
-devtools::load_all()
-app <- init(
-  data = data,
-  modules = modules(
-    tm_a_pca(
-      "PCA",
-      dat = data_extract_spec(
-        dataname = "USArrests",
-        select = select_spec(
-          choices = variable_choices(
-            data = data[["USArrests"]], c("Murder", "Assault", "UrbanPop", "Rape")
-          ),
-          selected = c("Murder", "Assault"),
-          multiple = TRUE
-        ),
-        filter = NULL
-      ),
-      decorators = list(default_decorator)
-    )
-  )
-)
-#> Initializing tm_a_pca
-if (interactive()) {
-  shinyApp(app$ui, app$server)
-}
-```
-
-
-```{r}
-library(teal.modules.general)
-data <- teal_data()
-data <- within(data, {
-  iris <- iris
+  ADSL <- rADSL
 })
 
-app <- init(
-  data = data,
-  modules = list(
-    tm_g_distribution(
-      dist_var = data_extract_spec(
-        dataname = "iris",
-        select = select_spec(variable_choices("iris"), "Petal.Length")
-      ),
-      decorators = list(default_decorator)
-    )
-  )
-)
-if (interactive()) {
-  shinyApp(app$ui, app$server)
-}
-```
-
-### Dynamic Decoration
-
-### Reusable Variable Decoration
-
-### Server
-
-Here we create a simple decorator that does not provide user input. We will use `tm_g_bivariate` module, to illustrate
-the example. Knowing that the module contains an object of class `ggplot2` named `plot`, we will modify its title and x-axis title:
-
-```{r static_decorator}
-static_decorator <- teal_transform_module(
-  label = "Static decorator",
-  server = function(id, data) {
-    moduleServer(id, function(input, output, session) {
-      reactive({
-        req(data())
-        within(data(), {
-          plot <- plot +
-            ggtitle("This is a better title") +
-            xlab("the real x axis")
-        })
-      })
-    })
-  }
-)
-```
-
-
-### UI
-
-If decoration requires user input, a `ui` function can be added.
-Here, the x-axis title is obtained from a `textInput` widget, giving the user some flexibility.
-Note how the input values are passed to the `within()` function using its `...` argument.
-See `?teal.code::within.qenv` for more examples.
-
-```{r interactive_decorator}
-interactive_decorator <- teal_transform_module(
-  label = "Interactive decorator",
-  ui = function(id) {
-    ns <- NS(id)
-    div(
-      textInput(ns("x_axis_title"), "X axis title", value = "the suggested x axis")
-    )
-  },
-  server = function(id, data) {
-    moduleServer(id, function(input, output, session) {
-      reactive({
-        req(data())
-        within(data(),
-          {
-            plot <- plot +
-              ggtitle("This is a better title") +
-              xlab(my_title)
-          },
-          my_title = input$x_axis_title
-        )
-      })
-    })
-  }
-)
-```
-
-
-### Variable Names as Arguments
-
-The server function of a decorating `teal_transform_module` must conform to the names of the variables that exist in the server function of the decorated `teal` module.
-Writing a universal decorator that applies to any module is impossible because different modules may use different variable names for their output elements.
-It is possible, however, to create a decorator that will take the relevant variable names as arguments.
-Here, the `output_name` variable name is passed to a decorator, allowing it to work with multiple modules.
-
-```{r dynamic_decorator}
-dynamic_decorator <- function(output_name) {
+insert_rrow_decorator <- function(default_caption = "I am a good new row") {
   teal_transform_module(
-    label = "Dynamic decorator",
+    label = "New row",
     ui = function(id) {
-      ns <- NS(id)
-      div(
-        textInput(ns("x_axis_title"), "X axis title", value = "the syggested x axis")
-      )
+      shiny::textInput(shiny::NS(id, "new_row"), "New row", value = default_caption)
     },
     server = function(id, data) {
       moduleServer(id, function(input, output, session) {
         reactive({
-          req(data())
-          within(data(),
-            {
-              output_name <- output_name +
-                xlab(x_axis_title)
-            },
-            output_name = as.name(output_name),
-            x_axis_title = input$x_axis_title
-          )
+          data() |>
+            within(
+              {
+                table <- rtables::insert_rrow(table, rtables::rrow(new_row))
+              },
+              new_row = input$new_row
+            )
         })
       })
     }
   )
 }
-```
-
-Note that when the function is used, `output_name` will be passed a character string but the expression passed to `within` needs a `name`/`symbol`, a language object, hence the argument value must be converted to a `name`.
-
-
-## Using Decorators
-
-### Single decoration
-
-Here is a minimal illustration, where decorators are passed to the module through `decorators` argument. We create a helper function `tm_g_bivariate_decorated` that works on `tm_g_bivariate` with some custom setup, so that we can illustrate multiple decorators on the same module with the same setup.
-
-
-```{r tm_g_bivariate_decorated}
-tm_g_bivariate_decorated <- function(label, decorators = list()) {
-  tm_g_bivariate(
-    label = label,
-    x = data_extract_spec(
-      dataname = "CO2",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["CO2"]]),
-        selected = "conc",
-        fixed = FALSE
-      )
-    ),
-    y = data_extract_spec(
-      dataname = "CO2",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["CO2"]]),
-        selected = "uptake",
-        multiple = FALSE,
-        fixed = FALSE
-      )
-    ),
-    row_facet = data_extract_spec(
-      dataname = "CO2",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["CO2"]]),
-        selected = "Type",
-        fixed = FALSE
-      )
-    ),
-    col_facet = data_extract_spec(
-      dataname = "CO2",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["CO2"]]),
-        selected = "Treatment",
-        fixed = FALSE
-      )
-    ),
-    decorators = decorators
-  )
-}
-```
-
-#### Application
-
-Note that every call to the module (`tm_g_bivariate_decorated`) takes a list containing _one_ decorator.
-
-```{r app_1}
-data <- teal_data()
-data <- within(data, {
-  require(nestcolor)
-  CO2 <- data.frame(CO2)
-})
 
 app <- init(
   data = data,
   modules = modules(
-    tm_g_bivariate_decorated("undecorated"),
-    tm_g_bivariate_decorated("static", decorators = list(static_decorator)),
-    tm_g_bivariate_decorated("interactive", decorators = list(interactive_decorator)),
-    tm_g_bivariate_decorated("dynamic", decorators = list(dynamic_decorator("plot")))
+    tm_t_crosstable(
+      label = "Cross Table",
+      x = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = variable_choices(data[["ADSL"]], subset = function(data) {
+            idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
+            return(names(data)[idx])
+          }),
+          selected = "COUNTRY",
+          multiple = TRUE,
+          ordered = TRUE
+        )
+      ),
+      y = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = variable_choices(data[["ADSL"]], subset = function(data) {
+            idx <- vapply(data, is.factor, logical(1))
+            return(names(data)[idx])
+          }),
+          selected = "SEX"
+        )
+      ),
+      decorators = list(
+        table = insert_rrow_decorator()
+      )
+    )
   )
 )
+
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -349,47 +143,81 @@ if (interactive()) {
 code <- paste0(c(
   "interactive <- function() TRUE",
   knitr::knit_code$get("setup"),
-  knitr::knit_code$get("static_decorator"),
-  knitr::knit_code$get("interactive_decorator"),
-  knitr::knit_code$get("dynamic_decorator"),
-  knitr::knit_code$get("tm_g_bivariate_decorated"),
-  knitr::knit_code$get("app_1")
+  knitr::knit_code$get("decorate_ElementaryTable")
 ), collapse = "\n")
+
 url <- roxy.shinylive::create_shinylive_url(code)
 knitr::include_url(url, height = "800px")
 ```
 
-### Decorating Multiple Outputs
+## Decorating `ggplot`
 
-Here we will apply decoration to two outputs in one module. We will use `tm_g_distribution` module
-to illustrate the example. You can check module's documentation `?tm_g_distribution` to see that it allows
-to adjust objects called: `histogram_plot`, `qq_plot`, `summary_table` and `test_table`. In this example we will modify `histogram_plot` and `qq_plot`. Those names need to be explicitly used in the decorators. Those also need to be used as names of the list passed to `decorators` argument. See `Application` section below.
+Here's an example to showcase how you can edit an output of class `ggplot`.
+You can extend them using `ggplot2` functions.
 
-#### Application
+```{r decorate_ggplot}
+library(teal.modules.general)
 
-Pay attention to how `decorators` are passed. This is a named list (where names corresponds to the objects existing inside module) of lists of `teal_transform_module`s. We will use `dynamic_decorator` to edit both objects.
-
-```{r app_2}
-data <- teal_data()
+data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
 data <- within(data, {
-  iris <- iris
+  require(nestcolor)
+  ADSL <- rADSL
 })
+
+ggplot_caption_decorator <- function(default_caption = "I am a good decorator") {
+  teal_transform_module(
+    label = "Caption",
+    ui = function(id) {
+      shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
+    },
+    server = function(id, data) {
+      moduleServer(id, function(input, output, session) {
+        reactive({
+          data() |>
+            within(
+              {
+                plot <- plot + ggplot2::labs(caption = footnote)
+              },
+              footnote = input$footnote
+            )
+        })
+      })
+    }
+  )
+}
 
 app <- init(
   data = data,
-  modules = list(
-    tm_g_distribution(
-      dist_var = data_extract_spec(
-        dataname = "iris",
-        select = select_spec(variable_choices("iris"), "Petal.Length")
+  modules = modules(
+    tm_a_regression(
+      label = "Regression",
+      response = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          label = "Select variable:",
+          choices = "BMRKR1",
+          selected = "BMRKR1",
+          multiple = FALSE,
+          fixed = TRUE
+        )
+      ),
+      regressor = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          label = "Select variables:",
+          choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
+          selected = "AGE",
+          multiple = TRUE,
+          fixed = FALSE
+        )
       ),
       decorators = list(
-        histogram_plot = list(dynamic_decorator("histogram_plot")),
-        qq_plot = list(dynamic_decorator("qq_plot"))
+        plot = ggplot_caption_decorator("I am a Regression")
       )
     )
   )
 )
+
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -399,9 +227,290 @@ if (interactive()) {
 code <- paste0(c(
   "interactive <- function() TRUE",
   knitr::knit_code$get("setup"),
-  knitr::knit_code$get("dynamic_decorator"),
-  knitr::knit_code$get("app_2")
+  knitr::knit_code$get("decorate_ggplot")
 ), collapse = "\n")
+
+url <- roxy.shinylive::create_shinylive_url(code)
+knitr::include_url(url, height = "800px")
+```
+
+## Decorating `grob`
+
+Here's an example to showcase how you can edit an output of class `grob`.
+You can extend them using `grid` and `gridExtra` functions.
+
+```{r decorate_grob}
+library(teal.modules.general)
+
+data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
+data <- within(data, {
+  ADSL <- rADSL
+})
+
+grob_caption_decorator <- function(default_caption = "I am a good decorator") {
+  teal_transform_module(
+    label = "Caption",
+    ui = function(id) {
+      shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
+    },
+    server = function(id, data) {
+      moduleServer(id, function(input, output, session) {
+        reactive({
+          data() |>
+            within(
+              {
+                footnote_grob <- grid::textGrob(
+                  footnote,
+                  x = 0, hjust = 0,
+                  gp = grid::gpar(fontsize = 10, fontface = "italic", col = "gray50")
+                )
+                plot <- gridExtra::arrangeGrob(
+                  plot,
+                  footnote_grob,
+                  ncol = 1,
+                  heights = grid::unit.c(
+                    grid::unit(1, "npc") - grid::unit(1, "lines"), grid::unit(1, "lines")
+                  )
+                )
+              },
+              footnote = input$footnote
+            )
+        })
+      })
+    }
+  )
+}
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_g_association(
+      ref = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = variable_choices(
+            data[["ADSL"]],
+            c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
+          ),
+          selected = "RACE"
+        )
+      ),
+      vars = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = variable_choices(
+            data[["ADSL"]],
+            c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
+          ),
+          selected = "BMRKR2",
+          multiple = TRUE
+        )
+      ),
+      decorators = list(
+        plot = grob_caption_decorator("I am a Association")
+      )
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+```
+
+```{r shinylive_iframe_3, echo = FALSE, out.width = '150%', out.extra = 'style = "position: relative; z-index:1"', eval = requireNamespace("roxy.shinylive", quietly = TRUE) && knitr::is_html_output() && identical(Sys.getenv("IN_PKGDOWN"), "true")}
+code <- paste0(c(
+  "interactive <- function() TRUE",
+  knitr::knit_code$get("setup"),
+  knitr::knit_code$get("decorate_grob")
+), collapse = "\n")
+
+url <- roxy.shinylive::create_shinylive_url(code)
+knitr::include_url(url, height = "800px")
+```
+
+## Decorating `datatables`
+
+Here's an example to showcase how you can edit an output of class `datatables`.
+Please refer the [helper functions](https://rstudio.github.io/DT/functions.html) of the `DT` package to learn more about extending the `datatables` objects.
+```{r decorate_datatables}
+library(teal.modules.general)
+
+data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
+data <- within(data, {
+  require(nestcolor)
+  ADSL <- rADSL
+})
+fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
+vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
+
+dt_table_decorator <- function(color1 = "pink", color2 = "lightblue") {
+  teal_transform_module(
+    label = "Table color",
+    ui = function(id) {
+      selectInput(
+        NS(id, "color"),
+        "Table Color",
+        choices = c("white", color1, color2),
+        selected = "Default"
+      )
+    },
+    server = function(id, data) {
+      moduleServer(id, function(input, output, session) {
+        reactive({
+          data() |> within(
+            {
+              summary_table <- DT::formatStyle(
+                summary_table,
+                columns = attr(summary_table$x, "colnames")[-1],
+                target = "row",
+                backgroundColor = color
+              )
+            },
+            color = input$color
+          )
+        })
+      })
+    }
+  )
+}
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_g_distribution(
+      dist_var = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
+          selected = "BMRKR1",
+          multiple = FALSE,
+          fixed = FALSE
+        )
+      ),
+      strata_var = data_extract_spec(
+        dataname = "ADSL",
+        filter = filter_spec(
+          vars = vars,
+          multiple = TRUE
+        )
+      ),
+      group_var = data_extract_spec(
+        dataname = "ADSL",
+        filter = filter_spec(
+          vars = vars,
+          multiple = TRUE
+        )
+      ),
+      decorators = list(
+        summary_table = dt_table_decorator()
+      )
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+```
+
+```{r shinylive_iframe_4, echo = FALSE, out.width = '150%', out.extra = 'style = "position: relative; z-index:1"', eval = requireNamespace("roxy.shinylive", quietly = TRUE) && knitr::is_html_output() && identical(Sys.getenv("IN_PKGDOWN"), "true")}
+code <- paste0(c(
+  "interactive <- function() TRUE",
+  knitr::knit_code$get("setup"),
+  knitr::knit_code$get("decorate_datatables")
+), collapse = "\n")
+
+url <- roxy.shinylive::create_shinylive_url(code)
+knitr::include_url(url, height = "800px")
+```
+
+## Decorating `trellis`
+
+Here's an example to showcase how you can edit an output of class `trellis`.
+`rtables` modifiers like `rtables::insert_rrow` can be applied to modify this object.
+
+```{r decorate_trellis}
+library(teal.modules.general)
+
+data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
+data <- within(data, {
+  require(nestcolor)
+  ADSL <- rADSL
+  ADRS <- rADRS
+})
+
+trellis_subtitle_decorator <- function(default_caption = "I am a good decorator") {
+  teal_transform_module(
+    label = "Caption",
+    ui = function(id) shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption),
+    server = function(id, data) {
+      moduleServer(id, function(input, output, session) {
+        reactive({
+          data() |>
+            within(
+              {
+                plot <- update(plot, sub = footnote)
+              },
+              footnote = input$footnote
+            )
+        })
+      })
+    }
+  )
+}
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_g_scatterplotmatrix(
+      label = "Scatterplot matrix",
+      variables = list(
+        data_extract_spec(
+          dataname = "ADSL",
+          select = select_spec(
+            choices = variable_choices(data[["ADSL"]]),
+            selected = c("AGE", "RACE", "SEX"),
+            multiple = TRUE,
+            ordered = TRUE
+          )
+        ),
+        data_extract_spec(
+          dataname = "ADRS",
+          filter = filter_spec(
+            label = "Select endpoints:",
+            vars = c("PARAMCD", "AVISIT"),
+            choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
+            selected = "INVET - END OF INDUCTION",
+            multiple = TRUE
+          ),
+          select = select_spec(
+            choices = variable_choices(data[["ADRS"]]),
+            selected = c("AGE", "AVAL", "ADY"),
+            multiple = TRUE,
+            ordered = TRUE
+          )
+        )
+      ),
+      decorators = list(
+        plot = trellis_subtitle_decorator("I am a Scatterplot matrix")
+      )
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+```
+
+```{r shinylive_iframe_5, echo = FALSE, out.width = '150%', out.extra = 'style = "position: relative; z-index:1"', eval = requireNamespace("roxy.shinylive", quietly = TRUE) && knitr::is_html_output() && identical(Sys.getenv("IN_PKGDOWN"), "true")}
+code <- paste0(c(
+  "interactive <- function() TRUE",
+  knitr::knit_code$get("setup"),
+  knitr::knit_code$get("decorate_trellis")
+), collapse = "\n")
+
 url <- roxy.shinylive::create_shinylive_url(code)
 knitr::include_url(url, height = "800px")
 ```

@@ -91,8 +91,8 @@ visually and statistically analyze the variable's distribution.
 
 This module generates the following objects, which can be modified in place using decorators::
 \itemize{
-\item \code{histogram_plot} (\code{ggplot2})
-\item \code{qq_plot} (\code{ggplot2})
+\item \code{histogram_plot} (\code{ggplot})
+\item \code{qq_plot} (\code{ggplot})
 \item \code{summary_table} (\code{datatables} created with \code{\link[DT:datatable]{DT::datatable()}})
 \item \code{test_table} (\code{datatables} created with \code{\link[DT:datatable]{DT::datatable()}})
 }
