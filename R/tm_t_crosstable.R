@@ -30,8 +30,20 @@
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `table` (`ElementaryTable` - output of `rtables::build_table`)
 #'
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
+#' See code snippet below:
+#'
+#' ```
+#' tm_t_crosstable(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      table = teal_transform_module(...) # applied to the `table` output
+#'    )
+#' )
+#' ```
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -164,8 +176,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
-  decorators <- normalize_decorators(decorators)
-  assert_decorators(decorators, "plot")
+  assert_decorators(decorators, "table")
   # End of assertions
 
   # Make UI args
@@ -233,7 +244,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot"))
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "table"))
     ),
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
@@ -300,10 +311,10 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
       selector_list = selector_list,
       merge_function = merge_function
     )
-
+    qenv <- teal.code::eval_code(data(), 'library("rtables");library("tern");library("dplyr")') # nolint quotes
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -409,7 +420,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
     decorated_output_q <- srv_decorate_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      decorators = select_decorators(decorators, "table"),
       expr = table
     )
 

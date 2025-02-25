@@ -23,28 +23,26 @@
 #' - `summary_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `combination_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `by_subject_plot` (`ggplot2`)
-#' - `table` (`listing_df` created with [rlistings::as_listing()])
+#' - `table` (`datatable` created with [DT::datatable()])
 #'
-#' Decorators can be applied to all outputs or only to specific objects using a
-#' named list of `teal_transform_module` objects.
-#' The `"default"` name is reserved for decorators that are applied to all outputs.
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
 #' See code snippet below:
 #'
 #' ```
 #' tm_missing_data(
 #'    ..., # arguments for module
 #'    decorators = list(
-#'      default = list(teal_transform_module(...)), # applied to all outputs
-#'      summary_plot = list(teal_transform_module(...)), # applied only to `summary_plot` output
-#'      combination_plot = list(teal_transform_module(...)) # applied only to `combination_plot` output
-#'      by_subject_plot = list(teal_transform_module(...)) # applied only to `by_subject_plot` output
-#'      table = list(teal_transform_module(...)) # applied only to `table` output
+#'      summary_plot = teal_transform_module(...), # applied only to `summary_plot` output
+#'      combination_plot = teal_transform_module(...), # applied only to `combination_plot` output
+#'      by_subject_plot = teal_transform_module(...), # applied only to `by_subject_plot` output
+#'      table = teal_transform_module(...) # applied only to `table` output
 #'    )
 #' )
 #' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -147,8 +145,7 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  available_decorators <- c("summary_plot", "combination_plot", "by_subject_plot", "summary_table")
-  decorators <- normalize_decorators(decorators)
+  available_decorators <- c("summary_plot", "combination_plot", "by_subject_plot", "table")
   assert_decorators(decorators, names = available_decorators)
   # End of assertions
 
@@ -446,7 +443,7 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
         selected = "counts",
         inline = TRUE
       ),
-      ui_decorate_teal_data(ns("dec_summary_table"), decorators = select_decorators(decorators, "summary_table"))
+      ui_decorate_teal_data(ns("dec_summary_table"), decorators = select_decorators(decorators, "table"))
     ),
     teal.widgets::panel_item(
       title = "Plot settings",
@@ -535,10 +532,13 @@ srv_missing_data <- function(id,
 
       group_var <- input$group_by_var
       anl <- data_r()
+      qenv <- teal.code::eval_code(data(), {
+        'library("dplyr");library("ggplot2");library("tidyr");library("gridExtra")' # nolint quotes
+      })
 
       qenv <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
         teal.code::eval_code(
-          data(),
+          qenv,
           substitute(
             expr = ANL <- anl_name[, selected_vars, drop = FALSE],
             env = list(anl_name = as.name(dataname), selected_vars = selected_vars())
@@ -546,7 +546,7 @@ srv_missing_data <- function(id,
         )
       } else {
         teal.code::eval_code(
-          data(),
+          qenv,
           substitute(expr = ANL <- anl_name, env = list(anl_name = as.name(dataname)))
         )
       }
@@ -790,7 +790,7 @@ srv_missing_data <- function(id,
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(x = "Variable", y = "Missing observations"),
-        theme = list(legend.position = "bottom", axis.text.x = quote(element_text(angle = 45, hjust = 1)))
+        theme = list(legend.position = "bottom", axis.text.x = quote(ggplot2::element_text(angle = 45, hjust = 1)))
       )
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
@@ -808,32 +808,32 @@ srv_missing_data <- function(id,
         qenv,
         substitute(
           summary_plot_top <- summary_plot_obs %>%
-            ggplot() +
-            aes(
+            ggplot2::ggplot() +
+            ggplot2::aes(
               x = factor(create_cols_labels(col), levels = x_levels),
               y = n_pct,
               fill = isna
             ) +
-            geom_bar(position = "fill", stat = "identity") +
-            scale_fill_manual(
+            ggplot2::geom_bar(position = "fill", stat = "identity") +
+            ggplot2::scale_fill_manual(
               name = "",
               values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
               labels = c("Present", "Missing")
             ) +
-            scale_y_continuous(
+            ggplot2::scale_y_continuous(
               labels = scales::percent_format(),
               breaks = seq(0, 1, by = 0.1),
               expand = c(0, 0)
             ) +
-            geom_text(
-              aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+            ggplot2::geom_text(
+              ggplot2::aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
               hjust = 1,
               color = "black"
             ) +
             labs +
             ggthemes +
             themes +
-            coord_flip(),
+            ggplot2::coord_flip(),
           env = list(
             labs = parsed_ggplot2_args$labs,
             themes = parsed_ggplot2_args$theme,
@@ -870,8 +870,8 @@ srv_missing_data <- function(id,
           labs = list(x = "", y = "Missing patients"),
           theme = list(
             legend.position = "bottom",
-            axis.text.x = quote(element_text(angle = 45, hjust = 1)),
-            axis.text.y = quote(element_blank())
+            axis.text.x = quote(ggplot2::element_text(angle = 45, hjust = 1)),
+            axis.text.y = quote(ggplot2::element_blank())
           )
         )
 
@@ -890,32 +890,32 @@ srv_missing_data <- function(id,
           qenv,
           substitute(
             summary_plot_bottom <- summary_plot_patients %>%
-              ggplot() +
-              aes_(
+              ggplot2::ggplot() +
+              ggplot2::aes_(
                 x = ~ factor(create_cols_labels(col), levels = x_levels),
                 y = ~n_pct,
                 fill = ~isna
               ) +
-              geom_bar(alpha = 1, stat = "identity", position = "fill") +
-              scale_y_continuous(
+              ggplot2::geom_bar(alpha = 1, stat = "identity", position = "fill") +
+              ggplot2::scale_y_continuous(
                 labels = scales::percent_format(),
                 breaks = seq(0, 1, by = 0.1),
                 expand = c(0, 0)
               ) +
-              scale_fill_manual(
+              ggplot2::scale_fill_manual(
                 name = "",
                 values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
                 labels = c("Present", "Missing")
               ) +
-              geom_text(
-                aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
+              ggplot2::geom_text(
+                ggplot2::aes(label = ifelse(isna == TRUE, sprintf("%d [%.02f%%]", n, n_pct), ""), y = 1),
                 hjust = 1,
                 color = "black"
               ) +
               labs +
               ggthemes +
               themes +
-              coord_flip(),
+              ggplot2::coord_flip(),
             env = list(
               labs = parsed_ggplot2_args$labs,
               themes = parsed_ggplot2_args$theme,
@@ -927,14 +927,14 @@ srv_missing_data <- function(id,
 
       if (isTRUE(input$if_patients_plot)) {
         within(qenv, {
-          g1 <- ggplotGrob(summary_plot_top)
-          g2 <- ggplotGrob(summary_plot_bottom)
+          g1 <- ggplot2::ggplotGrob(summary_plot_top)
+          g2 <- ggplot2::ggplotGrob(summary_plot_bottom)
           summary_plot <- gridExtra::gtable_cbind(g1, g2, size = "first")
           summary_plot$heights <- grid::unit.pmax(g1$heights, g2$heights)
         })
       } else {
         within(qenv, {
-          g1 <- ggplotGrob(summary_plot_top)
+          g1 <- ggplot2::ggplotGrob(summary_plot_top)
           summary_plot <- g1
         })
       }
@@ -982,7 +982,7 @@ srv_missing_data <- function(id,
         labs = list(x = "", y = ""),
         theme = list(
           legend.position = "bottom",
-          axis.text.x = quote(element_blank())
+          axis.text.x = quote(ggplot2::element_blank())
         )
       )
 
@@ -1001,9 +1001,9 @@ srv_missing_data <- function(id,
         labs = list(x = "", y = ""),
         theme = list(
           legend.position = "bottom",
-          axis.text.x = quote(element_blank()),
-          axis.ticks = quote(element_blank()),
-          panel.grid.major = quote(element_blank())
+          axis.text.x = quote(ggplot2::element_blank()),
+          axis.ticks = quote(ggplot2::element_blank()),
+          panel.grid.major = quote(ggplot2::element_blank())
         )
       )
 
@@ -1025,14 +1025,14 @@ srv_missing_data <- function(id,
             combination_plot_top <- data_combination_plot_cutoff %>%
               dplyr::select(id, n) %>%
               dplyr::distinct() %>%
-              ggplot(aes(x = id, y = n)) +
-              geom_bar(stat = "identity", fill = c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]) +
-              geom_text(
-                aes(label = n),
-                position = position_dodge(width = 0.9),
+              ggplot2::ggplot(ggplot2::aes(x = id, y = n)) +
+              ggplot2::geom_bar(stat = "identity", fill = c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]) +
+              ggplot2::geom_text(
+                ggplot2::aes(label = n),
+                position = ggplot2::position_dodge(width = 0.9),
                 vjust = -0.25
               ) +
-              ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
+              ggplot2::ylim(c(0, max(data_combination_plot_cutoff$n) * 1.5)) +
               labs1 +
               ggthemes1 +
               themes1
@@ -1040,17 +1040,17 @@ srv_missing_data <- function(id,
             graph_number_rows <- length(unique(data_combination_plot_cutoff$id))
             graph_number_cols <- nrow(data_combination_plot_cutoff) / graph_number_rows
 
-            combination_plot_bottom <- data_combination_plot_cutoff %>% ggplot() +
-              aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
-              geom_tile(alpha = 0.85, height = 0.95) +
-              scale_fill_manual(
+            combination_plot_bottom <- data_combination_plot_cutoff %>% ggplot2::ggplot() +
+              ggplot2::aes(x = create_cols_labels(key), y = id - 0.5, fill = value) +
+              ggplot2::geom_tile(alpha = 0.85, height = 0.95) +
+              ggplot2::scale_fill_manual(
                 name = "",
                 values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
                 labels = c("Present", "Missing")
               ) +
-              geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
-              geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
-              coord_flip() +
+              ggplot2::geom_hline(yintercept = seq_len(1 + graph_number_rows) - 1) +
+              ggplot2::geom_vline(xintercept = seq_len(1 + graph_number_cols) - 0.5, linetype = "dotted") +
+              ggplot2::coord_flip() +
               labs2 +
               ggthemes2 +
               themes2
@@ -1067,8 +1067,8 @@ srv_missing_data <- function(id,
       )
 
       within(qenv, {
-        g1 <- ggplotGrob(combination_plot_top)
-        g2 <- ggplotGrob(combination_plot_bottom)
+        g1 <- ggplot2::ggplotGrob(combination_plot_top)
+        g2 <- ggplot2::ggplotGrob(combination_plot_bottom)
 
         combination_plot <- gridExtra::gtable_rbind(g1, g2, size = "last")
         combination_plot$heights[7] <- grid::unit(0.2, "null") # rescale to get the bar chart smaller
@@ -1112,8 +1112,12 @@ srv_missing_data <- function(id,
       }
 
       qenv <- if (!is.null(group_var)) {
-        teal.code::eval_code(
+        common_code_libraries_q <- teal.code::eval_code(
           common_code_q(),
+          'library("forcats");library("glue");' # nolint quotes
+        )
+        teal.code::eval_code(
+          common_code_libraries_q,
           substitute(
             expr = {
               summary_data <- ANL %>%
@@ -1150,7 +1154,7 @@ srv_missing_data <- function(id,
         )
       }
 
-      within(qenv, table <- rlistings::as_listing(summary_data))
+      within(qenv, table <- DT::datatable(summary_data))
     })
 
     by_subject_plot_q <- reactive({
@@ -1161,7 +1165,7 @@ srv_missing_data <- function(id,
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(x = "", y = ""),
-        theme = list(legend.position = "bottom", axis.text.x = quote(element_blank()))
+        theme = list(legend.position = "bottom", axis.text.x = quote(ggplot2::element_blank()))
       )
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
@@ -1238,20 +1242,20 @@ srv_missing_data <- function(id,
         teal.code::eval_code(
           substitute(
             expr = {
-              by_subject_plot <- ggplot(summary_plot_patients, aes(
+              by_subject_plot <- ggplot2::ggplot(summary_plot_patients, ggplot2::aes(
                 x = factor(id, levels = order_subjects),
                 y = factor(col, levels = ordered_columns[["column"]]),
                 fill = isna
               )) +
-                geom_raster() +
-                annotate(
+                ggplot2::geom_raster() +
+                ggplot2::annotate(
                   "text",
                   x = length(order_subjects),
                   y = seq_len(nrow(ordered_columns)),
                   hjust = 1,
                   label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
                 ) +
-                scale_fill_manual(
+                ggplot2::scale_fill_manual(
                   name = "",
                   values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
                   labels = c("Present", "Missing (at least one)")
@@ -1295,7 +1299,7 @@ srv_missing_data <- function(id,
     decorated_summary_table_q <- srv_decorate_teal_data(
       id = "dec_summary_table",
       data = summary_table_q,
-      decorators = select_decorators(decorators, "summary_table"),
+      decorators = select_decorators(decorators, "table"),
       expr = table
     )
 
@@ -1327,7 +1331,7 @@ srv_missing_data <- function(id,
           options = list(language = list(zeroRecords = "No variable selected."), pageLength = input$levels_table_rows)
         )
       } else {
-        DT::datatable(decorated_summary_table_q()[["summary_data"]])
+        decorated_summary_table_q()[["table"]]
       }
     })
 

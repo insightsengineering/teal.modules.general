@@ -66,7 +66,7 @@ with text placed before the output to put the output into context. For example a
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
 
 \item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
-To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
@@ -92,29 +92,27 @@ This module generates the following objects, which can be modified in place usin
 \itemize{
 \item \code{histogram_plot} (\code{ggplot2})
 \item \code{qq_plot} (\code{ggplot2})
-\item \code{summary_table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
-\item \code{test_table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
+\item \code{summary_table} (\code{datatables} created with \code{\link[DT:datatable]{DT::datatable()}})
+\item \code{test_table} (\code{datatables} created with \code{\link[DT:datatable]{DT::datatable()}})
 }
 
-Decorators can be applied to all outputs or only to specific objects using a
-named list of \code{teal_transform_module} objects.
-The \code{"default"} name is reserved for decorators that are applied to all outputs.
+A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
+The name of this list corresponds to the name of the output to which the decorator is applied.
 See code snippet below:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_g_distribution(
    ..., # arguments for module
    decorators = list(
-     default = list(teal_transform_module(...)), # applied to all outputs
-     histogram_plot = list(teal_transform_module(...)), # applied only to `histogram_plot` output
-     qq_plot = list(teal_transform_module(...)) # applied only to `qq_plot` output
-     summary_table = list(teal_transform_module(...)) # applied only to `summary_table` output
-     test_table = list(teal_transform_module(...)) # applied only to `test_table` output
+     histogram_plot = teal_transform_module(...), # applied only to `histogram_plot` output
+     qq_plot = teal_transform_module(...), # applied only to `qq_plot` output
+     summary_table = teal_transform_module(...), # applied only to `summary_table` output
+     test_table = teal_transform_module(...) # applied only to `test_table` output
    )
 )
 }\if{html}{\out{</div>}}
 
 For additional details and examples of decorators, refer to the vignette
-\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
+\code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
 \examples{

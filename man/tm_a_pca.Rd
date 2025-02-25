@@ -74,7 +74,7 @@ with text placed before the output to put the output into context. For example a
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
 \item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
-To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
@@ -105,25 +105,23 @@ This module generates the following objects, which can be modified in place usin
 \item \code{eigenvector_plot} (\code{ggplot2})
 }
 
-Decorators can be applied to all outputs or only to specific objects using a
-named list of \code{teal_transform_module} objects.
-The \code{"default"} name is reserved for decorators that are applied to all outputs.
+A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
+The name of this list corresponds to the name of the output to which the decorator is applied.
 See code snippet below:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_a_pca(
    ..., # arguments for module
    decorators = list(
-     default = list(teal_transform_module(...)), # applied to all outputs
-     elbow_plot = list(teal_transform_module(...)), # applied only to `elbow_plot` output
-     circle_plot = list(teal_transform_module(...)) # applied only to `circle_plot` output
-     biplot = list(teal_transform_module(...)) # applied only to `biplot` output
-     eigenvector_plot = list(teal_transform_module(...)) # applied only to `eigenvector_plot` output
+     elbow_plot = teal_transform_module(...), # applied to the `elbow_plot` output
+     circle_plot = teal_transform_module(...), # applied to the `circle_plot` output
+     biplot = teal_transform_module(...), # applied to the `biplot` output
+     eigenvector_plot = teal_transform_module(...) # applied to the `eigenvector_plot` output
    )
 )
 }\if{html}{\out{</div>}}
 
 For additional details and examples of decorators, refer to the vignette
-\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
+\code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
 \examples{
