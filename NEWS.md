@@ -1,15 +1,15 @@
 # teal.modules.general 0.4.0
 
 ### Enhancements
-* Introduced `transformators` and `decorators` argument to modules (#863, #1441).
-* Modules' Show R Code widgets include library calls and their code is styled with `styler` package (#847, #786).
+* Introduced `transformators` and `decorators` argument to modules (#863).
+* Modules' Show R Code widgets include library calls to boost reproducibility (#786).
 * Removed `Show Warnings` modals from modules.
 
 ### Miscellaneous
 * Soft deprecated `datasets_selected` argument of modules in favor of `datanames`.
 * Soft deprecated `show_metadata` argument of `tm_front_page()` in favor of `datanames`.
 * Added `teal.logger` functionality for logging changes in shiny inputs in all modules.
-* All example data is now sourced from `teal.data` (#818).
+* All example data is now sourced from `teal.data`.
 * Update `tm_g_distribution` to not start with validation error (#823).
 
 ### Bug fixes
