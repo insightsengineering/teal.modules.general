@@ -1032,13 +1032,12 @@ srv_a_regression <- function(id,
     ### REPORTER
     card_fun <- reactive({
       req(plot_r(), source_code_r())
-      function() {
-        card <- teal.reporter::report_document()
-        card <- c(card, c(list("## Plot")))
-        # card <- c(card, c(list("## Plot"), list(plot_r())))
-        # card <- c(card, list(source_code_r()))
-        card
-      }
+        teal.reporter::report_document(
+          "## Plot",
+          #,plot_r())
+          "## Source Code"
+          #,source_code_r()
+        )
     })
     ###
 
