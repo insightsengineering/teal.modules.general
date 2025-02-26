@@ -29,8 +29,8 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators::
-#' - `histogram_plot` (`ggplot2`)
-#' - `qq_plot` (`ggplot2`)
+#' - `histogram_plot` (`ggplot`)
+#' - `qq_plot` (`ggplot`)
 #' - `summary_table` (`datatables` created with [DT::datatable()])
 #' - `test_table` (`datatables` created with [DT::datatable()])
 #'
@@ -51,6 +51,9 @@
 #' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-module-output", package = "teal.modules.general")`.
+#'
+#' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
