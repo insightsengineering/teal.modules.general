@@ -18,10 +18,10 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `box_plot` (`ggplot2`)
-#' - `density_plot` (`ggplot2`)
-#' - `cumulative_plot` (`ggplot2`)
-#' - `table` (`datatable` created with [DT::datatable()])
+#' - `box_plot` (`ggplot`)
+#' - `density_plot` (`ggplot`)
+#' - `cumulative_plot` (`ggplot`)
+#' - `table` (`datatables` created with [DT::datatable()])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -40,6 +40,9 @@
 #' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
+#' `vignette("decorate-module-output", package = "teal.modules.general")`.
+#'
+#' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
@@ -533,12 +536,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       # this is utils function that converts a %>% NULL %>% b into a %>% b
       remove_pipe_null <- function(x) {
         if (length(x) == 1) {
-          return(x)
+          x
+        } else if (identical(x[[1]], as.name("%>%")) && is.null(x[[3]])) {
+          remove_pipe_null(x[[2]])
+        } else {
+          as.call(c(x[[1]], lapply(x[-1], remove_pipe_null)))
         }
-        if (identical(x[[1]], as.name("%>%")) && is.null(x[[3]])) {
-          return(remove_pipe_null(x[[2]]))
-        }
-        return(as.call(c(x[[1]], lapply(x[-1], remove_pipe_null))))
       }
 
       qenv <- teal.code::eval_code(
