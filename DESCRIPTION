@@ -80,7 +80,7 @@ Suggests:
     testthat (>= 3.1.9),
     withr (>= 2.0.0)
 Remotes:
-    insightsengineering/teal@test@bslib@main,
+    insightsengineering/teal@redesign@main,
     insightsengineering/teal.reporter@redesign@main
 VignetteBuilder:
     knitr,
