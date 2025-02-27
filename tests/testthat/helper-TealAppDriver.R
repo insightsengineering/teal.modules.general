@@ -13,7 +13,7 @@ init_teal_app_driver <- function(...) {
       functionBody(server) <- bquote({
         # Hint to shinytest2 that this package should be available (via {globals})
         .hint_to_load_package <- add_facet_labels
-        .one_more_inht_to_load <- sparkline::sparkline
+        .one_more_inht_to_load_package <- sparkline::sparkline
         .(functionBody(server))
       })
 
