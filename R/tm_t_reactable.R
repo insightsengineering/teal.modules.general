@@ -82,19 +82,46 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
 
 }
 
+#' Makes `reactable::colDef` call containing:
+#' name = <column label attribute>
+#' cell = <url formatter>
+#' Arguments of [reactable::colDef()] are specified only if necessary
+#' @param dataset (`data.frame`)
+#' @return named list of `colDef` calls
+#' @keywords internal
 .make_reactable_columns_call <- function(dataset) {
-  # todo: what to do with urls?
+  checkmate::assert_data_frame(dataset)
   args <- lapply(
-    teal.data::col_labels(dataset), 
-    function(label) {
-      if (!is.null(label) && !is.na(label)) {
-        substitute(
-          colDef(name = label),
-          list(label = label)
+    seq_along(dataset), 
+    function(i) {
+      label <- attr(dataset[[i]], "label")
+      is_labelled <- length(label) == 1 && !is.na(label) && !identical(label, "")
+      is_url <- is.character(dataset[[i]]) && any(
+        grepl(
+          "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)",
+          x = head(dataset[[i]]),
+          perl = TRUE
+        )
+      )
+
+      args <- c(
+        if (is_labelled) list(name = label),
+        if (is_url) list(cell = quote(function(value) {
+            if (!is.na(value) && !is.null(value) && value != "") {
+              htmltools::tags$a(href = value, target = "_blank", "Link")
+            } else {
+              "N/A"
+            }
+          })
         ) 
+      )
+
+      if (length(args)) {
+        do.call(call, c(list(name = "colDef"), args), quote = TRUE)
       }
     }
   )
+  names(args) <- names(dataset)
   args <- Filter(length, args)
   if (length(args)) {
     do.call(call, c(list("list"), args), quote = TRUE)    
