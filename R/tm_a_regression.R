@@ -1038,11 +1038,11 @@ srv_a_regression <- function(id,
       teal.reporter::report_document(
 
         "## Plot",
-        plot_to_base64(plot_r()),
+        plot_r(),
         "## Source Code",
         format_as_markdown_chunk(source_code_r()),
         "## Table for testing",
-        knitr::kable(head(iris))
+        head(iris)
       )
     })
     ###
@@ -1053,32 +1053,6 @@ srv_a_regression <- function(id,
   })
 }
 
-
-plot_to_base64 <- function(plot, width = 5, height = 4, dpi = 100) {
-  # Temporary file to save the plot
-  tmpfile <- tempfile(fileext = ".png")
-
-  # Save the plot as a PNG file
-  ggsave(tmpfile, plot = plot, width = width, height = height, dpi = dpi)
-
-  # Read the binary data and encode as base64
-  # base64enc::base64encode(tmpfile)
-  base64_string<- knitr::image_uri(tmpfile)
-  sprintf("![Plot](%s)", base64_string)
-}
-#
-# plot_to_base64(qqplot(x = 1:2, y = 1:2))
-
 format_as_markdown_chunk <- function(r_code) {
-  # Wrap the code inside a Markdown R chunk
   sprintf("```{r}\n%s\n```", r_code)
 }
-#
-# # Example usage:
-# r_code <- "ggplot(mtcars, aes(x = wt, y = mpg)) +\n  geom_point() +\n  ggtitle('Scatter plot')"
-#
-# markdown_chunk <- format_as_markdown_chunk(r_code)
-#
-# # Print the Markdown-formatted output
-# cat(markdown_chunk)
-
