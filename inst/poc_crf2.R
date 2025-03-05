@@ -126,6 +126,40 @@ tm_swimlane <- function(label = "Swimlane", plot_height = 700) {
                 summarise(study_day = max(event_study_day)) |>
                 bind_rows(tibble(subject = unique(swimlane_ds$subject), study_day = 0))
 
+              adverse_events <- swimlane_ds |>
+                filter(event_type == "adverse_event") |>
+                select(subject, event_study_day, event_result, aenum, aeraw, icrsgr, ecrsgr, igrnci, egrnci, aeod_study_day, aerd_study_day) |>
+                mutate(
+                  initial_grade = coalesce(icrsgr, igrnci),
+                  extreme_grade = coalesce(ecrsgr, egrnci),
+                  initial_label = case_when(
+                    !is.na(icrsgr) ~ "Initial ASTCT Grade",
+                    !is.na(igrnci) ~ "Initial NCI CTCAE Grade",
+                    TRUE ~ "Initial Grade"
+                  ),
+                  extreme_label = case_when(
+                    !is.na(ecrsgr) ~ "Most Extreme ASTCT Grade",
+                    !is.na(egrnci) ~ "Most Extreme NCI CTCAE Grade",
+                    TRUE ~ "Most Extreme Grade"
+                  )
+                ) |>
+                mutate(
+                  tooltip = sprintf(
+                    "Subject: %s<br>Study Day: %d<br>AENUM: %d<br>Event of Interest: %s<br>Primary Adverse Event: %s<br>Onset Study Day: %d<br>End Date Study Day: %d<br>%s: %d<br>%s: %d",
+                    subject,
+                    event_study_day,
+                    aenum,
+                    event_result,
+                    aeraw,
+                    aeod_study_day,
+                    aerd_study_day,
+                    initial_label,
+                    initial_grade,
+                    extreme_label,
+                    extreme_grade
+                  )
+                )
+
               p <- plotly::plot_ly(
                 source = "swimlane",
                 colors = c(
@@ -140,7 +174,13 @@ tm_swimlane <- function(label = "Swimlane", plot_height = 700) {
                   "SCR (Stringent Complete Response)" = "midnightblue",
                   "X Administration Injection" = "goldenrod",
                   "Y Administration Infusion" = "deepskyblue3",
-                  "Z Administration Infusion" = "darkorchid"
+                  "Z Administration Infusion" = "darkorchid",
+                  "Cytokine Release Syndrome" = "#f5a733",
+                  "Cytokine Release Syndrome Start" = "#fccf79",
+                  "Cytokine Release Syndrome End" = "#f59505",
+                  "Infection" = "pink",
+                  "Infection Start" = "#f2ced3",
+                  "Infection End" = "#d65668"
                 ),
                 symbols = c(
                   "DEATH" = "circle",
@@ -182,6 +222,41 @@ tm_swimlane <- function(label = "Swimlane", plot_height = 700) {
                   line = list(width = 1, color = "grey"),
                   showlegend = FALSE
                 ) |>
+                plotly::add_segments(
+                  data = adverse_events,
+                  x = ~aeod_study_day,
+                  xend = ~aerd_study_day,
+                  y = ~subject,
+                  yend = ~subject,
+                  color = ~event_result,
+                  line = list(width = 2),
+                  showlegend = TRUE,
+                  name = ~event_result,
+                  legendgroup = ~event_result,
+                  hoverinfo = "none"
+                ) |>
+                plotly::add_markers(
+                  data = adverse_events |> filter(event_study_day == aeod_study_day),
+                  x = ~aeod_study_day,
+                  y = ~subject,
+                  text = ~tooltip,
+                  hoverinfo = "text",
+                  color = ~ paste0(event_result, " Start"),
+                  showlegend = TRUE,
+                  legendgroup = ~event_result,
+                  marker = list(size = 6, symbol = "arrow-down")
+                ) |>
+                plotly::add_markers(
+                  data = adverse_events |> filter(event_study_day == aerd_study_day),
+                  x = ~aerd_study_day,
+                  y = ~subject,
+                  text = ~tooltip,
+                  hoverinfo = "text",
+                  color = ~ paste0(event_result, " End"),
+                  showlegend = TRUE,
+                  legendgroup = ~event_result,
+                  marker = list(size = 6, symbol = "arrow-down")
+                ) |>
                 plotly::layout(
                   xaxis = list(title = "Study Day"), yaxis = list(title = "Subject")
                 ) |>
@@ -205,11 +280,8 @@ tm_swimlane <- function(label = "Swimlane", plot_height = 700) {
         swimlane_ds <- data()[["swimlane_ds"]]
         col_defs <- with_tooltips(
           subject = colDef(name = "Subject"),
-          visit_name = colDef(name = "Visit Name", width = 250),
-          visit_date = colDef(name = "Visit Date"),
-          form_name = colDef(name = "Form Name", width = 250),
-          source_system_url_link = colDef(
-            name = "Source System URL Link",
+          raise_query = colDef(
+            name = "Raise Query",
             cell = function(value) {
               if (!is.na(value) && !is.null(value) && value != "") {
                 htmltools::tags$a(href = value, target = "_blank", "Link")
@@ -218,16 +290,17 @@ tm_swimlane <- function(label = "Swimlane", plot_height = 700) {
               }
             }
           ),
+          visit_name = colDef(name = "Visit Name"),
           rspdn = colDef(name = "Assessment Performed"),
           rspd = colDef(name = "Response Date"),
           rspd_study_day = colDef(name = "Response Date Study Day"),
-          orsp = colDef(name = "Response", width = 250),
+          orsp = colDef(name = "Response"),
           bma = colDef(name = "Best Marrow Aspirate"),
           bmb = colDef(name = "Best Marrow Biopsy"),
           comnts = colDef(name = "Comments")
         )
         mm_response <- swimlane_ds |>
-          filter(event_study_day %in% plotly_selected()$x, subject %in% plotly_selected()$y) |>
+          filter(event_study_day %in% plotly_selected()$x, subject %in% plotly_selected()$y, event_type == "response_assessment") |>
           select(all_of(names(col_defs)))
         if (nrow(mm_response) == 0) {
           return()
@@ -394,6 +467,7 @@ tm_spider <- function(label = "Spiderplot", plot_height = 600) {
               y_title <- selected_event
               spiderplot_ds_filtered <- spiderplot_ds |>
                 filter(event_type == selected_event)
+              ticksuffix <- ifelse(grepl("Change from baseline", selected_event), "%", "")
 
               p <- plotly::plot_ly(source = "spiderplot", height = height) |>
                 plotly::add_markers(
@@ -407,8 +481,8 @@ tm_spider <- function(label = "Spiderplot", plot_height = 600) {
                 ) |>
                 plotly::layout(
                   xaxis = list(title = "Collection Date Study Day", zeroline = FALSE),
-                  yaxis = list(title = ~y_title),
-                  title = ~ paste0(y_title, " Over Time")
+                  yaxis = list(title = ~y_title, ticksuffix = ticksuffix, separatethousands = TRUE, exponentformat = "none"),
+                  title = ~ paste0(paste(strwrap(y_title, width = 50), collapse = "<br>"), " Over Time")
                 ) |>
                 plotly::layout(dragmode = "select") |>
                 plotly::config(displaylogo = FALSE)
@@ -689,4 +763,3 @@ app <- init(
 )
 
 shinyApp(app$ui, app$server)
-
