@@ -2,7 +2,7 @@ library(teal)
 library(DT)
 library(labelled)
 library(reactable)
-#pkgload::load_all("teal.modules.general")
+pkgload::load_all("teal.modules.general")
 # Note: Please add the `PATH_TO_DATA` and change the X, Y, and Z Administrations to the actual values in the data
 
 with_tooltips <- function(...) {
@@ -17,7 +17,7 @@ data <- within(teal_data(), {
   library(dplyr)
   library(arrow)
   library(forcats)
-  data_path <- "/ocean/harbour/CDT70436/GO43979/CSRInterim_roak_upver/dev/data/other/mdr_spotfire/"
+  data_path <- "PATH/TO/THE/DATA"
 
   swimlane_ds <- read_parquet(file.path(data_path, "swimlane_ds.parquet")) |>
     filter(!is.na(event_result), !is.na(event_study_day)) |>

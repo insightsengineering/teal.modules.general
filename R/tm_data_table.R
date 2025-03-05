@@ -316,14 +316,14 @@ ui_dataset_table <- function(id, choices, selected) {
 
 # Server function for the data_table module
 srv_dataset_table <- function(id,
-                           data,
-                           dataname,
-                           if_filtered,
-                           if_distinct,
-                           dt_args,
-                           dt_options,
-                           server_rendering,
-                           filter_panel_api) {
+                             data,
+                             dataname,
+                             if_filtered,
+                             if_distinct,
+                             dt_args,
+                             dt_options,
+                             server_rendering,
+                             filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     iv <- shinyvalidate::InputValidator$new()
     iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))

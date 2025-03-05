@@ -111,20 +111,10 @@ srv_g_spiderplot <- function(id,
         time_vals = plotly_selected()$x,
         value_vals = plotly_selected()$y,
         expr = {
-          brushed_subjects <- dplyr::filter(
-            dataname, time_var %in% time_vals, value_var %in% value_vals
-          )[[subject_var]]
+          plotly_brushed_time <- time_vals
+          plotly_brushed_value <- value_vals
         }
       )
     })
-  })
-}
-
-
-.with_tooltips <- function(...) {
-  args <- list(...)
-  lapply(args, function(col) {
-    col$header <- tags$span(col$name, title = col$name)
-    return(col)
   })
 }

@@ -130,11 +130,19 @@ srv_a_spiderplot_mdr <- function(id,
       within(
         plotly_selected_q(),
         dataname = str2lang(dataname),
+        time_var = str2lang(time_var),
         subject_var = str2lang(subject_var),
+        value_var = str2lang(value_var),
+        subject_var_char = subject_var,
         event_var = str2lang(event_var),
         recent_resp_event =  "latest_response_assessment",  # todo: whattodo?
         resp_cols = resp_cols,
         expr = {
+          brushed_subjects <- dplyr::filter(
+            dataname, 
+            time_var %in% plotly_brushed_time, 
+            value_var %in% plotly_brushed_value
+          )[[subject_var_char]]
           recent_resp <- dplyr::filter(
             dataname,
             event_var %in% recent_resp_event,
@@ -237,16 +245,5 @@ srv_a_spiderplot_mdr <- function(id,
     })
     
     
-  })
-}
-
-
-
-
-.with_tooltips <- function(...) {
-  args <- list(...)
-  lapply(args, function(col) {
-    col$header <- tags$span(col$name, title = col$name)
-    return(col)
   })
 }

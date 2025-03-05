@@ -1,8 +1,8 @@
 tm_g_waterfall <- function(label = "Waterfall", time_var, subject_var, value_var, event_var, plot_height = 700) {
-  time_var$dataname <- "ADRS"
-  subject_var$dataname <- "ADRS"
-  value_var$dataname <- "ADRS"
-  event_var$dataname <- "ADRS"
+  time_var$dataname <- "ADTR"
+  subject_var$dataname <- "ADTR"
+  value_var$dataname <- "ADTR"
+  event_var$dataname <- "ADTR"
   module(
     label = label,
     ui = ui_g_waterfall,

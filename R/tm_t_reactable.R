@@ -1,15 +1,122 @@
 #' @param ... () additional [reactable()] arguments
 #' @export
-tm_t_reactables <- function(label = "Table", datanames, transformators = list(), decorators = list(), ...) {
+tm_t_reactables <- function(label = "Table", datanames = "all", columns = list(), transformators = list(), decorators = list(), ...) {
   module(
     label = label,
     ui = ui_t_reactable,
     srv = srv_t_reactable,
     ui_args = list(decorators = decorators),
-    srv_args = c(list(datanames = datanames, decorators = decorators), rlang::list2(...)),
-    datanames = datanames,
+    srv_args = c(
+      list(datanames = datanames, columns = columns, decorators = decorators), 
+      rlang::list2(...)
+    ),
+    datanames = subtables,
     transformers = transformers
   )
+}
+
+ui_t_reactables <- function(id) {
+  ns <- NS(id)
+  div(
+    class = "simple-card",
+    uiOutput(ns("subtables"))
+  )
+}
+
+srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, decorators, ...) {
+  moduleServer(id, function(input, output, session) {
+    
+    all_datanames_r <- reactive({
+      req(data())
+      names(Filter(is.data.frame, as.list(data())))
+    })
+    
+    datanames_r <- reactive({
+      req(all_datanames_r())
+      df_datanames <- all_datanames_r()
+      if (identical(datanames, "all")) {
+        df_datanames
+      } else {
+        intersect(datanames, df_datanames)
+      }
+    }) |> bindEvent(all_datanames_r())
+    
+    columns_r <- reactive({
+      req(datanames_r())
+      sapply(datanames_r(), function(dataname) {
+        if (length(columns[[dataname]])) {
+          columns()[[dataname]]
+        } else {
+          colnames(isolate(data())[[dataname]])
+        }
+      })
+    }) |> bindEvent(datanames_r())
+    
+    datalabels_r <- reactive({
+      req(datanames_r())
+      sapply(datanames_r(), function(dataname) {
+        datalabel <- attr(isolate(data())[[dataname]], "label")
+        if (length(datalabel)) datalabel else dataname
+      })
+    }) |> bindEvent(datanames_r())
+  
+    # todo: re-render only if datanames changes
+    output$subtables <- renderUI({
+      if (length(datanames_r()) == 0) return(NULL)
+      isolate({
+        do.call(
+          tabsetPanel,
+          c(
+            list(id = session$ns("reactables")),
+            lapply(
+              datanames_r(),
+              function(dataname) {
+                tabPanel(
+                  title = datalabels_r()[dataname],
+                  ui_t_reactable(session$ns(dataname))
+                )
+              }
+            )
+          )
+        )
+      })
+    }) |> bindCache(datanames_r())
+    
+    called_datanames <- reactiveVal()
+    observeEvent(datanames_r(), {
+      lapply(
+        setdiff(datanames_r(), called_datanames()), # call module only once per dataname
+        function(dataname) srv_t_reactable(dataname, data = data, dataname = dataname, filter_panel_api = filter_panel_api, ...)
+      )
+      called_datanames(union(called_datanames(), datanames_r()))
+    })
+    
+    
+    # lapply(
+    #   seq_along(subtables),
+    #   function(i) {
+    #     table_q <- reactive({
+    #       within(
+    #         plotly_selected_q(),
+    #         dataname = str2lang(dataname),
+    #         subtable_name = subtable_names[i],
+    #         time_var = str2lang(time_var),
+    #         subject_var = str2lang(subject_var),
+    #         col_defs = subtables[[i]],
+    #         expr = {
+    #           subtable_name <- dataname |>
+    #             dplyr::filter(
+    #               time_var %in% plotly_brushed_time, 
+    #               subject_var %in% plotly_brushed_subject
+    #             ) |>
+    #             dplyr::select(dplyr::all_of(col_defs))
+    #         }
+    #       )
+    #     })
+    #     srv_t_reactable(subtable_names[i], data = table_q, dataname = subtable_names[i], selection = NULL)
+    #   }
+    # )
+  })
 }
 
 ui_t_reactable <- function(id) {
@@ -128,4 +235,6 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
   }
 }
 
-
+.name_to_id <- function(name) {
+  gsub("[[:space:][:punct:]]+", "_", x = tolower(name))
+}
