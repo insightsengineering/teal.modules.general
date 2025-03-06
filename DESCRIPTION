@@ -30,6 +30,7 @@ Depends:
     teal (>= 0.16.0.9000),
     teal.transform (>= 0.6.0)
 Imports:
+    bslib (>= 0.8.0),
     checkmate (>= 2.1.0),
     colourpicker (>= 1.3.0),
     dplyr (>= 1.0.5),

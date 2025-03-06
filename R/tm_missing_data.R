@@ -392,13 +392,13 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       checkboxInput(
         ns("any_na"),
         tags$div(
-          class = "teal-tooltip",
           tagList(
             "Add **anyna** variable",
-            icon("circle-info"),
-            tags$span(
-              class = "tooltiptext",
-              "Describes the number of observations with at least one missing value in any variable."
+            bslib::tooltip(
+              icon("circle-info"),
+              tags$span(
+                "Describes the number of observations with at least one missing value in any variable."
+              )
             )
           )
         ),
@@ -408,15 +408,15 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
         checkboxInput(
           ns("if_patients_plot"),
           tags$div(
-            class = "teal-tooltip",
             tagList(
               "Add summary per patients",
-              icon("circle-info"),
-              tags$span(
-                class = "tooltiptext",
-                paste(
-                  "Displays the number of missing values per observation,",
-                  "where the x-axis is sorted by observation appearance in the table."
+              bslib::tooltip(
+                icon("circle-info"),
+                tags$span(
+                  paste(
+                    "Displays the number of missing values per observation,",
+                    "where the x-axis is sorted by observation appearance in the table."
+                  )
                 )
               )
             )
