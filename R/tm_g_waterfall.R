@@ -180,19 +180,7 @@ srv_g_waterfall <- function(id,
       )
     })
 
-    output$tables <- renderUI({
-      if (length(table_datanames) > 1) {
-        ui_t_reactables(session$ns("subtables"))
-      } else if (length(table_datanames) == 1) {
-        ui_t_reactable(session$ns("subtables"))
-      }
-    })
-
-
-    if (length(table_datanames) > 1) {
-      srv_t_reactables("subtables", data = tables_selected_q, datanames = sprintf("%s_brushed", table_datanames))
-    } else if (length(table_datanames) == 1) {
-      srv_t_reactable("subtables", data = tables_selected_q, dataname = sprintf("%s_brushed", table_datanames))
-    }
+    output$tables <- renderUI(ui_t_reactables(session$ns("subtables")))
+    srv_t_reactables("subtables", data = tables_selected_q, dataname = sprintf("%s_brushed", table_datanames))
   })
 }

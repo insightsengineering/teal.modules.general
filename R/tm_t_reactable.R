@@ -1,13 +1,13 @@
 #' @param ... () additional [reactable()] arguments
 #' @export
-tm_t_reactables <- function(label = "Table", datanames = "all", columns = list(), transformators = list(), decorators = list(), ...) {
+tm_t_reactables <- function(label = "Table", datanames = "all", columns = list(), layout = "grid", transformators = list(), decorators = list(), ...) {
   module(
     label = label,
     ui = ui_t_reactable,
     srv = srv_t_reactable,
     ui_args = list(decorators = decorators),
     srv_args = c(
-      list(datanames = datanames, columns = columns, decorators = decorators), 
+      list(datanames = datanames, columns = columns, layout = layout, decorators = decorators), 
       rlang::list2(...)
     ),
     datanames = subtables,
@@ -17,15 +17,11 @@ tm_t_reactables <- function(label = "Table", datanames = "all", columns = list()
 
 ui_t_reactables <- function(id) {
   ns <- NS(id)
-  div(
-    class = "simple-card",
-    uiOutput(ns("subtables"))
-  )
+  uiOutput(ns("subtables"), container = fluidRow)
 }
 
-srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, decorators, ...) {
+srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, decorators, layout = "grid", ...) {
   moduleServer(id, function(input, output, session) {
-    
     all_datanames_r <- reactive({
       req(data())
       names(Filter(is.data.frame, as.list(data())))
@@ -63,23 +59,43 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, dec
     # todo: re-render only if datanames changes
     output$subtables <- renderUI({
       if (length(datanames_r()) == 0) return(NULL)
-      isolate({
-        do.call(
-          tabsetPanel,
-          c(
-            list(id = session$ns("reactables")),
-            lapply(
-              datanames_r(),
-              function(dataname) {
-                tabPanel(
-                  title = datalabels_r()[dataname],
-                  ui_t_reactable(session$ns(dataname))
+      
+      if (layout == "grid") {
+        tagList(
+          lapply(
+            datanames_r(),
+            function(dataname) {
+              column(
+                width = if (length(datanames_r()) == 1) 12 else 6,
+                div(
+                  class = "simple-card",
+                  h4(datalabels_r()[dataname]),
+                  ui_t_reactable(session$ns(dataname))                  
                 )
-              }
-            )
+              )
+            }
           )
         )
-      })
+      } else if (layout == "tabs") {
+        isolate({
+          do.call(
+            tabsetPanel,
+            c(
+              list(id = session$ns("reactables")),
+              lapply(
+                datanames_r(),
+                function(dataname) {
+                  tabPanel(
+                    title = datalabels_r()[dataname],
+                    ui_t_reactable(session$ns(dataname))
+                  )
+                }
+              )
+            )
+          )
+        })
+      }
+
     }) |> bindCache(datanames_r())
     
     called_datanames <- reactiveVal()
