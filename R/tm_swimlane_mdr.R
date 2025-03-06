@@ -76,16 +76,11 @@ tm_g_swimlane_mdr <- function(label = "Swimlane",
 ui_g_swimlane_mdr <- function(id, height) {
   ns <- NS(id)
   tagList(
-    fluidRow(
-      class = "simple-card",
+    div(
       h4("Swim Lane - Duration of Tx"),
       ui_g_swimlane(ns("plot"), height = height)
     ),
-    fluidRow(
-      class = "simple-card",
-      ui_t_reactables(ns("subtables"))      
-    )
-
+    ui_t_reactables(ns("subtables"))
   )
 }
 srv_g_swimlane_mdr <- function(id, 
@@ -142,6 +137,6 @@ srv_g_swimlane_mdr <- function(id,
       teal.code::eval_code(plotly_selected_q(), as.expression(calls))
     })
     
-    srv_t_reactables("subtables", data = subtables_q, datanames = subtable_names)
+    srv_t_reactables("subtables", data = subtables_q, datanames = subtable_names, layout = "tabs")
   })
 }

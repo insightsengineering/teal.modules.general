@@ -16,7 +16,10 @@ tm_t_reactables <- function(label = "Table", datanames = "all", columns = list()
 
 ui_t_reactables <- function(id) {
   ns <- NS(id)
-  uiOutput(ns("subtables"), container = fluidRow)
+  div(
+    class = "simple-card",
+    uiOutput(ns("subtables"), container = div, style = "display: flex;")
+  )
 }
 
 srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, decorators, layout = "grid", ...) {
@@ -64,13 +67,11 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, dec
           lapply(
             datanames_r(),
             function(dataname) {
-              column(
-                width = if (length(datanames_r()) == 1) 12 else 6,
-                div(
-                  class = "simple-card",
-                  h4(datalabels_r()[dataname]),
-                  ui_t_reactable(session$ns(dataname))                  
-                )
+              div(
+                class = "simple-card",
+                style = if (length(datanames_r()) > 1) "width: 50%" else "width: 100%",
+                h4(datalabels_r()[dataname]),
+                ui_t_reactable(session$ns(dataname))
               )
             }
           )
@@ -136,10 +137,7 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, dec
 
 ui_t_reactable <- function(id) {
   ns <- NS(id)
-  div(
-    class = "simple-card",
-    reactable::reactableOutput(ns("table"))
-  )
+  reactable::reactableOutput(ns("table"))
 }
 
 srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ...) {

@@ -31,18 +31,15 @@ tm_g_waterfall <- function(label = "Waterfall",
 ui_g_waterfall <- function(id, height) {
   ns <- NS(id)
   tagList(
-    fluidRow(
+    div(
       class = "simple-card",
-      div(
-        class = "row",
+      fluidRow(
         column(width = 6, uiOutput(ns("color_by_output"))),
-        column(width = 6, sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height))
+        column(width = 6, sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)),        
       ),
       plotly::plotlyOutput(ns("plot"), height = "100%")
     ),
-    fluidRow(
-      uiOutput(ns("tables"))
-    )
+    uiOutput(ns("tables"))
   )
 }
 srv_g_waterfall <- function(id,

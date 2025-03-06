@@ -26,20 +26,18 @@ ui_g_spiderplot <- function(id, height) {
   ns <- NS(id)
   div(
     div(
-      class = "simple-card",
-      div(
-        class = "row",
-        column(
-          width = 6,
-          selectInput(ns("select_event"), "Select Y Axis", NULL)
-        ),
-        column(
-          width = 6,
-          sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
-        )        
+      class = "row",
+      column(
+        width = 6,
+        selectInput(ns("select_event"), "Select Y Axis", NULL)
       ),
-      plotly::plotlyOutput(ns("plot"), height = "100%")
-    )
+      column(
+        width = 6,
+        sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
+      )        
+    ),
+    plotly::plotlyOutput(ns("plot"), height = "100%")
+  
   )
 }
 
