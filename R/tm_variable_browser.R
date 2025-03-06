@@ -1110,7 +1110,7 @@ create_sparklines.numeric <- function(arr, width = 150, ...) {
 #' @keywords internal
 #' @export
 create_sparklines.character <- function(arr, ...) {
-  return(create_sparklines(as.factor(arr)))
+  create_sparklines(as.factor(arr))
 }
 
 
