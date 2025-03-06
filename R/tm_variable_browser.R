@@ -141,24 +141,20 @@ ui_variable_browser <- function(id,
                                 post_output = NULL) {
   ns <- NS(id)
 
-  tagList(
+  tags$div(
     include_css_files("custom"),
     shinyjs::useShinyjs(),
     teal.widgets::standard_layout(
-      output = fluidRow(
+      output = tags$div(
         htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
-        column(
-          6,
-          # variable browser
+        bslib::layout_column_wrap(
+          width = 0.5,
           teal.widgets::white_small_well(
             uiOutput(ns("ui_variable_browser")),
             shinyjs::hidden({
               checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
             })
-          )
-        ),
-        column(
-          6,
+          ),
           teal.widgets::white_small_well(
             ### Reporter
             teal.reporter::simple_reporter_ui(ns("simple_reporter")),
@@ -331,41 +327,35 @@ srv_variable_browser <- function(id,
       varname <- plot_var$variable[[dataname]]
       df <- data()[[dataname]]
 
-      numeric_ui <- tagList(
-        fluidRow(
-          tags$div(
-            class = "col-md-4",
-            tags$br(),
-            shinyWidgets::switchInput(
-              inputId = session$ns("display_density"),
-              label = "Show density",
+      numeric_ui <- bslib::page_fluid(
+        bslib::layout_columns(
+          col_widths = c(8, 4),
+          bslib::layout_columns(
+            col_widths = c(6, 6, 12),
+            style = bslib::css(grid_row_gap = 0),
+            bslib::input_switch(
+              id = session$ns("display_density"),
+              label = tags$div(
+                "Show density:",
+                bslib::tooltip(
+                  trigger = icon("circle-info"),
+                  tags$span(
+                    "Show kernel density estimation with gaussian kernel and bandwidth function bw.nrd0 (R default)"
+                  )
+                )
+              ),
               value = `if`(is.null(isolate(input$display_density)), TRUE, isolate(input$display_density)),
-              width = "50%",
-              labelWidth = "100px",
-              handleWidth = "50px"
-            )
-          ),
-          tags$div(
-            class = "col-md-4",
-            tags$br(),
-            shinyWidgets::switchInput(
-              inputId = session$ns("remove_outliers"),
+              width = "100%"
+            ),
+            bslib::input_switch(
+              id = session$ns("remove_outliers"),
               label = "Remove outliers",
               value = `if`(is.null(isolate(input$remove_outliers)), FALSE, isolate(input$remove_outliers)),
-              width = "50%",
-              labelWidth = "100px",
-              handleWidth = "50px"
-            )
+              width = "100%"
+            ),
+            uiOutput(session$ns("ui_outlier_help"))
           ),
-          tags$div(
-            class = "col-md-4",
-            uiOutput(session$ns("outlier_definition_slider_ui"))
-          )
-        ),
-        tags$div(
-          class = "ml-4",
-          uiOutput(session$ns("ui_density_help")),
-          uiOutput(session$ns("ui_outlier_help"))
+          uiOutput(session$ns("outlier_definition_slider_ui"))
         )
       )
 
@@ -453,18 +443,6 @@ srv_variable_browser <- function(id,
         value = 3,
         step = 0.5
       )
-    })
-
-    output$ui_density_help <- renderUI({
-      req(is.logical(input$display_density))
-      if (input$display_density) {
-        tags$small(helpText(paste(
-          "Kernel density estimation with gaussian kernel",
-          "and bandwidth function bw.nrd0 (R default)"
-        )))
-      } else {
-        NULL
-      }
     })
 
     output$ui_outlier_help <- renderUI({
