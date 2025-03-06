@@ -1,120 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="examples" timestamp="2025-03-06T14:45:36Z" hostname="49e9a1de8e21" tests="37" skipped="37" failures="0" errors="0" time="0.63">
-    <testcase time="0.0900000000000001" classname="examples" name="example_add_facet_labels.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0549999999999999" classname="examples" name="example_call_fun_dots.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.034" classname="examples" name="example_create_sparklines.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.016" classname="examples" name="example_establish_updating_selection.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.016" classname="examples" name="example_get_scatterplotmatrix_stats.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.016" classname="examples" name="example_include_css_files.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.016" classname="examples" name="example_is_tab_active_js.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0149999999999999" classname="examples" name="example_plot_var_summary.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.018" classname="examples" name="example_remove_outliers_from.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0130000000000001" classname="examples" name="example_render_single_tab.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_render_tab_header.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_render_tab_table.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_render_tabset_panel_content.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0129999999999999" classname="examples" name="example_select_decorators.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_shared_params.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0129999999999999" classname="examples" name="example_srv_decorate_teal_data.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0130000000000001" classname="examples" name="example_teal.modules.general.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_tm_a_pca.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_tm_a_regression.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.016" classname="examples" name="example_tm_data_table.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0129999999999999" classname="examples" name="example_tm_file_viewer.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_tm_front_page.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_tm_g_association.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0130000000000001" classname="examples" name="example_tm_g_bivariate.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_tm_g_distribution.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0119999999999998" classname="examples" name="example_tm_g_response.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_tm_g_scatterplot.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0130000000000001" classname="examples" name="example_tm_g_scatterplotmatrix.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_tm_missing_data.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_tm_outliers.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.016" classname="examples" name="example_tm_t_crosstable.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0129999999999999" classname="examples" name="example_tm_variable_browser.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0130000000000001" classname="examples" name="example_validate_input.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.0129999999999999" classname="examples" name="example_var_missings_info.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_var_summary_table.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_variable_type_icons.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
-    <testcase time="0.012" classname="examples" name="example_varname_w_label.Rd">
-      <skipped message="Reason: On CRAN ('test-examples.R:154:7')"/>
-    </testcase>
+  <testsuite name="examples" timestamp="2025-03-06T14:47:24Z" hostname="51f36196ab19" tests="38" skipped="0" failures="0" errors="0" time="5.299">
+    <testcase time="1.839" classname="examples" name="example_add_facet_labels.Rd"/>
+    <testcase time="0.0549999999999997" classname="examples" name="example_call_fun_dots.Rd"/>
+    <testcase time="0.0140000000000002" classname="examples" name="example_create_sparklines.Rd"/>
+    <testcase time="0.00700000000000012" classname="examples" name="example_establish_updating_selection.Rd"/>
+    <testcase time="0.016" classname="examples" name="example_get_scatterplotmatrix_stats.Rd"/>
+    <testcase time="0.00699999999999967" classname="examples" name="example_include_css_files.Rd"/>
+    <testcase time="0.00700000000000012" classname="examples" name="example_is_tab_active_js.Rd"/>
+    <testcase time="0.00700000000000012" classname="examples" name="example_plot_var_summary.Rd"/>
+    <testcase time="0.00700000000000012" classname="examples" name="example_remove_outliers_from.Rd"/>
+    <testcase time="0.00700000000000012" classname="examples" name="example_render_single_tab.Rd"/>
+    <testcase time="0.00800000000000001" classname="examples" name="example_render_tab_header.Rd"/>
+    <testcase time="0.00699999999999967" classname="examples" name="example_render_tab_table.Rd"/>
+    <testcase time="0.00700000000000012" classname="examples" name="example_render_tabset_panel_content.Rd"/>
+    <testcase time="0.00800000000000001" classname="examples" name="example_select_decorators.Rd"/>
+    <testcase time="0.00700000000000012" classname="examples" name="example_shared_params.Rd"/>
+    <testcase time="0.00699999999999967" classname="examples" name="example_srv_decorate_teal_data.Rd"/>
+    <testcase time="0.00700000000000012" classname="examples" name="example_teal.modules.general.Rd"/>
+    <testcase time="0.188" classname="examples" name="example_tm_a_pca.Rd"/>
+    <testcase time="0.137" classname="examples" name="example_tm_a_regression.Rd"/>
+    <testcase time="0.131" classname="examples" name="example_tm_data_table.Rd"/>
+    <testcase time="0.407" classname="examples" name="example_tm_file_viewer.Rd"/>
+    <testcase time="0.0459999999999998" classname="examples" name="example_tm_file_viewer.Rd"/>
+    <testcase time="0.0800000000000001" classname="examples" name="example_tm_front_page.Rd"/>
+    <testcase time="0.159" classname="examples" name="example_tm_g_association.Rd"/>
+    <testcase time="0.146" classname="examples" name="example_tm_g_bivariate.Rd"/>
+    <testcase time="0.125" classname="examples" name="example_tm_g_distribution.Rd"/>
+    <testcase time="0.159" classname="examples" name="example_tm_g_response.Rd"/>
+    <testcase time="0.149" classname="examples" name="example_tm_g_scatterplot.Rd"/>
+    <testcase time="0.335" classname="examples" name="example_tm_g_scatterplotmatrix.Rd"/>
+    <testcase time="0.248" classname="examples" name="example_tm_missing_data.Rd"/>
+    <testcase time="0.169" classname="examples" name="example_tm_outliers.Rd"/>
+    <testcase time="0.457" classname="examples" name="example_tm_t_crosstable.Rd"/>
+    <testcase time="0.305" classname="examples" name="example_tm_variable_browser.Rd"/>
+    <testcase time="0.00800000000000001" classname="examples" name="example_validate_input.Rd"/>
+    <testcase time="0.00900000000000034" classname="examples" name="example_var_missings_info.Rd"/>
+    <testcase time="0.00800000000000001" classname="examples" name="example_var_summary_table.Rd"/>
+    <testcase time="0.00800000000000001" classname="examples" name="example_variable_type_icons.Rd"/>
+    <testcase time="0.00800000000000001" classname="examples" name="example_varname_w_label.Rd"/>
   </testsuite>
-  <testsuite name="shinytest2-tm_a_pca" timestamp="2025-03-06T14:45:37Z" hostname="49e9a1de8e21" tests="11" skipped="10" failures="0" errors="1" time="3.316">
-    <testcase time="2.376" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Module_is_initialised_with_the_specified_defaults_in_function_call.">
+  <testsuite name="shinytest2-tm_a_pca" timestamp="2025-03-06T14:47:29Z" hostname="51f36196ab19" tests="11" skipped="10" failures="0" errors="1" time="3.634">
+    <testcase time="2.611" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Module_is_initialised_with_the_specified_defaults_in_function_call.">
       <error type="error" message="Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout,  ('test-shinytest2-tm_a_pca.R:37:3')">Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, 
     timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, 
     screenshot_args = screenshot_args, check_names = check_names, 
@@ -126,14 +53,14 @@
 
 ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
 ℹ AppDriver logs:
-{shinytest2} R info   14:45:38.18 Start AppDriver initialization
-{shinytest2} R info   14:45:38.25 Starting Shiny app
-{shinytest2} R info   14:45:39.29 Creating new ChromoteSession
-{shinytest2} R info   14:45:39.32 Error while initializing AppDriver:
+{shinytest2} R info   14:47:31.16 Start AppDriver initialization
+{shinytest2} R info   14:47:31.24 Starting Shiny app
+{shinytest2} R info   14:47:32.48 Creating new ChromoteSession
+{shinytest2} R info   14:47:32.50 Error while initializing AppDriver:
                                   code: -32602
                                     message: Target position can only be set for new windows
 {shiny}      R stderr ----------- Loading required package: shiny
-{shiny}      R stderr ----------- Attempting to load the environment ‘package:nestcolor’
+{shiny}      R stderr ----------- Attempting to load the environment ‘package:sparkline’
 {shiny}      R stderr ----------- Loading required package: ggmosaic
 {shiny}      R stderr ----------- Loading required package: ggplot2
 {shiny}      R stderr ----------- Loading required package: teal
@@ -152,7 +79,7 @@
 {shiny}      R stderr ----------- Loading required package: teal.transform
 {shiny}      R stderr ----------- Running application in test mode.
 {shiny}      R stderr ----------- 
-{shiny}      R stderr ----------- Listening on http://127.0.0.1:7874
+{shiny}      R stderr ----------- Listening on http://127.0.0.1:7549
 
 
 Caused by error in `callback()`:
@@ -190,348 +117,348 @@ Backtrace:
  28.   └─shinytest2:::app_abort(...)
  29.     └─rlang::abort(..., app = self, call = call)</error>
     </testcase>
-    <testcase time="0.177" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_Assault_on_header.">
+    <testcase time="0.212999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_Assault_on_header.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_pca.R:61:3')"/>
     </testcase>
-    <testcase time="0.0789999999999997" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_UrbanPop_on_header.">
+    <testcase time="0.105" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_UrbanPop_on_header.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_pca.R:78:3')"/>
     </testcase>
-    <testcase time="0.0860000000000003" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Color_by_columns_data_extract_must_be_from_non_selected_variable_set.">
+    <testcase time="0.0939999999999994" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Color_by_columns_data_extract_must_be_from_non_selected_variable_set.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_pca.R:95:3')"/>
     </testcase>
-    <testcase time="0.104" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_tables_display_does_not_generate_errors.">
+    <testcase time="0.0850000000000009" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_tables_display_does_not_generate_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_pca.R:112:3')"/>
     </testcase>
-    <testcase time="0.077" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_for_plot_type_does_not_generate_errors.">
+    <testcase time="0.0949999999999989" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_for_plot_type_does_not_generate_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_pca.R:133:3')"/>
     </testcase>
-    <testcase time="0.0839999999999996" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_standardization_does_not_generate_errors.">
+    <testcase time="0.0850000000000009" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_standardization_does_not_generate_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_pca.R:156:3')"/>
     </testcase>
-    <testcase time="0.0830000000000002" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_NA_action_does_not_generate_errors.">
+    <testcase time="0.0849999999999991" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_NA_action_does_not_generate_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_pca.R:174:3')"/>
     </testcase>
-    <testcase time="0.0800000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options.">
+    <testcase time="0.0910000000000011" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_pca.R:188:3')"/>
     </testcase>
-    <testcase time="0.0830000000000002" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_theme_does_not_generate_errors.">
+    <testcase time="0.0849999999999991" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_theme_does_not_generate_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_pca.R:220:3')"/>
     </testcase>
-    <testcase time="0.0869999999999997" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_font_size_does_not_generate_errors.">
+    <testcase time="0.0850000000000009" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_font_size_does_not_generate_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_pca.R:238:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_a_regression" timestamp="2025-03-06T14:45:40Z" hostname="49e9a1de8e21" tests="7" skipped="7" failures="0" errors="0" time="0.605">
-    <testcase time="0.0999999999999996" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_parameter_and_module_label_is_passed_properly.">
+  <testsuite name="shinytest2-tm_a_regression" timestamp="2025-03-06T14:47:33Z" hostname="51f36196ab19" tests="7" skipped="7" failures="0" errors="0" time="0.633">
+    <testcase time="0.105" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_parameter_and_module_label_is_passed_properly.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_regression.R:51:3')"/>
     </testcase>
-    <testcase time="0.0870000000000006" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_response_and_regressor_arg.">
+    <testcase time="0.0919999999999987" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_response_and_regressor_arg.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_regression.R:69:3')"/>
     </testcase>
-    <testcase time="0.0880000000000001" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_is_set_properly.">
+    <testcase time="0.0920000000000005" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_is_set_properly.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_regression.R:88:3')"/>
     </testcase>
     <testcase time="0.0839999999999996" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_regression.R:101:3')"/>
     </testcase>
-    <testcase time="0.085" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_are_visible_by_default.">
+    <testcase time="0.0850000000000009" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_are_visible_by_default.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_regression.R:128:3')"/>
     </testcase>
-    <testcase time="0.0780000000000003" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_have_default_values_and_label_text.">
+    <testcase time="0.0919999999999987" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_have_default_values_and_label_text.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_regression.R:140:3')"/>
     </testcase>
     <testcase time="0.0830000000000002" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Unchecking_display_outlier_hides_outlier_label_and_definition.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_a_regression.R:168:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_data_table" timestamp="2025-03-06T14:45:40Z" hostname="49e9a1de8e21" tests="4" skipped="4" failures="0" errors="0" time="0.352">
-    <testcase time="0.0959999999999992" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Initializes_without_errors">
+  <testsuite name="shinytest2-tm_data_table" timestamp="2025-03-06T14:47:34Z" hostname="51f36196ab19" tests="4" skipped="4" failures="0" errors="0" time="0.372">
+    <testcase time="0.0899999999999999" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Initializes_without_errors">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_data_table.R:25:3')"/>
     </testcase>
-    <testcase time="0.0860000000000003" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_checkbox_displayed_over_data_table">
+    <testcase time="0.0940000000000012" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_checkbox_displayed_over_data_table">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_data_table.R:39:3')"/>
     </testcase>
-    <testcase time="0.0880000000000001" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_module_displays_data_table">
+    <testcase time="0.0899999999999999" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_module_displays_data_table">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_data_table.R:48:3')"/>
     </testcase>
-    <testcase time="0.0819999999999999" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_default_variable_selection_and_set_new_selection">
+    <testcase time="0.097999999999999" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_default_variable_selection_and_set_new_selection">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_data_table.R:84:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_file_viewer" timestamp="2025-03-06T14:45:41Z" hostname="49e9a1de8e21" tests="4" skipped="4" failures="0" errors="0" time="0.846">
+  <testsuite name="shinytest2-tm_file_viewer" timestamp="2025-03-06T14:47:34Z" hostname="51f36196ab19" tests="4" skipped="4" failures="0" errors="0" time="1.09">
     <testcase time="0.446" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_file_viewer.R:21:3')"/>
     </testcase>
-    <testcase time="0.133" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_image_file">
+    <testcase time="0.122000000000002" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_image_file">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_file_viewer.R:46:3')"/>
     </testcase>
-    <testcase time="0.132000000000001" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_text_file">
+    <testcase time="0.399999999999999" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_text_file">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_file_viewer.R:62:3')"/>
     </testcase>
-    <testcase time="0.135" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_url">
+    <testcase time="0.122" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_url">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_file_viewer.R:84:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_front_page" timestamp="2025-03-06T14:45:42Z" hostname="49e9a1de8e21" tests="3" skipped="3" failures="0" errors="0" time="0.353">
-    <testcase time="0.122" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Initializes_without_errors_and_check_html_elements">
+  <testsuite name="shinytest2-tm_front_page" timestamp="2025-03-06T14:47:35Z" hostname="51f36196ab19" tests="3" skipped="3" failures="0" errors="0" time="0.344">
+    <testcase time="0.119000000000002" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Initializes_without_errors_and_check_html_elements">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_front_page.R:26:3')"/>
     </testcase>
-    <testcase time="0.109" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_tables">
+    <testcase time="0.110999999999999" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_tables">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_front_page.R:50:3')"/>
     </testcase>
-    <testcase time="0.122" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_metadata">
+    <testcase time="0.114000000000001" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_metadata">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_front_page.R:62:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_g_association" timestamp="2025-03-06T14:45:42Z" hostname="49e9a1de8e21" tests="4" skipped="4" failures="0" errors="0" time="0.494">
-    <testcase time="0.124000000000001" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Data_parameter_and_module_label_is_passed_properly.">
+  <testsuite name="shinytest2-tm_g_association" timestamp="2025-03-06T14:47:36Z" hostname="51f36196ab19" tests="4" skipped="4" failures="0" errors="0" time="0.694">
+    <testcase time="0.116999999999999" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Data_parameter_and_module_label_is_passed_properly.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_association.R:50:3')"/>
     </testcase>
-    <testcase time="0.136" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_ref_and_vars_arguments.">
+    <testcase time="0.34" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_ref_and_vars_arguments.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_association.R:67:3')"/>
     </testcase>
-    <testcase time="0.117" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Module_plot_is_visible.">
+    <testcase time="0.122" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Module_plot_is_visible.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_association.R:88:3')"/>
     </testcase>
-    <testcase time="0.117" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Check_and_set_default_values_for_radio_buttons.">
+    <testcase time="0.115" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Check_and_set_default_values_for_radio_buttons.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_association.R:97:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_g_bivariate" timestamp="2025-03-06T14:45:42Z" hostname="49e9a1de8e21" tests="4" skipped="4" failures="0" errors="0" time="0.397">
-    <testcase time="0.0979999999999999" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults.">
+  <testsuite name="shinytest2-tm_g_bivariate" timestamp="2025-03-06T14:47:36Z" hostname="51f36196ab19" tests="4" skipped="4" failures="0" errors="0" time="0.389">
+    <testcase time="0.0970000000000013" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_bivariate.R:90:3')"/>
     </testcase>
-    <testcase time="0.111" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Coloring_options_are_hidden_when_coloring_is_toggled_off.">
+    <testcase time="0.109" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Coloring_options_are_hidden_when_coloring_is_toggled_off.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_bivariate.R:117:3')"/>
     </testcase>
-    <testcase time="0.093" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off.">
+    <testcase time="0.0939999999999994" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_bivariate.R:159:3')"/>
     </testcase>
-    <testcase time="0.0950000000000006" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors.">
+    <testcase time="0.0890000000000004" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_bivariate.R:195:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_g_distribution" timestamp="2025-03-06T14:45:43Z" hostname="49e9a1de8e21" tests="3" skipped="3" failures="0" errors="0" time="0.269">
-    <testcase time="0.0939999999999994" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults.">
+  <testsuite name="shinytest2-tm_g_distribution" timestamp="2025-03-06T14:47:37Z" hostname="51f36196ab19" tests="3" skipped="3" failures="0" errors="0" time="0.27">
+    <testcase time="0.0869999999999997" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_distribution.R:50:3')"/>
     </testcase>
-    <testcase time="0.0879999999999992" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors.">
+    <testcase time="0.097999999999999" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_distribution.R:74:3')"/>
     </testcase>
-    <testcase time="0.0870000000000015" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_QQ_plot_encoding_inputs_produce_output_without_validation_errors.">
+    <testcase time="0.0850000000000009" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_QQ_plot_encoding_inputs_produce_output_without_validation_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_distribution.R:111:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_g_response" timestamp="2025-03-06T14:45:43Z" hostname="49e9a1de8e21" tests="4" skipped="4" failures="0" errors="0" time="0.37">
-    <testcase time="0.093" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults.">
+  <testsuite name="shinytest2-tm_g_response" timestamp="2025-03-06T14:47:37Z" hostname="51f36196ab19" tests="4" skipped="4" failures="0" errors="0" time="0.367">
+    <testcase time="0.0899999999999999" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_response.R:45:3')"/>
     </testcase>
-    <testcase time="0.0969999999999995" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_encoding_inputs_produce_output_without_validation_errors.">
+    <testcase time="0.0980000000000008" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_encoding_inputs_produce_output_without_validation_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_response.R:63:3')"/>
     </testcase>
-    <testcase time="0.0890000000000004" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_deselecting_response_produces_validation_error.">
+    <testcase time="0.0879999999999992" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_deselecting_response_produces_validation_error.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_response.R:93:3')"/>
     </testcase>
     <testcase time="0.0909999999999993" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_deselecting_x_produces_validation_error.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_response.R:104:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_g_scatterplot" timestamp="2025-03-06T14:45:44Z" hostname="49e9a1de8e21" tests="5" skipped="5" failures="0" errors="0" time="0.501">
-    <testcase time="0.102" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults.">
+  <testsuite name="shinytest2-tm_g_scatterplot" timestamp="2025-03-06T14:47:37Z" hostname="51f36196ab19" tests="5" skipped="5" failures="0" errors="0" time="0.496">
+    <testcase time="0.0960000000000001" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_scatterplot.R:89:3')"/>
     </testcase>
-    <testcase time="0.111000000000001" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Base_for_the_log_transformation_can_be_applied.">
+    <testcase time="0.112" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Base_for_the_log_transformation_can_be_applied.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_scatterplot.R:115:3')"/>
     </testcase>
-    <testcase time="0.0959999999999983" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_log_transform_is_only_possible_for_positive_numeric_vars.">
+    <testcase time="0.0980000000000008" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_log_transform_is_only_possible_for_positive_numeric_vars.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_scatterplot.R:135:3')"/>
     </testcase>
-    <testcase time="0.0950000000000006" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Get_validation_error_when_facetting_with_the_same_row_col_variable.">
+    <testcase time="0.0990000000000002" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Get_validation_error_when_facetting_with_the_same_row_col_variable.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_scatterplot.R:154:3')"/>
     </testcase>
-    <testcase time="0.0969999999999995" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_produce_output_without_validation_errors.">
+    <testcase time="0.0909999999999993" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_produce_output_without_validation_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_scatterplot.R:166:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_g_scatterplotmatrix" timestamp="2025-03-06T14:45:44Z" hostname="49e9a1de8e21" tests="4" skipped="4" failures="0" errors="0" time="0.579">
-    <testcase time="0.161000000000001" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Initializes_without_errors">
+  <testsuite name="shinytest2-tm_g_scatterplotmatrix" timestamp="2025-03-06T14:47:38Z" hostname="51f36196ab19" tests="4" skipped="4" failures="0" errors="0" time="0.545">
+    <testcase time="0.138" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Initializes_without_errors">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_scatterplotmatrix.R:49:3')"/>
     </testcase>
-    <testcase time="0.139999999999999" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Verify_module_displays_data_table">
+    <testcase time="0.139000000000001" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Verify_module_displays_data_table">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_scatterplotmatrix.R:66:3')"/>
     </testcase>
-    <testcase time="0.144" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Verify_default_values_and_settings_data_extracts_for_data_selection">
+    <testcase time="0.135" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Verify_default_values_and_settings_data_extracts_for_data_selection">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_scatterplotmatrix.R:76:3')"/>
     </testcase>
-    <testcase time="0.134" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Change_plot_settings">
+    <testcase time="0.132999999999999" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Change_plot_settings">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_g_scatterplotmatrix.R:103:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_misssing_data" timestamp="2025-03-06T14:45:45Z" hostname="49e9a1de8e21" tests="10" skipped="5" failures="0" errors="0" time="0.957">
-    <testcase time="0.186" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Initializes_without_errors"/>
-    <testcase time="0.0120000000000005" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Initializes_without_errors">
+  <testsuite name="shinytest2-tm_misssing_data" timestamp="2025-03-06T14:47:38Z" hostname="51f36196ab19" tests="10" skipped="5" failures="0" errors="0" time="0.891">
+    <testcase time="0.172000000000001" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Initializes_without_errors"/>
+    <testcase time="0.00999999999999979" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Initializes_without_errors">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_misssing_data.R:40:3')"/>
     </testcase>
-    <testcase time="0.189" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Default_settings_and_visibility_of_the_summary_graph"/>
-    <testcase time="0.00900000000000034" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Default_settings_and_visibility_of_the_summary_graph">
+    <testcase time="0.178000000000001" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Default_settings_and_visibility_of_the_summary_graph"/>
+    <testcase time="0.00999999999999979" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Default_settings_and_visibility_of_the_summary_graph">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_misssing_data.R:61:3')"/>
     </testcase>
-    <testcase time="0.176" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Check_default_settings_and_visibility_of_the_combinations_graph_and_encodings"/>
-    <testcase time="0.0149999999999988" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Check_default_settings_and_visibility_of_the_combinations_graph_and_encodings">
+    <testcase time="0.164" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Check_default_settings_and_visibility_of_the_combinations_graph_and_encodings"/>
+    <testcase time="0.00999999999999979" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Check_default_settings_and_visibility_of_the_combinations_graph_and_encodings">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_misssing_data.R:90:3')"/>
     </testcase>
-    <testcase time="0.178000000000001" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_"/>
-    <testcase time="0.00900000000000034" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_">
+    <testcase time="0.164" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_"/>
+    <testcase time="0.0100000000000016" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_misssing_data.R:121:3')"/>
     </testcase>
-    <testcase time="0.173" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Validate_By_Variable_Levels_table_values"/>
-    <testcase time="0.00999999999999979" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Validate_By_Variable_Levels_table_values">
+    <testcase time="0.162999999999998" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Validate_By_Variable_Levels_table_values"/>
+    <testcase time="0.0100000000000016" classname="shinytest2_tm_misssing_data" name="e2e_tm_missing_data_Validate_By_Variable_Levels_table_values">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_misssing_data.R:151:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_outliers" timestamp="2025-03-06T14:45:46Z" hostname="49e9a1de8e21" tests="10" skipped="10" failures="0" errors="0" time="1.194">
-    <testcase time="0.110999999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_parameter_and_module_label_is_passed_properly.">
+  <testsuite name="shinytest2-tm_outliers" timestamp="2025-03-06T14:47:39Z" hostname="51f36196ab19" tests="10" skipped="10" failures="0" errors="0" time="1.132">
+    <testcase time="0.103999999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_parameter_and_module_label_is_passed_properly.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_outliers.R:54:3')"/>
     </testcase>
-    <testcase time="0.127000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument.">
+    <testcase time="0.114000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_outliers.R:74:3')"/>
     </testcase>
-    <testcase time="0.257999999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_correctly_set_by_default_and_has_appropriate_possible_options.">
+    <testcase time="0.103999999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_correctly_set_by_default_and_has_appropriate_possible_options.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_outliers.R:110:3')"/>
     </testcase>
-    <testcase time="0.0960000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Module_is_divided_into_3_tabs.">
+    <testcase time="0.106999999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Module_is_divided_into_3_tabs.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_outliers.R:127:3')"/>
     </testcase>
-    <testcase time="0.111000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_hidden_when_Boxplot_tab_is_not_selected.">
+    <testcase time="0.103000000000002" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_hidden_when_Boxplot_tab_is_not_selected.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_outliers.R:142:3')"/>
     </testcase>
-    <testcase time="0.106999999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Default_radio_buttons_are_set_properly.">
+    <testcase time="0.111000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Default_radio_buttons_are_set_properly.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_outliers.R:159:3')"/>
     </testcase>
-    <testcase time="0.0950000000000006" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Method_parameters_are_set_properly.">
+    <testcase time="0.102999999999998" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Method_parameters_are_set_properly.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_outliers.R:175:3')"/>
     </testcase>
-    <testcase time="0.0950000000000006" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method.">
+    <testcase time="0.114000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_outliers.R:190:3')"/>
     </testcase>
-    <testcase time="0.097999999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content.">
+    <testcase time="0.120000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_outliers.R:241:3')"/>
     </testcase>
-    <testcase time="0.0960000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_table_is_displayed_with_proper_content.">
+    <testcase time="0.151999999999997" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_table_is_displayed_with_proper_content.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_outliers.R:289:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_t_crosstable" timestamp="2025-03-06T14:45:47Z" hostname="49e9a1de8e21" tests="4" skipped="4" failures="0" errors="0" time="0.697">
-    <testcase time="0.361000000000001" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Initializes_without_errors">
+  <testsuite name="shinytest2-tm_t_crosstable" timestamp="2025-03-06T14:47:40Z" hostname="51f36196ab19" tests="4" skipped="4" failures="0" errors="0" time="0.514">
+    <testcase time="0.145" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Initializes_without_errors">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_t_crosstable.R:48:3')"/>
     </testcase>
-    <testcase time="0.109" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Verify_module_displays_data_table">
+    <testcase time="0.146000000000001" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Verify_module_displays_data_table">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_t_crosstable.R:65:3')"/>
     </testcase>
-    <testcase time="0.119999999999999" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Verify_default_values_and_settings_data_extracts_for_data_selection">
+    <testcase time="0.103000000000002" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Verify_default_values_and_settings_data_extracts_for_data_selection">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_t_crosstable.R:75:3')"/>
     </testcase>
-    <testcase time="0.107000000000001" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Change_plot_settings">
+    <testcase time="0.120000000000001" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Change_plot_settings">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_t_crosstable.R:98:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_variable_browser" timestamp="2025-03-06T14:45:47Z" hostname="49e9a1de8e21" tests="6" skipped="6" failures="0" errors="0" time="0.664">
-    <testcase time="0.103" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_content_is_displayed_correctly.">
+  <testsuite name="shinytest2-tm_variable_browser" timestamp="2025-03-06T14:47:41Z" hostname="51f36196ab19" tests="6" skipped="6" failures="0" errors="0" time="0.633">
+    <testcase time="0.104999999999997" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_content_is_displayed_correctly.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_variable_browser.R:32:3')"/>
     </testcase>
-    <testcase time="0.100999999999999" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_Selecting_treat_variable_as_factor_changes_the_table_headers.">
+    <testcase time="0.106000000000002" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_Selecting_treat_variable_as_factor_changes_the_table_headers.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_variable_browser.R:67:3')"/>
     </testcase>
-    <testcase time="0.117000000000001" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_selection_of_categorical_variable_has_a_table_with_level_header.">
+    <testcase time="0.111999999999998" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_selection_of_categorical_variable_has_a_table_with_level_header.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_variable_browser.R:99:3')"/>
     </testcase>
-    <testcase time="0.115" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_display_density_encoding_doesn_t_show_errors.">
+    <testcase time="0.0990000000000002" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_display_density_encoding_doesn_t_show_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_variable_browser.R:153:3')"/>
     </testcase>
-    <testcase time="0.126999999999999" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_outlier_definition_encoding_doesn_t_show_errors.">
+    <testcase time="0.107000000000003" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_outlier_definition_encoding_doesn_t_show_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_variable_browser.R:168:3')"/>
     </testcase>
-    <testcase time="0.101000000000001" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors.">
+    <testcase time="0.103999999999999" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors.">
       <skipped message="Reason: `shinytest2::AppDriver` can not be initialized as {chromote} can not be started ('test-shinytest2-tm_variable_browser.R:195:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="tm_g_bivariate" timestamp="2025-03-06T14:45:48Z" hostname="49e9a1de8e21" tests="18" skipped="0" failures="0" errors="0" time="0.145">
-    <testcase time="0.0190000000000001" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
-    <testcase time="0.00499999999999901" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
-    <testcase time="0.00600000000000023" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
-    <testcase time="0.00500000000000078" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
-    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.0129999999999999" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.0080000000000009" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+  <testsuite name="tm_g_bivariate" timestamp="2025-03-06T14:47:41Z" hostname="51f36196ab19" tests="18" skipped="0" failures="0" errors="0" time="0.169">
+    <testcase time="0.0189999999999984" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
+    <testcase time="0.00600000000000023" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
+    <testcase time="0.0120000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
+    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.00900000000000034" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
+    <testcase time="0.00899999999999679" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00800000000000267" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00900000000000034" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00900000000000034" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
     <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.0080000000000009" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.0080000000000009" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
-    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
-    <testcase time="0.00699999999999967" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
+    <testcase time="0.00900000000000034" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00900000000000034" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00999999999999801" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00900000000000034" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.0100000000000016" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
+    <testcase time="0.00999999999999801" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
+    <testcase time="0.0100000000000016" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
     <testcase time="0.00600000000000023" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
   </testsuite>
-  <testsuite name="bivariate_ggplot_call" timestamp="2025-03-06T14:45:48Z" hostname="49e9a1de8e21" tests="21" skipped="0" failures="0" errors="0" time="0.064">
-    <testcase time="0.0080000000000009" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+  <testsuite name="bivariate_ggplot_call" timestamp="2025-03-06T14:47:42Z" hostname="51f36196ab19" tests="21" skipped="0" failures="0" errors="0" time="0.079">
+    <testcase time="0.00900000000000034" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00399999999999956" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00499999999999901" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00299999999999834" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
-    <testcase time="0.00499999999999901" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_factor_char_logical"/>
+    <testcase time="0.00500000000000256" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00299999999999656" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00400000000000134" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00299999999999834" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00799999999999912" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00799999999999912" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
     <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00200000000000067" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00299999999999656" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
   </testsuite>
-  <testsuite name="front_page" timestamp="2025-03-06T14:45:48Z" hostname="49e9a1de8e21" tests="4" skipped="0" failures="0" errors="0" time="0.02">
-    <testcase time="0.00699999999999967" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
-    <testcase time="0.00500000000000078" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
-    <testcase time="0.00399999999999956" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
-    <testcase time="0.00399999999999956" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
+  <testsuite name="front_page" timestamp="2025-03-06T14:47:42Z" hostname="51f36196ab19" tests="4" skipped="0" failures="0" errors="0" time="0.023">
+    <testcase time="0.00800000000000267" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
+    <testcase time="0.00499999999999901" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
+    <testcase time="0.00499999999999901" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
+    <testcase time="0.00500000000000256" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
   </testsuite>
-  <testsuite name="g_expert_cl" timestamp="2025-03-06T14:45:48Z" hostname="49e9a1de8e21" tests="15" skipped="0" failures="0" errors="0" time="0.033">
-    <testcase time="0.00600000000000023" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00600000000000023" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00200000000000067" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+  <testsuite name="g_expert_cl" timestamp="2025-03-06T14:47:42Z" hostname="51f36196ab19" tests="15" skipped="0" failures="0" errors="0" time="0.03">
+    <testcase time="0.0069999999999979" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
     <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00399999999999956" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.000999999999999446" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00400000000000134" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
     <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00300000000000011" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00200000000000244" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00400000000000134" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
     <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
   </testsuite>
-  <testsuite name="scatterplotmatrix_get_stats" timestamp="2025-03-06T14:45:48Z" hostname="49e9a1de8e21" tests="6" skipped="0" failures="0" errors="0" time="0.025">
-    <testcase time="0.00999999999999979" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00199999999999889" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+  <testsuite name="scatterplotmatrix_get_stats" timestamp="2025-03-06T14:47:42Z" hostname="51f36196ab19" tests="6" skipped="0" failures="0" errors="0" time="0.025">
+    <testcase time="0.00799999999999912" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00500000000000078" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
-    <testcase time="0.00199999999999889" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00400000000000134" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00499999999999901" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
     <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00199999999999889" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
   </testsuite>
-  <testsuite name="variable_browser" timestamp="2025-03-06T14:45:48Z" hostname="49e9a1de8e21" tests="3" skipped="0" failures="0" errors="0" time="0.013">
+  <testsuite name="variable_browser" timestamp="2025-03-06T14:47:42Z" hostname="51f36196ab19" tests="3" skipped="0" failures="0" errors="0" time="0.015">
     <testcase time="0.00600000000000023" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
-    <testcase time="0.00399999999999956" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
-    <testcase time="0.00300000000000011" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
+    <testcase time="0.00499999999999901" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
+    <testcase time="0.00400000000000134" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
   </testsuite>
 </testsuites>
