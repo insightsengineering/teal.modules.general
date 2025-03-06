@@ -156,20 +156,11 @@ ui_variable_browser <- function(id,
             })
           ),
           teal.widgets::white_small_well(
-            ### Reporter
             teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-            ###
-            tags$div(
-              class = "block",
-              uiOutput(ns("ui_histogram_display"))
-            ),
-            tags$div(
-              class = "block",
-              uiOutput(ns("ui_numeric_display"))
-            ),
+            uiOutput(ns("ui_histogram_display")),
+            uiOutput(ns("ui_numeric_display")),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
             tags$br(),
-            # input user-defined text size
             teal.widgets::panel_item(
               title = "Plot settings",
               collapsed = TRUE,
@@ -178,15 +169,16 @@ ui_variable_browser <- function(id,
                 choices = ggplot_themes,
                 selected = "grey"
               ),
-              fluidRow(
-                column(6, sliderInput(
+              bslib::layout_columns(
+                col_widths = c(6, 6),
+                sliderInput(
                   inputId = ns("font_size"), label = "font size",
                   min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
-                )),
-                column(6, sliderInput(
+                ),
+                sliderInput(
                   inputId = ns("label_rotation"), label = "rotate x labels",
                   min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE
-                ))
+                )
               )
             ),
             tags$br(),
@@ -392,19 +384,14 @@ srv_variable_browser <- function(id,
       varname <- plot_var$variable[[dataname]]
       df <- data()[[dataname]]
 
-      numeric_ui <- tagList(fluidRow(
-        tags$div(
-          class = "col-md-4",
-          shinyWidgets::switchInput(
-            inputId = session$ns("remove_NA_hist"),
-            label = "Remove NA values",
-            value = FALSE,
-            width = "50%",
-            labelWidth = "100px",
-            handleWidth = "50px"
-          )
-        )
-      ))
+      numeric_ui <- shinyWidgets::switchInput(
+        inputId = session$ns("remove_NA_hist"),
+        label = "Remove NA values",
+        value = FALSE,
+        width = "50%",
+        labelWidth = "100px",
+        handleWidth = "50px"
+      )
 
       var <- df[[varname]]
       if (anyNA(var) && (is.factor(var) || is.character(var) || is.logical(var))) {
