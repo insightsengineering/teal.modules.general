@@ -98,6 +98,7 @@ srv_g_waterfall <- function(id,
               dplyr::mutate(
                 subject_var_ordered = forcats::fct_reorder(as.factor(subject_var), value_var, .fun = max, .desc = TRUE)
               ) |>
+              dplyr::filter(!duplicated(subject_var)) |>
               # todo: one value for x, y: distinct or summarize(value = foo(value_var)) [foo: summarize_fun]
               plotly::plot_ly(
                 source = "waterfall",
