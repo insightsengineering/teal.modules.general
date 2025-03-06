@@ -1,3 +1,4 @@
+#' @export
 tm_a_spiderplot_mdr <- function(label = "Spiderplot",
                                 dataname,
                                 time_var,

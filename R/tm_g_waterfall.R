@@ -1,3 +1,4 @@
+#' @export
 tm_g_waterfall <- function(label = "Waterfall",
                            plot_dataname,
                            table_datanames,

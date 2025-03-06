@@ -51,7 +51,7 @@ The argument is merged with options variable \code{teal.ggplot2_args} and defaul
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
 
 \item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
-To learn more check \code{vignette("data-transform-as-shiny-module", package = "teal")}.}
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -113,15 +113,6 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-<<<<<<< HEAD
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsKKoLADWdBBw-ri6XrRwpNSsugC89k7OtgBkGbruMb7+ABakMNQA7rT8UqSikdHecQnJqS6Z2bne+WAAVqIkdOS1MQ2JKQ4tSgDEulLhsrr8UKRQunAAHrCoIkoLSwbGXNQA+jtQNtuLy0a65aQFKuwnUSBKuro+tKJ7b4wfL7owpAILE+VwBQMYNQgr1KRHgUKuMLhfxMUFotzM1C+KLRBQxfwAwgB5ABMXyJxKUAF9FBAlGhUF8VGi-FD5hcmo8-nwhCJPilucIxCzXq9ioctCxaFB6CJDkwiKVRDJhSLXtRpXBMSl-AA1SXSkS6eWKmT+P6vGkWpQ02gmXTsFTkZiWHQ2WzPVmiO4QVgAQXQ7HpABJvFFg0rGDpGDTKUowJSALpAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsKKoLADWdBBw-ri6XrRwpNSsugC89k7OtgBkGbruMb7+ABakMNQA7rT8UqSikdHecQnJqS6Z2bne+WAAVqIkdOS1MQ2JKQ4tSgDEulLhsrr8UKRQunAAHrCoIkoLSwbGXNQA+jtQNtuLy0a65aQFKuwnUSBKuro+tKJ7b4wfL7owpAILE+VwBQMYNQgr1KRHgUKuMLhfxMUFotzM1C+KLRBQxfwAwgB5ABMXyJxKUAF9FBAlGhUF8VGi-FD5hcmo8-nwhCJPilucIxCzXq9ioctCxaFB6CJDkwiKVRDJhSLXtRpXBMSl-AA1SXSkS6eWKmT+P6vGkWpQ02gmXTsFTkZiWHQ2WzPVmiO4QVgAQXQ7HpABJvFFg0rGDpGDTKUowJSALpAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
-    \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
-  }
-  \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsKKoLADWdBBw-ri6XrRwpNSsugC89k7OtgBkGbruMb7+ABakMNQA7rT8UqSikdHecQnJqS6Z2bne+WAAVqIkdOS1MQ2JKQ4tSgDEugDCACIAkgDK07pwAB6wqCK6-FCkUEp0TCwcgSFhcIoQu-sGxlzUAPo3UDZKL3e65aQFKuwvURASl0ugAgrNFgAZT6McFQ4Fg2Z2OzOGHg5GuCAAXyuXSIKkewTgrFE-z2UFsRh2cBMUGEpEeBH4tFEBEeeIJRJJwGg8FJLzkAF0lEo0KhPipaKQ-BAQR8UgCEXwhCJRE1lcIxDKQSDio8tCxaFB6CJHkwiKVRDJtTqQdRjXBqE1-AA1Q3G7bmy0yfwIkFXf1KK60Ey6dgqcjMSw6Gy2IGy3SiX4QVig9DsMUAEm8USzVsYOkYVyxSjAWMFQA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAoksZwAjoNrv2CsKKoLADWdBBw-ri6XrRwpNSsugC89k7OtgBkGbruMb7+ABakMNQA7rT8UqSikdHecQnJqS6Z2bne+WAAVqIkdOS1MQ2JKQ4tSgDEugDCACIAkgDK07pwAB6wqCK6-FCkUEp0TCwcgSFhcIoQu-sGxlzUAPo3UDZKL3e65aQFKuwvURASl0ugAgrNFgAZT6McFQ4Fg2Z2OzOGHg5GuCAAXyuXSIKkewTgrFE-z2UFsRh2cBMUGEpEeBH4tFEBEeeIJRJJwGg8FJLzkAF0lEo0KhPipaKQ-BAQR8UgCEXwhCJRE1lcIxDKQSDio8tCxaFB6CJHkwiKVRDJtTqQdRjXBqE1-AA1Q3G7bmy0yfwIkFXf1KK60Ey6dgqcjMSw6Gy2IGy3SiX4QVig9DsMUAEm8USzVsYOkYVyxSjAWMFQA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
-=======
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiFbowpAQsdVmt7YxNEJXZRPD9WYPDzSZQeflmflmT07PNAMIA8gBM9WvrSgC+ihBKaKj1KnnszSm6ALz+GbjNfEIidbdPwmIX-ZW6pDCJWhYtCg9BEiSYRGyohkXx+P2oILgfluCjAADUgSCRLoIVCZKjmpUDkSlAdaCZdOwVORmJYdDZbOVvqJChBWABBdDsY4AEkEtFKvOhjB0jAOuyUYF2AF0gA}{Open in Shinylive}
     \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiFbowpAQsdVmt7YxNEJXZRPD9WYPDzSZQeflmflmT07PNAMIA8gBM9WvrSgC+ihBKaKj1KnnszSm6ALz+GbjNfEIidbdPwmIX-ZW6pDCJWhYtCg9BEiSYRGyohkXx+P2oILgfluCjAADUgSCRLoIVCZKjmpUDkSlAdaCZdOwVORmJYdDZbOVvqJChBWABBdDsY4AEkEtFKvOhjB0jAOuyUYF2AF0gA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
@@ -129,7 +120,6 @@ if (interactive()) {
   \item{example-2}{
     \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dOAAPWFQRXX4oUiglOiYWDlFUFgBrOgg4RQgYuINjLmoAfXyoGyVywt0Ad1pSAAsVdnLcXRAlXV0AQR8AgBka4oxyxERGPsGu3p87O2dhuG5R2KhxybmFpQBfXIArIhUS9LhWUVa12yNouBMoYVISgn5aUQISw+PT8+BoeAu5TkAF03NB0DUVA12DNqgBeaJrXAzPhCESiXQI1HCMQwiDdbqkGAlLQsWhQegiEpMIi1UQyPEEgnUClwaiY3QKMAANTJFKiNLpMi5M26uTFSlytBMunYKnIzEsOhstk6+N0omaEFYPXQ7DQqAAJIJaO0DYb6YwdIxcjslGAdsCgA}{Open in Shinylive}
     \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dOAAPWFQRXX4oUiglOiYWDlFUFgBrOgg4RQgYuINjLmoAfXyoGyVywt0Ad1pSAAsVdnLcXRAlXV0AQR8AgBka4oxyxERGPsGu3p87O2dhuG5R2KhxybmFpQBfXIArIhUS9LhWUVa12yNouBMoYVISgn5aUQISw+PT8+BoeAu5TkAF03NB0DUVA12DNqgBeaJrXAzPhCESiXQI1HCMQwiDdbqkGAlLQsWhQegiEpMIi1UQyPEEgnUClwaiY3QKMAANTJFKiNLpMi5M26uTFSlytBMunYKnIzEsOhstk6+N0omaEFYPXQ7DQqAAJIJaO0DYb6YwdIxcjslGAdsCgA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
->>>>>>> main
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

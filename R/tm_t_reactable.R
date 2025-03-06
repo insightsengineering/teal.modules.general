@@ -1,4 +1,3 @@
-#' @param ... () additional [reactable()] arguments
 #' @export
 tm_t_reactables <- function(label = "Table", datanames = "all", columns = list(), layout = "grid", transformators = list(), decorators = list(), ...) {
   module(

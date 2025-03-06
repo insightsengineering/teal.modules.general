@@ -1,3 +1,4 @@
+#' @export
 tm_g_swimlane_mdr <- function(label = "Swimlane", 
                               dataname, 
                               time_var, 

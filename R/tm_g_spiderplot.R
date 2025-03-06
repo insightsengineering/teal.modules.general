@@ -1,3 +1,4 @@
+#' @export
 tm_g_spiderplot <- function(label = "Spiderplot",
                             time_var,
                             subject_var,
