@@ -52,7 +52,7 @@ testthat::test_that("e2e - tm_a_regression: Data parameter and module label is p
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Regression"
   )
 

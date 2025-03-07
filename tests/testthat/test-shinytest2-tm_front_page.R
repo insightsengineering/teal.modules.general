@@ -28,7 +28,7 @@ test_that("e2e - tm_front_page: Initializes without errors and check html elemen
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Front page"
   )
 
@@ -50,10 +50,10 @@ test_that("e2e - tm_front_page: Verify the module displays tables", {
   app_driver <- app_driver_tm_front_page()
   # tables
   testthat::expect_match(app_driver$get_active_module_output("table_1"), "MTCARS")
-  testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("table_1")))
+  testthat::expect_true(app_driver$is_visible(sprintf("%s table", app_driver$active_module_element("table_1"))))
 
   testthat::expect_match(app_driver$get_active_module_output("table_2"), "IRIS")
-  testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("table_2")))
+  testthat::expect_true(app_driver$is_visible(sprintf("%s table", app_driver$active_module_element("table_2"))))
   app_driver$stop()
 })
 
@@ -63,7 +63,7 @@ test_that("e2e - tm_front_page: Verify the module displays metadata", {
 
   # show metadata
   app_driver$click(NS(app_driver$active_module_ns(), "metadata_button"))
-  testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("metadata_table")))
+  testthat::expect_true(app_driver$is_visible(sprintf("%s table", app_driver$active_module_element("metadata_table"))))
 
   app_driver$stop()
 })
