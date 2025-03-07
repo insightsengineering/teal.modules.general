@@ -441,8 +441,9 @@ ui_g_bivariate <- function(id, ...) {
           )
         )
       },
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Plot settings",
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
           checkboxInput(ns("swap_axes"), "Swap axes", value = args$swap_axes),

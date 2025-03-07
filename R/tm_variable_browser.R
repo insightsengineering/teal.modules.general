@@ -161,23 +161,26 @@ ui_variable_browser <- function(id,
             uiOutput(ns("ui_numeric_display")),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
             tags$br(),
-            teal.widgets::panel_item(
-              title = "Plot settings",
-              collapsed = TRUE,
-              selectInput(
-                inputId = ns("ggplot_theme"), label = "ggplot2 theme",
-                choices = ggplot_themes,
-                selected = "grey"
-              ),
-              bslib::layout_columns(
-                col_widths = c(6, 6),
-                sliderInput(
-                  inputId = ns("font_size"), label = "font size",
-                  min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
+            bslib::accordion(
+              open = TRUE,
+              bslib::accordion_panel(
+                title = "Plot settings",
+                collapsed = TRUE,
+                selectInput(
+                  inputId = ns("ggplot_theme"), label = "ggplot2 theme",
+                  choices = ggplot_themes,
+                  selected = "grey"
                 ),
-                sliderInput(
-                  inputId = ns("label_rotation"), label = "rotate x labels",
-                  min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE
+                bslib::layout_columns(
+                  col_widths = c(6, 6),
+                  sliderInput(
+                    inputId = ns("font_size"), label = "font size",
+                    min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
+                  ),
+                  sliderInput(
+                    inputId = ns("label_rotation"), label = "rotate x labels",
+                    min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE
+                  )
                 )
               )
             ),

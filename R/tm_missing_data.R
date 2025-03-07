@@ -432,14 +432,16 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       ),
       ui_decorate_teal_data(ns("dec_summary_table"), decorators = select_decorators(decorators, "table"))
     ),
-    teal.widgets::panel_item(
-      title = "Plot settings",
-      selectInput(
-        inputId = ns("ggtheme"),
-        label = "Theme (by ggplot):",
-        choices = ggplot_themes,
-        selected = ggtheme,
-        multiple = FALSE
+    bslib::accordion(
+      bslib::accordion_panel(
+        title = "Plot settings",
+        selectInput(
+          inputId = ns("ggtheme"),
+          label = "Theme (by ggplot):",
+          choices = ggplot_themes,
+          selected = ggtheme,
+          multiple = FALSE
+        )
       )
     )
   )
