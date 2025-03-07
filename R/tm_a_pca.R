@@ -246,10 +246,10 @@ ui_a_pca <- function(id, ...) {
           data_extract_spec = args$dat,
           is_single_dataset = is_single_dataset_value
         ),
-        teal.widgets::panel_group(
-          teal.widgets::panel_item(
+        bslib::accordion(
+          open = TRUE,
+          bslib::accordion_panel(
             title = "Display",
-            collapsed = FALSE,
             checkboxGroupInput(
               ns("tables_display"),
               "Tables display",
@@ -291,7 +291,7 @@ ui_a_pca <- function(id, ...) {
               )
             )
           ),
-          teal.widgets::panel_item(
+          bslib::accordion_panel(
             title = "Pre-processing",
             radioButtons(
               ns("standardization"), "Standardization",
@@ -304,9 +304,8 @@ ui_a_pca <- function(id, ...) {
               selected = "none"
             )
           ),
-          teal.widgets::panel_item(
+          bslib::accordion_panel(
             title = "Selected plot specific settings",
-            collapsed = FALSE,
             uiOutput(ns("plot_settings")),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
@@ -322,7 +321,7 @@ ui_a_pca <- function(id, ...) {
               )
             )
           ),
-          teal.widgets::panel_item(
+          bslib::accordion_panel(
             title = "Plot settings",
             collapsed = TRUE,
             conditionalPanel(

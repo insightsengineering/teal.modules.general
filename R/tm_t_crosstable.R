@@ -240,8 +240,9 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
         multiple = FALSE
       ),
       tags$hr(),
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Table settings",
           checkboxInput(ns("show_percentage"), "Show column percentage", value = show_percentage),
           checkboxInput(ns("show_total"), "Show total column", value = show_total)

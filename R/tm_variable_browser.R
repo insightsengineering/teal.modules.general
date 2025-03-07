@@ -141,56 +141,47 @@ ui_variable_browser <- function(id,
                                 post_output = NULL) {
   ns <- NS(id)
 
-  tagList(
+  tags$div(
     include_css_files("custom"),
     shinyjs::useShinyjs(),
     teal.widgets::standard_layout(
-      output = fluidRow(
+      output = tags$div(
         htmlwidgets::getDependency("sparkline"), # needed for sparklines to work
-        column(
-          6,
-          # variable browser
+        bslib::layout_column_wrap(
+          width = 0.5,
           teal.widgets::white_small_well(
             uiOutput(ns("ui_variable_browser")),
             shinyjs::hidden({
               checkboxInput(ns("show_parent_vars"), "Show parent dataset variables", value = FALSE)
             })
-          )
-        ),
-        column(
-          6,
+          ),
           teal.widgets::white_small_well(
-            ### Reporter
             teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-            ###
-            tags$div(
-              class = "block",
-              uiOutput(ns("ui_histogram_display"))
-            ),
-            tags$div(
-              class = "block",
-              uiOutput(ns("ui_numeric_display"))
-            ),
+            uiOutput(ns("ui_histogram_display")),
+            uiOutput(ns("ui_numeric_display")),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
             tags$br(),
-            # input user-defined text size
-            teal.widgets::panel_item(
-              title = "Plot settings",
-              collapsed = TRUE,
-              selectInput(
-                inputId = ns("ggplot_theme"), label = "ggplot2 theme",
-                choices = ggplot_themes,
-                selected = "grey"
-              ),
-              fluidRow(
-                column(6, sliderInput(
-                  inputId = ns("font_size"), label = "font size",
-                  min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
-                )),
-                column(6, sliderInput(
-                  inputId = ns("label_rotation"), label = "rotate x labels",
-                  min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE
-                ))
+            bslib::accordion(
+              open = TRUE,
+              bslib::accordion_panel(
+                title = "Plot settings",
+                collapsed = TRUE,
+                selectInput(
+                  inputId = ns("ggplot_theme"), label = "ggplot2 theme",
+                  choices = ggplot_themes,
+                  selected = "grey"
+                ),
+                bslib::layout_columns(
+                  col_widths = c(6, 6),
+                  sliderInput(
+                    inputId = ns("font_size"), label = "font size",
+                    min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
+                  ),
+                  sliderInput(
+                    inputId = ns("label_rotation"), label = "rotate x labels",
+                    min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE
+                  )
+                )
               )
             ),
             tags$br(),
@@ -331,41 +322,35 @@ srv_variable_browser <- function(id,
       varname <- plot_var$variable[[dataname]]
       df <- data()[[dataname]]
 
-      numeric_ui <- tagList(
-        fluidRow(
-          tags$div(
-            class = "col-md-4",
-            tags$br(),
-            shinyWidgets::switchInput(
-              inputId = session$ns("display_density"),
-              label = "Show density",
+      numeric_ui <- bslib::page_fluid(
+        bslib::layout_columns(
+          col_widths = c(8, 4),
+          bslib::layout_columns(
+            col_widths = c(6, 6, 12),
+            style = bslib::css(grid_row_gap = 0),
+            bslib::input_switch(
+              id = session$ns("display_density"),
+              label = tags$div(
+                "Show density:",
+                bslib::tooltip(
+                  trigger = icon("circle-info"),
+                  tags$span(
+                    "Show kernel density estimation with gaussian kernel and bandwidth function bw.nrd0 (R default)"
+                  )
+                )
+              ),
               value = `if`(is.null(isolate(input$display_density)), TRUE, isolate(input$display_density)),
-              width = "50%",
-              labelWidth = "100px",
-              handleWidth = "50px"
-            )
-          ),
-          tags$div(
-            class = "col-md-4",
-            tags$br(),
-            shinyWidgets::switchInput(
-              inputId = session$ns("remove_outliers"),
+              width = "100%"
+            ),
+            bslib::input_switch(
+              id = session$ns("remove_outliers"),
               label = "Remove outliers",
               value = `if`(is.null(isolate(input$remove_outliers)), FALSE, isolate(input$remove_outliers)),
-              width = "50%",
-              labelWidth = "100px",
-              handleWidth = "50px"
-            )
+              width = "100%"
+            ),
+            uiOutput(session$ns("ui_outlier_help"))
           ),
-          tags$div(
-            class = "col-md-4",
-            uiOutput(session$ns("outlier_definition_slider_ui"))
-          )
-        ),
-        tags$div(
-          class = "ml-4",
-          uiOutput(session$ns("ui_density_help")),
-          uiOutput(session$ns("ui_outlier_help"))
+          uiOutput(session$ns("outlier_definition_slider_ui"))
         )
       )
 
@@ -402,19 +387,14 @@ srv_variable_browser <- function(id,
       varname <- plot_var$variable[[dataname]]
       df <- data()[[dataname]]
 
-      numeric_ui <- tagList(fluidRow(
-        tags$div(
-          class = "col-md-4",
-          shinyWidgets::switchInput(
-            inputId = session$ns("remove_NA_hist"),
-            label = "Remove NA values",
-            value = FALSE,
-            width = "50%",
-            labelWidth = "100px",
-            handleWidth = "50px"
-          )
-        )
-      ))
+      numeric_ui <- shinyWidgets::switchInput(
+        inputId = session$ns("remove_NA_hist"),
+        label = "Remove NA values",
+        value = FALSE,
+        width = "50%",
+        labelWidth = "100px",
+        handleWidth = "50px"
+      )
 
       var <- df[[varname]]
       if (anyNA(var) && (is.factor(var) || is.character(var) || is.logical(var))) {
@@ -435,15 +415,15 @@ srv_variable_browser <- function(id,
       sliderInput(
         inputId = session$ns("outlier_definition_slider"),
         tags$div(
-          class = "teal-tooltip",
           tagList(
             "Outlier definition:",
-            icon("circle-info"),
-            tags$span(
-              class = "tooltiptext",
-              paste(
-                "Use the slider to choose the cut-off value to define outliers; the larger the value the",
-                "further below Q1/above Q3 points have to be in order to be classed as outliers"
+            bslib::tooltip(
+              icon("circle-info"),
+              tags$span(
+                paste(
+                  "Use the slider to choose the cut-off value to define outliers; the larger the value the",
+                  "further below Q1/above Q3 points have to be in order to be classed as outliers"
+                )
               )
             )
           )
@@ -453,18 +433,6 @@ srv_variable_browser <- function(id,
         value = 3,
         step = 0.5
       )
-    })
-
-    output$ui_density_help <- renderUI({
-      req(is.logical(input$display_density))
-      if (input$display_density) {
-        tags$small(helpText(paste(
-          "Kernel density estimation with gaussian kernel",
-          "and bandwidth function bw.nrd0 (R default)"
-        )))
-      } else {
-        NULL
-      }
     })
 
     output$ui_outlier_help <- renderUI({
@@ -1145,7 +1113,7 @@ create_sparklines.numeric <- function(arr, width = 150, ...) {
 #' @keywords internal
 #' @export
 create_sparklines.character <- function(arr, ...) {
-  return(create_sparklines(as.factor(arr)))
+  create_sparklines(as.factor(arr))
 }
 
 

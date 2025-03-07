@@ -35,13 +35,18 @@ testthat::test_that("e2e - tm_variable_browser: content is displayed correctly."
 
   # Test tab name
   testthat::expect_equal(
-    trimws(app_driver$get_text("#teal-teal_modules-active_tab > li.active")),
+    trimws(app_driver$get_text("#teal-teal_modules-active_tab .active")),
     "Variable browser (e2e)"
   )
 
   # Plot is visible
   testthat::expect_true(
-    app_driver$is_visible(app_driver$active_module_element("variable_plot-plot_out_main"))
+    app_driver$is_visible(
+      sprintf(
+        "%s .shiny-plot-output",
+        app_driver$active_module_element("variable_plot-plot_out_main")
+      )
+    )
   )
 
   # All datanames are available on the left sidebar
@@ -68,7 +73,7 @@ testthat::test_that("e2e - tm_variable_browser: Selecting 'treat variable as fac
 
   # Categorical type have levels table in main output
   current_var <- trimws(app_driver$get_text(
-    sprintf("%s .nav li.active", app_driver$active_module_element("ui_variable_browser"))
+    sprintf("%s li .active", app_driver$active_module_element("ui_variable_browser"))
   ))
 
   app_driver$set_active_module_input(
@@ -100,7 +105,7 @@ testthat::test_that("e2e - tm_variable_browser: selection of categorical variabl
 
   # Categorical type have levels table in main output
   current_var <- trimws(app_driver$get_text(
-    sprintf("%s .nav li.active", app_driver$active_module_element("ui_variable_browser"))
+    sprintf("%s li .active", app_driver$active_module_element("ui_variable_browser"))
   ))
 
   categorical_selector <- app_driver$active_module_element(
@@ -195,8 +200,6 @@ testthat::test_that("e2e - tm_variable_browser: changing plot setting encodings 
   app_driver <- app_driver_tm_variable_browser()
 
   # Test changing plot settings
-  testthat::expect_false(app_driver$is_visible(app_driver$active_module_element("ggplot_theme-selectized")))
-
   app_driver$set_active_module_input("ggplot_theme", "bw")
   app_driver$expect_no_validation_error()
   app_driver$set_active_module_input("ggplot_theme", "light")

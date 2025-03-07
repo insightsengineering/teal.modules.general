@@ -10,7 +10,7 @@ app_driver_tm_t_crosstable <- function() {
           label = "Select variable:",
           choices = teal.transform::variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
-            return(names(data)[idx])
+            names(data)[idx]
           }),
           selected = "COUNTRY",
           multiple = TRUE,
@@ -24,7 +24,7 @@ app_driver_tm_t_crosstable <- function() {
           label = "Select variable:",
           choices = teal.transform::variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- vapply(data, is.factor, logical(1))
-            return(names(data)[idx])
+            names(data)[idx]
           }),
           selected = "SEX",
           multiple = FALSE,
@@ -50,7 +50,7 @@ test_that("e2e - tm_t_crosstable: Initializes without errors", {
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Cross Table"
   )
 
