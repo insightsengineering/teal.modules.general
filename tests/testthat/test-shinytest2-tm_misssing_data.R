@@ -42,7 +42,7 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Missing data"
   )
 
@@ -78,7 +78,10 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 
   testthat::expect_true(
     app_driver$is_visible(
-      app_driver$active_module_element("iris-summary_plot-plot_out_main")
+      sprintf(
+        "%s .shiny-plot-output",
+        app_driver$active_module_element("iris-summary_plot-plot_out_main")
+      )
     )
   )
 
@@ -97,7 +100,10 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
   app_driver$expect_no_validation_error()
   testthat::expect_true(
     app_driver$is_visible(
-      app_driver$active_module_element("iris-combination_plot-plot_out_main")
+      sprintf(
+        "%s .shiny-plot-output",
+        app_driver$active_module_element("iris-combination_plot-plot_out_main")
+      )
     )
   )
 
@@ -105,7 +111,10 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
 
   testthat::expect_true(
     app_driver$is_visible(
-      app_driver$active_module_element("iris-cutoff")
+      sprintf(
+        "%s .shiny-input-container",
+        app_driver$active_module_element("iris-cutoff")
+      )
     )
   )
 

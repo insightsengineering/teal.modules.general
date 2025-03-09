@@ -186,13 +186,7 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
     include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
-        tags$div(
-          class = "flex",
-          column(
-            width = 12,
-            uiOutput(ns("dataset_tabs"))
-          )
-        )
+        uiOutput(ns("dataset_tabs"))
       ),
       encoding = tags$div(
         uiOutput(ns("dataset_encodings"))
@@ -230,13 +224,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, dataname
             function(x) {
               tabPanel(
                 title = x,
-                column(
-                  width = 12,
-                  tags$div(
-                    class = "mt-4",
-                    ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
-                  )
-                )
+                ui_missing_data(id = ns(x), by_subject_plot = if_subject_plot)
               )
             }
           )
@@ -389,34 +377,30 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Summary"),
-      checkboxInput(
-        ns("any_na"),
-        tags$div(
-          tagList(
-            "Add **anyna** variable",
-            bslib::tooltip(
-              icon("circle-info"),
-              tags$span(
-                "Describes the number of observations with at least one missing value in any variable."
-              )
+      bslib::input_switch(
+        id = ns("any_na"),
+        label = tags$div(
+          HTML("Add <b>anyna</b> variable"),
+          bslib::tooltip(
+            icon("circle-info"),
+            tags$span(
+              "Describes the number of observations with at least one missing value in any variable."
             )
           )
         ),
         value = FALSE
       ),
       if (summary_per_patient) {
-        checkboxInput(
-          ns("if_patients_plot"),
-          tags$div(
-            tagList(
-              "Add summary per patients",
-              bslib::tooltip(
-                icon("circle-info"),
-                tags$span(
-                  paste(
-                    "Displays the number of missing values per observation,",
-                    "where the x-axis is sorted by observation appearance in the table."
-                  )
+        bslib::input_switch(
+          id = ns("if_patients_plot"),
+          label = tags$div(
+            "Add summary per patients",
+            bslib::tooltip(
+              icon("circle-info"),
+              tags$span(
+                paste(
+                  "Displays the number of missing values per observation,",
+                  "where the x-axis is sorted by observation appearance in the table."
                 )
               )
             )
@@ -448,14 +432,16 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
       ),
       ui_decorate_teal_data(ns("dec_summary_table"), decorators = select_decorators(decorators, "table"))
     ),
-    teal.widgets::panel_item(
-      title = "Plot settings",
-      selectInput(
-        inputId = ns("ggtheme"),
-        label = "Theme (by ggplot):",
-        choices = ggplot_themes,
-        selected = ggtheme,
-        multiple = FALSE
+    bslib::accordion(
+      bslib::accordion_panel(
+        title = "Plot settings",
+        selectInput(
+          inputId = ns("ggtheme"),
+          label = "Theme (by ggplot):",
+          choices = ggplot_themes,
+          selected = ggtheme,
+          multiple = FALSE
+        )
       )
     )
   )
