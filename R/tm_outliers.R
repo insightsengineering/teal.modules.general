@@ -292,8 +292,9 @@ ui_outliers <- function(id, ...) {
       ),
       shinyjs::hidden(checkboxInput(ns("split_outliers"), "Define outliers based on group splitting", value = FALSE)),
       shinyjs::hidden(checkboxInput(ns("order_by_outlier"), "Re-order categories by outliers [by %]", value = FALSE)),
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Method parameters",
           collapsed = FALSE,
           teal.widgets::optionalSelectInput(
@@ -364,7 +365,7 @@ ui_outliers <- function(id, ...) {
         )
       ),
       ui_decorate_teal_data(ns("d_table"), decorators = select_decorators(args$decorators, "table")),
-      teal.widgets::panel_item(
+      bslib::accordion_panel(
         title = "Plot settings",
         selectInput(
           inputId = ns("ggtheme"),

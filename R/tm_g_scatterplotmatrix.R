@@ -264,8 +264,9 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       ),
       tags$hr(),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Plot settings",
           sliderInput(
             ns("alpha"), "Opacity:",

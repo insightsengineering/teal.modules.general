@@ -288,10 +288,10 @@ ui_distribution <- function(id, ...) {
           is_single_dataset = is_single_dataset_value
         )
       },
-      teal.widgets::panel_group(
+      bslib::accordion(
         conditionalPanel(
           condition = paste0("input['", ns("tabs"), "'] == 'Histogram'"),
-          teal.widgets::panel_item(
+          bslib::accordion_panel(
             "Histogram",
             teal.widgets::optionalSliderInputValMinMax(ns("bins"), "Bins", args$bins, ticks = FALSE, step = 1),
             shinyWidgets::prettyRadioButtons(
@@ -306,13 +306,12 @@ ui_distribution <- function(id, ...) {
             ui_decorate_teal_data(
               ns("d_density"),
               decorators = select_decorators(args$decorators, "histogram_plot")
-            ),
-            collapsed = FALSE
+            )
           )
         ),
         conditionalPanel(
           condition = paste0("input['", ns("tabs"), "'] == 'QQplot'"),
-          teal.widgets::panel_item(
+          bslib::accordion_panel(
             "QQ Plot",
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
             ui_decorate_teal_data(
@@ -332,7 +331,7 @@ ui_distribution <- function(id, ...) {
         ),
         conditionalPanel(
           condition = paste0("input['", ns("main_type"), "'] == 'Density'"),
-          teal.widgets::panel_item(
+          bslib::accordion_panel(
             "Theoretical Distribution",
             teal.widgets::optionalSelectInput(
               ns("t_dist"),
@@ -356,39 +355,39 @@ ui_distribution <- function(id, ...) {
             tags$span(actionButton(ns("params_reset"), "Default params")),
             collapsed = FALSE
           )
-        )
-      ),
-      teal.widgets::panel_item(
-        "Tests",
-        teal.widgets::optionalSelectInput(
-          ns("dist_tests"),
-          "Tests:",
-          choices = c(
-            "Shapiro-Wilk",
-            if (!is.null(args$strata_var)) "t-test (two-samples, not paired)",
-            if (!is.null(args$strata_var)) "one-way ANOVA",
-            if (!is.null(args$strata_var)) "Fligner-Killeen",
-            if (!is.null(args$strata_var)) "F-test",
-            "Kolmogorov-Smirnov (one-sample)",
-            "Anderson-Darling (one-sample)",
-            "Cramer-von Mises (one-sample)",
-            if (!is.null(args$strata_var)) "Kolmogorov-Smirnov (two-samples)"
-          ),
-          selected = NULL
-        )
-      ),
-      teal.widgets::panel_item(
-        "Statistics Table",
-        sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2)
-      ),
-      teal.widgets::panel_item(
-        title = "Plot settings",
-        selectInput(
-          inputId = ns("ggtheme"),
-          label = "Theme (by ggplot):",
-          choices = ggplot_themes,
-          selected = args$ggtheme,
-          multiple = FALSE
+        ),
+        bslib::accordion_panel(
+          title = "Tests",
+          teal.widgets::optionalSelectInput(
+            ns("dist_tests"),
+            "Tests:",
+            choices = c(
+              "Shapiro-Wilk",
+              if (!is.null(args$strata_var)) "t-test (two-samples, not paired)",
+              if (!is.null(args$strata_var)) "one-way ANOVA",
+              if (!is.null(args$strata_var)) "Fligner-Killeen",
+              if (!is.null(args$strata_var)) "F-test",
+              "Kolmogorov-Smirnov (one-sample)",
+              "Anderson-Darling (one-sample)",
+              "Cramer-von Mises (one-sample)",
+              if (!is.null(args$strata_var)) "Kolmogorov-Smirnov (two-samples)"
+            ),
+            selected = NULL
+          )
+        ),
+        bslib::accordion_panel(
+          title = "Statistics Table",
+          sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2)
+        ),
+        bslib::accordion_panel(
+          title = "Plot settings",
+          selectInput(
+            inputId = ns("ggtheme"),
+            label = "Theme (by ggplot):",
+            choices = ggplot_themes,
+            selected = args$ggtheme,
+            multiple = FALSE
+          )
         )
       )
     ),
