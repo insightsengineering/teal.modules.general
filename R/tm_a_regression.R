@@ -1038,7 +1038,7 @@ srv_a_regression <- function(id,
         "## Plot",
         plot_r(),
         "## Source Code",
-        format_as_markdown_chunk(source_code_r()),
+        teal.reporter::code_chunk(source_code_r()),
         "## Table for testing",
         head(iris)
       )
@@ -1049,8 +1049,4 @@ srv_a_regression <- function(id,
       report_card = card_fun
     )
   })
-}
-
-format_as_markdown_chunk <- function(r_code) {
-  sprintf("```{r}\n%s\n```", r_code)
 }
