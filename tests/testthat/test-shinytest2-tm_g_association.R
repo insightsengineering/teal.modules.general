@@ -45,6 +45,7 @@ app_driver_tm_g_association <- function() {
 }
 
 testthat::test_that("e2e - tm_g_association: Data parameter and module label is passed properly.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_association()
@@ -63,6 +64,7 @@ testthat::test_that("e2e - tm_g_association: Data parameter and module label is 
 
 testthat::test_that("e2e - tm_g_association:
   Data extract spec elements are initialized with the default values specified by ref and vars arguments.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_association()
 
@@ -84,6 +86,7 @@ testthat::test_that("e2e - tm_g_association:
 })
 
 testthat::test_that("e2e - tm_g_association: Module plot is visible.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_association()
 
@@ -93,6 +96,7 @@ testthat::test_that("e2e - tm_g_association: Module plot is visible.", {
 })
 
 testthat::test_that("e2e - tm_g_association: Check and set default values for radio buttons.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_association()
 

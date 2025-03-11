@@ -84,6 +84,7 @@ app_driver_tm_g_scatterplot <- function() {
 }
 
 testthat::test_that("e2e - tm_g_scatterplot: Module is initialised with the specified defaults.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_scatterplot()
@@ -110,6 +111,7 @@ testthat::test_that("e2e - tm_g_scatterplot: Module is initialised with the spec
 })
 
 testthat::test_that("e2e - tm_g_scatterplot: Base for the log transformation can be applied.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_scatterplot()
@@ -130,6 +132,7 @@ testthat::test_that("e2e - tm_g_scatterplot: Base for the log transformation can
 })
 
 testthat::test_that("e2e - tm_g_scatterplot: The log transform is only possible for positive numeric vars.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_scatterplot()
@@ -149,6 +152,7 @@ testthat::test_that("e2e - tm_g_scatterplot: The log transform is only possible 
 })
 
 testthat::test_that("e2e - tm_g_scatterplot: Get validation error when facetting with the same row & col variable.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_scatterplot()
@@ -161,6 +165,7 @@ testthat::test_that("e2e - tm_g_scatterplot: Get validation error when facetting
 })
 
 testthat::test_that("e2e - tm_g_scatterplot: The encoding inputs produce output without validation errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app <- app_driver_tm_g_scatterplot()

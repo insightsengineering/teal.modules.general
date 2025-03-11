@@ -44,6 +44,7 @@ app_driver_tm_t_crosstable <- function() {
 }
 
 test_that("e2e - tm_t_crosstable: Initializes without errors", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_t_crosstable()
 
@@ -61,6 +62,7 @@ test_that("e2e - tm_t_crosstable: Initializes without errors", {
 })
 
 test_that("e2e - tm_t_crosstable: Verify module displays data table", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_t_crosstable()
 
@@ -71,6 +73,7 @@ test_that("e2e - tm_t_crosstable: Verify module displays data table", {
 })
 
 test_that("e2e - tm_t_crosstable: Verify default values and settings (data_extracts) for data selection", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_t_crosstable()
 
@@ -94,6 +97,7 @@ test_that("e2e - tm_t_crosstable: Verify default values and settings (data_extra
 })
 
 test_that("e2e - tm_t_crosstable: Change plot settings", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_t_crosstable()
 

@@ -27,6 +27,7 @@ app_driver_tm_variable_browser <- function() {
 }
 
 testthat::test_that("e2e - tm_variable_browser: content is displayed correctly.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_variable_browser()
@@ -67,6 +68,7 @@ testthat::test_that("e2e - tm_variable_browser: content is displayed correctly."
 })
 
 testthat::test_that("e2e - tm_variable_browser: Selecting 'treat variable as factor' changes the table headers.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_variable_browser()
@@ -99,6 +101,7 @@ testthat::test_that("e2e - tm_variable_browser: Selecting 'treat variable as fac
 })
 
 testthat::test_that("e2e - tm_variable_browser: selection of categorical variable has a table with 'level' header.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_variable_browser()
@@ -153,6 +156,7 @@ testthat::test_that("e2e - tm_variable_browser: selection of categorical variabl
 })
 
 testthat::test_that("e2e - tm_variable_browser: changing 'display density' encoding doesn't show errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_variable_browser()
@@ -168,6 +172,7 @@ testthat::test_that("e2e - tm_variable_browser: changing 'display density' encod
 })
 
 testthat::test_that("e2e - tm_variable_browser: changing 'outlier definition' encoding doesn't show errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_variable_browser()
@@ -195,6 +200,7 @@ testthat::test_that("e2e - tm_variable_browser: changing 'outlier definition' en
 })
 
 testthat::test_that("e2e - tm_variable_browser: changing plot setting encodings doesn't show errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_variable_browser()

@@ -45,6 +45,7 @@ app_driver_tm_g_scatterplotmatrix <- function() { # nolint: object_length_linter
 }
 
 test_that("e2e - tm_g_scatterplotmatrix: Initializes without errors", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
@@ -62,6 +63,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Initializes without errors", {
 })
 
 test_that("e2e - tm_g_scatterplotmatrix: Verify module displays data table", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
@@ -74,6 +76,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Verify module displays data table", {
 })
 
 test_that("e2e - tm_g_scatterplotmatrix: Verify default values and settings (data_extracts) for data selection", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
@@ -101,6 +104,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Verify default values and settings (dat
 })
 
 test_that("e2e - tm_g_scatterplotmatrix: Change plot settings", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
