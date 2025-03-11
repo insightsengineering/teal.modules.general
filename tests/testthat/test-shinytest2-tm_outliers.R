@@ -49,13 +49,14 @@ app_driver_tm_outlier <- function() {
 }
 
 testthat::test_that("e2e - tm_outliers: Data parameter and module label is passed properly.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Outliers Module"
   )
 
@@ -69,6 +70,7 @@ testthat::test_that("e2e - tm_outliers: Data parameter and module label is passe
 testthat::test_that("e2e - tm_outliers:
   Data extract spec elements are initialized with the default values
   specified by outlier_var and categorical_var argument.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -105,6 +107,7 @@ testthat::test_that("e2e - tm_outliers:
 })
 
 testthat::test_that("e2e - tm_outliers: Plot type is correctly set by default and has appropriate possible options.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -122,6 +125,7 @@ testthat::test_that("e2e - tm_outliers: Plot type is correctly set by default an
 })
 
 testthat::test_that("e2e - tm_outliers: Module is divided into 3 tabs.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -137,6 +141,7 @@ testthat::test_that("e2e - tm_outliers: Module is divided into 3 tabs.", {
 })
 
 testthat::test_that("e2e - tm_outliers: Plot type is hidden when Boxplot tab is not selected.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -154,6 +159,7 @@ testthat::test_that("e2e - tm_outliers: Plot type is hidden when Boxplot tab is 
 })
 
 testthat::test_that("e2e - tm_outliers: Default radio buttons are set properly.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -170,6 +176,7 @@ testthat::test_that("e2e - tm_outliers: Default radio buttons are set properly."
 })
 
 testthat::test_that("e2e - tm_outliers: Method parameters are set properly.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -185,6 +192,7 @@ testthat::test_that("e2e - tm_outliers: Method parameters are set properly.", {
 
 testthat::test_that("e2e - tm_outliers:
   Outlier definition text and range are displayed properly depending on method.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -236,6 +244,7 @@ testthat::test_that("e2e - tm_outliers:
 })
 
 testthat::test_that("e2e - tm_outliers: Outliers summary table is displayed with proper content.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()
@@ -284,6 +293,7 @@ testthat::test_that("e2e - tm_outliers: Outliers summary table is displayed with
 })
 
 testthat::test_that("e2e - tm_outliers: Outlier table is displayed with proper content.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_outlier()

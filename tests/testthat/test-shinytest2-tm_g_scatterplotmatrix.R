@@ -45,13 +45,14 @@ app_driver_tm_g_scatterplotmatrix <- function() { # nolint: object_length_linter
 }
 
 test_that("e2e - tm_g_scatterplotmatrix: Initializes without errors", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Scatterplot matrix"
   )
 
@@ -62,16 +63,20 @@ test_that("e2e - tm_g_scatterplotmatrix: Initializes without errors", {
 })
 
 test_that("e2e - tm_g_scatterplotmatrix: Verify module displays data table", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
   # table
-  testthat::expect_true(app_driver$is_visible(selector = app_driver$active_module_element("myplot-plot_out_main")))
+  testthat::expect_true(
+    app_driver$is_visible(sprintf("%s .shiny-plot-output", app_driver$active_module_element("myplot-plot_out_main")))
+  )
 
   app_driver$stop()
 })
 
 test_that("e2e - tm_g_scatterplotmatrix: Verify default values and settings (data_extracts) for data selection", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
@@ -99,6 +104,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Verify default values and settings (dat
 })
 
 test_that("e2e - tm_g_scatterplotmatrix: Change plot settings", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 

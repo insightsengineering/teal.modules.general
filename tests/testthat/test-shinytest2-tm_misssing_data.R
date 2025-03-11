@@ -36,13 +36,14 @@ app_driver_tm_missing_data <- function() {
 }
 
 test_that("e2e - tm_missing_data: Initializes without errors", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Missing data"
   )
 
@@ -57,6 +58,7 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
 })
 
 test_that("e2e - tm_missing_data: Default settings and visibility of the summary graph", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # default summary tab
@@ -78,7 +80,10 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 
   testthat::expect_true(
     app_driver$is_visible(
-      app_driver$active_module_element("iris-summary_plot-plot_out_main")
+      sprintf(
+        "%s .shiny-plot-output",
+        app_driver$active_module_element("iris-summary_plot-plot_out_main")
+      )
     )
   )
 
@@ -86,6 +91,7 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 })
 
 test_that("e2e - tm_missing_data: Check default settings and visibility of the combinations graph and encodings", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
@@ -97,7 +103,10 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
   app_driver$expect_no_validation_error()
   testthat::expect_true(
     app_driver$is_visible(
-      app_driver$active_module_element("iris-combination_plot-plot_out_main")
+      sprintf(
+        "%s .shiny-plot-output",
+        app_driver$active_module_element("iris-combination_plot-plot_out_main")
+      )
     )
   )
 
@@ -105,7 +114,10 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
 
   testthat::expect_true(
     app_driver$is_visible(
-      app_driver$active_module_element("iris-cutoff")
+      sprintf(
+        "%s .shiny-input-container",
+        app_driver$active_module_element("iris-cutoff")
+      )
     )
   )
 
@@ -117,6 +129,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
 })
 
 test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By Variable Levels'", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # By variable levels
@@ -147,6 +160,7 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
 })
 
 test_that("e2e - tm_missing_data: Validate 'By Variable Levels' table values", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 

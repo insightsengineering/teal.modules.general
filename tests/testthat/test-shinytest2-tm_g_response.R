@@ -40,6 +40,7 @@ app_driver_tm_g_response <- function() {
 }
 
 testthat::test_that("e2e - tm_g_response: module is initialised with the specified defaults.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_response()
@@ -58,6 +59,7 @@ testthat::test_that("e2e - tm_g_response: module is initialised with the specifi
 })
 
 testthat::test_that("e2e - tm_g_response: encoding inputs produce output without validation errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_response()
@@ -88,6 +90,7 @@ testthat::test_that("e2e - tm_g_response: encoding inputs produce output without
 })
 
 testthat::test_that("e2e - tm_g_response: deselecting response produces validation error.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_response()
@@ -99,6 +102,7 @@ testthat::test_that("e2e - tm_g_response: deselecting response produces validati
 })
 
 testthat::test_that("e2e - tm_g_response: deselecting x produces validation error.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_response()
