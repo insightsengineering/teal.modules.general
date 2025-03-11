@@ -46,10 +46,26 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot` (`ggplot2`)
+#' - `plot` (`ggplot`)
+#'
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
+#' See code snippet below:
+#'
+#' ```
+#' tm_a_regression(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      plot = teal_transform_module(...) # applied to the `plot` output
+#'    )
+#' )
+#' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' `vignette("decorate-module-output", package = "teal.modules.general")`.
+#'
+#' To learn more please refer to the vignette
+#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -225,7 +241,6 @@ tm_a_regression <- function(label = "Regression Analysis",
       .var.name = "label_segment_threshold"
     )
   }
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, "plot")
   # End of assertions
 
@@ -273,7 +288,7 @@ ui_a_regression <- function(id, ...) {
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
-      tags$label("Encodings", class = "text-primary"),
+      tags$label("Encodings", class = "text-primary"), tags$br(),
       teal.transform::datanames_input(args[c("response", "regressor")]),
       teal.transform::data_extract_ui(
         id = ns("response"),
@@ -300,12 +315,10 @@ ui_a_regression <- function(id, ...) {
         teal.widgets::optionalSliderInput(
           ns("outlier"),
           tags$div(
-            class = "teal-tooltip",
             tagList(
               "Outlier definition:",
-              icon("circle-info"),
-              tags$span(
-                class = "tooltiptext",
+              bslib::tooltip(
+                icon("fas fa-circle-info"),
                 paste(
                   "Use the slider to choose the cut-off value to define outliers.",
                   "Points with a Cook's distance greater than",
@@ -323,24 +336,25 @@ ui_a_regression <- function(id, ...) {
         )
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Plot settings",
           teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(
             inputId = ns("label_min_segment"),
             label = tags$div(
-              class = "teal-tooltip",
               tagList(
                 "Label min. segment:",
-                icon("circle-info"),
-                tags$span(
-                  class = "tooltiptext",
-                  paste(
-                    "Use the slider to choose the cut-off value to define minimum distance between label and point",
-                    "that generates a line segment.",
-                    "It's only valid when 'Display outlier labels' is checked."
+                bslib::tooltip(
+                  icon("circle-info"),
+                  tags$span(
+                    paste(
+                      "Use the slider to choose the cut-off value to define minimum distance between label and point",
+                      "that generates a line segment.",
+                      "It's only valid when 'Display outlier labels' is checked."
+                    )
                   )
                 )
               )
@@ -448,9 +462,14 @@ srv_a_regression <- function(id,
       )
     })
 
+    qenv <- teal.code::eval_code(
+      data(),
+      'library("ggplot2");library("dplyr")' # nolint quotes
+    )
+
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -495,7 +514,7 @@ srv_a_regression <- function(id,
           selected = restoreInput(ns("label_var"), selected)
         )
 
-        data <- fortify(stats::lm(form, data = ANL))
+        data <- ggplot2::fortify(stats::lm(form, data = ANL))
         cooksd <- data$.cooksd[!is.nan(data$.cooksd)]
         max_outlier <- max(ceiling(max(cooksd) / mean(cooksd)), 2)
         cur_outlier <- isolate(input$outlier)
@@ -585,9 +604,9 @@ srv_a_regression <- function(id,
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
-          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) +
-            geom_point(size = size, alpha = alpha) +
-            stat_smooth(method = "lm", formula = y ~ x, se = FALSE),
+          expr = ggplot2::ggplot(fit$model[, 2:1], ggplot2::aes_string(regressor, response)) +
+            ggplot2::geom_point(size = size, alpha = alpha) +
+            ggplot2::stat_smooth(method = "lm", formula = y ~ x, se = FALSE),
           env = list(
             regressor = regression_var()$regressor,
             response = regression_var()$response,
@@ -605,8 +624,8 @@ srv_a_regression <- function(id,
         shinyjs::hide("size")
         shinyjs::hide("alpha")
         plot <- substitute(
-          expr = ggplot(fit$model[, 2:1], aes_string(regressor, response)) +
-            geom_boxplot(),
+          expr = ggplot2::ggplot(fit$model[, 2:1], ggplot2::aes_string(regressor, response)) +
+            ggplot2::geom_boxplot(),
           env = list(regressor = regression_var()$regressor, response = regression_var()$response)
         )
         if (input$show_outlier) {
@@ -635,7 +654,7 @@ srv_a_regression <- function(id,
         substitute(
           expr = {
             class(fit$residuals) <- NULL
-            data <- fortify(fit)
+            data <- ggplot2::fortify(fit)
             plot <- graph
           },
           env = list(
@@ -650,10 +669,10 @@ srv_a_regression <- function(id,
       shinyjs::show("size")
       shinyjs::show("alpha")
       plot <- substitute(
-        expr = ggplot(data = data, aes(.fitted, .resid)) +
-          geom_point(size = size, alpha = alpha) +
-          geom_hline(yintercept = 0, linetype = "dashed", size = 1) +
-          geom_line(data = smoothy, mapping = smoothy_aes),
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(.fitted, .resid)) +
+          ggplot2::geom_point(size = size, alpha = alpha) +
+          ggplot2::geom_hline(yintercept = 0, linetype = "dashed", size = 1) +
+          ggplot2::geom_line(data = smoothy, mapping = smoothy_aes),
         env = list(size = input$size, alpha = input$alpha)
       )
       if (input$show_outlier) {
@@ -694,15 +713,15 @@ srv_a_regression <- function(id,
       shinyjs::show("alpha")
       plot_base <- output_plot_base()
       plot <- substitute(
-        expr = ggplot(data = data, aes(sample = .stdresid)) +
-          stat_qq(size = size, alpha = alpha) +
-          geom_abline(linetype = "dashed"),
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(sample = .stdresid)) +
+          ggplot2::stat_qq(size = size, alpha = alpha) +
+          ggplot2::geom_abline(linetype = "dashed"),
         env = list(size = input$size, alpha = input$alpha)
       )
       if (input$show_outlier) {
         plot <- substitute(
           expr = plot +
-            stat_qq(
+            ggplot2::stat_qq(
               geom = ggrepel::GeomTextRepel,
               label = label_col %>%
                 data.frame(label = .) %>%
@@ -753,9 +772,9 @@ srv_a_regression <- function(id,
       shinyjs::show("alpha")
       plot_base <- output_plot_base()
       plot <- substitute(
-        expr = ggplot(data = data, aes(.fitted, sqrt(abs(.stdresid)))) +
-          geom_point(size = size, alpha = alpha) +
-          geom_line(data = smoothy, mapping = smoothy_aes),
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(.fitted, sqrt(abs(.stdresid)))) +
+          ggplot2::geom_point(size = size, alpha = alpha) +
+          ggplot2::geom_line(data = smoothy, mapping = smoothy_aes),
         env = list(size = input$size, alpha = input$alpha)
       )
       if (input$show_outlier) {
@@ -796,14 +815,14 @@ srv_a_regression <- function(id,
       shinyjs::show("alpha")
       plot_base <- output_plot_base()
       plot <- substitute(
-        expr = ggplot(data = data, aes(seq_along(.cooksd), .cooksd)) +
-          geom_col(alpha = alpha),
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(seq_along(.cooksd), .cooksd)) +
+          ggplot2::geom_col(alpha = alpha),
         env = list(alpha = input$alpha)
       )
       if (input$show_outlier) {
         plot <- substitute(
           expr = plot +
-            geom_hline(
+            ggplot2::geom_hline(
               yintercept = c(
                 outlier * mean(data$.cooksd, na.rm = TRUE),
                 mean(data$.cooksd, na.rm = TRUE)
@@ -811,8 +830,8 @@ srv_a_regression <- function(id,
               color = "red",
               linetype = "dashed"
             ) +
-            geom_text(
-              aes(
+            ggplot2::geom_text(
+              ggplot2::aes(
                 x = 0,
                 y = mean(data$.cooksd, na.rm = TRUE),
                 label = paste("mu", "=", round(mean(data$.cooksd, na.rm = TRUE), 4)),
@@ -862,21 +881,21 @@ srv_a_regression <- function(id,
       shinyjs::show("alpha")
       plot_base <- output_plot_base()
       plot <- substitute(
-        expr = ggplot(data = data, aes(.hat, .stdresid)) +
-          geom_vline(
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(.hat, .stdresid)) +
+          ggplot2::geom_vline(
             size = 1,
             colour = "black",
             linetype = "dashed",
             xintercept = 0
           ) +
-          geom_hline(
+          ggplot2::geom_hline(
             size = 1,
             colour = "black",
             linetype = "dashed",
             yintercept = 0
           ) +
-          geom_point(size = size, alpha = alpha) +
-          geom_line(data = smoothy, mapping = smoothy_aes),
+          ggplot2::geom_point(size = size, alpha = alpha) +
+          ggplot2::geom_line(data = smoothy, mapping = smoothy_aes),
         env = list(size = input$size, alpha = input$alpha)
       )
       if (input$show_outlier) {
@@ -917,16 +936,16 @@ srv_a_regression <- function(id,
       shinyjs::show("alpha")
       plot_base <- output_plot_base()
       plot <- substitute(
-        expr = ggplot(data = data, aes(.hat, .cooksd)) +
-          geom_vline(xintercept = 0, colour = NA) +
-          geom_abline(
+        expr = ggplot2::ggplot(data = data, ggplot2::aes(.hat, .cooksd)) +
+          ggplot2::geom_vline(xintercept = 0, colour = NA) +
+          ggplot2::geom_abline(
             slope = seq(0, 3, by = 0.5),
             colour = "black",
             linetype = "dashed",
             size = 1
           ) +
-          geom_line(data = smoothy, mapping = smoothy_aes) +
-          geom_point(size = size, alpha = alpha),
+          ggplot2::geom_line(data = smoothy, mapping = smoothy_aes) +
+          ggplot2::geom_point(size = size, alpha = alpha),
         env = list(size = input$size, alpha = input$alpha)
       )
       if (input$show_outlier) {

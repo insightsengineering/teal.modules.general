@@ -42,10 +42,26 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot` (`ggplot2`)
+#' - `plot` (`ggplot`)
+#'
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
+#' See code snippet below:
+#'
+#' ```
+#' tm_g_response(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      plot = teal_transform_module(...) # applied to the `plot` output
+#'    )
+#' )
+#' ```
 #'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' `vignette("decorate-module-output", package = "teal.modules.general")`.
+#'
+#' To learn more please refer to the vignette
+#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -202,7 +218,6 @@ tm_g_response <- function(label = "Response Plot",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, "plot")
   # End of assertions
 
@@ -289,8 +304,9 @@ ui_g_response <- function(id, ...) {
         justified = TRUE
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Plot settings",
           checkboxInput(ns("count_labels"), "Add count labels", value = args$count_labels),
           checkboxInput(ns("coord_flip"), "Swap axes", value = args$coord_flip),
@@ -378,9 +394,14 @@ srv_g_response <- function(id,
       datasets = data
     )
 
+    qenv <- teal.code::eval_code(
+      data(),
+      'library("ggplot2");library("dplyr")' # nolint quotes
+    )
+
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
+      qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -464,8 +485,8 @@ srv_g_response <- function(id,
         )
 
       plot_call <- substitute(
-        expr = ggplot(ANL2, aes(x = x_cl, y = ns)) +
-          geom_bar(aes(fill = resp_cl), stat = "identity", position = arg_position),
+        expr = ggplot2::ggplot(ANL2, ggplot2::aes(x = x_cl, y = ns)) +
+          ggplot2::geom_bar(ggplot2::aes(fill = resp_cl), stat = "identity", position = arg_position),
         env = list(
           x_cl = x_cl,
           resp_cl = resp_cl,
@@ -475,7 +496,7 @@ srv_g_response <- function(id,
 
       if (!freq) {
         plot_call <- substitute(
-          plot_call + expand_limits(y = c(0, 1.1)),
+          plot_call + ggplot2::expand_limits(y = c(0, 1.1)),
           env = list(plot_call = plot_call)
         )
       }
@@ -483,16 +504,16 @@ srv_g_response <- function(id,
       if (counts) {
         plot_call <- substitute(
           expr = plot_call +
-            geom_text(
+            ggplot2::geom_text(
               data = ANL2,
-              aes(label = ns, x = x_cl, y = ns, group = resp_cl),
+              ggplot2::aes(label = ns, x = x_cl, y = ns, group = resp_cl),
               col = "white",
               vjust = "middle",
               hjust = "middle",
               position = position_anl2_value
             ) +
-            geom_text(
-              data = ANL3, aes(label = ns, x = x_cl, y = anl3_y),
+            ggplot2::geom_text(
+              data = ANL3, ggplot2::aes(label = ns, x = x_cl, y = anl3_y),
               hjust = hjust_value,
               vjust = vjust_value,
               position = position_anl3_value
@@ -530,7 +551,7 @@ srv_g_response <- function(id,
       )
 
       if (rotate_xaxis_labels) {
-        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(element_text(angle = 45, hjust = 1))
+        dev_ggplot2_args$theme[["axis.text.x"]] <- quote(ggplot2::element_text(angle = 45, hjust = 1))
       }
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(

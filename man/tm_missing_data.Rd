@@ -62,11 +62,9 @@ adding context or further instructions. Elements like \code{shiny::helpText()} a
 To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-(\code{list} of \code{teal_transform_module}, named \code{list} of \code{teal_transform_module}) optional,
+(named \code{list} of lists of \code{teal_transform_module}) optional,
 decorator for tables or plots included in the module output reported.
-When a named list of \code{teal_transform_module}, the decorators are applied to the respective output objects.
-
-Otherwise, the decorators are applied to all objects, which is equivalent as using the name \code{default}.
+The decorators are applied to the respective output objects.
 
 See section "Decorating Module" below for more details.}
 }
@@ -86,29 +84,30 @@ This module generates the following objects, which can be modified in place usin
 \itemize{
 \item \code{summary_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
 \item \code{combination_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
-\item \code{by_subject_plot} (\code{ggplot2})
-\item \code{table} (\code{listing_df} created with \code{\link[rlistings:listings]{rlistings::as_listing()}})
+\item \code{by_subject_plot} (\code{ggplot})
+\item \code{table} (\code{datatables} created with \code{\link[DT:datatable]{DT::datatable()}})
 }
 
-Decorators can be applied to all outputs or only to specific objects using a
-named list of \code{teal_transform_module} objects.
-The \code{"default"} name is reserved for decorators that are applied to all outputs.
+A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
+The name of this list corresponds to the name of the output to which the decorator is applied.
 See code snippet below:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_missing_data(
    ..., # arguments for module
    decorators = list(
-     default = list(teal_transform_module(...)), # applied to all outputs
-     summary_plot = list(teal_transform_module(...)), # applied only to `summary_plot` output
-     combination_plot = list(teal_transform_module(...)) # applied only to `combination_plot` output
-     by_subject_plot = list(teal_transform_module(...)) # applied only to `by_subject_plot` output
-     table = list(teal_transform_module(...)) # applied only to `table` output
+     summary_plot = teal_transform_module(...), # applied only to `summary_plot` output
+     combination_plot = teal_transform_module(...), # applied only to `combination_plot` output
+     by_subject_plot = teal_transform_module(...), # applied only to `by_subject_plot` output
+     table = teal_transform_module(...) # applied only to `table` output
    )
 )
 }\if{html}{\out{</div>}}
 
 For additional details and examples of decorators, refer to the vignette
-\code{vignette("decorate-modules-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
+\code{vignette("decorate-module-output", package = "teal.modules.general")}.
+
+To learn more please refer to the vignette
+\code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
 \examples{

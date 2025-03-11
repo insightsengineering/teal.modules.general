@@ -23,8 +23,24 @@
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `plot` (`trellis` - output of `lattice::splom`)
 #'
+#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
+#' The name of this list corresponds to the name of the output to which the decorator is applied.
+#' See code snippet below:
+#'
+#' ```
+#' tm_g_scatterplotmatrix(
+#'    ..., # arguments for module
+#'    decorators = list(
+#'      plot = teal_transform_module(...) # applied to the `plot` output
+#'    )
+#' )
+#' ```
+#'
 #' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-modules-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
+#' `vignette("decorate-module-output", package = "teal.modules.general")`.
+#'
+#' To learn more please refer to the vignette
+#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -93,7 +109,7 @@
 #'             label = "Select variable:",
 #'             vars = "country_id",
 #'             choices = value_choices(data[["sales"]], "country_id"),
-#'             selected = c("DE", "FR", "IT", "ES", "PT", "GR", "NL", "BE", "LU", "AT"),
+#'             selected = c("DE", "FR", "IT", "PT", "GR", "NL", "BE", "LU", "AT"),
 #'             multiple = TRUE
 #'           ),
 #'           select = select_spec(
@@ -199,7 +215,6 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  decorators <- normalize_decorators(decorators)
   assert_decorators(decorators, "plot")
   # End of assertions
 
@@ -249,8 +264,9 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       ),
       tags$hr(),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Plot settings",
           sliderInput(
             ns("alpha"), "Opacity:",
@@ -317,8 +333,8 @@ srv_g_scatterplotmatrix <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      data() %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+      qenv <- teal.code::eval_code(data(), 'library("dplyr");library("lattice")') # nolint quotes
+      teal.code::eval_code(qenv, as.expression(anl_merged_input()$expr))
     })
 
     merged <- list(
@@ -354,6 +370,7 @@ srv_g_scatterplotmatrix <- function(id,
 
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
+      qenv <- teal.code::eval_code(qenv, 'library("dplyr")') # nolint quotes
       if (any(check_char)) {
         qenv <- teal.code::eval_code(
           qenv,

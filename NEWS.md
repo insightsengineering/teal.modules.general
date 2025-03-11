@@ -1,15 +1,23 @@
-# teal.modules.general 0.3.0.9081
+# teal.modules.general 0.4.0.9001
 
-* Removed `Show Warnings` modals from modules.
-* Soft deprecated `datasets_selected` argument of modules in favor of `datanames`.
-* Soft deprecated `show_metadata` argument of `tm_front_page()` in favor of `datanames`.
+# teal.modules.general 0.4.0
 
 ### Enhancements
+* Introduced `transformators` and `decorators` argument to modules (#863).
+* Modules' Show R Code widgets include library calls to boost reproducibility (#786).
+* Removed `Show Warnings` modals from modules.
 
+### Miscellaneous
+* Soft deprecated `datasets_selected` argument of modules in favor of `datanames`.
+* Soft deprecated `show_metadata` argument of `tm_front_page()` in favor of `datanames`.
 * Added `teal.logger` functionality for logging changes in shiny inputs in all modules.
+* All example data is now sourced from `teal.data`.
+* Update `tm_g_distribution` to not start with validation error (#823).
 
 ### Bug fixes
-* Fixed a bug in `tm_missing_data` in "Group by Subject" that was not using reactive data call.
+* Fixed a bug in `tm_missing_data` in "Group by Subject" that was not using reactive data call (#772).
+* Fixed out-of-bound labels for `tm_g_regression` (#66).
+* Fixed a bug in `tm_g_association` where the app would crash when a selected categorical variable was a factor instead of a character (#645).
 
 # teal.modules.general 0.3.0
 
