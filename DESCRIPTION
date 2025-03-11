@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.4.0.9000
-Date: 2025-02-28
+Version: 0.4.0.9001
+Date: 2025-03-11
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -83,6 +83,10 @@ Suggests:
 VignetteBuilder:
     knitr,
     rmarkdown
+Remotes:
+    insightsengineering/teal.reporter@main,
+    insightsengineering/teal.widgets@main,
+    insightsengineering/teal@main
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.slice, insightsengineering/teal.transform,
@@ -106,7 +110,3 @@ Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE, packages = c("roxy.shinylive"))
 RoxygenNote: 7.3.2
-Remotes:
-    insightsengineering/teal.widgets@main,
-    insightsengineering/teal.reporter@main,
-    insightsengineering/teal@main
