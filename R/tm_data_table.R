@@ -155,7 +155,6 @@ tm_data_table <- function(label = "Data Table",
 # UI page module
 ui_data_table <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
-
   tagList(
     include_css_files("custom"),
     teal.widgets::standard_layout(
@@ -208,18 +207,17 @@ srv_data_table <- function(id,
 
     datanames_r <- reactive({
       Filter(
-        function(name) {
-          is.data.frame(data()[[name]])
-        }, 
+        function(name) is.data.frame(data()[[name]]), 
         if (identical(datanames, "all")) names(data()) else datanames
       )
     })
 
-    output$dataset_table <- renderUI({
+    output$data_tables <- renderUI({
+      req(datanames_r())
       do.call(
         tabsetPanel,
         c(
-          list(id = session$ns("dataname_tab")),
+          list(id = session$ns("tabs_selected"), selected = datanames_r()[1]),
           lapply(
             datanames_r(),
             function(x) {
@@ -258,12 +256,16 @@ srv_data_table <- function(id,
           )
         )
       )
-    })
+    }) |>
+      bindCache(datanames_r()) |>
+      bindEvent(datanames_r())
+    
     
     # server should be run only once
     modules_run <- reactiveVal()
-    modules_to_run <- reactive(setdiff(datanames_r(), modules_run()))
+    modules_to_run <- reactive(setdiff(datanames_r(), isolate(modules_run())))
     observeEvent(modules_to_run(), {
+      print(modules_to_run())
       lapply(
         modules_to_run(),
         function(dataname) {
@@ -288,7 +290,6 @@ srv_data_table <- function(id,
 # UI function for the data_table module
 ui_dataset_table <- function(id, choices, selected) {
   ns <- NS(id)
-
   if (!is.null(selected)) {
     all_choices <- choices
     choices <- c(selected, setdiff(choices, selected))

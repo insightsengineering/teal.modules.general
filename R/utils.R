@@ -455,7 +455,7 @@ normalize_decorators <- function(decorators) {
     furthest_neighbours_idx <- order(apply(optimal_to_current_dist, 2, min), decreasing = TRUE)
     missing_colors <- optimal_color_space[furthest_neighbours_idx][seq_len(m)]
     p <- c(p, setNames(missing_colors, missing_levels))
-  } else if (n) {
+  } else if (length(missing_levels)) {
     colorspace::qualitative_hcl(N)
   } else {
     p

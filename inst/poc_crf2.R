@@ -2,7 +2,7 @@ library(teal)
 library(DT)
 library(labelled)
 library(reactable)
-pkgload::load_all("teal.modules.general")
+pkgload::load_all("~/nest/teal.modules.general")
 # Note: Please add the `PATH_TO_DATA` and change the X, Y, and Z Administrations to the actual values in the data
 
 with_tooltips <- function(...) {
@@ -17,7 +17,7 @@ data <- within(teal_data(), {
   library(dplyr)
   library(arrow)
   library(forcats)
-  data_path <- "PATH/TO/THE/DATA"
+  data_path <- "PATH/TO/DATA"
 
   swimlane_ds <- read_parquet(file.path(data_path, "swimlane_ds.parquet")) |>
     filter(!is.na(event_result), !is.na(event_study_day)) |>
@@ -159,7 +159,7 @@ tm_swimlane <- function(label = "Swimlane", plot_height = 700) {
                     extreme_grade
                   )
                 )
-
+              
               p <- plotly::plot_ly(
                 source = "swimlane",
                 colors = c(

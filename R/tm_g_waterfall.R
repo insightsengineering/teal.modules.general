@@ -180,6 +180,6 @@ srv_g_waterfall <- function(id,
     })
 
     output$tables <- renderUI(ui_t_reactables(session$ns("subtables")))
-    srv_t_reactables("subtables", data = tables_selected_q, dataname = sprintf("%s_brushed", table_datanames))
+    srv_t_reactables("subtables", data = tables_selected_q, dataname = sprintf("%s_brushed", table_datanames), layout = "grid")
   })
 }

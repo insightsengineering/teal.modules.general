@@ -1,24 +1,11 @@
 #' @export
 tm_g_swimlane_mdr <- function(label = "Swimlane", 
-                              dataname, 
+                              plot_dataname, 
                               time_var, 
                               subject_var, 
                               value_var, 
                               event_var,
-                              subtable_labels = c("Multiple Myeloma Response", "Study Tx Listing"),
-                              subtable_cols = list(
-                                c(
-                                  "subject", "visit_name", "visit_date", "form_name", "source_system_url_link",
-                                  "rspdn", "rspd", "rspd_study_day", "orsp", "bma", "bmb", "comnts"
-                                ),
-                                c(
-                                  "site_name", "subject", "visit_name", "visit_date", "form_name", "source_system_url_link", "txnam",
-                                  "txrec", "txrecrs", "txd_study_day", "date_administered", "cydly", "cydlyrs", "cydlyae", "txdly", 
-                                  "txdlyrs", "txdlyae", "txpdos", "txpdosu", "frqdv", "txrte", "txform", "txdmod", "txrmod",
-                                  "txdmae", "txad", "txadu", "txd", "txstm", "txstmu", "txed", "txetm", "txetmu", "txtm", "txtmu",
-                                  "txed_study_day", "infrt", "infrtu", "tximod", "txirmod", "tximae"
-                                )
-                              ),
+                              listing_datanames = character(0),
                               value_var_color = c(
                                 "DEATH" = "black",
                                 "WITHDRAWAL BY SUBJECT" = "grey",
@@ -49,25 +36,22 @@ tm_g_swimlane_mdr <- function(label = "Swimlane",
                                 "Z Administration Infusion" = "line-ns"
                               ),
                               plot_height = 700) {
-  checkmate::assert_character(subtable_labels)
-  checkmate::assert_list(subtable_cols)
   checkmate::assert_character(value_var_color)
   module(
     label = label,
     ui = ui_g_swimlane_mdr,
     server = srv_g_swimlane_mdr,
-    datanames = dataname,
+    datanames = union(plot_dataname, listing_datanames),
     ui_args = list(height = plot_height),
     server_args = list(
-      dataname = dataname,
+      plot_dataname = plot_dataname,
       time_var = time_var,
       subject_var = subject_var,
       value_var = value_var,
       event_var = event_var,
       value_var_color = value_var_color,
       value_var_symbol = value_var_symbol,
-      subtable_labels = subtable_labels,
-      subtable_cols = subtable_cols,
+      listing_datanames = listing_datanames,
       plot_height = plot_height
     )
   )
@@ -85,22 +69,21 @@ ui_g_swimlane_mdr <- function(id, height) {
 }
 srv_g_swimlane_mdr <- function(id, 
                                data, 
-                               dataname,
+                               plot_dataname,
                                time_var,
                                subject_var,
                                value_var,
                                event_var,
                                value_var_color,
                                value_var_symbol,
-                               subtable_labels,
-                               subtable_cols,
+                               listing_datanames,
                                filter_panel_api, 
                                plot_height = 600) {
   moduleServer(id, function(input, output, session) {
     plotly_selected_q <- srv_g_swimlane(
       "plot", 
       data = data,
-      dataname = dataname,
+      dataname = plot_dataname,
       time_var = time_var,
       subject_var = subject_var,
       value_var = value_var,
@@ -110,33 +93,27 @@ srv_g_swimlane_mdr <- function(id,
       filter_panel_api = filter_panel_api
     )
     
-    subtable_names <- gsub("[[:space:][:punct:]]+", "_", x = tolower(subtable_labels))
-    subtables_q <- reactive({
-      req(plotly_selected_q())
-      calls <- lapply(seq_along(subtable_names), function(i) {
-        substitute(
-          list(
-            dataname = str2lang(dataname),
-            subtable_name = str2lang(subtable_names[i]),
-            subtable_label = subtable_labels[i],
-            time_var = str2lang(time_var),
-            subject_var = str2lang(subject_var),
-            col_defs = subtable_cols[[i]]
-          ),
-          expr = {
-            subtable_name <- dataname |>
-              dplyr::filter(
-                time_var %in% plotly_brushed_time,
-                subject_var %in% plotly_brushed_subject
-              ) |>
-              dplyr::select(dplyr::all_of(col_defs))
-            attr(subtable_name, "label") <- subtable_label
-          }
-        )
+    if (length(listing_datanames)) {
+      listings_q <- reactive({
+        req(plotly_selected_q())
+        calls <- lapply(seq_along(listing_datanames), function(i) {
+          listing_name <- listing_names[i]
+          listing_label <- attr(plotly_selected_q()[[listing_name]], "label")
+          substitute(
+            list(
+              listing_name = str2lang(listing_name),
+              listing_selected = str2lang(sprintf("%s_selected", listing_name)),
+              listing_label = listing_label,
+              subject_var = str2lang(subject_var)
+            ),
+            expr = {
+              listing_selected <- dplyr::filter(listing_name, subject_var %in% plotly_brushed_subject)
+            }
+          )
+        })
+        teal.code::eval_code(plotly_selected_q(), as.expression(calls))
       })
-      teal.code::eval_code(plotly_selected_q(), as.expression(calls))
-    })
-    
-    srv_t_reactables("subtables", data = subtables_q, datanames = subtable_names, layout = "tabs")
+      srv_t_reactables("subtables", data = listings_q, datanames = listing_datanames, layout = "tabs")
+    }
   })
 }

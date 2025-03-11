@@ -78,21 +78,25 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, dec
         )
       } else if (layout == "tabs") {
         isolate({
-          do.call(
-            tabsetPanel,
-            c(
-              list(id = session$ns("reactables")),
-              lapply(
-                datanames_r(),
-                function(dataname) {
-                  tabPanel(
-                    title = datalabels_r()[dataname],
-                    ui_t_reactable(session$ns(dataname))
-                  )
-                }
+          div(
+            do.call(
+              tabsetPanel,
+              c(
+                list(id = session$ns("reactables")),
+                lapply(
+                  datanames_r(),
+                  function(dataname) {
+                    tabPanel(
+                      title = datalabels_r()[dataname],
+                      class = "simple-card",
+                      ui_t_reactable(session$ns(dataname))
+                    )
+                  }
+                )
               )
             )
           )
+
         })
       }
 
@@ -147,6 +151,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
     reactable_call <- reactive({
       default_args <- list(
         columns = .make_reactable_columns_call(data()[[dataname]]),
+        resizable = TRUE,
         onClick = "select",
         defaultPageSize = 15,
         wrap = FALSE,
@@ -195,7 +200,32 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
 
 .make_reactable_call <- function(dataname, args) {
   args <- c(
-    list(data = str2lang(dataname)),
+    list(
+      data = str2lang(dataname),
+      defaultColDef = quote(
+        colDef(
+          cell = function(value) {
+            is_url <- is.character(value) && any(
+              grepl(
+                "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)",
+                x = head(value),
+                perl = TRUE
+              )
+            )
+            if (is_url) {
+              if (!is.na(value) && !is.null(value) && value != "") {
+                htmltools::tags$a(href = value, target = "_blank", "Link")
+              } else {
+                "N/A"
+              }              
+            } else {
+              value
+            }
+          }          
+        )
+
+      )
+    ),
     args
   )
   do.call(call, c(list(name = "reactable"), args), quote = TRUE)
@@ -214,26 +244,21 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
   args <- lapply(
     seq_along(dataset), 
     function(i) {
-      label <- attr(dataset[[i]], "label")
+      column <- dataset[[i]]
+      label <- attr(column, "label")
       is_labelled <- length(label) == 1 && !is.na(label) && !identical(label, "")
-      is_url <- is.character(dataset[[i]]) && any(
+      is_url <- is.character(column) && any(
         grepl(
           "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)",
-          x = head(dataset[[i]]),
+          x = head(column),
           perl = TRUE
         )
       )
-
+      # todo: move url formatter to the defaultColDef
+      width <- max(nchar(head(as.character(column), 100))) * 9
       args <- c(
-        if (is_labelled) list(name = label),
-        if (is_url) list(cell = quote(function(value) {
-            if (!is.na(value) && !is.null(value) && value != "") {
-              htmltools::tags$a(href = value, target = "_blank", "Link")
-            } else {
-              "N/A"
-            }
-          })
-        ) 
+        if (!is.na(width) && width > 100 && !is_url) list(width = width),
+        if (is_labelled) list(name = label)
       )
 
       if (length(args)) {

@@ -242,7 +242,7 @@ srv_a_spiderplot_mdr <- function(id,
     })
     
     observeEvent(all_q(), {
-      "do nothing"
+      cat(teal.code::get_code(all_q()))
     })
     
     
