@@ -51,6 +51,10 @@ srv_g_swimlane <- function(id,
         levels = unique(data()[[dataname]][[value_var]]),
         color = value_var_color
       )
+      adjusted_symbols <- .shape_palette_discrete(
+        levels = unique(data()[[dataname]][[value_var]]),
+        symbol = value_var_symbol
+      )
       subject_var_label <- c(attr(data()[[dataname]][[subject_var]], "label"), "Subject")[1]
       time_var_label <- c(attr(data()[[dataname]][[time_var]], "label"), "Study Day")[1]
       data() |>
@@ -64,15 +68,16 @@ srv_g_swimlane <- function(id,
           subject_var_label = sprintf("%s:", subject_var_label),
           time_var_label = sprintf("%s:", time_var_label),
           colors = adjusted_colors,
-          symbols = value_var_symbol,
+          symbols = adjusted_symbols,
           height = input$plot_height,
-          filtered_events = c("disposition","response_assessment", "study_drug_administration"),
           subject_axis_label = subject_var_label,
           time_axis_label = time_var_label,
           expr = {
-            dataname <- dataname |>
-              mutate(subject_var_ordered = forcats::fct_reorder(as.factor(subject_var), time_var, .fun = max)) |>
-              group_by(subject_var, time_var) |>
+            # todo: forcats::fct_reorder didn't work. 
+            levels <- with(dataname, tapply(time_var, subject_var, max)) |> sort()
+            dataname <- dataname  %>%
+              mutate(subject_var_ordered = factor(subject_var, levels = names(levels)))  %>%
+              group_by(subject_var, time_var)  %>%
               mutate(
                 tooltip = paste(
                   unique(c(
@@ -84,31 +89,27 @@ srv_g_swimlane <- function(id,
               ))
           
             
-            p <- dataname |> 
-              dplyr::filter(
-                event_var %in% filtered_events,
-                !is.na(time_var)
-              ) |>
+            p <- dataname %>%
               plotly::plot_ly(
               source = "swimlane",
               colors = colors,
               symbols = symbols,
               height = height
-            ) |>
+            )  %>%
               plotly::add_markers(
                 x = ~time_var, y = ~subject_var_ordered, color = ~value_var, symbol = ~value_var,
                 text = ~tooltip,
                 hoverinfo = "text"
-              ) |>
+              )  %>%
               plotly::add_segments(
                 x = ~0, xend = ~study_day, y = ~subject_var_ordered, yend = ~subject_var_ordered,
                 data = dataname |> group_by(subject_var_ordered) |> summarise(study_day = max(time_var)),
                 line = list(width = 1, color = "grey"),
                 showlegend = FALSE
-              ) |>
+              )  %>%
               plotly::layout(
                 xaxis = list(title = time_axis_label), yaxis = list(title = subject_axis_label)
-              ) |>
+              )  %>%
               plotly::layout(dragmode = "select") |>
               plotly::config(displaylogo = FALSE)
           }
@@ -124,6 +125,10 @@ srv_g_swimlane <- function(id,
     plotly_selected <- reactive({
       plotly::event_data("plotly_deselect", source = "swimlane") # todo: deselect doesn't work
       plotly::event_data("plotly_selected", source = "swimlane")
+    })
+    
+    observeEvent(plotly_q(), {
+      cat(paste(collapse = "\n", teal.code::get_code(plotly_q())))
     })
     
     reactive({
@@ -142,7 +147,6 @@ srv_g_swimlane <- function(id,
         }
       )
     })
-  
   })
 }
 

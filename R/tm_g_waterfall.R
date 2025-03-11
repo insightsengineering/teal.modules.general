@@ -8,22 +8,26 @@ tm_g_waterfall <- function(label = "Waterfall",
                            bar_colors = list(),
                            value_arbitrary_hlines = c(0.2, -0.3),
                            plot_title = "Waterfall plot",
-                           plot_height = 700) {
+                           plot_height = 700, 
+                           ...) {
   module(
     label = label,
     ui = ui_g_waterfall,
     server = srv_g_waterfall,
     datanames = union(plot_dataname, table_datanames),
     ui_args = list(height = plot_height),
-    server_args = list(
-      plot_dataname = plot_dataname,
-      table_datanames = table_datanames,
-      subject_var = subject_var,
-      value_var = value_var,
-      color_var = color_var,
-      bar_colors = bar_colors,
-      value_arbitrary_hlines = value_arbitrary_hlines,
-      plot_title = plot_title
+    server_args = c(
+      list(
+        plot_dataname = plot_dataname,
+        table_datanames = table_datanames,
+        subject_var = subject_var,
+        value_var = value_var,
+        color_var = color_var,
+        bar_colors = bar_colors,
+        value_arbitrary_hlines = value_arbitrary_hlines,
+        plot_title = plot_title
+      ),
+      list(...)
     )
   )
 }
@@ -53,7 +57,8 @@ srv_g_waterfall <- function(id,
                             filter_panel_api,
                             value_arbitrary_hlines,
                             plot_title,
-                            plot_height = 600) {
+                            plot_height = 600,
+                            ...) {
   moduleServer(id, function(input, output, session) {
     output$color_by_output <- renderUI({
       selectInput(session$ns("color_by"), label = "Color by:", choices = color_var$choices, selected = color_var$selected)
@@ -180,6 +185,12 @@ srv_g_waterfall <- function(id,
     })
 
     output$tables <- renderUI(ui_t_reactables(session$ns("subtables")))
-    srv_t_reactables("subtables", data = tables_selected_q, dataname = sprintf("%s_brushed", table_datanames), layout = "grid")
+    srv_t_reactables(
+      "subtables", 
+      data = tables_selected_q, 
+      dataname = sprintf("%s_brushed", table_datanames), 
+      layout = "accordion", 
+      ...
+    )
   })
 }

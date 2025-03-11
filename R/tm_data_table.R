@@ -155,20 +155,12 @@ tm_data_table <- function(label = "Data Table",
 # UI page module
 ui_data_table <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
-  tagList(
+  bslib::page_fluid(
     include_css_files("custom"),
     teal.widgets::standard_layout(
-      output = teal.widgets::white_small_well(
-        bslib::page_fluid(
-          checkboxInput(
-            ns("if_distinct"),
-            "Show only distinct rows:",
-            value = FALSE
-          )
-        ),
-        bslib::page_fluid(
-          uiOutput(ns("dataset_table"))
-        )
+      output = bslib::page_fluid(
+        div(checkboxInput(ns("if_distinct"), "Show only distinct rows:", value = FALSE)),
+        uiOutput(ns("data_tables"))
       ),
       pre_output = pre_output,
       post_output = post_output
@@ -213,12 +205,12 @@ srv_data_table <- function(id,
           list(id = session$ns("tabs_selected"), selected = datanames_r()[1]),
           lapply(
             datanames_r(),
-            function(x) {
-              dataset <- isolate(data()[[x]])
+            function(dataname) {
+              dataset <- isolate(data()[[dataname]])
               choices <- names(dataset)
               labels <- vapply(
                 dataset,
-                function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
+                function(column) ifelse(is.null(attr(column, "label")), "", attr(column, "label")),
                 character(1)
               )
               names(choices) <- ifelse(
@@ -226,17 +218,17 @@ srv_data_table <- function(id,
                 choices,
                 paste(choices, labels, sep = ": ")
               )
-              variables_selected <- if (!is.null(variables_selected[[x]])) {
-                variables_selected[[x]]
+              variables_selected <- if (!is.null(variables_selected[[dataname]])) {
+                variables_selected[[dataname]]
               } else {
                 utils::head(choices)
               }
               tabPanel(
-                title = x,
+                title = dataname,
                 bslib::layout_columns(
                   col_widths = 12,
-                  ui_data_table(
-                    id = session$ns(x),
+                  ui_dataset_table(
+                    id = session$ns(dataname),
                     choices = choices,
                     selected = variables_selected
                   )
@@ -255,7 +247,6 @@ srv_data_table <- function(id,
     modules_run <- reactiveVal()
     modules_to_run <- reactive(setdiff(datanames_r(), isolate(modules_run())))
     observeEvent(modules_to_run(), {
-      print(modules_to_run())
       lapply(
         modules_to_run(),
         function(dataname) {

@@ -416,7 +416,7 @@ select_decorators <- function(decorators, scope) {
   N <- length(levels)
   n <- length(p)
   m <- N - n
-  if (m & n) {
+  if (m > 0 && n > 0) {
     current_space <- rgb2hsv(col2rgb(p))
     optimal_color_space <- colorspace::qualitative_hcl(N)
     color_distances <- dist(t(cbind(current_space, rgb2hsv(col2rgb(optimal_color_space)))))
@@ -428,6 +428,12 @@ select_decorators <- function(decorators, scope) {
     colorspace::qualitative_hcl(N)
   } else {
     p
-  }        
+  }
+  p[levels]
 }
 
+.shape_palette_discrete <- function(levels, symbol) {
+  s <- setNames(symbol[levels], levels)
+  s[is.na(s)] <- "circle-open"
+  s
+}

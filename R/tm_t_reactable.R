@@ -16,10 +16,7 @@ tm_t_reactables <- function(label = "Table", datanames = "all", columns = list()
 
 ui_t_reactables <- function(id) {
   ns <- NS(id)
-  div(
-    class = "simple-card",
-    uiOutput(ns("subtables"), container = div, style = "display: flex;")
-  )
+  uiOutput(ns("subtables"), container = bslib::page_fluid)
 }
 
 srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, decorators, layout = "grid", ...) {
@@ -76,28 +73,24 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, dec
             }
           )
         )
-      } else if (layout == "tabs") {
-        isolate({
-          div(
-            do.call(
-              tabsetPanel,
-              c(
-                list(id = session$ns("reactables")),
-                lapply(
-                  datanames_r(),
-                  function(dataname) {
-                    tabPanel(
-                      title = datalabels_r()[dataname],
-                      class = "simple-card",
-                      ui_t_reactable(session$ns(dataname))
-                    )
-                  }
-                )
+      } else if (layout == "accordion") {
+        div(
+          do.call(
+            bslib::accordion,
+            c(
+              list(id = session$ns("reactables")),
+              lapply(
+                datanames_r(),
+                function(dataname) {
+                  bslib::accordion_panel(
+                    title = datalabels_r()[dataname],
+                    ui_t_reactable(session$ns(dataname))
+                  )
+                }
               )
             )
           )
-
-        })
+        )
       }
 
     }) |> bindCache(datanames_r())
@@ -153,7 +146,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
         columns = .make_reactable_columns_call(data()[[dataname]]),
         resizable = TRUE,
         onClick = "select",
-        defaultPageSize = 15,
+        defaultPageSize = 10,
         wrap = FALSE,
         rowClass = JS("
           function(rowInfo) {
