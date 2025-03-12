@@ -34,7 +34,7 @@ ui_g_swimlane <- function(id, height) {
   ns <- NS(id)
   bslib::page_fluid(
     bslib::layout_columns(
-      selectInput(ns("sort_by"), label = "Select variable:", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("sort_by"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
     plotly::plotlyOutput(ns("plot"), height = "100%")
