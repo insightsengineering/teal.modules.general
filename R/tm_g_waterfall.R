@@ -185,8 +185,7 @@ srv_g_waterfall <- function(id,
     srv_t_reactables(
       "subtables", 
       data = tables_selected_q, 
-      dataname = sprintf("%s_brushed", table_datanames), 
-      layout = "accordion", 
+      dataname = sprintf("%s_brushed", table_datanames),
       ...
     )
   })

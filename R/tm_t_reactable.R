@@ -2,7 +2,6 @@
 tm_t_reactables <- function(label = "Table",
                             datanames = "all",
                             columns = list(),
-                            layout = "grid",
                             transformators = list(),
                             decorators = list(),
                             ...) {
@@ -12,7 +11,7 @@ tm_t_reactables <- function(label = "Table",
     server = srv_t_reactables,
     ui_args = list(decorators = decorators),
     server_args = c(
-      list(datanames = datanames, columns = columns, layout = layout, decorators = decorators),
+      list(datanames = datanames, columns = columns, decorators = decorators),
       rlang::list2(...)
     ),
     datanames = datanames,
@@ -20,12 +19,12 @@ tm_t_reactables <- function(label = "Table",
   )
 }
 
-ui_t_reactables <- function(id, decorators) {
+ui_t_reactables <- function(id, decorators = list()) {
   ns <- NS(id)
   uiOutput(ns("subtables"), container = bslib::page_fluid)
 }
 
-srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, decorators, layout = "grid", ...) {
+srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns = list(), decorators = list(), ...) {
   moduleServer(id, function(input, output, session) {
     all_datanames_r <- reactive({
       req(data())
@@ -111,21 +110,26 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, dec
 
 ui_t_reactable <- function(id) {
   ns <- NS(id)
+  
+  input <- shinyWidgets::pickerInput(
+    ns("columns"),
+    label = NULL,
+    choices = NULL,
+    selected = NULL,
+    multiple = TRUE,
+    width = "100%",
+    options = shinyWidgets::pickerOptions(
+      actionsBox = TRUE,
+      `show-subtext` = TRUE,
+      countSelectedText = TRUE,
+      liveSearch = TRUE
+    )
+  )
+  
+  # input <- actionButton(ns("show_select_columns"), "Nothing selected", class = "rounded-pill btn-sm primary") |>
+  #   bslib::popover(input)
   bslib::page_fluid(
-    shinyWidgets::pickerInput(
-      ns("columns"),
-      label = "Select columns",
-      choices = NULL,
-      selected = NULL,
-      multiple = TRUE,
-      width = "100%",
-      options = shinyWidgets::pickerOptions(
-        actionsBox = TRUE,
-        `show-subtext` = TRUE,
-        countSelectedText = TRUE,
-        liveSearch = TRUE
-      )
-    ),
+    input,
     reactable::reactableOutput(ns("table"))
   )
 }
@@ -162,8 +166,13 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decor
         cols_selected(cols_choices_new)
       }
     })
-
     observeEvent(input$columns_open, `if`(!isTruthy(input$columns_open), cols_selected(input$columns)))
+    observeEvent(cols_selected(), {
+      updateActionButton(
+        inputId = "show_select_columns", 
+        label = paste(substring(toString(cols_selected()), 1, 100), "...")
+      )
+    })
 
     select_call <- reactive({
       req(cols_selected())
@@ -181,13 +190,12 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decor
       )
     })
     reactable_call <- reactive({
-      req(input$columns, data())
+      req(cols_selected(), data())
       default_args <- list(
         columns = .make_reactable_columns_call(data()[[dataname]][cols_selected()]),
         resizable = TRUE,
         onClick = "select",
         defaultPageSize = 10,
-        wrap = FALSE,
         rowClass = JS("
           function(rowInfo) {
               if (rowInfo.selected) {
