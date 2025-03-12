@@ -28,9 +28,11 @@ tm_g_swimlane <- function(label = "Swimlane",
 
 ui_g_swimlane <- function(id, height) {
   ns <- NS(id)
-  div(
-    class = "simple-card",
-    sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height, width = "100%"),
+  bslib::page_fluid(
+    fluidRow(
+      column(6, uiOutput(ns("sort_by_output"))),
+      column(6, sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height))
+    ),
     plotly::plotlyOutput(ns("plot"), height = "100%")
   )
 }
@@ -125,10 +127,6 @@ srv_g_swimlane <- function(id,
     plotly_selected <- reactive({
       plotly::event_data("plotly_deselect", source = "swimlane") # todo: deselect doesn't work
       plotly::event_data("plotly_selected", source = "swimlane")
-    })
-    
-    observeEvent(plotly_q(), {
-      cat(paste(collapse = "\n", teal.code::get_code(plotly_q())))
     })
     
     reactive({

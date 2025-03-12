@@ -324,6 +324,14 @@ srv_dataset_table <- function(id,
       teal.code::eval_code(
         qenv,
         substitute(
+          env = list(
+            dataname = as.name(dataname),
+            if_distinct = if_distinct(),
+            vars = input$variables,
+            args = dt_args,
+            dt_options = dt_options,
+            dt_rows = input$dt_rows
+          ),
           expr = {
             variables <- vars
             dataframe_selected <- if (if_distinct) {
@@ -338,15 +346,7 @@ srv_dataset_table <- function(id,
             }
             dt_args$data <- dataframe_selected
             table <- do.call(DT::datatable, dt_args)
-          },
-          env = list(
-            dataname = as.name(dataname),
-            if_distinct = if_distinct(),
-            vars = input$variables,
-            args = dt_args,
-            dt_options = dt_options,
-            dt_rows = input$dt_rows
-          )
+          }
         )
       )
     })

@@ -2,19 +2,19 @@
 tm_t_reactables <- function(label = "Table", datanames = "all", columns = list(), layout = "grid", transformators = list(), decorators = list(), ...) {
   module(
     label = label,
-    ui = ui_t_reactable,
-    srv = srv_t_reactable,
+    ui = ui_t_reactables,
+    server = srv_t_reactables,
     ui_args = list(decorators = decorators),
-    srv_args = c(
+    server_args = c(
       list(datanames = datanames, columns = columns, layout = layout, decorators = decorators), 
       rlang::list2(...)
     ),
-    datanames = subtables,
-    transformers = transformers
+    datanames = datanames,
+    transformators = transformators
   )
 }
 
-ui_t_reactables <- function(id) {
+ui_t_reactables <- function(id, decorators) {
   ns <- NS(id)
   uiOutput(ns("subtables"), container = bslib::page_fluid)
 }
@@ -34,7 +34,8 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, dec
       } else {
         intersect(datanames, df_datanames)
       }
-    }) |> bindEvent(all_datanames_r())
+    }) |> 
+      bindEvent(all_datanames_r())
     
     columns_r <- reactive({
       req(datanames_r())
@@ -45,7 +46,9 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, dec
           colnames(isolate(data())[[dataname]])
         }
       })
-    }) |> bindEvent(datanames_r())
+    }) |> 
+      bindCache(datanames_r()) |> 
+      bindEvent(datanames_r())
     
     datalabels_r <- reactive({
       req(datanames_r())
@@ -53,97 +56,134 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns, dec
         datalabel <- attr(isolate(data())[[dataname]], "label")
         if (length(datalabel)) datalabel else dataname
       })
-    }) |> bindEvent(datanames_r())
+    }) |> 
+      bindCache(datanames_r()) |> 
+      bindEvent(datanames_r())
   
     # todo: re-render only if datanames changes
     output$subtables <- renderUI({
       if (length(datanames_r()) == 0) return(NULL)
-      
-      if (layout == "grid") {
-        tagList(
-          lapply(
-            datanames_r(),
-            function(dataname) {
-              div(
-                class = "simple-card",
-                style = if (length(datanames_r()) > 1) "width: 50%" else "width: 100%",
-                h4(datalabels_r()[dataname]),
-                ui_t_reactable(session$ns(dataname))
-              )
-            }
-          )
-        )
-      } else if (layout == "accordion") {
-        div(
-          do.call(
-            bslib::accordion,
-            c(
-              list(id = session$ns("reactables")),
-              lapply(
-                datanames_r(),
-                function(dataname) {
-                  bslib::accordion_panel(
-                    title = datalabels_r()[dataname],
-                    ui_t_reactable(session$ns(dataname))
-                  )
-                }
-              )
+      logger::log_debug("srv_t_reactables@1 render subtables")
+      div(
+        do.call(
+          bslib::accordion,
+          c(
+            list(id = session$ns("reactables")),
+            lapply(
+              datanames_r(),
+              function(dataname) {
+                bslib::accordion_panel(
+                  title = datalabels_r()[dataname],
+                  ui_t_reactable(session$ns(dataname))
+                )
+              }
             )
           )
         )
-      }
-
-    }) |> bindCache(datanames_r())
+      )
+    }) |> 
+      bindCache(datanames_r()) |>
+      bindEvent(datanames_r())
     
     called_datanames <- reactiveVal()
     observeEvent(datanames_r(), {
       lapply(
         setdiff(datanames_r(), called_datanames()), # call module only once per dataname
-        function(dataname) srv_t_reactable(dataname, data = data, dataname = dataname, filter_panel_api = filter_panel_api, ...)
+        function(dataname) {
+          srv_t_reactable(
+            dataname, 
+            data = data, 
+            dataname = dataname, 
+            filter_panel_api = filter_panel_api, 
+            columns = columns[[dataname]],
+            ...
+          )
+        }
       )
       called_datanames(union(called_datanames(), datanames_r()))
     })
-    
-    
-    # lapply(
-    #   seq_along(subtables),
-    #   function(i) {
-    #     table_q <- reactive({
-    #       within(
-    #         plotly_selected_q(),
-    #         dataname = str2lang(dataname),
-    #         subtable_name = subtable_names[i],
-    #         time_var = str2lang(time_var),
-    #         subject_var = str2lang(subject_var),
-    #         col_defs = subtables[[i]],
-    #         expr = {
-    #           subtable_name <- dataname |>
-    #             dplyr::filter(
-    #               time_var %in% plotly_brushed_time, 
-    #               subject_var %in% plotly_brushed_subject
-    #             ) |>
-    #             dplyr::select(dplyr::all_of(col_defs))
-    #         }
-    #       )
-    #     })
-    #     srv_t_reactable(subtable_names[i], data = table_q, dataname = subtable_names[i], selection = NULL)
-    #   }
-    # )
   })
 }
 
 ui_t_reactable <- function(id) {
   ns <- NS(id)
-  reactable::reactableOutput(ns("table"))
+  bslib::page_fluid(
+    shinyWidgets::pickerInput(
+      ns("columns"), 
+      label = "Select columns", 
+      choices = NULL, 
+      selected = NULL, 
+      multiple = TRUE,
+      width = "100%",
+      options = shinyWidgets::pickerOptions(
+        actionsBox = TRUE,
+        `show-subtext` = TRUE,
+        countSelectedText = TRUE,
+        liveSearch = TRUE
+      )
+    ),
+    reactable::reactableOutput(ns("table"))    
+  )
+
 }
 
-srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ...) {
+srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decorators, ...) {
   moduleServer(id, function(input, output, session) {
+    logger::log_debug("srv_t_reactable initializing for dataname: { dataname }")
     dataname_reactable <- sprintf("%s_reactable", dataname)
     
+    dataset_labels <- reactive({
+      req(data()) 
+      teal.data::col_labels(data()[[dataname]], fill = TRUE)
+    })
+    
+    cols_choices <- reactive({
+      req(dataset_labels())
+      choices <- if (length(columns)) {
+        columns
+      } else {
+        names(dataset_labels())
+      }
+      labels_choices <- dataset_labels()[choices]
+      setNames(choices, labels_choices)
+    }) |>
+      bindCache(dataset_labels())
+      
+    
+    observeEvent(cols_choices(), {
+      logger::log_debug("srv_t_reactable@1 update column choices")
+      shinyWidgets::updatePickerInput(
+        inputId = "columns", 
+        choices = cols_choices(), 
+        selected = cols_choices()
+      )
+    })
+    
+    # this is needed because picker input reacts to the selection while dropdown is open
+    # to avoid this we need to bypass input through reactiveVal 
+    # https://forum.posit.co/t/only-update-pickerinput-on-close/173833
+    cols_selected <- reactiveVal(isolate(cols_choices()))
+    observeEvent(input$columns_open, `if`(!isTruthy(input$columns_open), cols_selected(input$columns)))
+
+    select_call <- reactive({
+      req(cols_selected())
+      substitute(
+        lhs <- rhs, 
+        list(
+          lhs = str2lang(dataname),
+          rhs = as.call( 
+            c(
+              list(name = str2lang("dplyr::select"), .data = str2lang(dataname)),
+              lapply(cols_selected(), str2lang)
+            )
+          )
+        )
+      )
+    })
     reactable_call <- reactive({
+      req(input$columns, data())
       default_args <- list(
-        columns = .make_reactable_columns_call(data()[[dataname]]),
+        columns = .make_reactable_columns_call(data()[[dataname]][cols_selected()]),
         resizable = TRUE,
         onClick = "select",
         defaultPageSize = 10,
@@ -157,20 +197,28 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
         ")
       )
       args <- modifyList(default_args, rlang::list2(...))
+      
       substitute(
         lhs <- rhs,
         list(
-          lhs = dataname_reactable,
-          rhs = .make_reactable_call(dataname = dataname, args = args)          
+          lhs = str2lang(dataname_reactable),
+          rhs = .make_reactable_call(dataname = dataname, args = args)     
         )
       )
       
     })
+    
     table_q <- reactive({
-      req(data())
-      eval_code(data(), reactable_call())
+      req(reactable_call(), select_call())
+      data() |>
+        eval_code(select_call()) |>
+        eval_code(reactable_call())
     })
-    output$table <- reactable::renderReactable(table_q()[[dataname_reactable]])
+    output$table <- reactable::renderReactable({
+      logger::log_debug("srv_t_reactable@2 render table for dataset { dataname }")
+      table_q()[[dataname_reactable]]
+    })
+    
     table_selected_q <- reactive({
       selected_row <- reactable::getReactableState("table", "selected")
       if (!is.null(selected_row)) {
@@ -192,7 +240,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
 }
 
 .make_reactable_call <- function(dataname, args) {
-  args <- c(
+  args <- modifyList(
     list(
       data = str2lang(dataname),
       defaultColDef = quote(
@@ -214,15 +262,13 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
             } else {
               value
             }
-          }          
+          }
         )
-
       )
     ),
     args
   )
-  do.call(call, c(list(name = "reactable"), args), quote = TRUE)
-
+  as.call(c(list(name = "reactable"), args))
 }
 
 #' Makes `reactable::colDef` call containing:
@@ -255,14 +301,14 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, decorators, ..
       )
 
       if (length(args)) {
-        do.call(call, c(list(name = "colDef"), args), quote = TRUE)
+        as.call(c(list(name = "colDef"), args))
       }
     }
   )
   names(args) <- names(dataset)
   args <- Filter(length, args)
   if (length(args)) {
-    do.call(call, c(list("list"), args), quote = TRUE)    
+    as.call(c(list("list"), args))    
   }
 }
 
