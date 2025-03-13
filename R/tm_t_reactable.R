@@ -201,7 +201,6 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
 
     table_q <- reactive({
       req(reactable_call(), select_call())
-      print(reactable_call())
       data() |>
         eval_code(select_call()) |>
         eval_code(reactable_call())
