@@ -36,6 +36,7 @@ app_driver_tm_missing_data <- function() {
 }
 
 test_that("e2e - tm_missing_data: Initializes without errors", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
@@ -57,6 +58,7 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
 })
 
 test_that("e2e - tm_missing_data: Default settings and visibility of the summary graph", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # default summary tab
@@ -89,6 +91,7 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 })
 
 test_that("e2e - tm_missing_data: Check default settings and visibility of the combinations graph and encodings", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
@@ -126,6 +129,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
 })
 
 test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By Variable Levels'", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # By variable levels
@@ -156,6 +160,7 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
 })
 
 test_that("e2e - tm_missing_data: Validate 'By Variable Levels' table values", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 

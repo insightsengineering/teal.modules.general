@@ -22,6 +22,7 @@ app_driver_tm_front_page <- function() {
 }
 
 test_that("e2e - tm_front_page: Initializes without errors and check html elements", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_front_page()
 
@@ -46,6 +47,7 @@ test_that("e2e - tm_front_page: Initializes without errors and check html elemen
 })
 
 test_that("e2e - tm_front_page: Verify the module displays tables", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_front_page()
   # tables
@@ -58,6 +60,7 @@ test_that("e2e - tm_front_page: Verify the module displays tables", {
 })
 
 test_that("e2e - tm_front_page: Verify the module displays metadata", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_front_page()
 

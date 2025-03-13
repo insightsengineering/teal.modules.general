@@ -17,6 +17,7 @@ app_driver_tm_file_viewer <- function() {
 }
 
 test_that("e2e - tm_file_viewer: Initializes without errors and shows files tree specified in input_path argument", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
@@ -42,6 +43,7 @@ test_that("e2e - tm_file_viewer: Initializes without errors and shows files tree
 })
 
 test_that("e2e - tm_file_viewer: Shows selected image file", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
@@ -58,6 +60,7 @@ test_that("e2e - tm_file_viewer: Shows selected image file", {
 })
 
 test_that("e2e - tm_file_viewer: Shows selected text file", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
@@ -80,6 +83,7 @@ test_that("e2e - tm_file_viewer: Shows selected text file", {
 })
 
 test_that("e2e - tm_file_viewer: Shows selected url", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
