@@ -1,7 +1,7 @@
 #' @export
 tm_t_reactables <- function(label = "Table",
                             datanames = "all",
-                            columns = list(),
+                            colnames = list(),
                             transformators = list(),
                             decorators = list(),
                             ...) {
@@ -11,7 +11,7 @@ tm_t_reactables <- function(label = "Table",
     server = srv_t_reactables,
     ui_args = list(decorators = decorators),
     server_args = c(
-      list(datanames = datanames, columns = columns, decorators = decorators),
+      list(datanames = datanames, colnames = colnames, decorators = decorators),
       rlang::list2(...)
     ),
     datanames = datanames,
@@ -24,31 +24,15 @@ ui_t_reactables <- function(id, decorators = list()) {
   uiOutput(ns("subtables"), container = bslib::page_fluid)
 }
 
-srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns = list(), decorators = list(), ...) {
+srv_t_reactables <- function(id, data, filter_panel_api, datanames, colnames = list(), decorators = list(), ...) {
   moduleServer(id, function(input, output, session) {
-    all_datanames_r <- reactive({
-      req(data())
-      names(Filter(is.data.frame, as.list(data())))
-    })
-
-    datanames_r <- reactiveVal()
-    observeEvent(all_datanames_r(), {
-      df_datanames <- all_datanames_r()
-      new_datanames <- if (identical(datanames, "all")) {
-        df_datanames
-      } else {
-        intersect(datanames, df_datanames)
-      }
-      if (!identical(new_datanames, datanames_r())) {
-        datanames_r(new_datanames)
-      }
-    })
-
-    columns_r <- reactive({
+    # todo: this to the function .validate_datanames
+    datanames_r <- .validate_datanames(datanames = datanames, data = data)
+    colnames_r <- reactive({
       req(datanames_r())
       sapply(datanames_r(), function(dataname) {
-        if (length(columns[[dataname]])) {
-          columns()[[dataname]]
+        if (length(colnames[[dataname]])) {
+          colnames()[[dataname]]
         } else {
           colnames(isolate(data())[[dataname]])
         }
@@ -98,7 +82,7 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, columns = li
             data = data,
             dataname = dataname,
             filter_panel_api = filter_panel_api,
-            columns = columns[[dataname]],
+            colnames = colnames[[dataname]],
             ...
           )
         }
@@ -112,7 +96,7 @@ ui_t_reactable <- function(id) {
   ns <- NS(id)
   
   input <- shinyWidgets::pickerInput(
-    ns("columns"),
+    ns("colnames"),
     label = NULL,
     choices = NULL,
     selected = NULL,
@@ -126,7 +110,7 @@ ui_t_reactable <- function(id) {
     )
   )
   
-  # input <- actionButton(ns("show_select_columns"), "Nothing selected", class = "rounded-pill btn-sm primary") |>
+  # input <- actionButton(ns("show_select_colnames"), "Nothing selected", class = "rounded-pill btn-sm primary") |>
   #   bslib::popover(input)
   bslib::page_fluid(
     input,
@@ -134,7 +118,7 @@ ui_t_reactable <- function(id) {
   )
 }
 
-srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decorators, ...) {
+srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, decorators, ...) {
   moduleServer(id, function(input, output, session) {
     logger::log_debug("srv_t_reactable initializing for dataname: { dataname }")
     dataname_reactable <- sprintf("%s_reactable", dataname)
@@ -148,8 +132,8 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decor
     cols_selected <- reactiveVal()
     observeEvent(dataset_labels(), {
       req(dataset_labels())
-      choices <- if (length(columns)) {
-        columns
+      choices <- if (length(colnames)) {
+        colnames
       } else {
         names(dataset_labels())
       }
@@ -158,7 +142,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decor
       if (!identical(cols_choices_new, cols_choices())) {
         logger::log_debug("srv_t_reactable@1 update column choices")
         shinyWidgets::updatePickerInput(
-          inputId = "columns",
+          inputId = "colnames",
           choices = cols_choices_new,
           selected = cols_choices_new
         )
@@ -166,10 +150,10 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decor
         cols_selected(cols_choices_new)
       }
     })
-    observeEvent(input$columns_open, `if`(!isTruthy(input$columns_open), cols_selected(input$columns)))
+    observeEvent(input$colnames_open, `if`(!isTruthy(input$colnames_open), cols_selected(input$colnames)))
     observeEvent(cols_selected(), {
       updateActionButton(
-        inputId = "show_select_columns", 
+        inputId = "show_select_colnames", 
         label = paste(substring(toString(cols_selected()), 1, 100), "...")
       )
     })
@@ -192,7 +176,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decor
     reactable_call <- reactive({
       req(cols_selected(), data())
       default_args <- list(
-        columns = .make_reactable_columns_call(data()[[dataname]][cols_selected()]),
+        #columns = .make_reactable_columns_call(data()[[dataname]][cols_selected()]),
         resizable = TRUE,
         onClick = "select",
         defaultPageSize = 10,
@@ -217,6 +201,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decor
 
     table_q <- reactive({
       req(reactable_call(), select_call())
+      print(reactable_call())
       data() |>
         eval_code(select_call()) |>
         eval_code(reactable_call())
@@ -275,7 +260,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decor
     ),
     args
   )
-  as.call(c(list(name = "reactable"), args))
+  as.call(c(list(name = quote(reactable)), args))
 }
 
 #' Makes `reactable::colDef` call containing:
@@ -321,4 +306,38 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, columns, decor
 
 .name_to_id <- function(name) {
   gsub("[[:space:][:punct:]]+", "_", x = tolower(name))
+}
+
+.validate_datanames <- function(datanames, data, class = "data.frame") {
+  all_datanames_r <- reactive({
+    req(data())
+    names(
+      Filter(
+        function(dataset) inherits(dataset, class), 
+        as.list(data())
+      )
+    )
+  })
+  
+  this_datanames_r <- reactive({
+    if (is.reactive(datanames)) {
+      datanames()
+    } else {
+      datanames
+    }
+  })
+  
+  datanames_r <- reactiveVal()
+  
+  observeEvent(all_datanames_r(), {
+    new_datanames <- if (identical(this_datanames_r(), "all")) {
+      all_datanames_r()
+    } else {
+      intersect(this_datanames_r(), all_datanames_r())
+    }
+    if (!identical(new_datanames, datanames_r())) {
+      datanames_r(new_datanames)
+    }
+  })
+  datanames_r
 }

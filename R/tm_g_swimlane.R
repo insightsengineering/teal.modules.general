@@ -140,9 +140,16 @@ srv_g_swimlane <- function(id,
                 plotly::layout(dragmode = "select") %>%
                 plotly::config(displaylogo = FALSE)
             }
-            levels <- with(dataname, tapply(sort_var, subject_var, max)) |> sort()
+            
+            levels <- dataname %>%
+              group_by(subject_var, group_var) %>%
+              summarize(v = max(sort_var)) %>%
+              ungroup() %>%
+              arrange(group_var, v) %>%
+              pull(subject_var)
+  
             p <- dataname  %>%
-              mutate(subject_var_ordered = factor(subject_var, levels = names(levels)))  %>%
+              mutate(subject_var_ordered = factor(subject_var, levels = levels))  %>%
               group_by(subject_var, time_var)  %>%
               mutate(
                 tooltip = paste(
@@ -153,9 +160,7 @@ srv_g_swimlane <- function(id,
                   )),
                   collapse = "<br>"
               )) %>%
-              split(if (is.null(group_var)) "" else .[[group_var]]) %>%
-              lapply(plotly_fun) %>%
-              plotly::subplot(nrows = length(.), shareX = TRUE, titleX = FALSE)
+              plotly_fun()
           }
         )
     })
@@ -173,19 +178,25 @@ srv_g_swimlane <- function(id,
     
     reactive({
       req(plotly_selected())
-      within(
-        plotly_q(),
-        dataname = str2lang(dataname),
-        time_var = str2lang(time_var),
-        subject_var = subject_var,
-        value_var = str2lang(value_var),
-        time_vals = plotly_selected()$x,
-        subject_vals = plotly_selected()$y,
-        expr = {
-          plotly_brushed_time <- time_vals
-          plotly_brushed_subject <- subject_vals
-        }
-      )
+      primary_key_cols <- join_keys(plotly_q())[dataname, dataname]
+      if (length(primary_key_cols)) {
+        within(
+          plotly_q(),
+          dataname = str2lang(dataname),
+          time_var = str2lang(time_var),
+          subject_var = subject_var,
+          value_var = str2lang(value_var),
+          time_vals = plotly_selected()$x,
+          subject_vals = plotly_selected()$y,
+          primary_key_cols = primary_key_cols,
+          expr = {
+            plotly_selected_keys <- dplyr::filter(time_var %in% time_vals, subject_var %in% subject_vals) %>%
+              dplyr::select(primary_key_cols)
+            plotly_brushed_time <- time_vals
+            plotly_brushed_subject <- subject_vals
+          }
+        ) 
+      }
     })
   })
 }
