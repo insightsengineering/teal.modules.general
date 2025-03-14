@@ -158,52 +158,30 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       )
     })
 
-    select_call <- reactive({
+   
+    table_q <- reactive({
       req(cols_selected())
-      substitute(
-        lhs <- rhs,
-        list(
+      data() |>
+        within( # select call
+          lhs <- rhs,
           lhs = str2lang(dataname),
           rhs = as.call(
             c(
               list(name = str2lang("dplyr::select"), .data = str2lang(dataname)),
-              lapply(cols_selected(), str2lang)
+              lapply(unname(cols_selected()), str2lang)
             )
           )
-        )
-      )
-    })
-    reactable_call <- reactive({
-      req(cols_selected(), data())
-      default_args <- list(
-        #columns = .make_reactable_columns_call(data()[[dataname]][cols_selected()]),
-        resizable = TRUE,
-        onClick = "select",
-        defaultPageSize = 10,
-        rowClass = JS("
-          function(rowInfo) {
-              if (rowInfo.selected) {
-                return 'selected-row';
-              }
-          }
-        ")
-      )
-      args <- modifyList(default_args, rlang::list2(...))
-
-      substitute(
-        lhs <- rhs,
-        list(
+        ) |>
+        within( # reactable call
+          lhs <- rhs,
           lhs = str2lang(dataname_reactable),
-          rhs = .make_reactable_call(dataname = dataname, args = args)
+          rhs = .make_reactable_call(
+            dataset = data()[[dataname]][cols_selected()], 
+            dataname = dataname, 
+            args = rlang::list2(...)
+          )
         )
-      )
-    })
-
-    table_q <- reactive({
-      req(reactable_call(), select_call())
-      data() |>
-        eval_code(select_call()) |>
-        eval_code(reactable_call())
+      
     })
     output$table <- reactable::renderReactable({
       logger::log_debug("srv_t_reactable@2 render table for dataset { dataname }")
@@ -230,36 +208,58 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
   })
 }
 
-.make_reactable_call <- function(dataname, args) {
-  args <- modifyList(
-    list(
-      data = str2lang(dataname),
-      defaultColDef = quote(
-        colDef(
-          cell = function(value) {
-            is_url <- is.character(value) && any(
-              grepl(
-                "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)",
-                x = head(value),
-                perl = TRUE
-              )
-            )
-            if (is_url) {
-              if (!is.na(value) && !is.null(value) && value != "") {
-                htmltools::tags$a(href = value, target = "_blank", "Link")
-              } else {
-                "N/A"
-              }
-            } else {
-              value
-            }
+.make_reactable_call <- function(dataset, dataname, args) {
+  columns <- .make_reactable_columns_call(dataset)
+  if (length(args$columns)) {
+    columns <- modifyList(columns, args$columns)
+    args <- args[!names(args) %in% "columns"]
+  }
+
+  default_args <- list(
+    columns = columns,
+    resizable = TRUE,
+    onClick = "select",
+    defaultPageSize = 10,
+    rowClass = JS({"
+      function(rowInfo) {
+          if (rowInfo.selected) {
+            return 'selected-row';
           }
-        )
+      }
+    "}),
+    defaultColDef = quote(
+      colDef(
+        cell = function(value) {
+          is_url <- is.character(value) && any(
+            grepl(
+              "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)",
+              x = head(value),
+              perl = TRUE
+            )
+          )
+          if (is_url) {
+            if (!is.na(value) && !is.null(value) && value != "") {
+              htmltools::tags$a(href = value, target = "_blank", "Link")
+            } else {
+              "N/A"
+            }
+          } else {
+            value
+          }
+        }
       )
-    ),
-    args
+    )
   )
-  as.call(c(list(name = quote(reactable)), args))
+
+  as.call(
+    c(
+      list(
+        name = quote(reactable),
+        data = str2lang(dataname)
+      ), 
+      modifyList(default_args, args)
+    )
+  )
 }
 
 #' Makes `reactable::colDef` call containing:
@@ -292,15 +292,12 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       )
 
       if (length(args)) {
-        as.call(c(list(name = "colDef"), args))
+        as.call(c(list(name = quote(colDef)), args))
       }
     }
   )
   names(args) <- names(dataset)
-  args <- Filter(length, args)
-  if (length(args)) {
-    as.call(c(list("list"), args))
-  }
+  Filter(length, args)
 }
 
 .name_to_id <- function(name) {
