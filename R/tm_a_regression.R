@@ -469,6 +469,7 @@ srv_a_regression <- function(id,
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
+
     # sets qenv object and populates it with data merge call and fit expression
     fit_r <- reactive({
       ANL <- anl_merged_q()[["ANL"]]
@@ -1023,6 +1024,32 @@ srv_a_regression <- function(id,
     })
 
     # Render R code.
+    subset_code <- function(code, data) {
+      gsub(code, "", teal.data::get_code(data), fixed = TRUE)
+    }
+    setup_code_r <- reactive(teal.data::get_code(qenv))
+    data_prep_code_r <-
+      reactive(
+        subset_code(
+          setup_code_r(),
+          req(anl_merged_q())
+        )
+      )
+    fit_code_r <-
+      reactive(
+        subset_code(
+          paste0(setup_code_r(), data_prep_code_r()),
+          req(fit_r())
+        )
+      )
+    plot_code_r <-
+      reactive(
+        subset_code(
+          paste0(setup_code_r(), data_prep_code_r(), fit_code_r()),
+          req(decorated_output_q())
+        )
+      )
+
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
 
     teal.widgets::verbatim_popup_srv(
@@ -1036,10 +1063,24 @@ srv_a_regression <- function(id,
       req(plot_r(), source_code_r())
       teal.reporter::report_document(
 
+        "## Setup",
+        teal.reporter::code_chunk(setup_code_r()),
+
+        "## Data Preparations",
+        teal.reporter::code_chunk(data_prep_code_r()),
+
+        "## Model",
+        teal.reporter::code_chunk(fit_code_r()),
+        teal.reporter::code_output(
+          paste(utils::capture.output(summary(teal.code::dev_suppress(fitted())))[-1],
+              collapse = "\n"
+          )
+        ),
+
         "## Plot",
+        teal.reporter::code_chunk(plot_code_r() |> styler::style_text() |> paste(collapse = "\n")), #|> teal.reporter::link_output(plot_r()),
         plot_r(),
-        "## Source Code",
-        teal.reporter::code_chunk(source_code_r()),
+
         "## Table for testing",
         head(iris)
       )
