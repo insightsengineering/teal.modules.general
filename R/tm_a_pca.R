@@ -235,9 +235,6 @@ ui_a_pca <- function(id, ...) {
         uiOutput(ns("all_plots"))
       ),
       encoding = tags$div(
-        ### Reporter
-        teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-        ###
         tags$label("Encodings", class = "text-primary"),
         teal.transform::datanames_input(args["dat"]),
         teal.transform::data_extract_ui(
@@ -478,7 +475,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     })
 
     # computation ----
-    computation <- reactive({
+    computation_model <- reactive({
       validation()
 
       # inputs
@@ -504,24 +501,26 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         )
       }
 
-      qenv <- teal.code::eval_code(
+      teal.code::eval_code(
         qenv,
         substitute(
           expr = pca <- summary(stats::prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
           env = list(center = center, scale = scale)
         )
       )
-
-      qenv <- teal.code::eval_code(
-        qenv,
+    })
+    computation_tbl_imp <- reactive({
+      teal.code::eval_code(
+        computation_model(),
         quote({
           tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
           tbl_importance
         })
       )
-
+    })
+    computation <- reactive({
       teal.code::eval_code(
-        qenv,
+        computation_tbl_imp(),
         quote({
           tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
           tbl_eigenvector
@@ -1124,6 +1123,50 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     })
 
     # Render R code.
+    subset_code <- function(code, data) {
+      gsub(code, "", teal.data::get_code(data), fixed = TRUE)
+    }
+    setup_code_r <- reactive(teal.data::get_code(qenv))
+    data_prep_code_r <-
+      reactive(
+        subset_code(
+          setup_code_r(),
+          req(anl_merged_q())
+        )
+      )
+
+    computation_model_code_r <-
+      reactive(
+        subset_code(
+          paste0(setup_code_r(), data_prep_code_r()),
+          req(computation_model())
+        )
+      )
+
+    computation_tbl_imp_code_r <-
+      reactive(
+        subset_code(
+          paste0(setup_code_r(), data_prep_code_r(), computation_model_code_r()),
+          req(computation_tbl_imp())
+        )
+      )
+
+    computation_tbl_eig_code_r <-
+      reactive(
+        subset_code(
+          paste0(setup_code_r(), data_prep_code_r(), computation_model_code_r(), computation_tbl_imp_code_r()),
+          req(computation())
+        )
+      )
+
+    plot_code_r <-
+      reactive(
+        subset_code(
+          paste0(setup_code_r(), data_prep_code_r(), computation_model_code_r(), computation_tbl_imp_code_r(), computation_tbl_eig_code_r()),
+          req(decorated_output_q())
+        )
+      )
+
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
 
     teal.widgets::verbatim_popup_srv(
@@ -1132,30 +1175,40 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       title = "R Code for PCA"
     )
 
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Principal Component Analysis Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Principal Components Table", "header3")
-        card$append_table(computation()[["tbl_importance"]])
-        card$append_text("Eigenvectors Table", "header3")
-        card$append_table(computation()[["tbl_eigenvector"]])
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
+    card_fun <- reactive({
+      req(setup_code_r(), data_prep_code_r(), computation_model_code_r(), computation(),
+          computation_tbl_imp_code_r(), computation_tbl_eig_code_r(), plot_code_r(), plot_r())
+
+      teal.reporter::report_document(
+
+        "## Setup",
+        teal.reporter::code_chunk(setup_code_r()),
+
+        "## Data Preparations",
+        teal.reporter::code_chunk(data_prep_code_r()),
+
+        "## PCA Model",
+        teal.reporter::code_chunk(computation_model_code_r()),
+
+        "### Principal Components Table",
+        teal.reporter::code_chunk(computation_tbl_imp_code_r()) |>
+          teal.reporter::link_output(computation()[["tbl_importance"]]),
+
+        "### Eigenvectors Table",
+        teal.reporter::code_chunk(computation_tbl_eig_code_r()) |>
+          teal.reporter::link_output(computation()[["tbl_eigenvector"]]),
+
+        "### Plot",
+        teal.reporter::code_chunk(
+          plot_code_r() |> styler::style_text() |> paste(collapse = "\n")
+        ) |>
+          teal.reporter::link_output(plot_r())
+      )
+    })
+
     ###
+    list(
+      report_card = card_fun
+    )
   })
 }

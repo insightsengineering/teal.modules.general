@@ -285,9 +285,6 @@ ui_a_regression <- function(id, ...) {
       tags$div(verbatimTextOutput(ns("text")))
     )),
     encoding = tags$div(
-      ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      ###
       tags$label("Encodings", class = "text-primary"), tags$br(),
       teal.transform::datanames_input(args[c("response", "regressor")]),
       teal.transform::data_extract_ui(
@@ -386,16 +383,15 @@ ui_a_regression <- function(id, ...) {
 # Server function for the regression module
 srv_a_regression <- function(id,
                              data,
-                             reporter,
                              filter_panel_api,
                              response,
                              regressor,
+                             reporter,
                              plot_height,
                              plot_width,
                              ggplot2_args,
                              default_outlier_label,
                              decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -472,6 +468,7 @@ srv_a_regression <- function(id,
       qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
+
 
     # sets qenv object and populates it with data merge call and fit expression
     fit_r <- reactive({
@@ -1027,6 +1024,32 @@ srv_a_regression <- function(id,
     })
 
     # Render R code.
+    subset_code <- function(code, data) {
+      gsub(code, "", teal.data::get_code(data), fixed = TRUE)
+    }
+    setup_code_r <- reactive(teal.data::get_code(qenv))
+    data_prep_code_r <-
+      reactive(
+        subset_code(
+          setup_code_r(),
+          req(anl_merged_q())
+        )
+      )
+    fit_code_r <-
+      reactive(
+        subset_code(
+          paste0(setup_code_r(), data_prep_code_r()),
+          req(fit_r())
+        )
+      )
+    plot_code_r <-
+      reactive(
+        subset_code(
+          paste0(setup_code_r(), data_prep_code_r(), fit_code_r()),
+          req(decorated_output_q())
+        )
+      )
+
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
 
     teal.widgets::verbatim_popup_srv(
@@ -1036,25 +1059,45 @@ srv_a_regression <- function(id,
     )
 
     ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Linear Regression Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
+    card_fun <- reactive({
+      req(plot_r(), plot_code_r(), setup_code_r(), data_prep_code_r(), fit_code_r(), fitted())
+      teal.reporter::report_document(
+
+        "## Setup",
+        teal.reporter::code_chunk(setup_code_r()),
+
+        "## Data Preparations",
+        teal.reporter::code_chunk(data_prep_code_r()),
+
+        "## Model",
+        teal.reporter::code_chunk(fit_code_r()),
+        teal.reporter::code_output(
+          paste(utils::capture.output(summary(teal.code::dev_suppress(fitted())))[-1],
+              collapse = "\n"
+          )
+        ),
+
+        "## Plot",
+        teal.reporter::code_chunk(
+          plot_code_r() |> styler::style_text() |> paste(collapse = "\n")
+        ) |>
+          teal.reporter::link_output(plot_r()),
+
+        "## rtables for testing",
+        rtables::rtable(
+          header = LETTERS[1:3],
+          rtables::rrow("one to three", 1, 2, 3),
+          rtables::rrow("more stuff", rtables::rcell(pi, format = "xx.xx"), "test", "and more")
+        ),
+
+        "## Table for testing",
+        head(iris)
+      )
+    })
     ###
+
+    list(
+      report_card = card_fun
+    )
   })
 }
