@@ -161,26 +161,22 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
    
     table_q <- reactive({
       req(cols_selected())
-      data() |>
-        within( # select call
-          lhs <- rhs,
-          lhs = str2lang(dataname),
-          rhs = as.call(
-            c(
-              list(name = str2lang("dplyr::select"), .data = str2lang(dataname)),
-              lapply(unname(cols_selected()), str2lang)
-            )
-          )
-        ) |>
-        within( # reactable call
-          lhs <- rhs,
-          lhs = str2lang(dataname_reactable),
-          rhs = .make_reactable_call(
-            dataset = data()[[dataname]][cols_selected()], 
-            dataname = dataname, 
-            args = rlang::list2(...)
-          )
+      select_call <- as.call(
+        c(
+          list(name = str2lang("dplyr::select"), .data = str2lang(dataname)),
+          lapply(unname(cols_selected()), str2lang)
         )
+      )
+      
+      reactable_call <- .make_reactable_call(
+        dataset = data()[[dataname]][cols_selected()], 
+        dataname = dataname, 
+        args = rlang::list2(...)
+      )
+      
+      data() |>
+        within(lhs <- rhs, lhs = str2lang(dataname), rhs = select_call) |>
+        within(lhs <- rhs, lhs = str2lang(dataname_reactable), rhs = reactable_call)
       
     })
     output$table <- reactable::renderReactable({
@@ -209,55 +205,18 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
 }
 
 .make_reactable_call <- function(dataset, dataname, args) {
-  columns <- .make_reactable_columns_call(dataset)
-  if (length(args$columns)) {
-    columns <- modifyList(columns, args$columns)
-    args <- args[!names(args) %in% "columns"]
-  }
-
-  default_args <- list(
-    columns = columns,
-    resizable = TRUE,
-    onClick = "select",
-    defaultPageSize = 10,
-    rowClass = JS({"
-      function(rowInfo) {
-          if (rowInfo.selected) {
-            return 'selected-row';
-          }
-      }
-    "}),
-    defaultColDef = quote(
-      colDef(
-        cell = function(value) {
-          is_url <- is.character(value) && any(
-            grepl(
-              "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)",
-              x = head(value),
-              perl = TRUE
-            )
-          )
-          if (is_url) {
-            if (!is.na(value) && !is.null(value) && value != "") {
-              htmltools::tags$a(href = value, target = "_blank", "Link")
-            } else {
-              "N/A"
-            }
-          } else {
-            value
-          }
-        }
-      )
-    )
+  columns <- .make_reactable_columns_call(dataset = dataset, col_defs = args$columns)
+  call_args <- modifyList(
+    list(columns = columns, onClick = "select"), 
+    args[!names(args) %in% "columns"]
   )
-
   as.call(
     c(
       list(
         name = quote(reactable),
         data = str2lang(dataname)
       ), 
-      modifyList(default_args, args)
+      call_args
     )
   )
 }
@@ -269,30 +228,24 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
 #' @param dataset (`data.frame`)
 #' @return named list of `colDef` calls
 #' @keywords internal
-.make_reactable_columns_call <- function(dataset) {
+.make_reactable_columns_call <- function(dataset, col_defs) {
   checkmate::assert_data_frame(dataset)
   args <- lapply(
-    seq_along(dataset),
+    colnames(dataset),
     function(i) {
       column <- dataset[[i]]
       label <- attr(column, "label")
       is_labelled <- length(label) == 1 && !is.na(label) && !identical(label, "")
-      is_url <- is.character(column) && any(
-        grepl(
-          "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)",
-          x = head(column),
-          perl = TRUE
+      default_col_def <- if (is_labelled) list(name = label) else list()
+      col_def_override <- if (!is.null(col_defs[[i]])) col_defs[[i]] else list()
+      col_def_args <- modifyList(default_col_def, col_def_override)
+      if (length(col_def_args)) {
+        as.call(
+          c(
+            list(quote(colDef)),
+            col_def_args
+          )
         )
-      )
-      # todo: move url formatter to the defaultColDef
-      width <- max(nchar(head(as.character(column), 100))) * 9
-      args <- c(
-        if (!is.na(width) && width > 100 && !is_url) list(width = width),
-        if (is_labelled) list(name = label)
-      )
-
-      if (length(args)) {
-        as.call(c(list(name = quote(colDef)), args))
       }
     }
   )

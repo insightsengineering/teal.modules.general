@@ -1,6 +1,6 @@
 #' @export
 tm_g_swimlane <- function(label = "Swimlane", 
-                          dataname, 
+                          plot_dataname, 
                           time_var, 
                           subject_var, 
                           value_var, 
@@ -9,15 +9,17 @@ tm_g_swimlane <- function(label = "Swimlane",
                           group_var = NULL,
                           value_var_color = character(0),
                           value_var_symbol,
-                          plot_height = 700) {
+                          plot_height = 700,
+                          table_datanames,
+                          ...) {
   module(
     label = label,
     ui = ui_g_swimlane,
     server = srv_g_swimlane,
-    datanames = "all",
+    datanames = c(plot_dataname, table_datanames),
     ui_args = list(height = plot_height),
     server_args = list(
-      dataname = dataname,
+      plot_dataname = plot_dataname,
       time_var = time_var,
       subject_var = subject_var,
       value_var = value_var,
@@ -25,24 +27,29 @@ tm_g_swimlane <- function(label = "Swimlane",
       sort_var = sort_var,
       group_var = group_var,
       value_var_color = value_var_color,
-      value_var_symbol = value_var_symbol
+      value_var_symbol = value_var_symbol,
+      table_datanames = table_datanames,
+      ...
     )
   )
 }
 
 ui_g_swimlane <- function(id, height) {
+  
+  
   ns <- NS(id)
   bslib::page_fluid(
     bslib::layout_columns(
       selectInput(ns("sort_by"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
-    plotly::plotlyOutput(ns("plot"), height = "100%")
+    plotly::plotlyOutput(ns("plot"), height = "100%"),
+    uiOutput(ns("tables"))
   )
 }
 srv_g_swimlane <- function(id, 
                            data, 
-                           dataname,
+                           plot_dataname,
                            time_var,
                            subject_var,
                            value_var,
@@ -51,7 +58,9 @@ srv_g_swimlane <- function(id,
                            group_var = NULL,
                            value_var_color,
                            value_var_symbol,
-                           filter_panel_api) {
+                           table_datanames, 
+                           filter_panel_api, 
+                           ...) {
   moduleServer(id, function(input, output, session) {
     
     sort_choices <- reactiveVal()
@@ -81,19 +90,19 @@ srv_g_swimlane <- function(id,
     plotly_q <- reactive({
       req(data(), sort_selected())
       adjusted_colors <- .color_palette_discrete(
-        levels = unique(data()[[dataname]][[value_var]]),
+        levels = unique(data()[[plot_dataname]][[value_var]]),
         color = value_var_color
       )
       adjusted_symbols <- .shape_palette_discrete(
-        levels = unique(data()[[dataname]][[value_var]]),
+        levels = unique(data()[[plot_dataname]][[value_var]]),
         symbol = value_var_symbol
       )
-      subject_var_label <- c(attr(data()[[dataname]][[subject_var]], "label"), "Subject")[1]
-      time_var_label <- c(attr(data()[[dataname]][[time_var]], "label"), "Study Day")[1]
+      subject_var_label <- c(attr(data()[[plot_dataname]][[subject_var]], "label"), "Subject")[1]
+      time_var_label <- c(attr(data()[[plot_dataname]][[time_var]], "label"), "Study Day")[1]
       data() |>
         within(
-          dataname = str2lang(dataname),
-          dataname_filtered = str2lang(sprintf("%s_filtered", dataname)),
+          dataname = str2lang(plot_dataname),
+          dataname_filtered = str2lang(sprintf("%s_filtered", plot_dataname)),
           time_var = str2lang(time_var),
           subject_var = str2lang(subject_var),
           value_var = str2lang(value_var),
@@ -176,28 +185,58 @@ srv_g_swimlane <- function(id,
       plotly::event_data("plotly_selected", source = "swimlane")
     })
     
-    reactive({
+    plotly_selected_q <- reactive({
       req(plotly_selected())
-      primary_key_cols <- join_keys(plotly_q())[dataname, dataname]
-      if (length(primary_key_cols)) {
-        within(
-          plotly_q(),
-          dataname = str2lang(dataname),
-          time_var = str2lang(time_var),
-          subject_var = subject_var,
-          value_var = str2lang(value_var),
-          time_vals = plotly_selected()$x,
-          subject_vals = plotly_selected()$y,
-          primary_key_cols = primary_key_cols,
-          expr = {
-            plotly_selected_keys <- dplyr::filter(time_var %in% time_vals, subject_var %in% subject_vals) %>%
-              dplyr::select(primary_key_cols)
-            plotly_brushed_time <- time_vals
-            plotly_brushed_subject <- subject_vals
-          }
-        ) 
+      primary_keys <- unname(join_keys(data())[plot_dataname, plot_dataname])
+      req(primary_keys)
+      within(
+        plotly_q(),
+        expr = {
+          swimlane_selected <- dplyr::filter(dataname, xvar %in% xvals, yvar %in% yvals) %>% 
+            dplyr::select(primary_keys)
+        },
+        dataname = str2lang(plot_dataname),
+        xvar = str2lang(time_var),
+        yvar = str2lang(subject_var),
+        xvals = plotly_selected()$x,
+        yvals = plotly_selected()$y,
+        primary_keys = primary_keys
+      )
+    })
+    
+    children_names <- reactive({
+      if (length(table_datanames) == 0) {
+        children(plotly_selected_q(), plot_dataname)
+      } else {
+        table_datanames
       }
     })
+    
+    tables_selected_q <- eventReactive(plotly_selected_q(), {
+      exprs <- as.expression(
+        lapply(
+          children_names(),
+          function(childname) {
+            join_cols <- join_keys(plotly_selected_q())[childname, plot_dataname]
+            substitute(
+              expr = {
+                childname <- dplyr::right_join(childname, swimlane_selected, by = by)
+              },
+              list(
+                childname = str2lang(childname),
+                by = join_cols
+              )
+            )
+          }
+        )
+      )
+      eval_code(plotly_selected_q(), exprs)
+    })
+    
+    output$tables <- renderUI(ui_t_reactables(session$ns("subtables")))
+    srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, ...)
+    
+
   })
 }
 
