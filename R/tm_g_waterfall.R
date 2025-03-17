@@ -40,7 +40,7 @@ ui_g_waterfall <- function(id, height) {
       column(6, sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height))
     ),
     plotly::plotlyOutput(ns("plot"), height = "100%"),
-    uiOutput(ns("tables"))
+    ui_t_reactables(ns("subtables"))
   )
 }
 srv_g_waterfall <- function(id,
@@ -193,8 +193,7 @@ srv_g_waterfall <- function(id,
       )
       eval_code(plotly_selected_q(), exprs)
     })
-
-    output$tables <- renderUI(ui_t_reactables(session$ns("subtables")))
+    
     srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, ...)
   })
 }

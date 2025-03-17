@@ -44,7 +44,7 @@ ui_g_swimlane <- function(id, height) {
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
     plotly::plotlyOutput(ns("plot"), height = "100%"),
-    uiOutput(ns("tables"))
+    ui_t_reactables(ns("subtables"))
   )
 }
 srv_g_swimlane <- function(id, 
@@ -82,10 +82,7 @@ srv_g_swimlane <- function(id,
       isolate(sort_selected(sort_var))
       shinyjs::hide("sort_by")
     }
-    
-    
-    
-
+  
     
     plotly_q <- reactive({
       req(data(), sort_selected())
@@ -162,13 +159,16 @@ srv_g_swimlane <- function(id,
               group_by(subject_var, time_var)  %>%
               mutate(
                 tooltip = paste(
-                  unique(c(
-                    paste(subject_var_label, subject_var),
-                    paste(time_var_label, time_var),
-                    sprintf("%s: %s", tools::toTitleCase(gsub("[^0-9A-Za-z]+", " ", event_var)), value_var)
-                  )),
+                  unique(
+                    c(
+                      paste(subject_var_label, subject_var),
+                      paste(time_var_label, time_var),
+                      sprintf("%s: %s", tools::toTitleCase(gsub("[^0-9A-Za-z]+", " ", event_var)), value_var)
+                    )
+                  ),
                   collapse = "<br>"
-              )) %>%
+                )
+              ) %>%
               plotly_fun()
           }
         )
@@ -233,7 +233,6 @@ srv_g_swimlane <- function(id,
       eval_code(plotly_selected_q(), exprs)
     })
     
-    output$tables <- renderUI(ui_t_reactables(session$ns("subtables")))
     srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, ...)
     
 
