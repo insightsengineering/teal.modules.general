@@ -234,7 +234,6 @@ srv_g_swimlane <- function(id,
     })
     
     srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, ...)
-    
 
   })
 }
