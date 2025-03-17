@@ -1060,7 +1060,7 @@ srv_a_regression <- function(id,
 
     ### REPORTER
     card_fun <- reactive({
-      req(plot_r(), source_code_r())
+      req(plot_r(), plot_code_r(), setup_code_r(), data_prep_code_r(), fit_code_r(), fitted())
       teal.reporter::report_document(
 
         "## Setup",
@@ -1078,8 +1078,10 @@ srv_a_regression <- function(id,
         ),
 
         "## Plot",
-        teal.reporter::code_chunk(plot_code_r() |> styler::style_text() |> paste(collapse = "\n")), #|> teal.reporter::link_output(plot_r()),
-        plot_r(),
+        teal.reporter::code_chunk(
+          plot_code_r() |> styler::style_text() |> paste(collapse = "\n")
+        ) |>
+          teal.reporter::link_output(plot_r()),
 
         "## Table for testing",
         head(iris)
