@@ -1083,6 +1083,13 @@ srv_a_regression <- function(id,
         ) |>
           teal.reporter::link_output(plot_r()),
 
+        "## rtables for testing",
+        rtables::rtable(
+          header = LETTERS[1:3],
+          rtables::rrow("one to three", 1, 2, 3),
+          rtables::rrow("more stuff", rtables::rcell(pi, format = "xx.xx"), "test", "and more")
+        ),
+
         "## Table for testing",
         head(iris)
       )
