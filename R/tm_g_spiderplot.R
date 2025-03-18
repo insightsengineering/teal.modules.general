@@ -161,6 +161,7 @@ srv_g_spiderplot <- function(id,
                 event_var_label, value_var * 100
               )
             ) %>%
+            ungroup() %>%
             plotly_fun()
         }
       )
