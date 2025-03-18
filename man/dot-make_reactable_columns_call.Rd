@@ -7,7 +7,7 @@ name = \if{html}{\out{<column label attribute>}}
 cell = \if{html}{\out{<url formatter>}}
 Arguments of \code{\link[reactable:colDef]{reactable::colDef()}} are specified only if necessary}
 \usage{
-.make_reactable_columns_call(dataset)
+.make_reactable_columns_call(dataset, col_defs)
 }
 \arguments{
 \item{dataset}{(\code{data.frame})}
