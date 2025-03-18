@@ -78,8 +78,17 @@ srv_g_spiderplot <- function(id,
     })
     
     plotly_q <- reactive({
-      # todo: tooltip!
       req(input$select_event)
+      
+      adjusted_colors <- .color_palette_discrete(
+        levels = unique(data()[[plot_dataname]][[color_var]]),
+        color = point_colors
+      )
+      
+      adjusted_symbols <- .shape_palette_discrete(
+        levels = unique(data()[[plot_dataname]][[color_var]]),
+        symbol = point_symbols
+      )
       
       time_var_label <- c(
         attr(data()[[plot_dataname]][[time_var]], "label"),
@@ -100,50 +109,59 @@ srv_g_spiderplot <- function(id,
         event_var = str2lang(event_var),
         color_var = str2lang(color_var),
         selected_event = input$select_event,
+        colors = adjusted_colors,
+        symbols = adjusted_symbols,
         height = input$plot_height,
         time_var_label = time_var_label,
         event_var_label = input$select_event,
         subject_var_label = subject_var_label,
         title = paste0(input$select_event, " Over Time"),
         expr = {
-          dd <- dataname %>%
-            arrange(subject_var, time_var) %>%
+          plotly_fun <- function(data) {
+            data %>%
+              plotly::plot_ly(
+                source = "spiderplot", 
+                height = height,
+                color = ~color_var,
+                colors = colors,
+                symbols = symbols
+              ) %>%
+              plotly::add_segments(
+                x = ~x,
+                y = ~y,
+                xend = ~time_var, 
+                yend = ~value_var
+              ) %>%
+              plotly::add_markers(
+                x = ~time_var,
+                y = ~value_var,
+                symbol = ~color_var,
+                text = ~ tooltip,
+                hoverinfo = "text"
+              ) %>%
+              plotly::layout(
+                xaxis = list(title = time_var_label),
+                yaxis = list(title = event_var_label),
+                title = title,
+                dragmode = "select"
+              ) %>%
+              plotly::config(displaylogo = FALSE)
+          }
+          p <- dataname %>%
             filter(event_var == selected_event) %>%
+            arrange(subject_var, time_var) %>%
             group_by(subject_var) %>%
             mutate(
               x = dplyr::lag(time_var, default = 0),
               y = dplyr:::lag(value_var, default = 0),
               tooltip = sprintf(
-                "%s: %s <br>%s: %s%% <br>%s: %s", 
+                "%s: %s <br>%s: %s <br>%s: %s%%", 
                 subject_var_label, subject_var,
                 time_var_label, time_var, 
-                event_var_label, value_var
+                event_var_label, value_var * 100
               )
-            )
-          p <- dd |> plotly::plot_ly(
-            source = "spiderplot", 
-            height = height,
-            x = ~x,
-            y = ~y,
-            xend = ~time_var, 
-            yend = ~value_var,
-            color = ~color_var
-          ) %>%
-            plotly::add_segments() %>%
-            plotly::add_markers(
-              x = ~time_var,
-              y = ~value_var,
-              symbol = ~color_var,
-              text = ~ tooltip,
-              hoverinfo = "text"
             ) %>%
-            plotly::layout(
-              xaxis = list(title = time_var_label),
-              yaxis = list(title = event_var_label),
-              title = title,
-              dragmode = "select"
-            ) %>%
-            plotly::config(displaylogo = FALSE)
+            plotly_fun()
         }
       )
     })

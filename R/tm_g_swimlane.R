@@ -135,7 +135,6 @@ srv_g_swimlane <- function(id,
                 plotly::add_segments(
                   x = ~0, xend = ~study_day, 
                   y = ~subject_var_ordered, yend = ~subject_var_ordered,
-                  color = ~event_var,
                   data = data |> group_by(subject_var_ordered, event_var) |> summarise(study_day = max(time_var)),
                   line = list(width = 2, color = "grey"),
                   showlegend = FALSE
@@ -188,6 +187,7 @@ srv_g_swimlane <- function(id,
     
     plotly_selected_q <- reactive({
       req(plotly_selected())
+      # todo: change it to foreign keys needed to merge with table_datanames
       primary_keys <- unname(join_keys(data())[plot_dataname, plot_dataname])
       req(primary_keys)
       within(

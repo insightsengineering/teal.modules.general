@@ -28,7 +28,6 @@ ui_t_reactables <- function(id, decorators = list()) {
 
 srv_t_reactables <- function(id, data, filter_panel_api, datanames, colnames = list(), decorators = list(), reactable_args = list()) {
   moduleServer(id, function(input, output, session) {
-    # todo: this to the function .validate_datanames
     datanames_r <- .validate_datanames(datanames = datanames, data = data)
     colnames_r <- reactive({
       req(datanames_r())
@@ -49,7 +48,6 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, colnames = l
       })
     })
 
-    # todo: re-render only if datanames changes
     output$subtables <- renderUI({
       logger::log_debug("srv_t_reactables@1 render subtables")
       if (length(datanames_r()) == 0) {
@@ -160,7 +158,6 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       )
     })
 
-   
     table_q <- reactive({
       req(cols_selected())
       select_call <- as.call(
@@ -185,7 +182,8 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       logger::log_debug("srv_t_reactable@2 render table for dataset { dataname }")
       table_q()[[dataname_reactable]]
     })
-
+    
+    # todo: add select -> show children table
     table_selected_q <- reactive({
       selected_row <- reactable::getReactableState("table", "selected")
       if (!is.null(selected_row)) {

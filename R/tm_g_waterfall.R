@@ -65,6 +65,7 @@ srv_g_waterfall <- function(id,
     }
     plotly_q <- reactive({
       req(data(), input$color_by)
+      
       adjusted_colors <- .color_palette_discrete(
         levels = unique(data()[[plot_dataname]][[input$color_by]]),
         color = bar_colors[[input$color_by]]
