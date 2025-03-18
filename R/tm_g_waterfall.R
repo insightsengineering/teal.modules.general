@@ -81,7 +81,13 @@ srv_g_waterfall <- function(id,
         attr(data()[[plot_dataname]][[value_var]], "label"),
         value_var
       )[1]
-
+      
+      color_var_label <- c(
+        attr(data()[[plot_dataname]][[input$color_by]], "label"),
+        input$color_by
+      )[1]
+      
+      
       data() |>
         within(
           dataname = str2lang(plot_dataname),
@@ -93,13 +99,21 @@ srv_g_waterfall <- function(id,
           value_arbitrary_hlines = value_arbitrary_hlines,
           subject_var_label = subject_var_label,
           value_var_label = value_var_label,
+          color_var_label = color_var_label,
           title = paste0(value_var_label, " (Waterfall plot)"),
           height = input$plot_height,
           expr = {
             p <- dataname %>%
               dplyr::mutate(
-                subject_var_ordered = forcats::fct_reorder(as.factor(subject_var), value_var, .fun = max, .desc = TRUE)
+                subject_var_ordered = forcats::fct_reorder(as.factor(subject_var), value_var, .fun = max, .desc = TRUE),
+                tooltip = sprintf(
+                  "%s: %s <br>%s: %s%% <br>%s: %s", 
+                  subject_var_label, subject_var, 
+                  value_var_label, value_var,
+                  color_var_label, color_var
+                )
               ) %>%
+            
               dplyr::filter(!duplicated(subject_var)) %>%
               # todo: one value for x, y: distinct or summarize(value = foo(value_var)) [foo: summarize_fun]
               plotly::plot_ly(
@@ -111,10 +125,7 @@ srv_g_waterfall <- function(id,
                 y = ~value_var,
                 color = ~color_var,
                 colors = colors,
-                text = ~ paste(
-                  subject_var_label, ":", subject_var,
-                  value_var_label, ":", value_var, "<br>"
-                ),
+                text = ~ tooltip,
                 hoverinfo = "text"
               ) %>%
               plotly::layout(
