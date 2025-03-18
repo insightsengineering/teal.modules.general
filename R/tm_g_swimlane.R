@@ -10,7 +10,7 @@ tm_g_swimlane <- function(label = "Swimlane",
                           value_var_color = character(0),
                           value_var_symbol,
                           plot_height = 700,
-                          table_datanames,
+                          table_datanames = character(0),
                           ...) {
   module(
     label = label,
@@ -137,11 +137,12 @@ srv_g_swimlane <- function(id,
                   y = ~subject_var_ordered, yend = ~subject_var_ordered,
                   color = ~event_var,
                   data = data |> group_by(subject_var_ordered, event_var) |> summarise(study_day = max(time_var)),
-                  line = list(width = 1, color = "grey"),
+                  line = list(width = 2, color = "grey"),
                   showlegend = FALSE
                 ) %>%
                 plotly::layout(
-                  xaxis = list(title = time_axis_label), yaxis = list(title = subject_axis_label)
+                  xaxis = list(title = time_axis_label), 
+                  yaxis = list(title = subject_axis_label)
                 ) %>%
                 plotly::layout(dragmode = "select") %>%
                 plotly::config(displaylogo = FALSE)

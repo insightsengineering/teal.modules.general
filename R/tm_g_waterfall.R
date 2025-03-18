@@ -8,7 +8,7 @@ tm_g_waterfall <- function(label = "Waterfall",
                            value_arbitrary_hlines = c(0.2, -0.3),
                            plot_title = "Waterfall plot",
                            plot_height = 700,
-                           table_datanames,
+                           table_datanames = character(0),
                            ...) {
   module(
     label = label,
