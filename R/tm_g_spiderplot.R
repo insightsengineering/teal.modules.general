@@ -48,7 +48,8 @@ ui_g_spiderplot <- function(id, height) {
         sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
       )        
     ),
-    plotly::plotlyOutput(ns("plot"), height = "100%")
+    plotly::plotlyOutput(ns("plot"), height = "100%"),
+    ui_t_reactables(ns("subtables"))
   
   )
 }
@@ -64,8 +65,8 @@ srv_g_spiderplot <- function(id,
                              point_colors,
                              point_symbols,
                              plot_height = 600,
-                             table_datanames,
-                             reactable_args,
+                             table_datanames = character(0),
+                             reactable_args = list(),
                              filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     event_levels <- reactive({
@@ -108,38 +109,38 @@ srv_g_spiderplot <- function(id,
           dd <- dataname %>%
             arrange(subject_var, time_var) %>%
             filter(event_var == selected_event) %>%
+            group_by(subject_var) %>%
             mutate(
+              x = dplyr::lag(time_var, default = 0),
+              y = dplyr:::lag(value_var, default = 0),
               tooltip = sprintf(
                 "%s: %s <br>%s: %s%% <br>%s: %s", 
                 subject_var_label, subject_var,
                 time_var_label, time_var, 
                 event_var_label, value_var
               )
-            ) %>%
-            group_by(subject_var) # %>%
-          #   group_modify(~ {
-          #     .first_x <- within(.x[1, ], {
-          #       value_var <- 0
-          #       time_var <- 0
-          #     })
-          #     bind_rows(.first_x, .x)
-          #   })
-          p <- dd |> plotly::plot_ly(source = "spiderplot", height = height) %>%
-            plotly::add_trace(
-              x = ~time_var, 
+            )
+          p <- dd |> plotly::plot_ly(
+            source = "spiderplot", 
+            height = height,
+            x = ~x,
+            y = ~y,
+            xend = ~time_var, 
+            yend = ~value_var,
+            color = ~color_var
+          ) %>%
+            plotly::add_segments() %>%
+            plotly::add_markers(
+              x = ~time_var,
               y = ~value_var,
-              mode = 'lines+markers',
+              symbol = ~color_var,
               text = ~ tooltip,
               hoverinfo = "text"
-            ) %>%
-            plotly::add_markers(
-              x = ~time_var, y = ~value_var, color = ~color_var, symbol = ~color_var
             ) %>%
             plotly::layout(
               xaxis = list(title = time_var_label),
               yaxis = list(title = event_var_label),
               title = title,
-              showlegend = FALSE,
               dragmode = "select"
             ) %>%
             plotly::config(displaylogo = FALSE)
@@ -148,24 +149,57 @@ srv_g_spiderplot <- function(id,
     })
 
     output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
-
+    
     plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "spiderplot"))
-
-    reactive({
+    
+    plotly_selected_q <- reactive({
       req(plotly_selected())
+      primary_keys <- unname(join_keys(data())[plot_dataname, plot_dataname])
+      req(primary_keys)
       within(
         plotly_q(),
-        dataname = str2lang(plot_dataname),
-        time_var = str2lang(time_var),
-        subject_var = subject_var,
-        value_var = str2lang(value_var),
-        time_vals = plotly_selected()$x,
-        value_vals = plotly_selected()$y,
         expr = {
-          plotly_brushed_time <- time_vals
-          plotly_brushed_value <- value_vals
-        }
+          spiderplot_selected <- dplyr::filter(dataname, xvar %in% xvals, yvar %in% yvals) %>% 
+            dplyr::select(primary_keys)
+        },
+        dataname = str2lang(plot_dataname),
+        xvar = str2lang(time_var),
+        yvar = str2lang(value_var),
+        xvals = plotly_selected()$x,
+        yvals = plotly_selected()$y,
+        primary_keys = primary_keys
       )
     })
+    
+    children_names <- reactive({
+      if (length(table_datanames) == 0) {
+        children(plotly_selected_q(), plot_dataname)
+      } else {
+        table_datanames
+      }
+    })
+    
+    tables_selected_q <- eventReactive(plotly_selected_q(), {
+      exprs <- as.expression(
+        lapply(
+          children_names(),
+          function(childname) {
+            join_cols <- join_keys(plotly_selected_q())[childname, plot_dataname]
+            substitute(
+              expr = {
+                childname <- dplyr::right_join(childname, spiderplot_selected, by = by)
+              },
+              list(
+                childname = str2lang(childname),
+                by = join_cols
+              )
+            )
+          }
+        )
+      )
+      eval_code(plotly_selected_q(), exprs)
+    })
+    
+    srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, reactable_args = reactable_args)
   })
 }

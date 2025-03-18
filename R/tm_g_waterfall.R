@@ -9,25 +9,23 @@ tm_g_waterfall <- function(label = "Waterfall",
                            plot_title = "Waterfall plot",
                            plot_height = 700,
                            table_datanames = character(0),
-                           ...) {
+                           reactable_args = list()) {
   module(
     label = label,
     ui = ui_g_waterfall,
     server = srv_g_waterfall,
     datanames = union(plot_dataname, table_datanames),
     ui_args = list(height = plot_height),
-    server_args = c(
-      list(
-        plot_dataname = plot_dataname,
-        table_datanames = table_datanames,
-        subject_var = subject_var,
-        value_var = value_var,
-        color_var = color_var,
-        bar_colors = bar_colors,
-        value_arbitrary_hlines = value_arbitrary_hlines,
-        plot_title = plot_title
-      ),
-      list(...)
+    server_args = list(
+      plot_dataname = plot_dataname,
+      table_datanames = table_datanames,
+      subject_var = subject_var,
+      value_var = value_var,
+      color_var = color_var,
+      bar_colors = bar_colors,
+      value_arbitrary_hlines = value_arbitrary_hlines,
+      plot_title = plot_title,
+      reactable_args = reactable_args
     )
   )
 }
@@ -54,8 +52,8 @@ srv_g_waterfall <- function(id,
                             plot_title,
                             plot_height = 600,
                             table_datanames = character(0),
-                            filter_panel_api,
-                            ...) {
+                            reactable_args = list(),
+                            filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     output$color_by_output <- renderUI({
       selectInput(session$ns("color_by"), label = "Color by:", choices = color_var$choices, selected = color_var$selected)
@@ -205,7 +203,7 @@ srv_g_waterfall <- function(id,
       eval_code(plotly_selected_q(), exprs)
     })
     
-    srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, ...)
+    srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, reactable_args = reactable_args)
   })
 }
 

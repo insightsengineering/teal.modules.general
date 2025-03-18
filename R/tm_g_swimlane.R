@@ -11,7 +11,7 @@ tm_g_swimlane <- function(label = "Swimlane",
                           value_var_symbol,
                           plot_height = 700,
                           table_datanames = character(0),
-                          ...) {
+                          reactable_args = list()) {
   module(
     label = label,
     ui = ui_g_swimlane,
@@ -29,7 +29,7 @@ tm_g_swimlane <- function(label = "Swimlane",
       value_var_color = value_var_color,
       value_var_symbol = value_var_symbol,
       table_datanames = table_datanames,
-      ...
+      reactable_args = reactable_args
     )
   )
 }
@@ -59,8 +59,8 @@ srv_g_swimlane <- function(id,
                            value_var_color,
                            value_var_symbol,
                            table_datanames, 
-                           filter_panel_api, 
-                           ...) {
+                           reactable_args = list(),
+                           filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     
     sort_choices <- reactiveVal()
@@ -234,7 +234,7 @@ srv_g_swimlane <- function(id,
       eval_code(plotly_selected_q(), exprs)
     })
     
-    srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, ...)
+    srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, reactable_args = reactable_args)
 
   })
 }

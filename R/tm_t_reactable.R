@@ -4,15 +4,17 @@ tm_t_reactables <- function(label = "Table",
                             colnames = list(),
                             transformators = list(),
                             decorators = list(),
-                            ...) {
+                            reactable_args = list()) {
   module(
     label = label,
     ui = ui_t_reactables,
     server = srv_t_reactables,
     ui_args = list(decorators = decorators),
-    server_args = c(
-      list(datanames = datanames, colnames = colnames, decorators = decorators),
-      rlang::list2(...)
+    server_args = list(
+      datanames = datanames, 
+      colnames = colnames, 
+      reactable_args = reactable_args,
+      decorators = decorators
     ),
     datanames = datanames,
     transformators = transformators
@@ -24,7 +26,7 @@ ui_t_reactables <- function(id, decorators = list()) {
   uiOutput(ns("subtables"), container = bslib::page_fluid)
 }
 
-srv_t_reactables <- function(id, data, filter_panel_api, datanames, colnames = list(), decorators = list(), ...) {
+srv_t_reactables <- function(id, data, filter_panel_api, datanames, colnames = list(), decorators = list(), reactable_args = list()) {
   moduleServer(id, function(input, output, session) {
     # todo: this to the function .validate_datanames
     datanames_r <- .validate_datanames(datanames = datanames, data = data)
@@ -83,7 +85,7 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, colnames = l
             dataname = dataname,
             filter_panel_api = filter_panel_api,
             colnames = colnames[[dataname]],
-            ...
+            reactable_args = reactable_args
           )
         }
       )
@@ -118,7 +120,7 @@ ui_t_reactable <- function(id) {
   )
 }
 
-srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, decorators, ...) {
+srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, decorators, reactable_args = list()) {
   moduleServer(id, function(input, output, session) {
     logger::log_debug("srv_t_reactable initializing for dataname: { dataname }")
     dataname_reactable <- sprintf("%s_reactable", dataname)
@@ -171,7 +173,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       reactable_call <- .make_reactable_call(
         dataset = data()[[dataname]][cols_selected()], 
         dataname = dataname, 
-        args = rlang::list2(...)
+        args = reactable_args
       )
       
       data() |>
