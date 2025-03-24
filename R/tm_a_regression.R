@@ -1027,25 +1027,32 @@ srv_a_regression <- function(id,
     subset_code <- function(code, data) {
       gsub(code, "", teal.data::get_code(data), fixed = TRUE)
     }
-    setup_code_r <- reactive(teal.data::get_code(qenv))
-    data_prep_code_r <-
+    setup_code_r <- reactive(teal.data::get_code(req(data())))
+    libraries_code_r <-
       reactive(
         subset_code(
           setup_code_r(),
+          qenv
+        )
+      )
+    data_prep_code_r <-
+      reactive(
+        subset_code(
+          paste0(setup_code_r(), libraries_code_r()),
           req(anl_merged_q())
         )
       )
     fit_code_r <-
       reactive(
         subset_code(
-          paste0(setup_code_r(), data_prep_code_r()),
+          paste0(setup_code_r(), libraries_code_r(), data_prep_code_r()),
           req(fit_r())
         )
       )
     plot_code_r <-
       reactive(
         subset_code(
-          paste0(setup_code_r(), data_prep_code_r(), fit_code_r()),
+          paste0(setup_code_r(), libraries_code_r(), data_prep_code_r(), fit_code_r()),
           req(decorated_output_q())
         )
       )
@@ -1066,6 +1073,9 @@ srv_a_regression <- function(id,
         "## Setup",
         teal.reporter::code_chunk(setup_code_r()),
 
+        "## Libraries",
+        teal.reporter::code_chunk(libraries_code_r(), eval = TRUE),
+
         "## Data Preparations",
         teal.reporter::code_chunk(data_prep_code_r()),
 
@@ -1080,10 +1090,17 @@ srv_a_regression <- function(id,
         "## Plot",
         teal.reporter::code_chunk(
           plot_code_r() |> styler::style_text() |> paste(collapse = "\n")
-        ) |>
-          teal.reporter::link_output(plot_r()),
+        ),
+        plot_r(),
 
         "## rtables for testing",
+        teal.reporter::code_chunk(
+          "rtables::rtable(
+          header = LETTERS[1:3],
+          rtables::rrow('one to three', 1, 2, 3),
+          rtables::rrow('more stuff', rtables::rcell(pi, format = 'xx.xx'), 'test', 'and more')
+          )"
+        ),
         rtables::rtable(
           header = LETTERS[1:3],
           rtables::rrow("one to three", 1, 2, 3),
@@ -1091,6 +1108,9 @@ srv_a_regression <- function(id,
         ),
 
         "## Table for testing",
+        teal.reporter::code_chunk(
+          "head(iris)"
+        ),
         head(iris)
       )
     })
