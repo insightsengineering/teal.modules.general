@@ -171,6 +171,8 @@ srv_g_swimlane <- function(id,
 }
 
 
+# todo: export is temporary, this should go to a new package teal.graphs or another bird species
+#' @export
 swimlanely <- function(data, time_var, subject_var, color_var, group_var, sort_var, colors, symbols, height) {
   subject_var_label <- attr(data[[subject_var]], "label")
   time_var_label <- attr(data[[time_var]], "label")

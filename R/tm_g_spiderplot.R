@@ -153,6 +153,8 @@ srv_g_spiderplot <- function(id,
   })
 }
 
+# todo: export is temporary, this should go to a new package teal.graphs or another bird species
+#' @export
 spiderplotly <- function(data, time_var, value_var, subject_var, event_var, color_var, colors, symbols, height) {
   subject_var_label <- attr(data[[subject_var]], "label")
   time_var_label <- attr(data[[time_var]], "label")

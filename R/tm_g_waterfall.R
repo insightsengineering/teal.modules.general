@@ -140,6 +140,9 @@ srv_g_waterfall <- function(id,
   })
 }
 
+
+# todo: export is temporary, this should go to a new package teal.graphs or another bird species
+#' @export
 waterfally <- function(data, subject_var, value_var, color_var, colors, value_arbitrary_hlines, height) {
   subject_var_label <- attr(data[[subject_var]], "label")
   value_var_label <- attr(data[[value_var]], "label")
