@@ -1,3 +1,10 @@
+#' `teal` module: Reactable
+#'
+#' Wrapper module on [reactable::reactable()]
+#' 
+#' @inheritParams teal::module
+#' @inheritParams shared_params
+#' @param reactable_args (`list`) any argument of [reactable::reactable()]. 
 #' @export
 tm_t_reactables <- function(label = "Table",
                             datanames = "all",
@@ -23,7 +30,7 @@ tm_t_reactables <- function(label = "Table",
 
 ui_t_reactables <- function(id, decorators = list()) {
   ns <- NS(id)
-  uiOutput(ns("subtables"), container = bslib::page_fluid)
+  uiOutput(ns("subtables"), container = div)
 }
 
 srv_t_reactables <- function(id, data, filter_panel_api, datanames, colnames = list(), decorators = list(), reactable_args = list()) {
@@ -127,6 +134,8 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       req(data())
       teal.data::col_labels(data()[[dataname]], fill = TRUE)
     })
+    
+    reactable_args_r <- if (is.reactive(reactable_args)) reactable_args else reactive(reactable_args)
 
     cols_choices <- reactiveVal()
     cols_selected <- reactiveVal()
@@ -170,7 +179,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       reactable_call <- .make_reactable_call(
         dataset = data()[[dataname]][cols_selected()], 
         dataname = dataname, 
-        args = reactable_args
+        args = reactable_args_r()
       )
       
       data() |>
@@ -200,6 +209,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
         table_q()
       }
     })
+    
     table_selected_q
   })
 }

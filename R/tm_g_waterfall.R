@@ -1,3 +1,19 @@
+#' `teal` module: Waterfall plot
+#'
+#' Module visualizes subjects sorted decreasingly by y-values.
+#' 
+#' @inheritParams teal::module
+#' @inheritParams shared_params
+#' @param plot_dataname (`character(1)`) name of the dataset which visualization is builded on.
+#' @param subject_var (`character(1)`) name of the `factor` or `character`  column in `plot_dataname` 
+#'  to be used as x-axis.
+#' @param value_var (`character(1)`) name of the `numeric` column in `plot_dataname` to be used as y-axis.
+#' @param color_var (`character(1)`) name of the `factor` or `character` column in `plot_dataname` 
+#'  to be used to differentiate bar colors.
+#' @param bar_colors (`named character`) valid color names (see [colors()]) or hex-colors named 
+#'  by levels of `color_var` column.
+#' @param value_arbitrary_hlines (`numeric`) values in the same scale as `value_var` to horizontal
+#'  lines on the plot.
 #' @export
 tm_g_waterfall <- function(label = "Waterfall",
                            plot_dataname,
@@ -32,13 +48,17 @@ tm_g_waterfall <- function(label = "Waterfall",
 
 ui_g_waterfall <- function(id, height) {
   ns <- NS(id)
-  bslib::page_fluid(
-    fluidRow(
-      column(6, uiOutput(ns("color_by_output"))),
-      column(6, sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height))
+  
+  bslib::page_sidebar(
+    sidebar = div(
+      uiOutput(ns("color_by_output")),
+      colour_picker_ui(ns("colors")),
+      sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
-    plotly::plotlyOutput(ns("plot"), height = "100%"),
-    ui_t_reactables(ns("subtables"))
+    bslib::page_fillable(
+      plotly::plotlyOutput(ns("plot"), height = "100%"),
+      ui_t_reactables(ns("subtables"))      
+    )
   )
 }
 srv_g_waterfall <- function(id,
@@ -63,168 +83,116 @@ srv_g_waterfall <- function(id,
     } else {
       shinyjs::hide("color_by")
     }
+    
+    color_inputs <- colour_picker_srv(
+      "colors", 
+      x = reactive({
+        req(data(), input$color_by)
+        data()[[plot_dataname]][[input$color_by]]
+      }),
+      default_colors = bar_colors
+    )
+    
     plotly_q <- reactive({
-      req(data(), input$color_by)
+      req(data(), input$color_by, color_inputs())
       
-      adjusted_colors <- .color_palette_discrete(
-        levels = unique(data()[[plot_dataname]][[input$color_by]]),
-        color = bar_colors[[input$color_by]]
+      within(
+        data(),
+        dataname = str2lang(plot_dataname),
+        subject_var = subject_var,
+        value_var = value_var,
+        color_var = input$color_by,
+        colors = color_inputs(),
+        value_arbitrary_hlines = value_arbitrary_hlines,
+        height = input$plot_height,
+        title = sprintf("Waterfall plot"),
+        expr = {
+          p <- waterfally(
+            dataname, 
+            subject_var = subject_var, 
+            value_var = value_var, 
+            color_var = color_var,
+            colors = colors,
+            value_arbitrary_hlines = value_arbitrary_hlines,
+            height = height
+          ) %>%
+            plotly::layout(title = title)
+
+        },
+        height = input$plot_height
       )
-
-      subject_var_label <- c(
-        attr(data()[[plot_dataname]][[subject_var]], "label"),
-        subject_var
-      )[1]
-
-      value_var_label <- c(
-        attr(data()[[plot_dataname]][[value_var]], "label"),
-        value_var
-      )[1]
-      
-      color_var_label <- c(
-        attr(data()[[plot_dataname]][[input$color_by]], "label"),
-        input$color_by
-      )[1]
-      
-      
-      data() |>
-        within(
-          dataname = str2lang(plot_dataname),
-          dataname_filtered = str2lang(sprintf("%s_filtered", plot_dataname)),
-          subject_var = str2lang(subject_var),
-          value_var = str2lang(value_var),
-          color_var = str2lang(input$color_by),
-          colors = adjusted_colors,
-          value_arbitrary_hlines = value_arbitrary_hlines,
-          subject_var_label = subject_var_label,
-          value_var_label = value_var_label,
-          color_var_label = color_var_label,
-          title = paste0(value_var_label, " (Waterfall plot)"),
-          height = input$plot_height,
-          expr = {
-            p <- dataname %>%
-              dplyr::mutate(
-                subject_var_ordered = forcats::fct_reorder(as.factor(subject_var), value_var, .fun = max, .desc = TRUE),
-                tooltip = sprintf(
-                  "%s: %s <br>%s: %s%% <br>%s: %s", 
-                  subject_var_label, subject_var, 
-                  value_var_label, value_var,
-                  color_var_label, color_var
-                )
-              ) %>%
-            
-              dplyr::filter(!duplicated(subject_var)) %>%
-              # todo: one value for x, y: distinct or summarize(value = foo(value_var)) [foo: summarize_fun]
-              plotly::plot_ly(
-                source = "waterfall",
-                height = height
-              ) %>%
-              plotly::add_bars(
-                x = ~subject_var_ordered,
-                y = ~value_var,
-                color = ~color_var,
-                colors = colors,
-                text = ~ tooltip,
-                hoverinfo = "text"
-              ) %>%
-              plotly::layout(
-                shapes = lapply(value_arbitrary_hlines, function(y) {
-                  list(
-                    type = "line",
-                    x0 = 0,
-                    x1 = 1,
-                    xref = "paper",
-                    y0 = y,
-                    y1 = y,
-                    line = list(color = "black", dash = "dot")
-                  )
-                }),
-                title = title,
-                xaxis = list(title = subject_var_label, tickangle = -45),
-                yaxis = list(title = value_var_label),
-                legend = list(title = list(text = "<b>Color by:</b>")),
-                barmode = "relative"
-              ) %>%
-              plotly::layout( dragmode = "select") %>%
-              plotly::config(displaylogo = FALSE)
-          },
-          height = input$plot_height
-        )
     })
 
     output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
 
     plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "waterfall"))
     
-    plotly_selected_q <- reactive({
-      req(plotly_selected())
-      primary_keys <- unname(join_keys(data())[plot_dataname, plot_dataname])
-      req(primary_keys)
-      within(
-        plotly_q(),
-        expr = {
-          waterfall_selected <- dplyr::filter(dataname, xvar %in% xvals, yvar %in% yvals) %>% 
-            dplyr::select(primary_keys)
-        },
-        dataname = str2lang(plot_dataname),
-        xvar = str2lang(subject_var),
-        yvar = str2lang(value_var),
-        xvals = plotly_selected()$x,
-        yvals = plotly_selected()$y,
-        primary_keys = primary_keys
-      )
-    })
-    
-    children_names <- reactive({
-      if (length(table_datanames) == 0) {
-        children(plotly_selected_q(), plot_dataname)
-      } else {
-        table_datanames
-      }
-    })
-    
-    tables_selected_q <- eventReactive(plotly_selected_q(), {
-      exprs <- as.expression(
-        lapply(
-          children_names(),
-          function(childname) {
-            join_cols <- join_keys(plotly_selected_q())[childname, plot_dataname]
-            substitute(
-              expr = {
-                childname <- dplyr::right_join(childname, waterfall_selected, by = by)
-              },
-              list(
-                childname = str2lang(childname),
-                by = join_cols
-              )
-            )
-          }
-        )
-      )
-      eval_code(plotly_selected_q(), exprs)
-    })
+    tables_selected_q <- .plotly_selected_filter_children(
+      data = plotly_q, 
+      plot_dataname = plot_dataname,
+      xvar = subject_var, 
+      yvar = value_var, 
+      plotly_selected = plotly_selected, 
+      children_datanames = table_datanames
+    )
     
     srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, reactable_args = reactable_args)
   })
 }
 
-# todo: to teal_data
-children <- function(x, dataset_name = character(0)) {
-  checkmate::assert_multi_class(x, c("teal_data", "join_keys"))
-  checkmate::assert_character(dataset_name, max.len = 1)
-  if (length(dataset_name)) {
-    names(
-      Filter(
-        function(parent) parent == dataset_name,
-        parents(x)
+waterfally <- function(data, subject_var, value_var, color_var, colors, value_arbitrary_hlines, height) {
+  subject_var_label <- attr(data[[subject_var]], "label")
+  value_var_label <- attr(data[[value_var]], "label")
+  color_var_label <- attr(data[[color_var]], "label")
+  if (!length(subject_var_label)) subject_var_label <- subject_var
+  if (!length(value_var_label)) value_var_label <- value_var
+  if (!length(color_var_label)) color_var_label <- color_var
+  
+  data %>%
+    dplyr::mutate(
+      !!as.name(subject_var) := forcats::fct_reorder(
+        as.factor(!!as.name(subject_var)), 
+        !!as.name(value_var), 
+        .fun = max, 
+        .desc = TRUE
+      ),
+      tooltip = sprintf(
+        "%s: %s <br>%s: %s%% <br>%s: %s", 
+        subject_var_label, !!as.name(subject_var), 
+        value_var_label, !!as.name(value_var),
+        color_var_label, !!as.name(color_var)
       )
-    )
-  } else {
-    all_parents <- unique(unlist(parents(x)))
-    names(all_parents) <- all_parents
-    lapply(
-      all_parents, 
-      function(parent) children(x = x, dataset_name = parent)
-    )
-  }
+    ) %>%
+    dplyr::filter(!duplicated(!!as.name(subject_var))) %>%
+    plotly::plot_ly(
+      source = "waterfall",
+      height = height
+    ) %>%
+    plotly::add_bars(
+      x = as.formula(sprintf("~%s", subject_var)),
+      y = as.formula(sprintf("~%s", value_var)),
+      color = as.formula(sprintf("~%s", color_var)),
+      colors = colors,
+      text = ~tooltip,
+      hoverinfo = "text"
+    ) %>%
+    plotly::layout(
+      shapes = lapply(value_arbitrary_hlines, function(y) {
+        list(
+          type = "line",
+          x0 = 0,
+          x1 = 1,
+          xref = "paper",
+          y0 = y,
+          y1 = y,
+          line = list(color = "black", dash = "dot")
+        )
+      }),
+      xaxis = list(title = subject_var_label, tickangle = -45),
+      yaxis = list(title = value_var_label),
+      legend = list(title = list(text = "<b>Color by:</b>")),
+      barmode = "relative"
+    ) %>%
+    plotly::layout( dragmode = "select") %>%
+    plotly::config(displaylogo = FALSE)
 }
