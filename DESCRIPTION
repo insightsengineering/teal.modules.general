@@ -84,6 +84,7 @@ VignetteBuilder:
     knitr,
     rmarkdown
 Remotes:
+    insightsengineering/teal.code@redesign@main,
     insightsengineering/teal.reporter@redesign@main,
     insightsengineering/teal.widgets@main,
     insightsengineering/teal@redesign@main

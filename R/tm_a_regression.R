@@ -460,13 +460,14 @@ srv_a_regression <- function(id,
 
     qenv <- teal.code::eval_code(
       data(),
-      'library("ggplot2");library("dplyr")' # nolint quotes
+      'library("ggplot2");library("dplyr")', # nolint quotes
+      label = "libraries"
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
       qenv %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+        teal.code::eval_code(as.expression(anl_merged_input()$expr), label = "data preparations")
     })
 
 
@@ -525,7 +526,7 @@ srv_a_regression <- function(id,
       }
 
       anl_merged_q() %>%
-        teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form))) %>%
+        teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form)), label = "fit") %>%
         teal.code::eval_code(quote({
           for (regressor in names(fit$contrasts)) {
             alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
@@ -533,8 +534,8 @@ srv_a_regression <- function(id,
               paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients)
             )
           }
-        })) %>%
-        teal.code::eval_code(quote(summary(fit)))
+        }), label = "fit") %>%
+        teal.code::eval_code(quote(summary(fit)), label = "fit")
     })
 
     label_col <- reactive({
@@ -587,7 +588,8 @@ srv_a_regression <- function(id,
           smoothy_aes <- ggplot2::aes_string(x = "x", y = "y")
 
           reg_form <- deparse(fit$call[[2]])
-        })
+        }),
+        label = "plot"
       )
     })
 
@@ -657,7 +659,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -701,7 +704,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -760,7 +764,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -803,7 +808,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -869,7 +875,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -924,7 +931,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -974,7 +982,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -994,8 +1003,9 @@ srv_a_regression <- function(id,
     decorated_output_q <- srv_decorate_teal_data(
       "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
-      expr = print(plot)
+      decorators = select_decorators(decorators, "plot"), # decorator needs to put label="plot" in it's eval_code
+      expr = print(plot),
+      label = "plot"
     )
 
     fitted <- reactive({
@@ -1023,39 +1033,40 @@ srv_a_regression <- function(id,
       )
     })
 
-    # Render R code.
-    subset_code <- function(code, data) {
-      gsub(code, "", teal.data::get_code(data), fixed = TRUE)
-    }
+    # # Render R code.
+    # subset_code <- function(code, data) {
+    #   gsub(code, "", teal.data::get_code(data), fixed = TRUE)
+    # }
+
     setup_code_r <- reactive(teal.data::get_code(req(data())))
-    libraries_code_r <-
-      reactive(
-        subset_code(
-          setup_code_r(),
-          qenv
-        )
-      )
-    data_prep_code_r <-
-      reactive(
-        subset_code(
-          paste0(setup_code_r(), libraries_code_r()),
-          req(anl_merged_q())
-        )
-      )
-    fit_code_r <-
-      reactive(
-        subset_code(
-          paste0(setup_code_r(), libraries_code_r(), data_prep_code_r()),
-          req(fit_r())
-        )
-      )
-    plot_code_r <-
-      reactive(
-        subset_code(
-          paste0(setup_code_r(), libraries_code_r(), data_prep_code_r(), fit_code_r()),
-          req(decorated_output_q())
-        )
-      )
+    libraries_code_r <- reactive(teal.code::get_code(req(decorated_output_q()), labels = "libraries"))
+      # reactive(
+      #   subset_code(
+      #     setup_code_r(),
+      #     qenv
+      #   )
+      # )
+    data_prep_code_r <- reactive(teal.code::get_code(req(decorated_output_q()), labels = "data preparations"))
+      # reactive(
+      #   subset_code(
+      #     paste0(setup_code_r(), libraries_code_r()),
+      #     req(anl_merged_q())
+      #   )
+      # )
+    fit_code_r <- reactive(teal.code::get_code(req(decorated_output_q()), labels = "fit"))
+      # reactive(
+      #   subset_code(
+      #     paste0(setup_code_r(), libraries_code_r(), data_prep_code_r()),
+      #     req(fit_r())
+      #   )
+      # )
+    plot_code_r <- reactive(teal.code::get_code(req(decorated_output_q()), labels = "plot"))
+      # reactive(
+      #   subset_code(
+      #     paste0(setup_code_r(), libraries_code_r(), data_prep_code_r(), fit_code_r()),
+      #     req(decorated_output_q())
+      #   )
+      # )
 
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
 
