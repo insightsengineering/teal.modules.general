@@ -1122,7 +1122,15 @@ srv_a_regression <- function(id,
         teal.reporter::code_chunk(
           "head(iris)"
         ),
-        head(iris)
+        head(iris),
+
+        "## keep_in_report",
+
+        "If you don't want to include code for head(mtcars) in report - just don't include it.",
+
+        "If you want the object to be kept in the report as loaded from .rds use keep_in_report()",
+        head(mtcars) |> keep_in_report()
+
       )
     })
     ###
