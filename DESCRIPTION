@@ -47,6 +47,7 @@ Imports:
     grDevices,
     grid,
     gridExtra (>= 2.3),
+    htmltools,
     htmlwidgets (>= 1.6.4),
     jsonlite (>= 1.8.9),
     lattice (>= 0.18-4),

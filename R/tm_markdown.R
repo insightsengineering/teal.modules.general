@@ -26,9 +26,9 @@
 #'
 tm_rmarkdown <- function(label = "App Info",
                         text = character(0),
-                        params = list(title = "Document", output = "html_output"),
+                        params = list(title = "Document"),
                         datanames = "all") {
-  message("Initializing tm_front_page")
+  message("Initializing tm_rmarkdown")
   
   # Start of assertions
   checkmate::assert_string(label)
@@ -59,22 +59,26 @@ srv_rmarkdown <- function(id, data, text, params) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-    file <- tempfile(fileext = ".Rmd")
-    if (!file.exists(file)) {
-      cat(text, file = file)
-    }
-    
     rmd_out <- reactive({
+      file <- tempfile(fileext = ".Rmd")
+      if (!file.exists(file)) {
+        cat(text, file = file)
+      }
       rmarkdown::render(
         file, 
         envir = data(), 
-        params = utils::modifyList(params, list(output = "html_document")) # html_document always as we renderUI below
+        params = utils::modifyList(
+          params, 
+          list(output = list(github_document = list(html_preview = FALSE)))  # html_document always as we renderUI below
+        )
       )
     })
     
     output$output <- renderUI({
       on.exit(unlink(rmd_out()))
-      shiny::HTML(paste(readLines(rmd_out()), collpse = "\n"))
+      # todo: includeMarkdown breaks css of the app
+      # https://stackoverflow.com/questions/42422771/including-markdown-tables-in-shiny-app-seems-to-break-css
+      shiny::includeMarkdown(rmd_out())
     })
   })
 }
