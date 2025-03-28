@@ -65,7 +65,7 @@ ui_g_swimlane <- function(id, height) {
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
     bslib::page_fillable(
-      plotly_with_settings_ui(ns("plot"), height = "100"),
+      plotly::plotlyOutput(ns("plot"), height = "100%"),
       ui_t_reactables(ns("subtables"))      
     )
   )
@@ -145,14 +145,7 @@ srv_g_swimlane <- function(id,
       )
     })
     
-    output$plot <- plotly_with_settings_srv(
-      "plot", 
-      plot = reactive({
-        plotly_q()$p |>
-          plotly::event_register("plotly_selected") |>
-          plotly::event_register("plotly_deselect") # todo: deselect doesn't work
-      })
-    )
+    output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
     
     plotly_selected <- reactive({
       plotly::event_data("plotly_deselect", source = "swimlane") # todo: deselect doesn't work
