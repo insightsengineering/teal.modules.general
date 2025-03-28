@@ -377,7 +377,7 @@ srv_dataset_table <- function(id,
         id = "brush_filter"
       ))
       shinyjs::hide("apply_brush_filter")
-      set_filter_state(filter_panel_api, slice)
+      teal.slice::set_filter_state(filter_panel_api, slice)
     })
   })
 }

@@ -65,7 +65,7 @@ ui_g_swimlane <- function(id, height) {
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
     bslib::page_fillable(
-      plotly::plotlyOutput(ns("plot"), height = "100%"),
+      plotly_with_settings_ui(ns("plot"), height = "100"),
       ui_t_reactables(ns("subtables"))      
     )
   )
@@ -145,11 +145,14 @@ srv_g_swimlane <- function(id,
       )
     })
     
-    output$plot <- plotly::renderPlotly({
-      plotly_q()$p |>
-        plotly::event_register("plotly_selected") |>
-        plotly::event_register("plotly_deselect") # todo: deselect doesn't work
-    })
+    output$plot <- plotly_with_settings_srv(
+      "plot", 
+      plot = reactive({
+        plotly_q()$p |>
+          plotly::event_register("plotly_selected") |>
+          plotly::event_register("plotly_deselect") # todo: deselect doesn't work
+      })
+    )
     
     plotly_selected <- reactive({
       plotly::event_data("plotly_deselect", source = "swimlane") # todo: deselect doesn't work
@@ -165,7 +168,7 @@ srv_g_swimlane <- function(id,
       children_datanames = table_datanames
     )
     
-    srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, reactable_args = reactable_args)
+    srv_t_reactables("subtables", data = tables_selected_q, datanames = table_datanames, reactable_args = reactable_args)
 
   })
 }
@@ -181,19 +184,19 @@ swimlanely <- function(data, time_var, subject_var, color_var, group_var, sort_v
   
   # forcats::fct_reorder doesn't seem to work here
   subject_levels <- data %>%
-    group_by(!!as.name(subject_var)) %>%
-    summarize(v = max(!!as.name(sort_var))) %>%
-    ungroup() %>%
-    arrange(v) %>%
-    pull(!!as.name(subject_var))
+    dplyr::group_by(!!as.name(subject_var)) %>%
+    dplyr::summarize(v = max(!!as.name(sort_var))) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(v) %>%
+    dplyr::pull(!!as.name(subject_var))
   data[[subject_var]] <- factor(data[[subject_var]], levels = subject_levels)
   
   data %>%
-    mutate(
+    dplyr::mutate(
       !!as.name(color_var) := factor(!!as.name(color_var), levels = names(colors)),
     ) %>%
-    group_by(!!as.name(subject_var), !!as.name(time_var))  %>%
-    mutate(
+    dplyr::group_by(!!as.name(subject_var), !!as.name(time_var))  %>%
+    dplyr::mutate(
       tooltip = paste(
         unique(
           c(
@@ -216,19 +219,21 @@ swimlanely <- function(data, time_var, subject_var, color_var, group_var, sort_v
       height = height
     ) %>%
     plotly::add_markers(
-      x = as.formula(sprintf("~%s", time_var)),
-      y = as.formula(sprintf("~%s", subject_var)),
-      color = as.formula(sprintf("~%s", color_var)), 
-      symbol = as.formula(sprintf("~%s", color_var)),
+      x = stats::as.formula(sprintf("~%s", time_var)),
+      y = stats::as.formula(sprintf("~%s", subject_var)),
+      color = stats::as.formula(sprintf("~%s", color_var)), 
+      symbol = stats::as.formula(sprintf("~%s", color_var)),
       text = ~tooltip,
       hoverinfo = "text"
     ) %>%
     plotly::add_segments(
-      x = ~0, xend = ~study_day, 
-      y = as.formula(sprintf("~%s", subject_var)), yend = as.formula(sprintf("~%s", subject_var)),
+      x = ~0, 
+      xend = ~study_day, 
+      y = stats::as.formula(sprintf("~%s", subject_var)), 
+      yend = stats::as.formula(sprintf("~%s", subject_var)),
       data = data |> 
-        group_by(!!as.name(subject_var), !!as.name(group_var)) |> 
-        summarise(study_day = max(!!as.name(time_var))),
+        dplyr::group_by(!!as.name(subject_var), !!as.name(group_var)) |> 
+        dplyr::summarise(study_day = max(!!as.name(time_var))),
       line = list(width = 2, color = "grey"),
       showlegend = FALSE
     ) %>%

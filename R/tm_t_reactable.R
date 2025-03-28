@@ -147,7 +147,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
         names(dataset_labels())
       }
       labels_choices <- dataset_labels()[choices]
-      cols_choices_new <- setNames(choices, labels_choices)
+      cols_choices_new <- stats::setNames(choices, labels_choices)
       if (!identical(cols_choices_new, cols_choices())) {
         logger::log_debug("srv_t_reactable@1 update column choices")
         shinyWidgets::updatePickerInput(
@@ -216,7 +216,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
 
 .make_reactable_call <- function(dataset, dataname, args) {
   columns <- .make_reactable_columns_call(dataset = dataset, col_defs = args$columns)
-  call_args <- modifyList(
+  call_args <- utils::modifyList(
     list(columns = columns, onClick = "select"), 
     args[!names(args) %in% "columns"]
   )
@@ -248,7 +248,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       is_labelled <- length(label) == 1 && !is.na(label) && !identical(label, "")
       default_col_def <- if (is_labelled) list(name = label) else list()
       col_def_override <- if (!is.null(col_defs[[i]])) col_defs[[i]] else list()
-      col_def_args <- modifyList(default_col_def, col_def_override)
+      col_def_args <- utils::modifyList(default_col_def, col_def_override)
       if (length(col_def_args)) {
         as.call(
           c(

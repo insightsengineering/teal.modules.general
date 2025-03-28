@@ -136,7 +136,7 @@ srv_g_waterfall <- function(id,
       children_datanames = table_datanames
     )
     
-    srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, reactable_args = reactable_args)
+    srv_t_reactables("subtables", data = tables_selected_q, datanames = table_datanames, reactable_args = reactable_args)
   })
 }
 
@@ -172,9 +172,9 @@ waterfally <- function(data, subject_var, value_var, color_var, colors, value_ar
       height = height
     ) %>%
     plotly::add_bars(
-      x = as.formula(sprintf("~%s", subject_var)),
-      y = as.formula(sprintf("~%s", value_var)),
-      color = as.formula(sprintf("~%s", color_var)),
+      x = stats::as.formula(sprintf("~%s", subject_var)),
+      y = stats::as.formula(sprintf("~%s", value_var)),
+      color = stats::as.formula(sprintf("~%s", color_var)),
       colors = colors,
       text = ~tooltip,
       hoverinfo = "text"

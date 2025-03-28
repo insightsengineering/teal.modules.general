@@ -358,11 +358,11 @@ children <- function(x, dataset_name = character(0)) {
     names(
       Filter(
         function(parent) parent == dataset_name,
-        parents(x)
+        teal.data::parents(x)
       )
     )
   } else {
-    all_parents <- unique(unlist(parents(x)))
+    all_parents <- unique(unlist(teal.data::parents(x)))
     names(all_parents) <- all_parents
     lapply(
       all_parents, 
@@ -392,10 +392,10 @@ children <- function(x, dataset_name = character(0)) {
   plotly_selected_q <- reactive({
     req(plotly_selected())
     # todo: change it to foreign keys needed to merge with children_datanames
-    primary_keys <- unname(join_keys(data())[plot_dataname, plot_dataname])
+    primary_keys <- unname(teal.data::join_keys(data())[plot_dataname, plot_dataname])
     if (length(primary_keys) == 0) {
       primary_keys <- unique(sapply(children_datanames, USE.NAMES = FALSE, FUN = function(childname) {
-        names(join_keys(data())[plot_dataname, childname])
+        names(teal.data::join_keys(data())[plot_dataname, childname])
       }))
     }
     req(primary_keys)
@@ -427,7 +427,7 @@ children <- function(x, dataset_name = character(0)) {
       lapply(
         children_names(),
         function(childname) {
-          join_cols <- join_keys(plotly_selected_q())[childname, plot_dataname]
+          join_cols <- teal.data::join_keys(plotly_selected_q())[childname, plot_dataname]
           substitute(
             expr = {
               childname <- dplyr::right_join(childname, swimlane_selected, by = by)
@@ -440,6 +440,6 @@ children <- function(x, dataset_name = character(0)) {
         }
       )
     )
-    q <- eval_code(plotly_selected_q(), exprs)
+    q <- teal.code::eval_code(plotly_selected_q(), exprs)
   })
 }

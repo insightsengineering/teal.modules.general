@@ -149,7 +149,7 @@ srv_g_spiderplot <- function(id,
       children_datanames = table_datanames
     )
     
-    srv_t_reactables("subtables", data = tables_selected_q, dataname = table_datanames, reactable_args = reactable_args)
+    srv_t_reactables("subtables", data = tables_selected_q, datanames = table_datanames, reactable_args = reactable_args)
   })
 }
 
@@ -164,9 +164,9 @@ spiderplotly <- function(data, time_var, value_var, subject_var, event_var, colo
   if (!length(event_var_label)) event_var_label <- event_var
   
   data %>%
-    arrange(!!as.name(subject_var), !!as.name(time_var)) %>%
-    group_by(!!as.name(subject_var)) %>%
-    mutate(
+    dplyr::arrange(!!as.name(subject_var), !!as.name(time_var)) %>%
+    dplyr::group_by(!!as.name(subject_var)) %>%
+    dplyr::mutate(
       x = dplyr::lag(!!as.name(time_var), default = 0),
       y = dplyr:::lag(!!as.name(value_var), default = 0),
       tooltip = sprintf(
@@ -176,24 +176,24 @@ spiderplotly <- function(data, time_var, value_var, subject_var, event_var, colo
         event_var_label, !!as.name(value_var) * 100
       )
     ) %>%
-    ungroup() %>%
+    dplyr::ungroup() %>%
     plotly::plot_ly(
       source = "spiderplot", 
       height = height,
-      color = as.formula(sprintf("~%s", color_var)),
+      color = stats::as.formula(sprintf("~%s", color_var)),
       colors = colors,
       symbols = symbols
     ) %>%
     plotly::add_segments(
       x = ~x,
       y = ~y,
-      xend = as.formula(sprintf("~%s", time_var)), 
-      yend = as.formula(sprintf("~%s", value_var))
+      xend = stats::as.formula(sprintf("~%s", time_var)), 
+      yend = stats::as.formula(sprintf("~%s", value_var))
     ) %>%
     plotly::add_markers(
-      x = as.formula(sprintf("~%s", time_var)),
-      y = as.formula(sprintf("~%s", value_var)),
-      symbol = as.formula(sprintf("~%s", color_var)),
+      x = stats::as.formula(sprintf("~%s", time_var)),
+      y = stats::as.formula(sprintf("~%s", value_var)),
+      symbol = stats::as.formula(sprintf("~%s", color_var)),
       text = ~tooltip,
       hoverinfo = "text"
     ) %>%

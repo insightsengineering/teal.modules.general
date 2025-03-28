@@ -69,21 +69,21 @@ colour_picker_srv <- function(id, x, default_colors) {
 #' @return `character` with hex colors named by `levels`.
 .color_palette_discrete <- function(levels, color)  {
   p <- color[names(color) %in% levels]
-  p_rgb_num <- col2rgb(p)
-  p_hex <- rgb(p_rgb_num[1,]/255, p_rgb_num[2,]/255, p_rgb_num[3,]/255)
-  p <- setNames(p_hex, names(p))
+  p_rgb_num <- grDevices::col2rgb(p)
+  p_hex <- grDevices::rgb(p_rgb_num[1,]/255, p_rgb_num[2,]/255, p_rgb_num[3,]/255)
+  p <- stats::setNames(p_hex, names(p))
   missing_levels <- setdiff(levels, names(p))
   N <- length(levels)
   n <- length(p)
   m <- N - n
   if (m > 0 && n > 0) {
-    current_space <- rgb2hsv(col2rgb(p))
+    current_space <- grDevices::rgb2hsv(grDevices::col2rgb(p))
     optimal_color_space <- colorspace::qualitative_hcl(N)
-    color_distances <- dist(t(cbind(current_space, rgb2hsv(col2rgb(optimal_color_space)))))
+    color_distances <- stats::dist(t(cbind(current_space, grDevices::rgb2hsv(grDevices::col2rgb(optimal_color_space)))))
     optimal_to_current_dist <- as.matrix(color_distances)[seq_len(n), -seq_len(n)]
     furthest_neighbours_idx <- order(apply(optimal_to_current_dist, 2, min), decreasing = TRUE)
     missing_colors <- optimal_color_space[furthest_neighbours_idx][seq_len(m)]
-    p <- c(p, setNames(missing_colors, missing_levels))
+    p <- c(p, stats::setNames(missing_colors, missing_levels))
   } else if (length(missing_levels)) {
     colorspace::qualitative_hcl(N)
   } else {
@@ -93,7 +93,7 @@ colour_picker_srv <- function(id, x, default_colors) {
 }
 
 .shape_palette_discrete <- function(levels, symbol) {
-  s <- setNames(symbol[levels], levels)
+  s <- stats::setNames(symbol[levels], levels)
   s[is.na(s)] <- "circle-open"
   s
 }
