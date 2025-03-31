@@ -1038,8 +1038,8 @@ srv_a_regression <- function(id,
     #   gsub(code, "", teal.data::get_code(data), fixed = TRUE)
     # }
 
-    pull_code <- function(data, labels){
-      reactive(teal.data::get_code(req(data()), labels = labels))
+    pull_code <- function(data, labels = NULL){
+      reactive(teal.code::get_code(req(data()), labels = labels))
     }
     setup_code_r <- pull_code(data)
     libraries_code_r <- pull_code(decorated_output_q, labels = "libraries")
