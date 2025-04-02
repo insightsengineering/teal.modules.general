@@ -9,6 +9,7 @@ tm_g_waterfall(
   plot_dataname,
   subject_var,
   value_var,
+  sort_var = NULL,
   color_var = NULL,
   bar_colors = list(),
   value_arbitrary_hlines = c(0.2, -0.3),
@@ -24,12 +25,12 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{plot_dataname}{(\code{character(1)}) name of the dataset which visualization is builded on.}
 
-\item{subject_var}{(\code{character(1)}) name of the \code{factor} or \code{character}  column in \code{plot_dataname}
+\item{subject_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character}  column in \code{plot_dataname}
 to be used as x-axis.}
 
-\item{value_var}{(\code{character(1)}) name of the \code{numeric} column in \code{plot_dataname} to be used as y-axis.}
+\item{value_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column in \code{plot_dataname} to be used as y-axis.}
 
-\item{color_var}{(\code{character(1)}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
+\item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
 to be used to differentiate bar colors.}
 
 \item{bar_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named

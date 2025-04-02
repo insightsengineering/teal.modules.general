@@ -23,22 +23,22 @@ tm_g_swimlane(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{plot_dataname}{(\code{character(1)}) name of the dataset which visualization is builded on.}
+\item{plot_dataname}{(\code{character(1)} or \code{choices_selected}) name of the dataset which visualization is builded on.}
 
-\item{time_var}{(\code{character(1)}) name of the \code{numeric} column in \code{plot_dataname} to be used as x-axis.}
+\item{time_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column in \code{plot_dataname} to be used as x-axis.}
 
-\item{subject_var}{(\code{character(1)}) name of the \code{factor} or \code{character}  column in \code{plot_dataname}
+\item{subject_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character}  column in \code{plot_dataname}
 to be used as y-axis.}
 
-\item{color_var}{(\code{character(1)}) name of the \code{factor} or \code{character}  column in \code{plot_dataname}
+\item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character}  column in \code{plot_dataname}
 to name and color subject events in time.}
 
-\item{group_var}{(\code{character(1)}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
+\item{group_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
 to categorize type of event.
 (legend is sorted according to this variable, and used in toolip to display type of the event)
 todo: this can be fixed by ordering factor levels}
 
-\item{sort_var}{(\code{character(1)} or \code{select_spec}) name(s) of the column in \code{plot_dataname} which
+\item{sort_var}{(\code{character(1)} or \code{choices_selected}) name(s) of the column in \code{plot_dataname} which
 value determines order of the subjects displayed on the y-axis.}
 
 \item{point_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named

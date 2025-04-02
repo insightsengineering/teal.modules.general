@@ -4,17 +4,17 @@
 #' 
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param plot_dataname (`character(1)`) name of the dataset which visualization is builded on.
-#' @param time_var (`character(1)`) name of the `numeric` column in `plot_dataname` to be used as x-axis.
-#' @param subject_var (`character(1)`) name of the `factor` or `character`  column in `plot_dataname` 
+#' @param plot_dataname (`character(1)` or `choices_selected`) name of the dataset which visualization is builded on.
+#' @param time_var (`character(1)` or `choices_selected`) name of the `numeric` column in `plot_dataname` to be used as x-axis.
+#' @param subject_var (`character(1)` or `choices_selected`) name of the `factor` or `character`  column in `plot_dataname` 
 #'  to be used as y-axis.
-#' @param color_var (`character(1)`) name of the `factor` or `character`  column in `plot_dataname` 
+#' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character`  column in `plot_dataname` 
 #'  to name and color subject events in time. 
-#' @param group_var (`character(1)`) name of the `factor` or `character` column in `plot_dataname`
+#' @param group_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname`
 #'  to categorize type of event. 
 #'  (legend is sorted according to this variable, and used in toolip to display type of the event)
 #'  todo: this can be fixed by ordering factor levels
-#' @param sort_var (`character(1)` or `select_spec`) name(s) of the column in `plot_dataname` which 
+#' @param sort_var (`character(1)` or `choices_selected`) name(s) of the column in `plot_dataname` which 
 #'  value determines order of the subjects displayed on the y-axis.
 #' @param point_colors (`named character`) valid color names (see [colors()]) or hex-colors named 
 #'  by levels of `color_var` column.
@@ -33,6 +33,21 @@ tm_g_swimlane <- function(label = "Swimlane",
                           plot_height = 700,
                           table_datanames = character(0),
                           reactable_args = list()) {
+  if (is.character(time_var)) {
+    time_var <- choices_selected(choices = time_var, selected = time_var)
+  }
+  if (is.character(subject_var)) {
+    subject_var <- choices_selected(choices = subject_var, selected = subject_var)
+  }
+  if (is.character(color_var)) {
+    color_var <- choices_selected(choices = color_var, selected = color_var)
+  }
+  if (is.character(group_var)) {
+    group_var <- choices_selected(choices = group_var, selected = group_var)
+  }
+  if (is.character(sort_var)) {
+    sort_var <- choices_selected(choices = sort_var, selected = sort_var)
+  }
   module(
     label = label,
     ui = ui_g_swimlane,
@@ -55,12 +70,14 @@ tm_g_swimlane <- function(label = "Swimlane",
 }
 
 ui_g_swimlane <- function(id, height) {
-  
-  
   ns <- NS(id)
   bslib::page_sidebar(
     sidebar = div(
-      selectInput(ns("sort_by"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("time_var"), label = "Time variable:", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("subject_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("color_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("group_var"), label = "Group by:", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("sort_var"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
       colour_picker_ui(ns("colors")),
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
@@ -84,48 +101,35 @@ srv_g_swimlane <- function(id,
                            reactable_args = list(),
                            filter_panel_api) {
   moduleServer(id, function(input, output, session) {
-    
-    sort_choices <- reactiveVal()
-    sort_selected <- reactiveVal()
-    if (inherits(sort_var, c("choices_selected", "select_spec"))) {
-      if (length(sort_var$choices) == 1) {
-        sort_var <- sort_var$choices
-      } else {
-        updateSelectInput(inputId = "sort_by", choices = sort_var$choices, selected = sort_var$selected)
-        observeEvent(input$sort_by, {
-          if (!identical(input$sort_by, sort_selected())) {
-            sort_selected(input$sort_by)          
-          }
-        })
-      }
-    }
-    
-    if (length(sort_var) == 1) {
-      isolate(sort_choices(sort_var))
-      isolate(sort_selected(sort_var))
-      shinyjs::hide("sort_by")
-    }
-  
+    .update_cs_input(inputId = "time_var", data = reactive(data()[[dataname]]), cs = time_var)
+    .update_cs_input(inputId = "subject_var", data = reactive(data()[[dataname]]), cs = subject_var)
+    .update_cs_input(inputId = "color_var", data = reactive(data()[[dataname]]), cs = color_var)
+    .update_cs_input(inputId = "group_var", data = reactive(data()[[dataname]]), cs = group_var)
+    .update_cs_input(inputId = "sort_var", data = reactive(data()[[dataname]]), cs = sort_var)
+
     color_inputs <- colour_picker_srv(
       "colors", 
-      x = reactive(data()[[plot_dataname]][[color_var]]),
+      x = reactive({
+        req(input$color_var)
+        data()[[plot_dataname]][[input$color_var]]
+      }),
       default_colors = point_colors
     )
     
     plotly_q <- reactive({
-      req(data(), sort_selected(), color_inputs())
+      req(data(), input$time_var, input$subject_var, input$color_var, input$group_var, input$sort_var, color_inputs())
       adjusted_symbols <- .shape_palette_discrete(
-        levels = unique(data()[[plot_dataname]][[color_var]]),
+        levels = unique(data()[[plot_dataname]][[input$color_var]]),
         symbol = point_symbols
       )
       within(
         data(),
         dataname = str2lang(plot_dataname),
-        time_var = time_var,
-        subject_var = subject_var,
-        color_var = color_var,
-        group_var = group_var,
-        sort_var = sort_selected(),
+        time_var = input$time_var,
+        subject_var = input$subject_var,
+        color_var = input$color_var,
+        group_var = input$group_var,
+        sort_var = input$sort_var,
         colors = color_inputs(),
         symbols = adjusted_symbols,
         height = input$plot_height,
@@ -155,8 +159,8 @@ srv_g_swimlane <- function(id,
     tables_selected_q <- .plotly_selected_filter_children(
       data = plotly_q, 
       plot_dataname = plot_dataname,
-      xvar = time_var, 
-      yvar = subject_var, 
+      xvar = reactive(input$time_var), 
+      yvar = reactive(input$subject_var), 
       plotly_selected = plotly_selected, 
       children_datanames = table_datanames
     )

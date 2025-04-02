@@ -7,7 +7,7 @@
 tm_rmarkdown(
   label = "App Info",
   text = character(0),
-  params = list(title = "Document", output = "html_output"),
+  params = list(title = "Document"),
   datanames = "all"
 )
 }

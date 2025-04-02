@@ -389,9 +389,11 @@ children <- function(x, dataset_name = character(0)) {
 #' @param plotly_selected (`reactive`)
 #' @param children_datanames (`character`)
 .plotly_selected_filter_children <- function(data, plot_dataname, xvar, yvar, plotly_selected, children_datanames) {
+  xvar_r <- if (is.reactive(xvar)) xvar else reactive(xvar)
+  yvar_r <- if (is.reactive(yvar)) yvar else reactive(yvar)
+  
   plotly_selected_q <- reactive({
-    req(plotly_selected())
-    # todo: change it to foreign keys needed to merge with children_datanames
+    req(plotly_selected(), xvar_r(), yvar_r())
     primary_keys <- unname(teal.data::join_keys(data())[plot_dataname, plot_dataname])
     if (length(primary_keys) == 0) {
       primary_keys <- unique(sapply(children_datanames, USE.NAMES = FALSE, FUN = function(childname) {
@@ -406,8 +408,8 @@ children <- function(x, dataset_name = character(0)) {
           dplyr::select(primary_keys)
       },
       dataname = str2lang(plot_dataname),
-      xvar = str2lang(xvar),
-      yvar = str2lang(yvar),
+      xvar = str2lang(xvar_r()),
+      yvar = str2lang(yvar_r()),
       xvals = plotly_selected()$x,
       yvals = plotly_selected()$y,
       primary_keys = primary_keys
@@ -442,4 +444,14 @@ children <- function(x, dataset_name = character(0)) {
     )
     q <- teal.code::eval_code(plotly_selected_q(), exprs)
   })
+}
+
+
+.update_cs_input <- function(inputId, data, cs) {
+  if (!missing(data) && !length(names(cs))) {
+    labels <- teal.data::col_labels(isolate(data()))[cs$choices]
+    names(cs$choices) <- labels
+  }
+  updateSelectInput(inputId = inputId, choices = cs$choices, selected = cs$selected)
+  if (length(cs$choices) < 2) shinyjs::hide(inputId)
 }

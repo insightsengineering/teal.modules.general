@@ -4,13 +4,13 @@
 #' 
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param plot_dataname (`character(1)`) name of the dataset which visualization is builded on.
-#' @param time_var (`character(1)`) name of the `numeric` column in `plot_dataname` to be used as x-axis.
-#' @param value_var (`character(1)`) name of the `numeric` column in `plot_dataname` to be used as y-axis.
+#' @param plot_dataname (`character(1)` or `choices_selected`) name of the dataset which visualization is builded on.
+#' @param time_var (`character(1)` or `choices_selected`) name of the `numeric` column in `plot_dataname` to be used as x-axis.
+#' @param value_var (`character(1)` or `choices_selected`) name of the `numeric` column in `plot_dataname` to be used as y-axis.
 #'  column.
-#' @param subject_var (`character(1)`) name of the `factor` or `character` column in `plot_dataname` 
+#' @param subject_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname` 
 #'  to be used as grouping variable for displayed lines/points.
-#' @param color_var (`character(1)`) name of the `factor` or `character` column in `plot_dataname` 
+#' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname` 
 #'  to be used to differentiate colors and symbols.
 #' @param point_colors (`named character`) valid color names (see [colors()]) or hex-colors named 
 #'  by levels of `color_var` column.
@@ -30,6 +30,22 @@ tm_g_spiderplot <- function(label = "Spiderplot",
                             table_datanames = character(0),
                             reactable_args =  list(),
                             transformator = transformator) {
+  if (is.character(time_var)) {
+    time_var <- choices_selected(choices = time_var, selected = time_var)
+  }
+  if (is.character(value_var)) {
+    value_var <- choices_selected(choices = value_var, selected = value_var)
+  }
+  if (is.character(subject_var)) {
+    subject_var <- choices_selected(choices = subject_var, selected = subject_var)
+  }
+  if (is.character(color_var)) {
+    color_var <- choices_selected(choices = color_var, selected = color_var)
+  }
+  if (is.character(event_var)) {
+    event_var <- choices_selected(choices = event_var, selected = event_var)
+  }
+
   module(
     label = label,
     ui = ui_g_spiderplot,
@@ -56,7 +72,12 @@ ui_g_spiderplot <- function(id, height) {
   ns <- NS(id)
   bslib::page_sidebar(
     sidebar = div(
-      selectInput(ns("select_event"), "Select Y Axis", NULL),
+      selectInput(ns("time_var"), label = "Time variable (x-axis):", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("value_var"), label = "Value variable (y-axis):", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("subject_var"), label = "Subject variable:", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("color_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("event_var"), label = "Event variable:", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("evant_var_level"), "Select an event:", NULL),
       colour_picker_ui(ns("colors")),
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
@@ -82,42 +103,51 @@ srv_g_spiderplot <- function(id,
                              reactable_args = list(),
                              filter_panel_api) {
   moduleServer(id, function(input, output, session) {
-    event_levels <- reactive({
-      req(data())
-      unique(data()[[plot_dataname]][[event_var]])
+    .update_cs_input(inputId = "value_var", data = reactive(data()[[dataname]]), cs = value_var)
+    .update_cs_input(inputId = "time_var", data = reactive(data()[[dataname]]), cs = time_var)
+    .update_cs_input(inputId = "subject_var", data = reactive(data()[[dataname]]), cs = subject_var)
+    .update_cs_input(inputId = "color_var", data = reactive(data()[[dataname]]), cs = color_var)
+    .update_cs_input(inputId = "event_var", data = reactive(data()[[dataname]]), cs = event_var)
+    
+    evant_var_levels <- reactive({
+      req(data(), input$event_var)
+      unique(data()[[plot_dataname]][[input$event_var]])
     })
-    observeEvent(event_levels(), {
-      updateSelectInput(inputId = "select_event",  choices = event_levels(), selected = event_levels()[1])
+    observeEvent(evant_var_levels(), {
+      updateSelectInput(inputId = "evant_var_level",  choices = evant_var_levels(), selected = evant_var_levels()[1])
     })
     
     color_inputs <- colour_picker_srv(
       "colors", 
-      x = reactive(data()[[plot_dataname]][[color_var]]),
+      x = reactive({
+        req(input$color_var)
+        data()[[plot_dataname]][[input$color_var]]
+      }),
       default_colors = point_colors
     )
     
     plotly_q <- reactive({
-      req(input$select_event, color_inputs())
+      req(input$evant_var_level, input$time_var, input$value_var, input$subject_var, input$event_var, input$color_var, color_inputs())
   
       adjusted_symbols <- .shape_palette_discrete(
-        levels = unique(data()[[plot_dataname]][[color_var]]),
+        levels = unique(data()[[plot_dataname]][[input$color_var]]),
         symbol = point_symbols
       )
       
       within(
         data(),
         dataname = str2lang(plot_dataname),
-        event_var_lang = str2lang(event_var),
-        time_var = time_var,
-        value_var = value_var,
-        subject_var = subject_var,
-        event_var = event_var,
-        color_var = color_var,
-        selected_event = input$select_event,
+        event_var_lang = str2lang(input$event_var),
+        time_var = input$time_var,
+        value_var = input$value_var,
+        subject_var = input$subject_var,
+        event_var = input$event_var,
+        selected_event = input$evant_var_level,
+        color_var = input$color_var,
         colors = color_inputs(),
         symbols = adjusted_symbols,
         height = input$plot_height,
-        title = sprintf("%s over time", input$selected_event),
+        title = sprintf("%s over time", input$evant_var_level),
         expr = {
           p <- dataname %>%
             filter(event_var_lang == selected_event) %>%
@@ -143,8 +173,8 @@ srv_g_spiderplot <- function(id,
     tables_selected_q <- .plotly_selected_filter_children(
       data = plotly_q, 
       plot_dataname = plot_dataname,
-      xvar = time_var, 
-      yvar = value_var, 
+      xvar = reactive(input$time_var), 
+      yvar = reactive(input$value_var), 
       plotly_selected = plotly_selected, 
       children_datanames = table_datanames
     )
