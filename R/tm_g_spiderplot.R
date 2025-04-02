@@ -77,7 +77,7 @@ ui_g_spiderplot <- function(id, height) {
       selectInput(ns("subject_var"), label = "Subject variable:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("color_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("event_var"), label = "Event variable:", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(ns("evant_var_level"), "Select an event:", NULL),
+      selectInput(ns("event_var_level"), label = "Select an event:", choices = NULL, selected = NULL, multiple = FALSE),
       colour_picker_ui(ns("colors")),
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
@@ -109,12 +109,22 @@ srv_g_spiderplot <- function(id,
     .update_cs_input(inputId = "color_var", data = reactive(data()[[dataname]]), cs = color_var)
     .update_cs_input(inputId = "event_var", data = reactive(data()[[dataname]]), cs = event_var)
     
-    evant_var_levels <- reactive({
+    event_var_levels <- reactive({
       req(data(), input$event_var)
+      # comment: 
+      #  i don't know if it makes sense. I think it will be rare that dataset would have multiple 
+      #  category variables. There would rather be another dataset (consider responses, interventions etc.)
       unique(data()[[plot_dataname]][[input$event_var]])
     })
-    observeEvent(evant_var_levels(), {
-      updateSelectInput(inputId = "evant_var_level",  choices = evant_var_levels(), selected = evant_var_levels()[1])
+    observeEvent(event_var_levels(), {
+      label <- attr(data()[[plot_dataname]][[input$event_var]], "label")
+      updateSelectInput(
+        inputId = "event_var_level",
+        label = sprintf("Select %s:", if (length(label)) label else "en event:"),
+        choices = event_var_levels(), 
+        selected = event_var_levels()[1]
+      )
+      if (length(event_var_levels()) < 2) shinyjs::hide("event_var_level")
     })
     
     color_inputs <- colour_picker_srv(
@@ -127,7 +137,7 @@ srv_g_spiderplot <- function(id,
     )
     
     plotly_q <- reactive({
-      req(input$evant_var_level, input$time_var, input$value_var, input$subject_var, input$event_var, input$color_var, color_inputs())
+      req(input$event_var_level, input$time_var, input$value_var, input$subject_var, input$event_var, input$color_var, color_inputs())
   
       adjusted_symbols <- .shape_palette_discrete(
         levels = unique(data()[[plot_dataname]][[input$color_var]]),
@@ -142,12 +152,12 @@ srv_g_spiderplot <- function(id,
         value_var = input$value_var,
         subject_var = input$subject_var,
         event_var = input$event_var,
-        selected_event = input$evant_var_level,
+        selected_event = input$event_var_level,
         color_var = input$color_var,
         colors = color_inputs(),
         symbols = adjusted_symbols,
         height = input$plot_height,
-        title = sprintf("%s over time", input$evant_var_level),
+        title = sprintf("%s over time", input$event_var_level),
         expr = {
           p <- dataname %>%
             filter(event_var_lang == selected_event) %>%
