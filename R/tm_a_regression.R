@@ -285,9 +285,6 @@ ui_a_regression <- function(id, ...) {
       tags$div(verbatimTextOutput(ns("text")))
     )),
     encoding = tags$div(
-      ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      ###
       tags$label("Encodings", class = "text-primary"), tags$br(),
       teal.transform::datanames_input(args[c("response", "regressor")]),
       teal.transform::data_extract_ui(
@@ -386,16 +383,15 @@ ui_a_regression <- function(id, ...) {
 # Server function for the regression module
 srv_a_regression <- function(id,
                              data,
-                             reporter,
                              filter_panel_api,
                              response,
                              regressor,
+                             reporter,
                              plot_height,
                              plot_width,
                              ggplot2_args,
                              default_outlier_label,
                              decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -464,14 +460,16 @@ srv_a_regression <- function(id,
 
     qenv <- teal.code::eval_code(
       data(),
-      'library("ggplot2");library("dplyr")' # nolint quotes
+      'library("ggplot2");library("dplyr")', # nolint quotes
+      label = "libraries"
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
       qenv %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+        teal.code::eval_code(as.expression(anl_merged_input()$expr), label = "data preparations")
     })
+
 
     # sets qenv object and populates it with data merge call and fit expression
     fit_r <- reactive({
@@ -528,7 +526,7 @@ srv_a_regression <- function(id,
       }
 
       anl_merged_q() %>%
-        teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form))) %>%
+        teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form)), label = "fit") %>%
         teal.code::eval_code(quote({
           for (regressor in names(fit$contrasts)) {
             alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
@@ -536,8 +534,8 @@ srv_a_regression <- function(id,
               paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients)
             )
           }
-        })) %>%
-        teal.code::eval_code(quote(summary(fit)))
+        }), label = "fit") %>%
+        teal.code::eval_code(quote(summary(fit)), label = "fit")
     })
 
     label_col <- reactive({
@@ -590,7 +588,8 @@ srv_a_regression <- function(id,
           smoothy_aes <- ggplot2::aes_string(x = "x", y = "y")
 
           reg_form <- deparse(fit$call[[2]])
-        })
+        }),
+        label = "plot"
       )
     })
 
@@ -660,7 +659,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -704,7 +704,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -763,7 +764,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -806,7 +808,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -872,7 +875,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -927,7 +931,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -977,7 +982,8 @@ srv_a_regression <- function(id,
           env = list(
             graph = Reduce(function(x, y) call("+", x, y), c(plot, parsed_ggplot2_args))
           )
-        )
+        ),
+        label = "plot"
       )
     })
 
@@ -997,8 +1003,9 @@ srv_a_regression <- function(id,
     decorated_output_q <- srv_decorate_teal_data(
       "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
-      expr = print(plot)
+      decorators = select_decorators(decorators, "plot"), # decorator needs to put label="plot" in it's eval_code
+      expr = print(plot),
+      label = "plot"
     )
 
     fitted <- reactive({
@@ -1026,8 +1033,13 @@ srv_a_regression <- function(id,
       )
     })
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
+    setup_code_r <- pull_code(data)
+    libraries_code_r <- pull_code(decorated_output_q, labels = "libraries")
+    data_prep_code_r <- pull_code(decorated_output_q, labels = "data preparations")
+    fit_code_r <- pull_code(decorated_output_q, labels = "fit")
+    plot_code_r <- pull_code(decorated_output_q, labels = "plot")
+
+    source_code_r <- pull_code(decorated_output_q)
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
@@ -1036,25 +1048,71 @@ srv_a_regression <- function(id,
     )
 
     ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Linear Regression Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+    card_fun <- reactive({
+      req(plot_r(), plot_code_r(), setup_code_r(), libraries_code_r(), data_prep_code_r(), fit_code_r(), fitted())
+      teal.reporter::report_document(
+
+        "## Setup",
+        teal.reporter::code_chunk(setup_code_r()),
+
+        "## Libraries",
+        teal.reporter::code_chunk(libraries_code_r(), eval = TRUE),
+
+        "## Data Preparations",
+        teal.reporter::code_chunk(data_prep_code_r()),
+
+        "## Model",
+        teal.reporter::code_chunk(fit_code_r()),
+        teal.reporter::code_output(
+          paste(utils::capture.output(summary(teal.code::dev_suppress(fitted())))[-1],
+              collapse = "\n"
+          )
+        ),
+
+        "## Plot",
+        teal.reporter::code_chunk(
+          plot_code_r() |> styler::style_text() |> paste(collapse = "\n")
+        ),
+        plot_r(),
+
+        "## rtables for testing",
+        teal.reporter::code_chunk(
+          "rtables::rtable(
+          header = LETTERS[1:3],
+          rtables::rrow('one to three', 1, 2, 3),
+          rtables::rrow('more stuff', rtables::rcell(pi, format = 'xx.xx'), 'test', 'and more')
+          )"
+        ),
+        rtables::rtable(
+          header = LETTERS[1:3],
+          rtables::rrow("one to three", 1, 2, 3),
+          rtables::rrow("more stuff", rtables::rcell(pi, format = "xx.xx"), "test", "and more")
+        ),
+
+        "## Table for testing",
+        teal.reporter::code_chunk(
+          "head(iris)"
+        ),
+        head(iris),
+
+        "## keep_in_report",
+
+        "If you don't want to include code for head(mtcars) in report - just don't include it.",
+
+        "If you want the object to be kept in the report as loaded from .rds use keep_in_report()",
+        head(mtcars) |> keep_in_report(),
+
+        "If you want the code/text to be included in the output, but not in the text use keep_in_report(FALSE)" |>
+          keep_in_report(FALSE),
+        teal.reporter::code_chunk(
+          "head(swiss)"
+        ) |> keep_in_report(FALSE)
+
+      )
+    })
+
+    list(
+      report_card = card_fun
+    )
   })
 }
