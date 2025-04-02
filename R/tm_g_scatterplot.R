@@ -371,9 +371,6 @@ ui_g_scatterplot <- function(id, ...) {
         DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
       encoding = tags$div(
-        ### Reporter
-        teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-        ###
         tags$label("Encodings", class = "text-primary"),
         teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
         teal.transform::data_extract_ui(
@@ -522,7 +519,6 @@ srv_g_scatterplot <- function(id,
                               table_dec,
                               ggplot2_args,
                               decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -590,13 +586,13 @@ srv_g_scatterplot <- function(id,
       datasets = data,
       merge_function = "dplyr::inner_join"
     )
-    qenv <- teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
+    qenv <- teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")', label = "libraries") # nolint quotes
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
       qenv %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr)) %>%
-        teal.code::eval_code(quote(ANL)) # used to display table when running show-r-code code
+        teal.code::eval_code(as.expression(anl_merged_input()$expr), label = "data preparations") %>%
+        teal.code::eval_code(quote(ANL), label = "data preparations") # used to display table when running show-r-code code
     })
 
     merged <- list(
@@ -767,7 +763,8 @@ srv_g_scatterplot <- function(id,
               log_x_fn = as.name(log_x_fn),
               log_x_var = paste0(log_x_fn, "_", x_var)
             )
-          )
+          ),
+          label = "plot"
         )
       }
 
@@ -782,7 +779,8 @@ srv_g_scatterplot <- function(id,
               log_y_fn = as.name(log_y_fn),
               log_y_var = paste0(log_y_fn, "_", y_var)
             )
-          )
+          ),
+          label = "plot"
         )
       }
 
@@ -911,7 +909,8 @@ srv_g_scatterplot <- function(id,
               substitute(
                 expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)),
                 env = list(x_var = as.name(x_var), y_var = as.name(y_var))
-              )
+              ),
+              label = "plot"
             )
           }
           rhs_formula <- substitute(
@@ -1014,14 +1013,15 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = plot <- plot_call, env = list(plot_call = plot_call))
 
-      teal.code::eval_code(plot_q, plot_call)
+      teal.code::eval_code(plot_q, plot_call, label = "plot")
     })
 
     decorated_output_plot_q <- srv_decorate_teal_data(
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = print(plot)
+      expr = print(plot),
+      label = "plot"
     )
 
     plot_r <- reactive(req(decorated_output_plot_q())[["plot"]])
@@ -1064,7 +1064,11 @@ srv_g_scatterplot <- function(id,
     })
 
     # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_plot_q())))
+    setup_code_r <- pull_code(data)
+    libraries_code_r <- pull_code(decorated_output_plot_q, labels = "libraries")
+    data_prep_code_r <- pull_code(decorated_output_plot_q, labels = "data preparations")
+    plot_code_r <- pull_code(decorated_output_plot_q, labels = "plot")
+    source_code_r <- pull_code(decorated_output_plot_q)
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
@@ -1072,26 +1076,32 @@ srv_g_scatterplot <- function(id,
       title = "R Code for scatterplot"
     )
 
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Scatter Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+
+    card_fun <- reactive({
+      req(setup_code_r(), libraries_code_r(), data_prep_code_r(), plot_code_r(), plot_r())
+
+      teal.reporter::report_document(
+
+        "## Setup",
+        teal.reporter::code_chunk(setup_code_r()),
+
+        "## Libraries",
+        teal.reporter::code_chunk(libraries_code_r(), eval = TRUE),
+
+        "## Data Preparations",
+        teal.reporter::code_chunk(data_prep_code_r()),
+
+        "## Scatterplot",
+        teal.reporter::code_chunk(
+          plot_code_r() |> styler::style_text() |> paste(collapse = "\n")
+        ),
+        plot_r()
+
+      )
+    })
+
+    list(
+      report_card = card_fun
+    )
   })
 }
