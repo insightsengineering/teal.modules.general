@@ -1033,43 +1033,11 @@ srv_a_regression <- function(id,
       )
     })
 
-    # # Render R code.
-    # subset_code <- function(code, data) {
-    #   gsub(code, "", teal.data::get_code(data), fixed = TRUE)
-    # }
-
-    pull_code <- function(data, labels = NULL){
-      reactive(teal.code::get_code(req(data()), labels = labels))
-    }
     setup_code_r <- pull_code(data)
     libraries_code_r <- pull_code(decorated_output_q, labels = "libraries")
-      # reactive(
-      #   subset_code(
-      #     setup_code_r(),
-      #     qenv
-      #   )
-      # )
     data_prep_code_r <- pull_code(decorated_output_q, labels = "data preparations")
-      # reactive(
-      #   subset_code(
-      #     paste0(setup_code_r(), libraries_code_r()),
-      #     req(anl_merged_q())
-      #   )
-      # )
     fit_code_r <- pull_code(decorated_output_q, labels = "fit")
-      # reactive(
-      #   subset_code(
-      #     paste0(setup_code_r(), libraries_code_r(), data_prep_code_r()),
-      #     req(fit_r())
-      #   )
-      # )
     plot_code_r <- pull_code(decorated_output_q, labels = "plot")
-      # reactive(
-      #   subset_code(
-      #     paste0(setup_code_r(), libraries_code_r(), data_prep_code_r(), fit_code_r()),
-      #     req(decorated_output_q())
-      #   )
-      # )
 
     source_code_r <- pull_code(decorated_output_q)
 
@@ -1081,7 +1049,7 @@ srv_a_regression <- function(id,
 
     ### REPORTER
     card_fun <- reactive({
-      req(plot_r(), plot_code_r(), setup_code_r(), data_prep_code_r(), fit_code_r(), fitted())
+      req(plot_r(), plot_code_r(), setup_code_r(), libraries_code_r(), data_prep_code_r(), fit_code_r(), fitted())
       teal.reporter::report_document(
 
         "## Setup",
