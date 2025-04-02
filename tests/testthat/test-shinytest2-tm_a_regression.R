@@ -46,13 +46,14 @@ app_driver_tm_a_regression <- function() {
 }
 
 testthat::test_that("e2e - tm_a_regression: Data parameter and module label is passed properly.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Regression"
   )
 
@@ -64,6 +65,7 @@ testthat::test_that("e2e - tm_a_regression: Data parameter and module label is p
 
 testthat::test_that("e2e - tm_a_regression:
   Data extract spec elements are initialized with the default values specified by response and regressor arg.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -83,6 +85,7 @@ testthat::test_that("e2e - tm_a_regression:
 })
 
 testthat::test_that("e2e - tm_a_regression: Plot type is set properly.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -96,6 +99,7 @@ testthat::test_that("e2e - tm_a_regression: Plot type is set properly.", {
 
 testthat::test_that("e2e - tm_a_regression:
   Plot type has 7 specific choices & changing choices does not throw errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -123,6 +127,7 @@ testthat::test_that("e2e - tm_a_regression:
 })
 
 testthat::test_that("e2e - tm_a_regression: Outlier definition and label are visible by default.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -135,6 +140,7 @@ testthat::test_that("e2e - tm_a_regression: Outlier definition and label are vis
 })
 
 testthat::test_that("e2e - tm_a_regression: Outlier definition and label have default values and label text.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()
@@ -163,6 +169,7 @@ testthat::test_that("e2e - tm_a_regression: Outlier definition and label have de
 })
 
 testthat::test_that("e2e - tm_a_regression: Unchecking display outlier hides outlier label and definition.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()

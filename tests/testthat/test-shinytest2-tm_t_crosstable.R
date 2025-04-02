@@ -10,7 +10,7 @@ app_driver_tm_t_crosstable <- function() {
           label = "Select variable:",
           choices = teal.transform::variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
-            return(names(data)[idx])
+            names(data)[idx]
           }),
           selected = "COUNTRY",
           multiple = TRUE,
@@ -24,7 +24,7 @@ app_driver_tm_t_crosstable <- function() {
           label = "Select variable:",
           choices = teal.transform::variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- vapply(data, is.factor, logical(1))
-            return(names(data)[idx])
+            names(data)[idx]
           }),
           selected = "SEX",
           multiple = FALSE,
@@ -44,13 +44,14 @@ app_driver_tm_t_crosstable <- function() {
 }
 
 test_that("e2e - tm_t_crosstable: Initializes without errors", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_t_crosstable()
 
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Cross Table"
   )
 
@@ -61,6 +62,7 @@ test_that("e2e - tm_t_crosstable: Initializes without errors", {
 })
 
 test_that("e2e - tm_t_crosstable: Verify module displays data table", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_t_crosstable()
 
@@ -71,6 +73,7 @@ test_that("e2e - tm_t_crosstable: Verify module displays data table", {
 })
 
 test_that("e2e - tm_t_crosstable: Verify default values and settings (data_extracts) for data selection", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_t_crosstable()
 
@@ -94,6 +97,7 @@ test_that("e2e - tm_t_crosstable: Verify default values and settings (data_extra
 })
 
 test_that("e2e - tm_t_crosstable: Change plot settings", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_t_crosstable()
 

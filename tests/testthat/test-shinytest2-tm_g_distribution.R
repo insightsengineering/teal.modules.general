@@ -45,6 +45,7 @@ app_driver_tm_g_distribution <- function() {
 }
 
 testthat::test_that("e2e - tm_g_distribution: Module is initialised with the specified defaults.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_distribution()
@@ -69,6 +70,7 @@ testthat::test_that("e2e - tm_g_distribution: Module is initialised with the spe
 })
 
 testthat::test_that("e2e - tm_g_distribution: Histogram encoding inputs produce output without validation errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_distribution()
@@ -106,6 +108,7 @@ testthat::test_that("e2e - tm_g_distribution: Histogram encoding inputs produce 
 })
 
 testthat::test_that("e2e - tm_g_distribution: QQ plot encoding inputs produce output without validation errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_distribution()

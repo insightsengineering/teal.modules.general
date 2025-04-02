@@ -441,8 +441,9 @@ ui_g_scatterplot <- function(id, ...) {
           )
         },
         ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
-        teal.widgets::panel_group(
-          teal.widgets::panel_item(
+        bslib::accordion(
+          open = TRUE,
+          bslib::accordion_panel(
             title = "Plot settings",
             teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
             teal.widgets::optionalSelectInput(
