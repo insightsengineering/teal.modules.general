@@ -351,7 +351,6 @@ ui_a_pca <- function(id, ...) {
 
 # Server function for the PCA module
 srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args, decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -1140,6 +1139,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     })
 
+    # Render R code.
     setup_code_r <- pull_code(data)
     libraries_code_r <- pull_code(decorated_output_q, labels = "libraries")
     data_prep_code_r <- pull_code(decorated_output_q, labels = "data preparations")
@@ -1156,7 +1156,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
     )
 
     card_fun <- reactive({
-      req(setup_code_r(), data_prep_code_r(), computation_model_code_r(), computation(),
+      req(setup_code_r(), libraries_code_r(), data_prep_code_r(), computation_model_code_r(), computation(),
           computation_tbl_imp_code_r(), computation_tbl_eig_code_r(), plot_code_r(), plot_r())
 
       teal.reporter::report_document(
@@ -1189,7 +1189,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       )
     })
 
-    ###
     list(
       report_card = card_fun
     )

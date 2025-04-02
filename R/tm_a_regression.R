@@ -1110,7 +1110,6 @@ srv_a_regression <- function(id,
 
       )
     })
-    ###
 
     list(
       report_card = card_fun
