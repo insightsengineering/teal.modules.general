@@ -346,13 +346,12 @@ srv_tm_g_association <- function(id,
       selector_list = selector_list
     )
 
-    qenv <- teal.code::eval_code(
-      data(),
-      'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")' # nolint quotes
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")') # nolint quotes
     )
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>% teal.code::eval_code(as.expression(anl_merged_input()$expr))
+      qenv() %>% teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
     merged <- list(

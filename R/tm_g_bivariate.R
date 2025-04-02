@@ -559,14 +559,13 @@ srv_g_bivariate <- function(id,
       selector_list = selector_list,
       datasets = data
     )
-    qenv <- teal.code::eval_code(
-      data(),
-      'library("ggplot2");library("dplyr");library("teal.modules.general")' # nolint quotes
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("teal.modules.general")') # nolint quotes
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>%
+      qenv() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
