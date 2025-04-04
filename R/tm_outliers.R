@@ -238,7 +238,10 @@ ui_outliers <- function(id, ...) {
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(
       uiOutput(ns("total_outliers")),
-      DT::dataTableOutput(ns("summary_table")),
+      tags$div(
+        style = "overflow: auto;",
+        DT::dataTableOutput(ns("summary_table"))
+      ),
       uiOutput(ns("total_missing")),
       tags$br(), tags$hr(),
       tabsetPanel(

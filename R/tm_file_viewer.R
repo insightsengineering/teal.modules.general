@@ -115,7 +115,6 @@ ui_viewer <- function(id, ...) {
           ns("tree"),
           dragAndDrop = FALSE,
           sort = FALSE,
-          wholerow = TRUE,
           theme = "proton",
           multiple = FALSE
         )
