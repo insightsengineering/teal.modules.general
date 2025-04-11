@@ -1118,7 +1118,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
       validation()
       tags$div(
-        class = "overflow-scroll",
         uiOutput(session$ns("tbl_importance_ui")),
         uiOutput(session$ns("tbl_eigenvector_ui")),
         teal.widgets::plot_with_settings_ui(id = session$ns("pca_plot"))
