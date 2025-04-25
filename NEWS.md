@@ -1,4 +1,9 @@
-# teal.modules.general 0.4.0.9000
+# teal.modules.general 0.4.1.9001
+
+# teal.modules.general 0.4.1
+
+### Bug fixes
+* Fixes output is not updated when filter is added for the modules:  `tm_a_pca`, `tm_a_regression`, `tm_g_scatterplot`, `tm_g_association`, `tm_g_bivariate`, `tm_g_distribution`, `tm_g_response`, `tm_t_crosstable` (#870)
 
 # teal.modules.general 0.4.0
 

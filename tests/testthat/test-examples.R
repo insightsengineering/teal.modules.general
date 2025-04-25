@@ -152,6 +152,7 @@ for (i in rd_files()) {
     paste0("example-", basename(i)),
     {
       testthat::skip_on_cran()
+      testthat::skip("chromium")
       skip_if_too_deep(5)
       testthat::skip_if_not_installed("pkgload")
       if (basename(i) %in% strict_exceptions) {

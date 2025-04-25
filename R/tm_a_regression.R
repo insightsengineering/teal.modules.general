@@ -288,7 +288,7 @@ ui_a_regression <- function(id, ...) {
       ### Reporter
       teal.reporter::simple_reporter_ui(ns("simple_reporter")),
       ###
-      tags$label("Encodings", class = "text-primary"),
+      tags$label("Encodings", class = "text-primary"), tags$br(),
       teal.transform::datanames_input(args[c("response", "regressor")]),
       teal.transform::data_extract_ui(
         id = ns("response"),
@@ -315,12 +315,10 @@ ui_a_regression <- function(id, ...) {
         teal.widgets::optionalSliderInput(
           ns("outlier"),
           tags$div(
-            class = "teal-tooltip",
             tagList(
               "Outlier definition:",
-              icon("circle-info"),
-              tags$span(
-                class = "tooltiptext",
+              bslib::tooltip(
+                icon("fas fa-circle-info"),
                 paste(
                   "Use the slider to choose the cut-off value to define outliers.",
                   "Points with a Cook's distance greater than",
@@ -338,24 +336,25 @@ ui_a_regression <- function(id, ...) {
         )
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Plot settings",
           teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(
             inputId = ns("label_min_segment"),
             label = tags$div(
-              class = "teal-tooltip",
               tagList(
                 "Label min. segment:",
-                icon("circle-info"),
-                tags$span(
-                  class = "tooltiptext",
-                  paste(
-                    "Use the slider to choose the cut-off value to define minimum distance between label and point",
-                    "that generates a line segment.",
-                    "It's only valid when 'Display outlier labels' is checked."
+                bslib::tooltip(
+                  icon("circle-info"),
+                  tags$span(
+                    paste(
+                      "Use the slider to choose the cut-off value to define minimum distance between label and point",
+                      "that generates a line segment.",
+                      "It's only valid when 'Display outlier labels' is checked."
+                    )
                   )
                 )
               )
@@ -463,14 +462,13 @@ srv_a_regression <- function(id,
       )
     })
 
-    qenv <- teal.code::eval_code(
-      data(),
-      'library("ggplot2");library("dplyr")' # nolint quotes
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>%
+      qenv() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 

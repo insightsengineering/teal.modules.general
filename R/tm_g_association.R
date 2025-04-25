@@ -265,8 +265,9 @@ ui_tm_g_association <- function(id, ...) {
         value = FALSE
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Plot settings",
           teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Scatterplot opacity:", c(0.5, 0, 1), ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(ns("size"), "Scatterplot points size:", c(2, 1, 8), ticks = FALSE),
@@ -345,13 +346,12 @@ srv_tm_g_association <- function(id,
       selector_list = selector_list
     )
 
-    qenv <- teal.code::eval_code(
-      data(),
-      'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")' # nolint quotes
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")') # nolint quotes
     )
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>% teal.code::eval_code(as.expression(anl_merged_input()$expr))
+      qenv() %>% teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
     merged <- list(

@@ -240,8 +240,9 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
         multiple = FALSE
       ),
       tags$hr(),
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Table settings",
           checkboxInput(ns("show_percentage"), "Show column percentage", value = show_percentage),
           checkboxInput(ns("show_total"), "Show total column", value = show_total)
@@ -314,10 +315,12 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
       selector_list = selector_list,
       merge_function = merge_function
     )
-    qenv <- teal.code::eval_code(data(), 'library("rtables");library("tern");library("dplyr")') # nolint quotes
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("rtables");library("tern");library("dplyr")') # nolint quotes
+    )
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>%
+      qenv() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 

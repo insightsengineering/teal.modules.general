@@ -49,10 +49,6 @@
   display: block;
 }
 
-.overflow-scroll {
-  overflow: scroll;
-}
-
 .w-10 {
   width: 10%;
 }
@@ -82,6 +78,6 @@
 }
 
 .embed_pdf {
-  height:600px;
-  width:100%
+  height: 600px;
+  width: 100%;
 }

@@ -372,8 +372,12 @@ ui_g_bivariate <- function(id, ...) {
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",
-          tags$label("Facetting"),
-          shinyWidgets::switchInput(inputId = ns("facetting"), value = args$facet, size = "mini"),
+          tags$br(),
+          bslib::input_switch(
+            id = ns("facetting"),
+            label = "Facetting",
+            value = args$facet
+          ),
           conditionalPanel(
             condition = paste0("input['", ns("facetting"), "']"),
             tags$div(
@@ -404,7 +408,11 @@ ui_g_bivariate <- function(id, ...) {
         tags$div(
           class = "data-extract-box",
           tags$label("Color settings"),
-          shinyWidgets::switchInput(inputId = ns("coloring"), value = TRUE, size = "mini"),
+          bslib::input_switch(
+            id = ns("coloring"),
+            label = "Color settings",
+            value = TRUE
+          ),
           conditionalPanel(
             condition = paste0("input['", ns("coloring"), "']"),
             tags$div(
@@ -433,8 +441,9 @@ ui_g_bivariate <- function(id, ...) {
           )
         )
       },
-      teal.widgets::panel_group(
-        teal.widgets::panel_item(
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
           title = "Plot settings",
           checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
           checkboxInput(ns("swap_axes"), "Swap axes", value = args$swap_axes),
@@ -550,14 +559,13 @@ srv_g_bivariate <- function(id,
       selector_list = selector_list,
       datasets = data
     )
-    qenv <- teal.code::eval_code(
-      data(),
-      'library("ggplot2");library("dplyr");library("teal.modules.general")' # nolint quotes
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("teal.modules.general")') # nolint quotes
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>%
+      qenv() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 

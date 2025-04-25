@@ -21,13 +21,14 @@ app_driver_tm_data_table <- function() {
 }
 
 test_that("e2e - tm_data_table: Initializes without errors", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 
   app_driver$expect_no_shiny_error()
 
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab > li.active > a"),
+    app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Data Table"
   )
 
@@ -35,6 +36,7 @@ test_that("e2e - tm_data_table: Initializes without errors", {
 })
 
 test_that("e2e - tm_data_table: Verify checkbox displayed over data table", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 
@@ -44,6 +46,7 @@ test_that("e2e - tm_data_table: Verify checkbox displayed over data table", {
 })
 
 test_that("e2e - tm_data_table: Verify module displays data table", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 
@@ -80,6 +83,7 @@ test_that("e2e - tm_data_table: Verify module displays data table", {
 })
 
 test_that("e2e - tm_data_table: Verify default variable selection and set new selection", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_data_table()
 

@@ -32,6 +32,7 @@ app_driver_tm_a_pca <- function() {
 }
 
 testthat::test_that("e2e - tm_a_pca: Module is initialised with the specified defaults in function call.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -56,6 +57,7 @@ testthat::test_that("e2e - tm_a_pca: Module is initialised with the specified de
 })
 
 testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract selection Murder/Assault on header.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -73,6 +75,7 @@ testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract 
 })
 
 testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract selection Murder/UrbanPop on header.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -90,6 +93,7 @@ testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract 
 })
 
 testthat::test_that("e2e - tm_a_pca: Color by columns (data_extract) must be from non-selected variable set.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -107,6 +111,7 @@ testthat::test_that("e2e - tm_a_pca: Color by columns (data_extract) must be fro
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of tables_display does not generate errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -128,6 +133,7 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings of tables_display
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings for 'plot type' does not generate errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -151,6 +157,7 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings for 'plot type' d
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'standardization' does not generate errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -169,6 +176,7 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'standardizati
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'NA action' does not generate errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -183,6 +191,7 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'NA action' do
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'plot_type' hides and shows options.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -215,6 +224,7 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'plot_type' hi
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'theme' does not generate errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -233,6 +243,7 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'theme' does n
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'font size' does not generate errors.", {
+  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
