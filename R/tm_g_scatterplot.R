@@ -585,11 +585,14 @@ srv_g_scatterplot <- function(id,
       datasets = data,
       merge_function = "dplyr::inner_join"
     )
-    qenv <- teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")', label = "libraries") # nolint quotes
+
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")', label = "libraries") # nolint quotes
+    )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>%
+      qenv() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr), label = "data preparations") %>%
         teal.code::eval_code(quote(ANL), label = "data preparations") # used in show-r-code code
     })

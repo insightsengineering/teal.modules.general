@@ -432,10 +432,14 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
       selector_list = selector_list,
       datasets = data
     )
-    qenv <- teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tidyr")', label = "libraries") # nolint quotes
+
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tidyr")', label = "libraries") # nolint quotes
+    )
+    
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>%
+      qenv() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr), label = "data preparations")
     })
 
@@ -1126,7 +1130,6 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
 
       validation()
       tags$div(
-        class = "overflow-scroll",
         uiOutput(session$ns("tbl_importance_ui")),
         uiOutput(session$ns("tbl_eigenvector_ui")),
         teal.widgets::plot_with_settings_ui(id = session$ns("pca_plot"))
