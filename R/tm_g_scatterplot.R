@@ -506,7 +506,6 @@ ui_g_scatterplot <- function(id, ...) {
 # Server function for the scatterplot module
 srv_g_scatterplot <- function(id,
                               data,
-                              reporter,
                               filter_panel_api,
                               x,
                               y,
