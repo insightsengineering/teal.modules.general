@@ -474,7 +474,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
     })
 
     # computation ----
-    computation_model <- reactive({
+    computation <- reactive({
       validation()
 
       # inputs
@@ -509,21 +509,15 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
           env = list(center = center, scale = scale)
         ),
         label = "computation model"
-      )
-    })
-    computation_tbl_imp <- reactive({
+      ) %>%
       teal.code::eval_code(
-        computation_model(),
         quote({
           tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
           tbl_importance
         }),
         label = "computation tbl imp"
-      )
-    })
-    computation <- reactive({
+      ) %>%
       teal.code::eval_code(
-        computation_tbl_imp(),
         quote({
           tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
           tbl_eigenvector
@@ -1140,14 +1134,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
     })
 
     # Render R code.
-    setup_code_r <- pull_code(data)
-    libraries_code_r <- pull_code(decorated_output_q, labels = "libraries")
-    data_prep_code_r <- pull_code(decorated_output_q, labels = "data preparations")
-    computation_model_code_r <- pull_code(decorated_output_q, labels = "computation model")
-    computation_tbl_imp_code_r <- pull_code(decorated_output_q, labels = "computation tbl imp")
-    computation_tbl_eig_code_r <- pull_code(decorated_output_q, labels = "computation tbl eig")
-    plot_code_r <- pull_code(decorated_output_q, labels = "plot")
-    source_code_r <- pull_code(decorated_output_q)
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
@@ -1156,35 +1143,31 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
     )
 
     card_fun <- reactive({
-      req(setup_code_r(), libraries_code_r(), data_prep_code_r(), computation_model_code_r(), computation(),
-          computation_tbl_imp_code_r(), computation_tbl_eig_code_r(), plot_code_r(), plot_r())
+      req(data(), decorated_output_q(), plot_r())
 
       teal.reporter::report_document(
-
         "## Setup",
-        teal.reporter::code_chunk(setup_code_r()),
+        teal.reporter::code_chunk(teal.code::get_code(data())),
 
         "## Libraries",
-        teal.reporter::code_chunk(libraries_code_r(), eval = TRUE),
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "libraries"), eval = TRUE),
 
         "## Data Preparations",
-        teal.reporter::code_chunk(data_prep_code_r()),
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "data preparations")),
 
         "## PCA Model",
-        teal.reporter::code_chunk(computation_model_code_r()),
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "computation model")),
 
         "### Principal Components Table",
-        teal.reporter::code_chunk(computation_tbl_imp_code_r()),
-        computation()[["tbl_importance"]],
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "computation tbl imp")),
+        decorated_output_q()[["tbl_importance"]],
 
         "### Eigenvectors Table",
-        teal.reporter::code_chunk(computation_tbl_eig_code_r()),
-        computation()[["tbl_eigenvector"]],
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "computation tbl eig")),
+        decorated_output_q()[["tbl_eigenvector"]],
 
-        "### Plot",
-        teal.reporter::code_chunk(
-          plot_code_r() |> styler::style_text() |> paste(collapse = "\n")
-        ),
+        "## PCA Plot",
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "plot")),
         plot_r()
       )
     })

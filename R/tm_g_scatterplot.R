@@ -591,7 +591,7 @@ srv_g_scatterplot <- function(id,
       req(anl_merged_input())
       qenv %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr), label = "data preparations") %>%
-        teal.code::eval_code(quote(ANL), label = "data preparations") # used to display table when running show-r-code code
+        teal.code::eval_code(quote(ANL), label = "data preparations") # used in show-r-code code
     })
 
     merged <- list(
@@ -1063,11 +1063,7 @@ srv_g_scatterplot <- function(id,
     })
 
     # Render R code.
-    setup_code_r <- pull_code(data)
-    libraries_code_r <- pull_code(decorated_output_plot_q, labels = "libraries")
-    data_prep_code_r <- pull_code(decorated_output_plot_q, labels = "data preparations")
-    plot_code_r <- pull_code(decorated_output_plot_q, labels = "plot")
-    source_code_r <- pull_code(decorated_output_plot_q)
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_plot_q())))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
@@ -1075,25 +1071,22 @@ srv_g_scatterplot <- function(id,
       title = "R Code for scatterplot"
     )
 
-
     card_fun <- reactive({
-      req(setup_code_r(), libraries_code_r(), data_prep_code_r(), plot_code_r(), plot_r())
+      req(data(), req(decorated_output_plot_q()), plot_r())
 
       teal.reporter::report_document(
 
         "## Setup",
-        teal.reporter::code_chunk(setup_code_r()),
+        teal.reporter::code_chunk(teal.code::get_code(data())),
 
         "## Libraries",
-        teal.reporter::code_chunk(libraries_code_r(), eval = TRUE),
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_plot_q(), label = "libraries"), eval = TRUE),
 
         "## Data Preparations",
-        teal.reporter::code_chunk(data_prep_code_r()),
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_plot_q(), label = "data preparations")),
 
         "## Scatterplot",
-        teal.reporter::code_chunk(
-          plot_code_r() |> styler::style_text() |> paste(collapse = "\n")
-        ),
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_plot_q(), label = "plot")),
         plot_r()
 
       )

@@ -1032,13 +1032,7 @@ srv_a_regression <- function(id,
       )
     })
 
-    setup_code_r <- pull_code(data)
-    libraries_code_r <- pull_code(decorated_output_q, labels = "libraries")
-    data_prep_code_r <- pull_code(decorated_output_q, labels = "data preparations")
-    fit_code_r <- pull_code(decorated_output_q, labels = "fit")
-    plot_code_r <- pull_code(decorated_output_q, labels = "plot")
-
-    source_code_r <- pull_code(decorated_output_q)
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
@@ -1048,20 +1042,20 @@ srv_a_regression <- function(id,
 
     ### REPORTER
     card_fun <- reactive({
-      req(plot_r(), plot_code_r(), setup_code_r(), libraries_code_r(), data_prep_code_r(), fit_code_r(), fitted())
+      req(data(), decorated_output_q(), plot_r())
       teal.reporter::report_document(
 
         "## Setup",
-        teal.reporter::code_chunk(setup_code_r()),
+        teal.reporter::code_chunk(teal.code::get_code(data())),
 
         "## Libraries",
-        teal.reporter::code_chunk(libraries_code_r(), eval = TRUE),
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "libraries"), eval = TRUE),
 
         "## Data Preparations",
-        teal.reporter::code_chunk(data_prep_code_r()),
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "data preparations"), eval = TRUE),
 
         "## Model",
-        teal.reporter::code_chunk(fit_code_r()),
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "fit"), eval = TRUE),
         teal.reporter::code_output(
           paste(utils::capture.output(summary(teal.code::dev_suppress(fitted())))[-1],
               collapse = "\n"
@@ -1069,10 +1063,11 @@ srv_a_regression <- function(id,
         ),
 
         "## Plot",
-        teal.reporter::code_chunk(
-          plot_code_r() |> styler::style_text() |> paste(collapse = "\n")
-        ),
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "plot")),
         plot_r(),
+
+        ### --- TODO: REST OF THIS CARD WILL BE DELETED
+        ### it is just here to test the reporter
 
         "## rtables for testing",
         teal.reporter::code_chunk(

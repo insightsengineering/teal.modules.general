@@ -397,9 +397,3 @@ select_decorators <- function(decorators, scope) {
     list()
   }
 }
-
-#' @keywords internal
-#' @noRd
-pull_code <- function(data, labels = NULL){
-  reactive(teal.code::get_code(req(data()), labels = labels))
-}
