@@ -52,3 +52,45 @@ See section "Decorating Module" below for more details.}
 \description{
 Module visualizes subjects sorted decreasingly by y-values.
 }
+\examples{
+data <- teal_data() |>
+  within({
+    subjects <- data.frame(
+      subject_var = c("A", "B", "C"),
+      AGE = sample(30:100, 3),
+      ARM = c("Combination", "Combination", "Placebo")
+    )
+
+    waterfall_ds <- data.frame(
+      subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
+      value_var = sample(-20:90, 10, replace = TRUE),
+      color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
+    )
+  })
+join_keys(data) <- join_keys(
+  join_key("subjects", "waterfall_ds", keys = c(subject_var = "subject_var"))
+)
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_g_waterfall(
+      plot_dataname = "waterfall_ds",
+      table_datanames = "subjects",
+      subject_var = "subject_var",
+      value_var = "value_var",
+      sort_var = "value_var",
+      color_var = "color_var",
+      value_arbitrary_hlines = c(20, -30),
+      bar_colors = c(
+        CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
+      )
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+}

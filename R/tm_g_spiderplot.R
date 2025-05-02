@@ -20,6 +20,65 @@
 #' The plot will be updated with just the filtereed data when the user selects an event from the dropdown menu.
 #' @param point_symbols (`named character`) valid plotly symbol name named  by levels of `color_var`
 #'  column.
+#'
+#' @examples
+#' data <- teal_data() |>
+#'   within({
+#'     subjects <- data.frame(
+#'       subject_var = c("A", "B", "C"),
+#'       AGE = sample(30:100, 3),
+#'       ARM = c("Combination", "Combination", "Placebo")
+#'     )
+#'
+#'     swimlane_ds <- data.frame(
+#'       subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
+#'       time_var = sample(1:100, 10, replace = TRUE),
+#'       color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
+#'     )
+#'
+#'     spiderplot_ds <- data.frame(
+#'       subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
+#'       time_var = 1:10,
+#'       filter_event_var = "response",
+#'       color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE),
+#'       value_var = sample(-50:100, 10, replace = TRUE)
+#'     )
+#'
+#'     waterfall_ds <- data.frame(
+#'       subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
+#'       value_var = sample(-20:90, 10, replace = TRUE),
+#'       color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
+#'     )
+#'   })
+#' join_keys(data) <- join_keys(
+#'   join_key("subjects", "spiderplot_ds", keys = c(subject_var = "subject_var"))
+#' )
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_g_spiderplot(
+#'       plot_dataname = "spiderplot_ds",
+#'       table_datanames = "subjects",
+#'       time_var = "time_var",
+#'       value_var = "value_var",
+#'       subject_var = "subject_var",
+#'       filter_event_var = "filter_event_var",
+#'       color_var = "color_var",
+#'       point_colors = c(
+#'         CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
+#'       ),
+#'       point_symbols = c(
+#'         CR = "circle", PR = "square", SD = "triangle-up", PD = "diamond"
+#'       )
+#'     )
+#'   )
+#' )
+#'
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
 #' @export
 tm_g_spiderplot <- function(label = "Spiderplot",
                             plot_dataname,

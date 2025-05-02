@@ -60,3 +60,49 @@ See section "Decorating Module" below for more details.}
 \description{
 Module visualizes subjects' events in time.
 }
+\examples{
+data <- teal_data() |>
+  within({
+    subjects <- data.frame(
+      subject_var = c("A", "B", "C"),
+      AGE = sample(30:100, 3),
+      ARM = c("Combination", "Combination", "Placebo")
+    )
+
+    swimlane_ds <- data.frame(
+      subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
+      time_var = sample(1:100, 10, replace = TRUE),
+      color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
+    )
+  })
+join_keys(data) <- join_keys(
+  join_key("subjects", "swimlane_ds", keys = c(subject_var = "subject_var"))
+)
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_g_swimlane(
+      plot_dataname = "swimlane_ds",
+      table_datanames = "subjects",
+      time_var = "time_var",
+      subject_var = "subject_var",
+      color_var = "color_var",
+      group_var = "color_var",
+      sort_var = "time_var",
+      plot_height = 400,
+      point_colors = c(
+        CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
+      ),
+      point_symbols = c(
+        CR = "circle", PR = "square", SD = "triangle-up", PD = "diamond"
+      )
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+}
