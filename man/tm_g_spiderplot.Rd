@@ -10,10 +10,10 @@ tm_g_spiderplot(
   time_var,
   value_var,
   subject_var,
-  event_var,
+  filter_event_var,
   color_var,
-  point_colors,
-  point_symbols,
+  point_colors = character(0),
+  point_symbols = character(0),
   plot_height = 600,
   table_datanames = character(0),
   reactable_args = list(),
@@ -34,6 +34,10 @@ in \code{plot_dataname} to be used as y-axis.}
 
 \item{subject_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
 in \code{plot_dataname} to be used as grouping variable for displayed lines/points.}
+
+\item{filter_event_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
+in \code{plot_dataname} to be used to filter the data.
+The plot will be updated with just the filtereed data when the user selects an event from the dropdown menu.}
 
 \item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
 to be used to differentiate colors and symbols.}

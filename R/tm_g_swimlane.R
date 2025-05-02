@@ -30,7 +30,7 @@ tm_g_swimlane <- function(label = "Swimlane",
                           group_var,
                           sort_var = NULL,
                           point_colors = character(0),
-                          point_symbols,
+                          point_symbols = character(0),
                           plot_height = 700,
                           table_datanames = character(0),
                           reactable_args = list()) {

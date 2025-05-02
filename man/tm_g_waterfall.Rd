@@ -11,7 +11,7 @@ tm_g_waterfall(
   value_var,
   sort_var = NULL,
   color_var = NULL,
-  bar_colors = list(),
+  bar_colors = character(0),
   value_arbitrary_hlines = c(0.2, -0.3),
   plot_title = "Waterfall plot",
   plot_height = 700,
