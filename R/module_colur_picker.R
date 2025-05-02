@@ -17,14 +17,14 @@ colour_picker_srv <- function(id, x, default_colors) {
         color = default_colors
       )
     })
-    
-    color_values <- reactiveVal()    
+
+    color_values <- reactiveVal()
     observeEvent(default_colors_adjusted(), {
       if (!identical(default_colors_adjusted(), color_values())) {
         color_values(default_colors_adjusted())
       }
     })
-    
+
     output$module <- renderUI({
       tagList(
         lapply(
@@ -35,10 +35,10 @@ colour_picker_srv <- function(id, x, default_colors) {
                 inputId = session$ns(.name_to_id(level)),
                 label = level,
                 value = color_values()[level]
-              )              
+              )
             )
           }
-        )        
+        )
       )
     })
 
@@ -52,7 +52,7 @@ colour_picker_srv <- function(id, x, default_colors) {
         isolate(color_input_values(new_input_values))
       }
     })
-    
+
     color_input_values
   })
 }
@@ -60,17 +60,17 @@ colour_picker_srv <- function(id, x, default_colors) {
 
 
 #' Color palette discrete
-#' 
-#' To specify custom discrete colors to `plotly` or `ggplot` elements one needs to specify a vector named by 
+#'
+#' To specify custom discrete colors to `plotly` or `ggplot` elements one needs to specify a vector named by
 #' levels of variable used for coloring. This function allows to specify only some or none of the colors/levels
 #' as the rest will be filled automatically.
 #' @param levels (`character`) values of possible variable levels
 #' @param color (`named character`) valid color names (see [colors()]) or hex-colors named by `levels`.
 #' @return `character` with hex colors named by `levels`.
-.color_palette_discrete <- function(levels, color)  {
+.color_palette_discrete <- function(levels, color) {
   p <- color[names(color) %in% levels]
   p_rgb_num <- grDevices::col2rgb(p)
-  p_hex <- grDevices::rgb(p_rgb_num[1,]/255, p_rgb_num[2,]/255, p_rgb_num[3,]/255)
+  p_hex <- grDevices::rgb(p_rgb_num[1, ] / 255, p_rgb_num[2, ] / 255, p_rgb_num[3, ] / 255)
   p <- stats::setNames(p_hex, names(p))
   missing_levels <- setdiff(levels, names(p))
   N <- length(levels)

@@ -365,7 +365,7 @@ children <- function(x, dataset_name = character(0)) {
     all_parents <- unique(unlist(teal.data::parents(x)))
     names(all_parents) <- all_parents
     lapply(
-      all_parents, 
+      all_parents,
       function(parent) children(x = x, dataset_name = parent)
     )
   }
@@ -381,17 +381,18 @@ children <- function(x, dataset_name = character(0)) {
 #' Filters children datanames according to:
 #' - selected x and y values on the plot (based on the parent dataset)
 #' - [`teal.data::join_keys`] relationship between `children_datanames`
-#' 
+#'
 #' @param data (`reactive teal_data`)
 #' @param plot_dataname (`character(1)`)
 #' @param xvar (`character(1)`)
 #' @param yvar (`character(1)`)
 #' @param plotly_selected (`reactive`)
 #' @param children_datanames (`character`)
-.plotly_selected_filter_children <- function(data, plot_dataname, xvar, yvar, plotly_selected, children_datanames) {
+.plotly_selected_filter_children <- function(
+    data, plot_dataname, xvar, yvar, plotly_selected, children_datanames) {
   xvar_r <- if (is.reactive(xvar)) xvar else reactive(xvar)
   yvar_r <- if (is.reactive(yvar)) yvar else reactive(yvar)
-  
+
   plotly_selected_q <- reactive({
     req(plotly_selected(), xvar_r(), yvar_r())
     primary_keys <- unname(teal.data::join_keys(data())[plot_dataname, plot_dataname])
@@ -404,7 +405,7 @@ children <- function(x, dataset_name = character(0)) {
     within(
       data(),
       expr = {
-        swimlane_selected <- dplyr::filter(dataname, xvar %in% xvals, yvar %in% yvals) %>% 
+        swimlane_selected <- dplyr::filter(dataname, xvar %in% xvals, yvar %in% yvals) %>%
           dplyr::select(primary_keys)
       },
       dataname = str2lang(plot_dataname),
@@ -415,7 +416,7 @@ children <- function(x, dataset_name = character(0)) {
       primary_keys = primary_keys
     )
   })
-  
+
   children_names <- reactive({
     if (length(children_datanames) == 0) {
       children(plotly_selected_q(), plot_dataname)
@@ -423,7 +424,7 @@ children <- function(x, dataset_name = character(0)) {
       children_datanames
     }
   })
-  
+
   eventReactive(plotly_selected_q(), {
     exprs <- as.expression(
       lapply(

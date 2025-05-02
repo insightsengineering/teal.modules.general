@@ -1,32 +1,33 @@
 #' `teal` module: Swimlane plot
 #'
 #' Module visualizes subjects' events in time.
-#' 
+#'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param plot_dataname (`character(1)` or `choices_selected`) name of the dataset which visualization is builded on.
-#' @param time_var (`character(1)` or `choices_selected`) name of the `numeric` column in `plot_dataname` to be used as x-axis.
-#' @param subject_var (`character(1)` or `choices_selected`) name of the `factor` or `character`  column in `plot_dataname` 
-#'  to be used as y-axis.
-#' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character`  column in `plot_dataname` 
-#'  to name and color subject events in time. 
+#' @param time_var (`character(1)` or `choices_selected`) name of the `numeric` column
+#' in `plot_dataname` to be used as x-axis.
+#' @param subject_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column
+#' in `plot_dataname` to be used as y-axis.
+#' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column
+#' in `plot_dataname` to name and color subject events in time.
 #' @param group_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname`
-#'  to categorize type of event. 
+#'  to categorize type of event.
 #'  (legend is sorted according to this variable, and used in toolip to display type of the event)
 #'  todo: this can be fixed by ordering factor levels
-#' @param sort_var (`character(1)` or `choices_selected`) name(s) of the column in `plot_dataname` which 
+#' @param sort_var (`character(1)` or `choices_selected`) name(s) of the column in `plot_dataname` which
 #'  value determines order of the subjects displayed on the y-axis.
-#' @param point_colors (`named character`) valid color names (see [colors()]) or hex-colors named 
+#' @param point_colors (`named character`) valid color names (see [colors()]) or hex-colors named
 #'  by levels of `color_var` column.
-#' @param point_symbols (`named character`) valid plotly symbol name named  by levels of `color_var` 
-#'  column.
+#' @param point_symbols (`named character`) valid plotly symbol name named  by levels of `color_var`
+#' column.
 #' @export
-tm_g_swimlane <- function(label = "Swimlane", 
-                          plot_dataname, 
-                          time_var, 
-                          subject_var, 
+tm_g_swimlane <- function(label = "Swimlane",
+                          plot_dataname,
+                          time_var,
+                          subject_var,
                           color_var,
-                          group_var, 
+                          group_var,
                           sort_var = NULL,
                           point_colors = character(0),
                           point_symbols,
@@ -83,12 +84,12 @@ ui_g_swimlane <- function(id, height) {
     ),
     bslib::page_fillable(
       plotly::plotlyOutput(ns("plot"), height = "100%"),
-      ui_t_reactables(ns("subtables"))      
+      ui_t_reactables(ns("subtables"))
     )
   )
 }
-srv_g_swimlane <- function(id, 
-                           data, 
+srv_g_swimlane <- function(id,
+                           data,
                            plot_dataname,
                            time_var,
                            subject_var,
@@ -97,7 +98,7 @@ srv_g_swimlane <- function(id,
                            sort_var = time_var,
                            point_colors,
                            point_symbols,
-                           table_datanames, 
+                           table_datanames,
                            reactable_args = list(),
                            filter_panel_api) {
   moduleServer(id, function(input, output, session) {
@@ -108,14 +109,14 @@ srv_g_swimlane <- function(id,
     .update_cs_input(inputId = "sort_var", data = reactive(data()[[dataname]]), cs = sort_var)
 
     color_inputs <- colour_picker_srv(
-      "colors", 
+      "colors",
       x = reactive({
         req(input$color_var)
         data()[[plot_dataname]][[input$color_var]]
       }),
       default_colors = point_colors
     )
-    
+
     plotly_q <- reactive({
       req(data(), input$time_var, input$subject_var, input$color_var, input$group_var, input$sort_var, color_inputs())
       adjusted_symbols <- .shape_palette_discrete(
@@ -135,38 +136,42 @@ srv_g_swimlane <- function(id,
         height = input$plot_height,
         expr = {
           p <- swimlanely(
-            data = dataname, 
-            time_var = time_var, 
-            subject_var = subject_var, 
-            color_var = color_var, 
-            group_var = group_var, 
-            sort_var = sort_var, 
-            colors = colors, 
-            symbols = symbols, 
+            data = dataname,
+            time_var = time_var,
+            subject_var = subject_var,
+            color_var = color_var,
+            group_var = group_var,
+            sort_var = sort_var,
+            colors = colors,
+            symbols = symbols,
             height = height
           )
         }
       )
     })
-    
+
     output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
-    
+
     plotly_selected <- reactive({
       plotly::event_data("plotly_deselect", source = "swimlane") # todo: deselect doesn't work
       plotly::event_data("plotly_selected", source = "swimlane")
     })
-    
+
     tables_selected_q <- .plotly_selected_filter_children(
-      data = plotly_q, 
+      data = plotly_q,
       plot_dataname = plot_dataname,
-      xvar = reactive(input$time_var), 
-      yvar = reactive(input$subject_var), 
-      plotly_selected = plotly_selected, 
+      xvar = reactive(input$time_var),
+      yvar = reactive(input$subject_var),
+      plotly_selected = plotly_selected,
       children_datanames = table_datanames
     )
-    
-    srv_t_reactables("subtables", data = tables_selected_q, datanames = table_datanames, reactable_args = reactable_args)
 
+    srv_t_reactables(
+      "subtables",
+      data = tables_selected_q,
+      datanames = table_datanames,
+      reactable_args = reactable_args
+    )
   })
 }
 
@@ -178,7 +183,7 @@ swimlanely <- function(data, time_var, subject_var, color_var, group_var, sort_v
   time_var_label <- attr(data[[time_var]], "label")
   if (!length(subject_var_label)) subject_var_label <- subject_var
   if (!length(time_var_label)) time_var_label <- time_var
-  
+
   # forcats::fct_reorder doesn't seem to work here
   subject_levels <- data %>%
     dplyr::group_by(!!as.name(subject_var)) %>%
@@ -187,12 +192,12 @@ swimlanely <- function(data, time_var, subject_var, color_var, group_var, sort_v
     dplyr::arrange(v) %>%
     dplyr::pull(!!as.name(subject_var))
   data[[subject_var]] <- factor(data[[subject_var]], levels = subject_levels)
-  
+
   data %>%
     dplyr::mutate(
       !!as.name(color_var) := factor(!!as.name(color_var), levels = names(colors)),
     ) %>%
-    dplyr::group_by(!!as.name(subject_var), !!as.name(time_var))  %>%
+    dplyr::group_by(!!as.name(subject_var), !!as.name(time_var)) %>%
     dplyr::mutate(
       tooltip = paste(
         unique(
@@ -200,8 +205,8 @@ swimlanely <- function(data, time_var, subject_var, color_var, group_var, sort_v
             paste(subject_var_label, !!as.name(subject_var)),
             paste(time_var_label, !!as.name(time_var)),
             sprintf(
-              "%s: %s", 
-              tools::toTitleCase(gsub("[^0-9A-Za-z]+", " ", !!as.name(group_var))), 
+              "%s: %s",
+              tools::toTitleCase(gsub("[^0-9A-Za-z]+", " ", !!as.name(group_var))),
               !!as.name(color_var)
             )
           )
@@ -218,24 +223,24 @@ swimlanely <- function(data, time_var, subject_var, color_var, group_var, sort_v
     plotly::add_markers(
       x = stats::as.formula(sprintf("~%s", time_var)),
       y = stats::as.formula(sprintf("~%s", subject_var)),
-      color = stats::as.formula(sprintf("~%s", color_var)), 
+      color = stats::as.formula(sprintf("~%s", color_var)),
       symbol = stats::as.formula(sprintf("~%s", color_var)),
       text = ~tooltip,
       hoverinfo = "text"
     ) %>%
     plotly::add_segments(
-      x = ~0, 
-      xend = ~study_day, 
-      y = stats::as.formula(sprintf("~%s", subject_var)), 
+      x = ~0,
+      xend = ~study_day,
+      y = stats::as.formula(sprintf("~%s", subject_var)),
       yend = stats::as.formula(sprintf("~%s", subject_var)),
-      data = data |> 
-        dplyr::group_by(!!as.name(subject_var), !!as.name(group_var)) |> 
+      data = data |>
+        dplyr::group_by(!!as.name(subject_var), !!as.name(group_var)) |>
         dplyr::summarise(study_day = max(!!as.name(time_var))),
       line = list(width = 2, color = "grey"),
       showlegend = FALSE
     ) %>%
     plotly::layout(
-      xaxis = list(title = time_var_label), 
+      xaxis = list(title = time_var_label),
       yaxis = list(title = subject_var_label)
     ) %>%
     plotly::layout(dragmode = "select") %>%

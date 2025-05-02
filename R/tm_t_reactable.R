@@ -1,10 +1,10 @@
 #' `teal` module: Reactable
 #'
 #' Wrapper module on [reactable::reactable()]
-#' 
+#'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param reactable_args (`list`) any argument of [reactable::reactable()]. 
+#' @param reactable_args (`list`) any argument of [reactable::reactable()].
 #' @export
 tm_t_reactables <- function(label = "Table",
                             datanames = "all",
@@ -18,8 +18,8 @@ tm_t_reactables <- function(label = "Table",
     server = srv_t_reactables,
     ui_args = list(decorators = decorators),
     server_args = list(
-      datanames = datanames, 
-      colnames = colnames, 
+      datanames = datanames,
+      colnames = colnames,
       reactable_args = reactable_args,
       decorators = decorators
     ),
@@ -33,7 +33,9 @@ ui_t_reactables <- function(id, decorators = list()) {
   uiOutput(ns("subtables"), container = div)
 }
 
-srv_t_reactables <- function(id, data, filter_panel_api, datanames, colnames = list(), decorators = list(), reactable_args = list()) {
+srv_t_reactables <- function(
+    id, data, filter_panel_api, datanames,
+    colnames = list(), decorators = list(), reactable_args = list()) {
   moduleServer(id, function(input, output, session) {
     datanames_r <- .validate_datanames(datanames = datanames, data = data)
     colnames_r <- reactive({
@@ -101,7 +103,7 @@ srv_t_reactables <- function(id, data, filter_panel_api, datanames, colnames = l
 
 ui_t_reactable <- function(id) {
   ns <- NS(id)
-  
+
   input <- shinyWidgets::pickerInput(
     ns("colnames"),
     label = NULL,
@@ -116,7 +118,7 @@ ui_t_reactable <- function(id) {
       liveSearch = TRUE
     )
   )
-  
+
   # input <- actionButton(ns("show_select_colnames"), "Nothing selected", class = "rounded-pill btn-sm primary") |>
   #   bslib::popover(input)
   bslib::page_fluid(
@@ -134,7 +136,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       req(data())
       teal.data::col_labels(data()[[dataname]], fill = TRUE)
     })
-    
+
     reactable_args_r <- if (is.reactive(reactable_args)) reactable_args else reactive(reactable_args)
 
     cols_choices <- reactiveVal()
@@ -162,7 +164,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
     observeEvent(input$colnames_open, `if`(!isTruthy(input$colnames_open), cols_selected(input$colnames)))
     observeEvent(cols_selected(), {
       updateActionButton(
-        inputId = "show_select_colnames", 
+        inputId = "show_select_colnames",
         label = paste(substring(toString(cols_selected()), 1, 100), "...")
       )
     })
@@ -175,23 +177,22 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
           lapply(unname(cols_selected()), str2lang)
         )
       )
-      
+
       reactable_call <- .make_reactable_call(
-        dataset = data()[[dataname]][cols_selected()], 
-        dataname = dataname, 
+        dataset = data()[[dataname]][cols_selected()],
+        dataname = dataname,
         args = reactable_args_r()
       )
-      
+
       data() |>
         within(lhs <- rhs, lhs = str2lang(dataname), rhs = select_call) |>
         within(lhs <- rhs, lhs = str2lang(dataname_reactable), rhs = reactable_call)
-      
     })
     output$table <- reactable::renderReactable({
       logger::log_debug("srv_t_reactable@2 render table for dataset { dataname }")
       table_q()[[dataname_reactable]]
     })
-    
+
     # todo: add select -> show children table
     table_selected_q <- reactive({
       selected_row <- reactable::getReactableState("table", "selected")
@@ -209,7 +210,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
         table_q()
       }
     })
-    
+
     table_selected_q
   })
 }
@@ -217,7 +218,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
 .make_reactable_call <- function(dataset, dataname, args) {
   columns <- .make_reactable_columns_call(dataset = dataset, col_defs = args$columns)
   call_args <- utils::modifyList(
-    list(columns = columns, onClick = "select"), 
+    list(columns = columns, onClick = "select"),
     args[!names(args) %in% "columns"]
   )
   as.call(
@@ -225,7 +226,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       list(
         name = quote(reactable),
         data = str2lang(dataname)
-      ), 
+      ),
       call_args
     )
   )
@@ -272,12 +273,12 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
     req(data())
     names(
       Filter(
-        function(dataset) inherits(dataset, class), 
+        function(dataset) inherits(dataset, class),
         as.list(data())
       )
     )
   })
-  
+
   this_datanames_r <- reactive({
     if (is.reactive(datanames)) {
       datanames()
@@ -285,9 +286,9 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       datanames
     }
   })
-  
+
   datanames_r <- reactiveVal()
-  
+
   observeEvent(all_datanames_r(), {
     new_datanames <- if (identical(this_datanames_r(), "all")) {
       all_datanames_r()

@@ -1,16 +1,17 @@
 #' `teal` module: Waterfall plot
 #'
 #' Module visualizes subjects sorted decreasingly by y-values.
-#' 
+#'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param plot_dataname (`character(1)`) name of the dataset which visualization is builded on.
-#' @param subject_var (`character(1)` or `choices_selected`) name of the `factor` or `character`  column in `plot_dataname` 
-#'  to be used as x-axis.
-#' @param value_var (`character(1)` or `choices_selected`) name of the `numeric` column in `plot_dataname` to be used as y-axis.
-#' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname` 
+#' @param subject_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column
+#' in `plot_dataname` to be used as x-axis.
+#' @param value_var (`character(1)` or `choices_selected`) name of the `numeric` column
+#' in `plot_dataname` to be used as y-axis.
+#' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname`
 #'  to be used to differentiate bar colors.
-#' @param bar_colors (`named character`) valid color names (see [colors()]) or hex-colors named 
+#' @param bar_colors (`named character`) valid color names (see [colors()]) or hex-colors named
 #'  by levels of `color_var` column.
 #' @param value_arbitrary_hlines (`numeric`) values in the same scale as `value_var` to horizontal
 #'  lines on the plot.
@@ -63,11 +64,19 @@ tm_g_waterfall <- function(label = "Waterfall",
 
 ui_g_waterfall <- function(id, height) {
   ns <- NS(id)
-  
+
   bslib::page_sidebar(
     sidebar = div(
-      selectInput(ns("subject_var"), label = "Subject variable (x-axis):", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(ns("value_var"), label = "Value variable (y-axis):", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(
+        ns("subject_var"),
+        label = "Subject variable (x-axis):",
+        choices = NULL, selected = NULL, multiple = FALSE
+      ),
+      selectInput(
+        ns("value_var"),
+        label = "Value variable (y-axis):",
+        choices = NULL, selected = NULL, multiple = FALSE
+      ),
       selectInput(ns("sort_var"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("color_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
       colour_picker_ui(ns("colors")),
@@ -75,7 +84,7 @@ ui_g_waterfall <- function(id, height) {
     ),
     bslib::page_fillable(
       plotly::plotlyOutput(ns("plot"), height = "100%"),
-      ui_t_reactables(ns("subtables"))      
+      ui_t_reactables(ns("subtables"))
     )
   )
 }
@@ -98,19 +107,19 @@ srv_g_waterfall <- function(id,
     .update_cs_input(inputId = "value_var", data = reactive(data()[[dataname]]), cs = value_var)
     .update_cs_input(inputId = "sort_var", data = reactive(data()[[dataname]]), cs = sort_var)
     .update_cs_input(inputId = "color_var", data = reactive(data()[[dataname]]), cs = color_var)
-    
+
     color_inputs <- colour_picker_srv(
-      "colors", 
+      "colors",
       x = reactive({
         req(data(), input$color_var)
         data()[[plot_dataname]][[input$color_var]]
       }),
       default_colors = bar_colors
     )
-    
+
     plotly_q <- reactive({
       req(data(), input$subject_var, input$value_var, input$sort_var, input$color_var, color_inputs())
-      
+
       within(
         data(),
         dataname = str2lang(plot_dataname),
@@ -124,8 +133,8 @@ srv_g_waterfall <- function(id,
         title = sprintf("Waterfall plot"),
         expr = {
           p <- waterfally(
-            dataname, 
-            subject_var = subject_var, 
+            dataname,
+            subject_var = subject_var,
             value_var = value_var,
             sort_var = sort_var,
             color_var = color_var,
@@ -134,7 +143,6 @@ srv_g_waterfall <- function(id,
             height = height
           ) %>%
             plotly::layout(title = title)
-
         },
         height = input$plot_height
       )
@@ -143,17 +151,22 @@ srv_g_waterfall <- function(id,
     output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
 
     plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "waterfall"))
-    
+
     tables_selected_q <- .plotly_selected_filter_children(
-      data = plotly_q, 
+      data = plotly_q,
       plot_dataname = plot_dataname,
-      xvar = reactive(input$subject_var), 
-      yvar = reactive(input$value_var), 
-      plotly_selected = plotly_selected, 
+      xvar = reactive(input$subject_var),
+      yvar = reactive(input$value_var),
+      plotly_selected = plotly_selected,
       children_datanames = table_datanames
     )
-    
-    srv_t_reactables("subtables", data = tables_selected_q, datanames = table_datanames, reactable_args = reactable_args)
+
+    srv_t_reactables(
+      "subtables",
+      data = tables_selected_q,
+      datanames = table_datanames,
+      reactable_args = reactable_args
+    )
   })
 }
 
@@ -164,21 +177,21 @@ waterfally <- function(data, subject_var, value_var, sort_var, color_var, colors
   subject_var_label <- attr(data[[subject_var]], "label")
   value_var_label <- attr(data[[value_var]], "label")
   color_var_label <- attr(data[[color_var]], "label")
-  
+
   if (!length(subject_var_label)) subject_var_label <- subject_var
   if (!length(value_var_label)) value_var_label <- value_var
   if (!length(color_var_label)) color_var_label <- color_var
-  
+
   dplyr::mutate(
     if (identical(sort_var, value_var) || is.null(sort_var)) {
-      dplyr::arrange(data, desc(!!as.name(value_var)))    
+      dplyr::arrange(data, desc(!!as.name(value_var)))
     } else {
       dplyr::arrange(data, !!as.name(sort_var), desc(!!as.name(value_var)))
     },
     !!as.name(subject_var) := factor(!!as.name(subject_var), levels = unique(!!as.name(subject_var))),
     tooltip = sprintf(
-      "%s: %s <br>%s: %s%% <br>%s: %s", 
-      subject_var_label, !!as.name(subject_var), 
+      "%s: %s <br>%s: %s%% <br>%s: %s",
+      subject_var_label, !!as.name(subject_var),
       value_var_label, !!as.name(value_var),
       color_var_label, !!as.name(color_var)
     )
@@ -213,6 +226,6 @@ waterfally <- function(data, subject_var, value_var, sort_var, color_var, colors
       legend = list(title = list(text = "<b>Color by:</b>")),
       barmode = "relative"
     ) %>%
-    plotly::layout( dragmode = "select") %>%
+    plotly::layout(dragmode = "select") %>%
     plotly::config(displaylogo = FALSE)
 }
