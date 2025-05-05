@@ -456,3 +456,23 @@ children <- function(x, dataset_name = character(0)) {
   updateSelectInput(inputId = inputId, choices = cs$choices, selected = cs$selected)
   if (length(cs$choices) < 2) shinyjs::hide(inputId)
 }
+
+.get_column_label <- function(data, column) {
+  column_label <- attr(data[[column]], "label")
+  if (!length(column_label)) column_label <- column
+  column_label
+}
+
+
+.generate_tooltip <- function(data, tooltip_cols) {
+  tooltip_lines <- sapply(tooltip_cols, function(col) {
+    label <- .get_column_label(data, col)
+    value <- data[[col]]
+    paste0(label, ": ", value)
+  })
+  if (is.vector(tooltip_lines)) {
+    paste(tooltip_lines, collapse = "<br>")
+  } else {
+    apply(tooltip_lines, 1, function(row) paste(row, collapse = "<br>"))
+  }
+}

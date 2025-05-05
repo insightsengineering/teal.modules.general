@@ -79,7 +79,8 @@ tm_g_swimlane <- function(label = "Swimlane",
                           point_symbols = character(0),
                           plot_height = 700,
                           table_datanames = character(0),
-                          reactable_args = list()) {
+                          reactable_args = list(),
+                          tooltip_cols = NULL) {
   if (is.character(time_var)) {
     time_var <- choices_selected(choices = time_var, selected = time_var)
   }
@@ -111,7 +112,8 @@ tm_g_swimlane <- function(label = "Swimlane",
       point_colors = point_colors,
       point_symbols = point_symbols,
       table_datanames = table_datanames,
-      reactable_args = reactable_args
+      reactable_args = reactable_args,
+      tooltip_cols = tooltip_cols
     )
   )
 }
@@ -146,6 +148,7 @@ srv_g_swimlane <- function(id,
                            point_symbols,
                            table_datanames,
                            reactable_args = list(),
+                           tooltip_cols = NULL,
                            filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     .update_cs_input(inputId = "time_var", data = reactive(data()[[dataname]]), cs = time_var)
@@ -180,6 +183,7 @@ srv_g_swimlane <- function(id,
         colors = color_inputs(),
         symbols = adjusted_symbols,
         height = input$plot_height,
+        tooltip_cols = tooltip_cols,
         expr = {
           p <- swimlanely(
             data = dataname,
@@ -190,7 +194,8 @@ srv_g_swimlane <- function(id,
             sort_var = sort_var,
             colors = colors,
             symbols = symbols,
-            height = height
+            height = height,
+            tooltip_cols = tooltip_cols
           )
         }
       )
@@ -224,11 +229,11 @@ srv_g_swimlane <- function(id,
 
 # todo: export is temporary, this should go to a new package teal.graphs or another bird species
 #' @export
-swimlanely <- function(data, time_var, subject_var, color_var, group_var, sort_var, colors, symbols, height) {
-  subject_var_label <- attr(data[[subject_var]], "label")
-  time_var_label <- attr(data[[time_var]], "label")
-  if (!length(subject_var_label)) subject_var_label <- subject_var
-  if (!length(time_var_label)) time_var_label <- time_var
+swimlanely <- function(
+    data, time_var, subject_var, color_var, group_var,
+    sort_var, colors, symbols, height, tooltip_cols = NULL) {
+  subject_var_label <- .get_column_label(data, subject_var)
+  time_var_label <- .get_column_label(data, time_var)
 
   # forcats::fct_reorder doesn't seem to work here
   subject_levels <- data %>%
@@ -245,20 +250,26 @@ swimlanely <- function(data, time_var, subject_var, color_var, group_var, sort_v
     ) %>%
     dplyr::group_by(!!as.name(subject_var), !!as.name(time_var)) %>%
     dplyr::mutate(
-      tooltip = paste(
-        unique(
-          c(
-            paste(subject_var_label, !!as.name(subject_var)),
-            paste(time_var_label, !!as.name(time_var)),
-            sprintf(
-              "%s: %s",
-              tools::toTitleCase(gsub("[^0-9A-Za-z]+", " ", !!as.name(group_var))),
-              !!as.name(color_var)
-            )
+      tooltip = {
+        if (is.null(tooltip_cols)) {
+          paste(
+            unique(
+              c(
+                paste(subject_var_label, !!as.name(subject_var)),
+                paste(time_var_label, !!as.name(time_var)),
+                sprintf(
+                  "%s: %s",
+                  tools::toTitleCase(gsub("[^0-9A-Za-z]+", " ", !!as.name(group_var))),
+                  !!as.name(color_var)
+                )
+              )
+            ),
+            collapse = "<br>"
           )
-        ),
-        collapse = "<br>"
-      )
+        } else {
+          .generate_tooltip(.data, tooltip_cols)
+        }
+      }
     ) %>%
     plotly::plot_ly(
       source = "swimlane",

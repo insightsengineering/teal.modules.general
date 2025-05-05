@@ -69,7 +69,8 @@ tm_g_waterfall <- function(label = "Waterfall",
                            plot_title = "Waterfall plot",
                            plot_height = 700,
                            table_datanames = character(0),
-                           reactable_args = list()) {
+                           reactable_args = list(),
+                           tooltip_cols = NULL) {
   if (is.character(subject_var)) {
     subject_var <- choices_selected(choices = subject_var, selected = subject_var)
   }
@@ -99,7 +100,8 @@ tm_g_waterfall <- function(label = "Waterfall",
       bar_colors = bar_colors,
       value_arbitrary_hlines = value_arbitrary_hlines,
       plot_title = plot_title,
-      reactable_args = reactable_args
+      reactable_args = reactable_args,
+      tooltip_cols = tooltip_cols
     )
   )
 }
@@ -143,6 +145,7 @@ srv_g_waterfall <- function(id,
                             plot_height = 600,
                             table_datanames = character(0),
                             reactable_args = list(),
+                            tooltip_cols = NULL,
                             filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     .update_cs_input(inputId = "subject_var", data = reactive(data()[[dataname]]), cs = subject_var)
@@ -173,6 +176,7 @@ srv_g_waterfall <- function(id,
         value_arbitrary_hlines = value_arbitrary_hlines,
         height = input$plot_height,
         title = sprintf("Waterfall plot"),
+        tooltip_cols = tooltip_cols,
         expr = {
           p <- waterfally(
             dataname,
@@ -182,7 +186,8 @@ srv_g_waterfall <- function(id,
             color_var = color_var,
             colors = colors,
             value_arbitrary_hlines = value_arbitrary_hlines,
-            height = height
+            height = height,
+            tooltip_cols = tooltip_cols
           ) %>%
             plotly::layout(title = title)
         },
@@ -215,14 +220,12 @@ srv_g_waterfall <- function(id,
 
 # todo: export is temporary, this should go to a new package teal.graphs or another bird species
 #' @export
-waterfally <- function(data, subject_var, value_var, sort_var, color_var, colors, value_arbitrary_hlines, height) {
-  subject_var_label <- attr(data[[subject_var]], "label")
-  value_var_label <- attr(data[[value_var]], "label")
-  color_var_label <- attr(data[[color_var]], "label")
-
-  if (!length(subject_var_label)) subject_var_label <- subject_var
-  if (!length(value_var_label)) value_var_label <- value_var
-  if (!length(color_var_label)) color_var_label <- color_var
+waterfally <- function(
+    data, subject_var, value_var, sort_var, color_var, colors,
+    value_arbitrary_hlines, height, tooltip_cols = NULL) {
+  subject_var_label <- .get_column_label(data, subject_var)
+  value_var_label <- .get_column_label(data, value_var)
+  color_var_label <- .get_column_label(data, color_var)
 
   dplyr::mutate(
     if (identical(sort_var, value_var) || is.null(sort_var)) {
@@ -231,12 +234,18 @@ waterfally <- function(data, subject_var, value_var, sort_var, color_var, colors
       dplyr::arrange(data, !!as.name(sort_var), desc(!!as.name(value_var)))
     },
     !!as.name(subject_var) := factor(!!as.name(subject_var), levels = unique(!!as.name(subject_var))),
-    tooltip = sprintf(
-      "%s: %s <br>%s: %s%% <br>%s: %s",
-      subject_var_label, !!as.name(subject_var),
-      value_var_label, !!as.name(value_var),
-      color_var_label, !!as.name(color_var)
-    )
+    tooltip = {
+      if (is.null(tooltip_cols)) {
+        sprintf(
+          "%s: %s <br>%s: %s%% <br>%s: %s",
+          subject_var_label, !!as.name(subject_var),
+          value_var_label, !!as.name(value_var),
+          color_var_label, !!as.name(color_var)
+        )
+      } else {
+        .generate_tooltip(.data, tooltip_cols)
+      }
+    }
   ) %>%
     dplyr::filter(!duplicated(!!as.name(subject_var))) %>%
     plotly::plot_ly(

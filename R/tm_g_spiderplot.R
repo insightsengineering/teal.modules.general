@@ -92,6 +92,7 @@ tm_g_spiderplot <- function(label = "Spiderplot",
                             plot_height = 600,
                             table_datanames = character(0),
                             reactable_args = list(),
+                            tooltip_cols = NULL,
                             transformator = transformator) {
   if (is.character(time_var)) {
     time_var <- choices_selected(choices = time_var, selected = time_var)
@@ -124,7 +125,8 @@ tm_g_spiderplot <- function(label = "Spiderplot",
       point_colors = point_colors,
       point_symbols = point_symbols,
       table_datanames = table_datanames,
-      reactable_args = reactable_args
+      reactable_args = reactable_args,
+      tooltip_cols = tooltip_cols
     ),
     datanames = union(plot_dataname, table_datanames)
   )
@@ -168,6 +170,7 @@ srv_g_spiderplot <- function(id,
                              plot_height = 600,
                              table_datanames = character(0),
                              reactable_args = list(),
+                             tooltip_cols = NULL,
                              filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     .update_cs_input(inputId = "value_var", data = reactive(data()[[dataname]]), cs = value_var)
@@ -228,6 +231,7 @@ srv_g_spiderplot <- function(id,
         symbols = adjusted_symbols,
         height = input$plot_height,
         title = sprintf("%s over time", input$filter_event_var_level),
+        tooltip_cols = tooltip_cols,
         expr = {
           p <- dataname %>%
             dplyr::filter(filter_event_var_lang == selected_event) %>%
@@ -239,7 +243,8 @@ srv_g_spiderplot <- function(id,
               color_var = color_var,
               colors = colors,
               symbols = symbols,
-              height = height
+              height = height,
+              tooltip_cols = tooltip_cols
             ) %>%
             plotly::layout(title = title)
         }
@@ -270,13 +275,12 @@ srv_g_spiderplot <- function(id,
 
 # todo: export is temporary, this should go to a new package teal.graphs or another bird species
 #' @export
-spiderplotly <- function(data, time_var, value_var, subject_var, filter_event_var, color_var, colors, symbols, height) {
-  subject_var_label <- attr(data[[subject_var]], "label")
-  time_var_label <- attr(data[[time_var]], "label")
-  filter_event_var_label <- attr(data[[filter_event_var]], "label")
-  if (!length(subject_var_label)) subject_var_label <- subject_var
-  if (!length(time_var_label)) time_var_label <- time_var
-  if (!length(filter_event_var_label)) filter_event_var_label <- filter_event_var
+spiderplotly <- function(
+    data, time_var, value_var, subject_var, filter_event_var,
+    color_var, colors, symbols, height, tooltip_cols = NULL) {
+  subject_var_label <- .get_column_label(data, subject_var)
+  time_var_label <- .get_column_label(data, time_var)
+  value_var_label <- .get_column_label(data, value_var)
 
   data %>%
     dplyr::arrange(!!as.name(subject_var), !!as.name(time_var)) %>%
@@ -284,12 +288,18 @@ spiderplotly <- function(data, time_var, value_var, subject_var, filter_event_va
     dplyr::mutate(
       x = dplyr::lag(!!as.name(time_var), default = 0),
       y = dplyr:::lag(!!as.name(value_var), default = 0),
-      tooltip = sprintf(
-        "%s: %s <br>%s: %s <br>%s: %s%% <br>",
-        subject_var_label, !!as.name(subject_var),
-        time_var_label, !!as.name(time_var),
-        filter_event_var_label, !!as.name(value_var) * 100
-      )
+      tooltip = {
+        if (is.null(tooltip_cols)) {
+          sprintf(
+            "%s: %s <br>%s: %s <br>%s: %s%% <br>",
+            subject_var_label, !!as.name(subject_var),
+            time_var_label, !!as.name(time_var),
+            value_var_label, !!as.name(value_var) * 100
+          )
+        } else {
+          .generate_tooltip(.data, tooltip_cols)
+        }
+      }
     ) %>%
     dplyr::ungroup() %>%
     plotly::plot_ly(
@@ -314,7 +324,7 @@ spiderplotly <- function(data, time_var, value_var, subject_var, filter_event_va
     ) %>%
     plotly::layout(
       xaxis = list(title = time_var_label),
-      yaxis = list(title = filter_event_var_label),
+      yaxis = list(title = value_var_label),
       title = title,
       dragmode = "select"
     ) %>%
