@@ -12,9 +12,12 @@ tm_g_swimlane(
   color_var,
   group_var,
   sort_var = NULL,
+  tooltip_vars = NULL,
+  size_var = NULL,
+  point_size = 10,
   point_colors = character(0),
   point_symbols = character(0),
-  plot_height = 700,
+  plot_height = c(700, 400, 1200),
   table_datanames = character(0),
   reactable_args = list()
 )
@@ -42,20 +45,25 @@ todo: this can be fixed by ordering factor levels}
 \item{sort_var}{(\code{character(1)} or \code{choices_selected}) name(s) of the column in \code{plot_dataname} which
 value determines order of the subjects displayed on the y-axis.}
 
+\item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
+If \code{NULL}, default tooltip is created.}
+
+\item{size_var}{(\code{character(1)} or \code{NULL}) If provided, this numeric column from the \code{plot_dataname}
+will be used to determine the size of the points. If \code{NULL}, a fixed size based on the \code{point_size} is used.}
+
+\item{point_size}{(\code{numeric(1)}) Default point size of the points in the plot.}
+
 \item{point_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named
 by levels of \code{color_var} column.}
 
-\item{point_symbols}{(\verb{named character}) valid plotly symbol name named  by levels of \code{color_var}
-column.}
+\item{point_symbols}{(\verb{named character}) valid plotly symbol name named  by levels of \code{color_var} column.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{table_datanames}{(\code{character}) names of the datasets which should be listed below the plot
-when some data points are selected. Objects named after \code{table_datanames} will be pulled from
-\code{data} so it is important that data actually contains these datasets. Please be aware that
-table datasets must be linked with \code{plot_dataname} by the relevant \code{\link[=join_keys]{join_keys()}}.
-See section "Decorating Module" below for more details.}
+\item{table_datanames}{(\code{character}) Names of the datasets to be displayed in the tables below the plot.}
+
+\item{reactable_args}{(\code{list}) Additional arguments passed to the \code{reactable} function for table customization.}
 }
 \description{
 Module visualizes subjects' events in time.

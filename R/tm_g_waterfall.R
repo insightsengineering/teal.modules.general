@@ -11,10 +11,15 @@
 #' in `plot_dataname` to be used as y-axis.
 #' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname`
 #'  to be used to differentiate bar colors.
+#' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
+#' If `NULL`, default tooltip is created.
 #' @param bar_colors (`named character`) valid color names (see [colors()]) or hex-colors named
 #'  by levels of `color_var` column.
 #' @param value_arbitrary_hlines (`numeric`) values in the same scale as `value_var` to horizontal
 #'  lines on the plot.
+#' @param plot_title (`character`) Title of the plot.
+#' @param table_datanames (`character`) Names of the datasets to be displayed in the tables below the plot.
+#' @param reactable_args (`list`) Additional arguments passed to the `reactable` function for table customization.
 #'
 #' @examples
 #' data <- teal_data() |>
@@ -64,13 +69,13 @@ tm_g_waterfall <- function(label = "Waterfall",
                            value_var,
                            sort_var = NULL,
                            color_var = NULL,
+                           tooltip_vars = NULL,
                            bar_colors = character(0),
                            value_arbitrary_hlines = c(0.2, -0.3),
                            plot_title = "Waterfall plot",
-                           plot_height = 700,
+                           plot_height = c(600, 400, 1200),
                            table_datanames = character(0),
-                           reactable_args = list(),
-                           tooltip_cols = NULL) {
+                           reactable_args = list()) {
   if (is.character(subject_var)) {
     subject_var <- choices_selected(choices = subject_var, selected = subject_var)
   }
@@ -101,7 +106,7 @@ tm_g_waterfall <- function(label = "Waterfall",
       value_arbitrary_hlines = value_arbitrary_hlines,
       plot_title = plot_title,
       reactable_args = reactable_args,
-      tooltip_cols = tooltip_cols
+      tooltip_vars = tooltip_vars
     )
   )
 }
@@ -124,7 +129,7 @@ ui_g_waterfall <- function(id, height) {
       selectInput(ns("sort_var"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("color_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
       colour_picker_ui(ns("colors")),
-      sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
+      sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1])
     ),
     tags$div(
       bslib::card(
@@ -147,10 +152,10 @@ srv_g_waterfall <- function(id,
                             bar_colors,
                             value_arbitrary_hlines,
                             plot_title,
-                            plot_height = 600,
+                            plot_height = c(600, 400, 1200),
                             table_datanames = character(0),
                             reactable_args = list(),
-                            tooltip_cols = NULL,
+                            tooltip_vars = NULL,
                             filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     .update_cs_input(inputId = "subject_var", data = reactive(data()[[dataname]]), cs = subject_var)
@@ -181,7 +186,7 @@ srv_g_waterfall <- function(id,
         value_arbitrary_hlines = value_arbitrary_hlines,
         height = input$plot_height,
         title = sprintf("Waterfall plot"),
-        tooltip_cols = tooltip_cols,
+        tooltip_vars = tooltip_vars,
         expr = {
           p <- waterfally(
             dataname,
@@ -192,7 +197,7 @@ srv_g_waterfall <- function(id,
             colors = colors,
             value_arbitrary_hlines = value_arbitrary_hlines,
             height = height,
-            tooltip_cols = tooltip_cols
+            tooltip_vars = tooltip_vars
           ) %>%
             plotly::layout(title = title)
         },
@@ -227,7 +232,7 @@ srv_g_waterfall <- function(id,
 #' @export
 waterfally <- function(
     data, subject_var, value_var, sort_var, color_var, colors,
-    value_arbitrary_hlines, height, tooltip_cols = NULL) {
+    value_arbitrary_hlines, height, tooltip_vars = NULL) {
   subject_var_label <- .get_column_label(data, subject_var)
   value_var_label <- .get_column_label(data, value_var)
   color_var_label <- .get_column_label(data, color_var)
@@ -240,7 +245,7 @@ waterfally <- function(
     },
     !!as.name(subject_var) := factor(!!as.name(subject_var), levels = unique(!!as.name(subject_var))),
     tooltip = {
-      if (is.null(tooltip_cols)) {
+      if (is.null(tooltip_vars)) {
         sprintf(
           "%s: %s <br>%s: %s%% <br>%s: %s",
           subject_var_label, !!as.name(subject_var),
@@ -248,7 +253,7 @@ waterfally <- function(
           color_var_label, !!as.name(color_var)
         )
       } else {
-        .generate_tooltip(.data, tooltip_cols)
+        .generate_tooltip(.data, tooltip_vars)
       }
     }
   ) %>%

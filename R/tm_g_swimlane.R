@@ -17,10 +17,16 @@
 #'  todo: this can be fixed by ordering factor levels
 #' @param sort_var (`character(1)` or `choices_selected`) name(s) of the column in `plot_dataname` which
 #'  value determines order of the subjects displayed on the y-axis.
+#' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
+#' If `NULL`, default tooltip is created.
+#' @param size_var (`character(1)` or `NULL`) If provided, this numeric column from the `plot_dataname`
+#' will be used to determine the size of the points. If `NULL`, a fixed size based on the `point_size` is used.
+#' @param point_size (`numeric(1)`) Default point size of the points in the plot.
 #' @param point_colors (`named character`) valid color names (see [colors()]) or hex-colors named
 #'  by levels of `color_var` column.
-#' @param point_symbols (`named character`) valid plotly symbol name named  by levels of `color_var`
-#' column.
+#' @param point_symbols (`named character`) valid plotly symbol name named  by levels of `color_var` column.
+#' @param table_datanames (`character`) Names of the datasets to be displayed in the tables below the plot.
+#' @param reactable_args (`list`) Additional arguments passed to the `reactable` function for table customization.
 #'
 #' @examples
 #' data <- teal_data() |>
@@ -74,14 +80,17 @@ tm_g_swimlane <- function(label = "Swimlane",
                           subject_var,
                           color_var,
                           group_var,
-                          size_var = NULL,
                           sort_var = NULL,
+                          tooltip_vars = NULL,
+                          size_var = NULL,
+                          point_size = 10,
                           point_colors = character(0),
                           point_symbols = character(0),
-                          plot_height = 700,
+                          plot_height = c(700, 400, 1200),
                           table_datanames = character(0),
-                          reactable_args = list(),
-                          tooltip_cols = NULL) {
+                          reactable_args = list()) {
+  checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
+  checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   if (is.character(time_var)) {
     time_var <- choices_selected(choices = time_var, selected = time_var)
   }
@@ -111,11 +120,12 @@ tm_g_swimlane <- function(label = "Swimlane",
       group_var = group_var,
       sort_var = sort_var,
       size_var = size_var,
+      point_size = point_size,
       point_colors = point_colors,
       point_symbols = point_symbols,
       table_datanames = table_datanames,
       reactable_args = reactable_args,
-      tooltip_cols = tooltip_cols
+      tooltip_vars = tooltip_vars
     )
   )
 }
@@ -130,7 +140,7 @@ ui_g_swimlane <- function(id, height) {
       selectInput(ns("group_var"), label = "Group by:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("sort_var"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
       colour_picker_ui(ns("colors")),
-      sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
+      sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1])
     ),
     tags$div(
       bslib::card(
@@ -152,11 +162,12 @@ srv_g_swimlane <- function(id,
                            group_var,
                            sort_var = time_var,
                            size_var = NULL,
+                           point_size = 10,
                            point_colors,
                            point_symbols,
                            table_datanames,
                            reactable_args = list(),
-                           tooltip_cols = NULL,
+                           tooltip_vars = NULL,
                            filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     .update_cs_input(inputId = "time_var", data = reactive(data()[[dataname]]), cs = time_var)
@@ -189,10 +200,11 @@ srv_g_swimlane <- function(id,
         group_var = input$group_var,
         sort_var = input$sort_var,
         size_var = size_var,
+        point_size = point_size,
         colors = color_inputs(),
         symbols = adjusted_symbols,
         height = input$plot_height,
-        tooltip_cols = tooltip_cols,
+        tooltip_vars = tooltip_vars,
         expr = {
           p <- swimlanely(
             data = dataname,
@@ -202,10 +214,11 @@ srv_g_swimlane <- function(id,
             group_var = group_var,
             sort_var = sort_var,
             size_var = size_var,
+            point_size = point_size,
             colors = colors,
             symbols = symbols,
             height = height,
-            tooltip_cols = tooltip_cols
+            tooltip_vars = tooltip_vars
           )
         }
       )
@@ -241,7 +254,7 @@ srv_g_swimlane <- function(id,
 #' @export
 swimlanely <- function(
     data, time_var, subject_var, color_var, group_var, sort_var,
-    colors, symbols, height, tooltip_cols = NULL, size_var = NULL, point_size = 10) {
+    colors, symbols, height, tooltip_vars = NULL, size_var = NULL, point_size = 10) {
   subject_var_label <- .get_column_label(data, subject_var)
   time_var_label <- .get_column_label(data, time_var)
 
@@ -267,7 +280,7 @@ swimlanely <- function(
     dplyr::group_by(!!as.name(subject_var), !!as.name(time_var)) %>%
     dplyr::mutate(
       tooltip = {
-        if (is.null(tooltip_cols)) {
+        if (is.null(tooltip_vars)) {
           paste(
             unique(
               c(
@@ -283,7 +296,7 @@ swimlanely <- function(
             collapse = "<br>"
           )
         } else {
-          .generate_tooltip(.data, tooltip_cols)
+          .generate_tooltip(.data, tooltip_vars)
         }
       }
     ) %>%

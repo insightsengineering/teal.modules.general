@@ -11,10 +11,11 @@ tm_g_waterfall(
   value_var,
   sort_var = NULL,
   color_var = NULL,
+  tooltip_vars = NULL,
   bar_colors = character(0),
   value_arbitrary_hlines = c(0.2, -0.3),
   plot_title = "Waterfall plot",
-  plot_height = 700,
+  plot_height = c(600, 400, 1200),
   table_datanames = character(0),
   reactable_args = list()
 )
@@ -34,20 +35,23 @@ in \code{plot_dataname} to be used as y-axis.}
 \item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
 to be used to differentiate bar colors.}
 
+\item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
+If \code{NULL}, default tooltip is created.}
+
 \item{bar_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named
 by levels of \code{color_var} column.}
 
 \item{value_arbitrary_hlines}{(\code{numeric}) values in the same scale as \code{value_var} to horizontal
 lines on the plot.}
 
+\item{plot_title}{(\code{character}) Title of the plot.}
+
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{table_datanames}{(\code{character}) names of the datasets which should be listed below the plot
-when some data points are selected. Objects named after \code{table_datanames} will be pulled from
-\code{data} so it is important that data actually contains these datasets. Please be aware that
-table datasets must be linked with \code{plot_dataname} by the relevant \code{\link[=join_keys]{join_keys()}}.
-See section "Decorating Module" below for more details.}
+\item{table_datanames}{(\code{character}) Names of the datasets to be displayed in the tables below the plot.}
+
+\item{reactable_args}{(\code{list}) Additional arguments passed to the \code{reactable} function for table customization.}
 }
 \description{
 Module visualizes subjects sorted decreasingly by y-values.

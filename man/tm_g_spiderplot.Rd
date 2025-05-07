@@ -10,14 +10,15 @@ tm_g_spiderplot(
   time_var,
   value_var,
   subject_var,
-  filter_event_var,
   color_var,
+  filter_event_var,
+  size_var = NULL,
+  tooltip_vars = NULL,
   point_colors = character(0),
   point_symbols = character(0),
-  plot_height = 600,
+  plot_height = c(600, 400, 1200),
   table_datanames = character(0),
-  reactable_args = list(),
-  transformator = transformator
+  reactable_args = list()
 )
 }
 \arguments{
@@ -35,27 +36,30 @@ in \code{plot_dataname} to be used as y-axis.}
 \item{subject_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
 in \code{plot_dataname} to be used as grouping variable for displayed lines/points.}
 
+\item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
+to be used to differentiate colors and symbols.}
+
 \item{filter_event_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
 in \code{plot_dataname} to be used to filter the data.
 The plot will be updated with just the filtereed data when the user selects an event from the dropdown menu.}
 
-\item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
-to be used to differentiate colors and symbols.}
+\item{size_var}{(\code{character(1)} or \code{NULL}) If provided, this numeric column from the \code{plot_dataname}
+will be used to determine the size of the points. If \code{NULL}, a fixed size based on the \code{point_size} is used.}
+
+\item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
+If \code{NULL}, default tooltip is created.}
 
 \item{point_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named
 by levels of \code{color_var} column.}
 
-\item{point_symbols}{(\verb{named character}) valid plotly symbol name named  by levels of \code{color_var}
-column.}
+\item{point_symbols}{(\verb{named character}) valid plotly symbol name named  by levels of \code{color_var}column.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{table_datanames}{(\code{character}) names of the datasets which should be listed below the plot
-when some data points are selected. Objects named after \code{table_datanames} will be pulled from
-\code{data} so it is important that data actually contains these datasets. Please be aware that
-table datasets must be linked with \code{plot_dataname} by the relevant \code{\link[=join_keys]{join_keys()}}.
-See section "Decorating Module" below for more details.}
+\item{table_datanames}{(\code{character}) Names of the datasets to be displayed in the tables below the plot.}
+
+\item{reactable_args}{(\code{list}) Additional arguments passed to the \code{reactable} function for table customization.}
 }
 \description{
 Module visualizes value development in time grouped by subjects.
