@@ -74,6 +74,7 @@ tm_g_swimlane <- function(label = "Swimlane",
                           subject_var,
                           color_var,
                           group_var,
+                          size_var = NULL,
                           sort_var = NULL,
                           point_colors = character(0),
                           point_symbols = character(0),
@@ -109,6 +110,7 @@ tm_g_swimlane <- function(label = "Swimlane",
       color_var = color_var,
       group_var = group_var,
       sort_var = sort_var,
+      size_var = size_var,
       point_colors = point_colors,
       point_symbols = point_symbols,
       table_datanames = table_datanames,
@@ -130,8 +132,13 @@ ui_g_swimlane <- function(id, height) {
       colour_picker_ui(ns("colors")),
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
-    bslib::page_fillable(
-      plotly::plotlyOutput(ns("plot"), height = "100%"),
+    tags$div(
+      bslib::card(
+        full_screen = TRUE,
+        tags$div(
+          plotly::plotlyOutput(ns("plot"), height = "100%")
+        )
+      ),
       ui_t_reactables(ns("subtables"))
     )
   )
@@ -144,6 +151,7 @@ srv_g_swimlane <- function(id,
                            color_var,
                            group_var,
                            sort_var = time_var,
+                           size_var = NULL,
                            point_colors,
                            point_symbols,
                            table_datanames,
@@ -180,6 +188,7 @@ srv_g_swimlane <- function(id,
         color_var = input$color_var,
         group_var = input$group_var,
         sort_var = input$sort_var,
+        size_var = size_var,
         colors = color_inputs(),
         symbols = adjusted_symbols,
         height = input$plot_height,
@@ -192,6 +201,7 @@ srv_g_swimlane <- function(id,
             color_var = color_var,
             group_var = group_var,
             sort_var = sort_var,
+            size_var = size_var,
             colors = colors,
             symbols = symbols,
             height = height,
@@ -230,10 +240,16 @@ srv_g_swimlane <- function(id,
 # todo: export is temporary, this should go to a new package teal.graphs or another bird species
 #' @export
 swimlanely <- function(
-    data, time_var, subject_var, color_var, group_var,
-    sort_var, colors, symbols, height, tooltip_cols = NULL) {
+    data, time_var, subject_var, color_var, group_var, sort_var,
+    colors, symbols, height, tooltip_cols = NULL, size_var = NULL, point_size = 10) {
   subject_var_label <- .get_column_label(data, subject_var)
   time_var_label <- .get_column_label(data, time_var)
+
+  if (is.null(size_var)) {
+    size <- point_size
+  } else {
+    size <- stats::as.formula(sprintf("~%s", size_var))
+  }
 
   # forcats::fct_reorder doesn't seem to work here
   subject_levels <- data %>%
@@ -282,6 +298,7 @@ swimlanely <- function(
       y = stats::as.formula(sprintf("~%s", subject_var)),
       color = stats::as.formula(sprintf("~%s", color_var)),
       symbol = stats::as.formula(sprintf("~%s", color_var)),
+      size = size,
       text = ~tooltip,
       hoverinfo = "text"
     ) %>%

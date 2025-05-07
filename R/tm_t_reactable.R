@@ -63,10 +63,11 @@ srv_t_reactables <- function(
         return(NULL)
       }
       div(
+        include_css_files("reactable.css"),
         do.call(
           bslib::accordion,
           c(
-            list(id = session$ns("reactables")),
+            list(id = session$ns("reactables"), class = "teal-modules-general reactable-accordion"),
             lapply(
               datanames_r(),
               function(dataname) {
@@ -115,7 +116,8 @@ ui_t_reactable <- function(id) {
       actionsBox = TRUE,
       `show-subtext` = TRUE,
       countSelectedText = TRUE,
-      liveSearch = TRUE
+      liveSearch = TRUE,
+      container = "body"
     )
   )
 
@@ -123,7 +125,11 @@ ui_t_reactable <- function(id) {
   #   bslib::popover(input)
   bslib::page_fluid(
     input,
-    reactable::reactableOutput(ns("table"))
+    bslib::card(
+      class = "teal-modules-general reactable-card",
+      full_screen = TRUE,
+      reactable::reactableOutput(ns("table"))
+    )
   )
 }
 

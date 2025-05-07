@@ -126,8 +126,13 @@ ui_g_waterfall <- function(id, height) {
       colour_picker_ui(ns("colors")),
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
-    bslib::page_fillable(
-      plotly::plotlyOutput(ns("plot"), height = "100%"),
+    tags$div(
+      bslib::card(
+        full_screen = TRUE,
+        tags$div(
+          plotly::plotlyOutput(ns("plot"), height = "100%")
+        )
+      ),
       ui_t_reactables(ns("subtables"))
     )
   )

@@ -87,6 +87,7 @@ tm_g_spiderplot <- function(label = "Spiderplot",
                             subject_var,
                             filter_event_var,
                             color_var,
+                            size_var = NULL,
                             point_colors = character(0),
                             point_symbols = character(0),
                             plot_height = 600,
@@ -122,6 +123,7 @@ tm_g_spiderplot <- function(label = "Spiderplot",
       subject_var = subject_var,
       filter_event_var = filter_event_var,
       color_var = color_var,
+      size_var = size_var,
       point_colors = point_colors,
       point_symbols = point_symbols,
       table_datanames = table_datanames,
@@ -150,8 +152,13 @@ ui_g_spiderplot <- function(id, height) {
       colour_picker_ui(ns("colors")),
       sliderInput(ns("plot_height"), "Plot Height (px)", 400, 1200, height)
     ),
-    bslib::page_fillable(
-      plotly::plotlyOutput(ns("plot"), height = "100%"),
+    tags$div(
+      bslib::card(
+        full_screen = TRUE,
+        tags$div(
+          plotly::plotlyOutput(ns("plot"), height = "100%")
+        )
+      ),
       ui_t_reactables(ns("subtables"))
     )
   )
@@ -167,6 +174,7 @@ srv_g_spiderplot <- function(id,
                              color_var,
                              point_colors,
                              point_symbols,
+                             size_var = NULL,
                              plot_height = 600,
                              table_datanames = character(0),
                              reactable_args = list(),
@@ -229,6 +237,7 @@ srv_g_spiderplot <- function(id,
         color_var = input$color_var,
         colors = color_inputs(),
         symbols = adjusted_symbols,
+        size_var = size_var,
         height = input$plot_height,
         title = sprintf("%s over time", input$filter_event_var_level),
         tooltip_cols = tooltip_cols,
@@ -243,6 +252,7 @@ srv_g_spiderplot <- function(id,
               color_var = color_var,
               colors = colors,
               symbols = symbols,
+              size_var = size_var,
               height = height,
               tooltip_cols = tooltip_cols
             ) %>%
@@ -277,10 +287,16 @@ srv_g_spiderplot <- function(id,
 #' @export
 spiderplotly <- function(
     data, time_var, value_var, subject_var, filter_event_var,
-    color_var, colors, symbols, height, tooltip_cols = NULL) {
+    color_var, colors, symbols, height, tooltip_cols = NULL, size_var = NULL, point_size = 10) {
   subject_var_label <- .get_column_label(data, subject_var)
   time_var_label <- .get_column_label(data, time_var)
   value_var_label <- .get_column_label(data, value_var)
+
+  if (is.null(size_var)) {
+    size <- point_size
+  } else {
+    size <- stats::as.formula(sprintf("~%s", size_var))
+  }
 
   data %>%
     dplyr::arrange(!!as.name(subject_var), !!as.name(time_var)) %>%
@@ -319,6 +335,7 @@ spiderplotly <- function(
       x = stats::as.formula(sprintf("~%s", time_var)),
       y = stats::as.formula(sprintf("~%s", value_var)),
       symbol = stats::as.formula(sprintf("~%s", color_var)),
+      size = size,
       text = ~tooltip,
       hoverinfo = "text"
     ) %>%
