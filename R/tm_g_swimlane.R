@@ -146,6 +146,7 @@ ui_g_swimlane <- function(id, height) {
       bslib::card(
         full_screen = TRUE,
         tags$div(
+          ui_trigger_tooltips(ns("show_tooltips")),
           plotly::plotlyOutput(ns("plot"), height = "100%")
         )
       ),
@@ -230,6 +231,8 @@ srv_g_swimlane <- function(id,
       plotly::event_data("plotly_deselect", source = "swimlane") # todo: deselect doesn't work
       plotly::event_data("plotly_selected", source = "swimlane")
     })
+
+    srv_trigger_tooltips("show_tooltips", plotly_selected, session$ns("plot"))
 
     tables_selected_q <- .plotly_selected_filter_children(
       data = plotly_q,

@@ -160,6 +160,7 @@ ui_g_spiderplot <- function(id, height) {
       bslib::card(
         full_screen = TRUE,
         tags$div(
+          ui_trigger_tooltips(ns("show_tooltips")),
           plotly::plotlyOutput(ns("plot"), height = "100%")
         )
       ),
@@ -268,6 +269,8 @@ srv_g_spiderplot <- function(id,
     output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
 
     plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "spiderplot"))
+
+    srv_trigger_tooltips("show_tooltips", plotly_selected, session$ns("plot"))
 
     tables_selected_q <- .plotly_selected_filter_children(
       data = plotly_q,

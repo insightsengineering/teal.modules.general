@@ -476,3 +476,53 @@ children <- function(x, dataset_name = character(0)) {
     apply(tooltip_lines, 1, function(row) paste(row, collapse = "<br>"))
   }
 }
+
+
+#' @keywords internal
+#' @noRd
+trigger_tooltips_deps <- function() {
+  htmltools::htmlDependency(
+    name = "teal-modules-general-trigger-tooltips",
+    version = utils::packageVersion("teal.modules.general"),
+    package = "teal.modules.general",
+    src = "js",
+    script = "triggerTooltips.js"
+  )
+}
+
+#' @keywords internal
+#' @noRd
+ui_trigger_tooltips <- function(id) {
+  ns <- NS(id)
+  tags$div(
+    trigger_tooltips_deps(),
+    actionButton(ns("show_tooltips"), "Show Selected Tooltips")
+  )
+}
+
+#' @keywords internal
+#' @noRd
+srv_trigger_tooltips <- function(id, plotly_selected, plot_id) {
+  moduleServer(id, function(input, output, session) {
+    observeEvent(input$show_tooltips, {
+      sel <- plotly_selected()
+
+      if (!is.null(sel) && nrow(sel) > 0) {
+        tooltip_points <- lapply(seq_len(nrow(sel)), function(i) {
+          list(
+            curve = sel$curveNumber[i],
+            index = sel$pointNumber[i]
+          )
+        })
+
+        session$sendCustomMessage(
+          "triggerTooltips",
+          list(
+            plotID = plot_id,
+            tooltipPoints = jsonlite::toJSON(tooltip_points, auto_unbox = TRUE)
+          )
+        )
+      }
+    })
+  })
+}
