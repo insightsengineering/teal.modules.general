@@ -269,7 +269,7 @@ srv_g_spiderplot <- function(id,
     output$plot <- output$plot <- plotly::renderPlotly(plotly::event_register(
       {
         plotly_q()$p |>
-          setup_trigger_tooltips(session$ns, input)
+          setup_trigger_tooltips(session$ns)
       },
       "plotly_selected"
     ))
