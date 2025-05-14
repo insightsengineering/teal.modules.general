@@ -485,44 +485,82 @@ trigger_tooltips_deps <- function() {
     name = "teal-modules-general-trigger-tooltips",
     version = utils::packageVersion("teal.modules.general"),
     package = "teal.modules.general",
-    src = "js",
-    script = "triggerTooltips.js"
+    src = "triggerTooltips",
+    script = "triggerTooltips.js",
+    stylesheet = "triggerTooltips.css"
+  )
+}
+
+
+#' @keywords internal
+#' @noRd
+setup_trigger_tooltips <- function(plot, ns) {
+  htmlwidgets::onRender(
+    plot,
+    paste0(
+      "function(el) {
+          const targetDiv = document.querySelector('#", ns("plot"), " .modebar-group:nth-child(4)');
+            console.log(el.data);
+            if (targetDiv) {
+              const button = document.createElement('button');
+              button.setAttribute('data-count', '0');
+              button.className = 'teal-modules-general trigger-tooltips-button';
+
+              button.onclick = function () {
+                const current = parseInt(this.getAttribute('data-count'));
+                const next = current + 1;
+                this.setAttribute('data-count', next);
+                console.log('Button clicked ' + next + ' times');
+                Shiny.setInputValue('", ns("show_tooltips"), "', next);
+              };
+
+              const icon = document.createElement('i');
+              icon.className = 'fas fa-message';
+              icon.setAttribute('role', 'presentation');
+              icon.setAttribute('aria-label', 'info icon');
+
+              const tooltip = document.createElement('span');
+              tooltip.className = 'plotly-icon-tooltip';
+              tooltip.textContent = 'Hover selection';
+
+              button.appendChild(icon);
+              button.appendChild(tooltip);
+              targetDiv.appendChild(button);
+            }
+        }"
+    )
   )
 }
 
 #' @keywords internal
 #' @noRd
-ui_trigger_tooltips <- function(id) {
-  ns <- NS(id)
-  tags$div(
-    trigger_tooltips_deps(),
-    actionButton(ns("show_tooltips"), "Show Selected Tooltips")
+set_plot_data <- function(plot, data_id) {
+  htmlwidgets::onRender(
+    plot,
+    paste0(
+      "
+        function(el) {
+          slicedData = el.data.slice(0, -1).map(({ x, y, customdata }) => ({ x, y, customdata }));
+          plotData = {
+            x: [],
+            y: [],
+            customdata: [],
+            curveNumber: [],
+            pointNumber: []
+          };
+
+          slicedData.forEach((item, curveNumber) => {
+            for (let i = 0; i < item.x.length; i++) {
+              plotData.pointNumber.push(i);
+              plotData.x.push(item.x[i]);
+              plotData.y.push(item.y[i]);
+              plotData.customdata.push(item.customdata[i]);
+              plotData.curveNumber.push(curveNumber);
+            }
+          });
+          Shiny.setInputValue('", data_id, "', plotData);
+        }
+      "
+    )
   )
-}
-
-#' @keywords internal
-#' @noRd
-srv_trigger_tooltips <- function(id, plotly_selected, plot_id) {
-  moduleServer(id, function(input, output, session) {
-    observeEvent(input$show_tooltips, {
-      sel <- plotly_selected()
-
-      if (!is.null(sel) && nrow(sel) > 0) {
-        tooltip_points <- lapply(seq_len(nrow(sel)), function(i) {
-          list(
-            curve = sel$curveNumber[i],
-            index = sel$pointNumber[i]
-          )
-        })
-
-        session$sendCustomMessage(
-          "triggerTooltips",
-          list(
-            plotID = plot_id,
-            tooltipPoints = jsonlite::toJSON(tooltip_points, auto_unbox = TRUE)
-          )
-        )
-      }
-    })
-  })
 }

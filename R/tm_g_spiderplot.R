@@ -160,7 +160,7 @@ ui_g_spiderplot <- function(id, height) {
       bslib::card(
         full_screen = TRUE,
         tags$div(
-          ui_trigger_tooltips(ns("show_tooltips")),
+          trigger_tooltips_deps(),
           plotly::plotlyOutput(ns("plot"), height = "100%")
         )
       ),
@@ -266,11 +266,36 @@ srv_g_spiderplot <- function(id,
       )
     })
 
-    output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
+    output$plot <- output$plot <- plotly::renderPlotly(plotly::event_register(
+      {
+        plotly_q()$p |>
+          setup_trigger_tooltips(session$ns, input)
+      },
+      "plotly_selected"
+    ))
 
     plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "spiderplot"))
 
-    srv_trigger_tooltips("show_tooltips", plotly_selected, session$ns("plot"))
+    observeEvent(input$show_tooltips, {
+      sel <- plotly_selected()
+
+      if (!is.null(sel) && nrow(sel) > 0) {
+        tooltip_points <- lapply(seq_len(nrow(sel)), function(i) {
+          list(
+            curve = sel$curveNumber[i],
+            index = sel$pointNumber[i]
+          )
+        })
+
+        session$sendCustomMessage(
+          "triggerTooltips",
+          list(
+            plotID = session$ns("plot"),
+            tooltipPoints = jsonlite::toJSON(tooltip_points, auto_unbox = TRUE)
+          )
+        )
+      }
+    })
 
     tables_selected_q <- .plotly_selected_filter_children(
       data = plotly_q,

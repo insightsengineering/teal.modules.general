@@ -140,13 +140,15 @@ ui_g_swimlane <- function(id, height) {
       selectInput(ns("group_var"), label = "Group by:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("sort_var"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
       colour_picker_ui(ns("colors")),
-      sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1])
+      sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1]),
+      selectInput(ns("subjects"), "Subjects", choices = NULL, selected = NULL, multiple = TRUE),
+      actionButton(ns("subject_tooltips"), "Show Subject Tooltips")
     ),
     tags$div(
       bslib::card(
         full_screen = TRUE,
         tags$div(
-          ui_trigger_tooltips(ns("show_tooltips")),
+          trigger_tooltips_deps(),
           plotly::plotlyOutput(ns("plot"), height = "100%")
         )
       ),
@@ -188,6 +190,7 @@ srv_g_swimlane <- function(id,
 
     plotly_q <- reactive({
       req(data(), input$time_var, input$subject_var, input$color_var, input$group_var, input$sort_var, color_inputs())
+      print(input$subject_var)
       adjusted_symbols <- .shape_palette_discrete(
         levels = unique(data()[[plot_dataname]][[input$color_var]]),
         symbol = point_symbols
@@ -225,14 +228,69 @@ srv_g_swimlane <- function(id,
       )
     })
 
-    output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
+    output$plot <- plotly::renderPlotly(plotly::event_register(
+      {
+        plotly_q()$p |>
+          set_plot_data(session$ns("plot_data")) |>
+          setup_trigger_tooltips(session$ns)
+      },
+      "plotly_selected"
+    ))
+
+    plotly_data <- reactive({
+      data.frame(
+        x = unlist(input$plot_data$x),
+        y = unlist(input$plot_data$y),
+        customdata = unlist(input$plot_data$customdata),
+        curve = unlist(input$plot_data$curveNumber),
+        index = unlist(input$plot_data$pointNumber)
+      )
+    })
 
     plotly_selected <- reactive({
       plotly::event_data("plotly_deselect", source = "swimlane") # todo: deselect doesn't work
       plotly::event_data("plotly_selected", source = "swimlane")
     })
 
-    srv_trigger_tooltips("show_tooltips", plotly_selected, session$ns("plot"))
+    observeEvent(input$show_tooltips, {
+      sel <- plotly_selected()
+
+      if (!is.null(sel) && nrow(sel) > 0) {
+        tooltip_points <- lapply(seq_len(nrow(sel)), function(i) {
+          list(
+            curve = sel$curveNumber[i],
+            index = sel$pointNumber[i]
+          )
+        })
+
+        session$sendCustomMessage(
+          "triggerTooltips",
+          list(
+            plotID = session$ns("plot"),
+            tooltipPoints = jsonlite::toJSON(tooltip_points, auto_unbox = TRUE)
+          )
+        )
+      }
+    })
+
+    observeEvent(input$subject_tooltips, {
+      hovervalues <- data()[[plot_dataname]] |>
+        dplyr::mutate(customdata = dplyr::row_number()) |>
+        dplyr::filter(!!rlang::sym(input$subject_var) %in% input$subjects) |>
+        dplyr::pull(customdata)
+
+
+      hovertips <- plotly_data() |>
+        dplyr::filter(customdata %in% hovervalues)
+
+      session$sendCustomMessage(
+        "triggerTooltips",
+        list(
+          plotID = session$ns("plot"),
+          tooltipPoints = jsonlite::toJSON(hovertips)
+        )
+      )
+    })
 
     tables_selected_q <- .plotly_selected_filter_children(
       data = plotly_q,
@@ -242,6 +300,19 @@ srv_g_swimlane <- function(id,
       plotly_selected = plotly_selected,
       children_datanames = table_datanames
     )
+
+
+    observeEvent(data(), {
+      if (class(subject_var) == "choices_selected") {
+        subject_col <- subject_var$selected
+      } else {
+        subject_col <- subject_var
+      }
+      updateSelectInput(
+        inputId = "subjects",
+        choices = data()[[plot_dataname]][[subject_col]]
+      )
+    })
 
     srv_t_reactables(
       "subtables",
@@ -260,6 +331,8 @@ swimlanely <- function(
     colors, symbols, height, tooltip_vars = NULL, size_var = NULL, point_size = 10) {
   subject_var_label <- .get_column_label(data, subject_var)
   time_var_label <- .get_column_label(data, time_var)
+  data <- data |>
+    dplyr::mutate(customdata = dplyr::row_number())
 
   if (is.null(size_var)) {
     size <- point_size
@@ -307,7 +380,8 @@ swimlanely <- function(
       source = "swimlane",
       colors = colors,
       symbols = symbols,
-      height = height
+      height = height,
+      customdata = ~customdata
     ) %>%
     plotly::add_markers(
       x = stats::as.formula(sprintf("~%s", time_var)),
@@ -327,7 +401,8 @@ swimlanely <- function(
         dplyr::group_by(!!as.name(subject_var), !!as.name(group_var)) |>
         dplyr::summarise(study_day = max(!!as.name(time_var))),
       line = list(width = 2, color = "grey"),
-      showlegend = FALSE
+      showlegend = FALSE,
+      customdata = NULL
     ) %>%
     plotly::layout(
       xaxis = list(title = time_var_label),
