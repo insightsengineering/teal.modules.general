@@ -224,7 +224,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
 .make_reactable_call <- function(dataset, dataname, args) {
   columns <- .make_reactable_columns_call(dataset = dataset, col_defs = args$columns)
   call_args <- utils::modifyList(
-    list(columns = columns, onClick = "select"),
+    list(columns = columns, onClick = "select", selection = "multiple"),
     args[!names(args) %in% "columns"]
   )
   as.call(

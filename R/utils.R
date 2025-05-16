@@ -512,8 +512,6 @@ setup_trigger_tooltips <- function(plot, ns) {
 
               const icon = document.createElement('i');
               icon.className = 'fas fa-message';
-              icon.setAttribute('role', 'presentation');
-              icon.setAttribute('aria-label', 'info icon');
 
               const tooltip = document.createElement('span');
               tooltip.className = 'plotly-icon-tooltip';
@@ -536,7 +534,7 @@ set_plot_data <- function(plot, data_id) {
     paste0(
       "
         function(el) {
-          slicedData = el.data.slice(0, -1).map(({ x, y, customdata }) => ({ x, y, customdata }));
+          slicedData = el.data.slice(0, -1).map(({ x, y, customdata, mode }) => ({ x, y, customdata, mode }));
           plotData = {
             x: [],
             y: [],
@@ -546,12 +544,14 @@ set_plot_data <- function(plot, data_id) {
           };
 
           slicedData.forEach((item, curveNumber) => {
-            for (let i = 0; i < item.x.length; i++) {
-              plotData.pointNumber.push(i);
-              plotData.x.push(item.x[i]);
-              plotData.y.push(item.y[i]);
-              plotData.customdata.push(item.customdata[i]);
-              plotData.curveNumber.push(curveNumber);
+            if (item.mode === 'markers') {
+              for (let i = 0; i < item.x.length; i++) {
+                plotData.pointNumber.push(i);
+                plotData.x.push(item.x[i]);
+                plotData.y.push(item.y[i]);
+                plotData.customdata.push(item.customdata[i]);
+                plotData.curveNumber.push(curveNumber);
+              }
             }
           });
           Shiny.setInputValue('", data_id, "', plotData);

@@ -17,8 +17,6 @@ function triggerSelectedTooltips(plotID) {
     if (trace.selectedpoints && Array.isArray(trace.selectedpoints)) {
       trace.selectedpoints.forEach((pointIndex) => {
         tooltipPoints.push({
-          x: trace.x[pointIndex],
-          y: trace.y[pointIndex],
           curve: curveIndex,
           index: pointIndex,
         });

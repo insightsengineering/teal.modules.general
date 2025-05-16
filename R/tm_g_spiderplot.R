@@ -154,7 +154,9 @@ ui_g_spiderplot <- function(id, height) {
       selectInput(ns("filter_event_var"), label = "Event variable:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("filter_event_var_level"), label = "Select an event:", choices = NULL, selected = NULL, multiple = FALSE),
       colour_picker_ui(ns("colors")),
-      sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1])
+      sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1]),
+      selectInput(ns("subjects"), "Subjects", choices = NULL, selected = NULL, multiple = TRUE),
+      actionButton(ns("subject_tooltips"), "Show Subject Tooltips")
     ),
     tags$div(
       bslib::card(
@@ -269,12 +271,53 @@ srv_g_spiderplot <- function(id,
     output$plot <- output$plot <- plotly::renderPlotly(plotly::event_register(
       {
         plotly_q()$p |>
+          set_plot_data(session$ns("plot_data")) |>
           setup_trigger_tooltips(session$ns)
       },
       "plotly_selected"
     ))
 
+    observeEvent(data(), {
+      if (class(subject_var) == "choices_selected") {
+        subject_col <- subject_var$selected
+      } else {
+        subject_col <- subject_var
+      }
+      updateSelectInput(
+        inputId = "subjects",
+        choices = data()[[plot_dataname]][[subject_col]]
+      )
+    })
+
+    plotly_data <- reactive({
+      data.frame(
+        x = unlist(input$plot_data$x),
+        y = unlist(input$plot_data$y),
+        customdata = unlist(input$plot_data$customdata),
+        curve = unlist(input$plot_data$curveNumber),
+        index = unlist(input$plot_data$pointNumber)
+      )
+    })
+
     plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "spiderplot"))
+
+    observeEvent(input$subject_tooltips, {
+      hovervalues <- data()[[plot_dataname]] |>
+        dplyr::mutate(customdata = dplyr::row_number()) |>
+        dplyr::filter(!!rlang::sym(input$subject_var) %in% input$subjects) |>
+        dplyr::pull(customdata)
+
+      hovertips <- plotly_data() |>
+        dplyr::filter(customdata %in% hovervalues)
+
+      session$sendCustomMessage(
+        "triggerTooltips",
+        list(
+          plotID = session$ns("plot"),
+          tooltipPoints = jsonlite::toJSON(hovertips)
+        )
+      )
+    })
 
     tables_selected_q <- .plotly_selected_filter_children(
       data = plotly_q,
@@ -302,6 +345,8 @@ spiderplotly <- function(
   subject_var_label <- .get_column_label(data, subject_var)
   time_var_label <- .get_column_label(data, time_var)
   value_var_label <- .get_column_label(data, value_var)
+  data <- data |>
+    dplyr::mutate(customdata = dplyr::row_number())
 
   if (is.null(size_var)) {
     size <- point_size
@@ -340,7 +385,8 @@ spiderplotly <- function(
       x = ~x,
       y = ~y,
       xend = stats::as.formula(sprintf("~%s", time_var)),
-      yend = stats::as.formula(sprintf("~%s", value_var))
+      yend = stats::as.formula(sprintf("~%s", value_var)),
+      customdata = NULL
     ) %>%
     plotly::add_markers(
       x = stats::as.formula(sprintf("~%s", time_var)),
@@ -348,7 +394,8 @@ spiderplotly <- function(
       symbol = stats::as.formula(sprintf("~%s", color_var)),
       size = size,
       text = ~tooltip,
-      hoverinfo = "text"
+      hoverinfo = "text",
+      customdata = ~customdata
     ) %>%
     plotly::layout(
       xaxis = list(title = time_var_label),
