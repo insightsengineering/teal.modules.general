@@ -22,7 +22,7 @@
   top: 125%;
   right: 0;
   transform: translateX(0);
-  background-color: #121f3d;
+  background: #121f3d;
   color: #fff;
   padding: 6px 10px;
   border-radius: 3px;
@@ -30,17 +30,14 @@
   font-size: 12px;
 }
 
+.teal-modules-general.trigger-tooltips-button:hover > .plotly-icon-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
 .teal-modules-general.trigger-tooltips-button > .plotly-icon-tooltip::after {
   content: "";
   position: absolute;
   bottom: 100%;
   right: 10px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent transparent #121f3d transparent;
-}
-
-.teal-modules-general.trigger-tooltips-button:hover > .plotly-icon-tooltip {
-  visibility: visible;
-  opacity: 1;
 }

@@ -507,11 +507,7 @@ setup_trigger_tooltips <- function(plot, ns) {
               button.className = 'teal-modules-general trigger-tooltips-button';
 
               button.onclick = function () {
-                const current = parseInt(this.getAttribute('data-count'));
-                const next = current + 1;
-                this.setAttribute('data-count', next);
-                console.log('Button clicked ' + next + ' times');
-                Shiny.setInputValue('", ns("show_tooltips"), "', next);
+                triggerSelectedTooltips('", ns("plot"), "')
               };
 
               const icon = document.createElement('i');

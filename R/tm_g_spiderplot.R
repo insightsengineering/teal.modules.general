@@ -276,27 +276,6 @@ srv_g_spiderplot <- function(id,
 
     plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "spiderplot"))
 
-    observeEvent(input$show_tooltips, {
-      sel <- plotly_selected()
-
-      if (!is.null(sel) && nrow(sel) > 0) {
-        tooltip_points <- lapply(seq_len(nrow(sel)), function(i) {
-          list(
-            curve = sel$curveNumber[i],
-            index = sel$pointNumber[i]
-          )
-        })
-
-        session$sendCustomMessage(
-          "triggerTooltips",
-          list(
-            plotID = session$ns("plot"),
-            tooltipPoints = jsonlite::toJSON(tooltip_points, auto_unbox = TRUE)
-          )
-        )
-      }
-    })
-
     tables_selected_q <- .plotly_selected_filter_children(
       data = plotly_q,
       plot_dataname = plot_dataname,

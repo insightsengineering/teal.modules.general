@@ -252,27 +252,6 @@ srv_g_swimlane <- function(id,
       plotly::event_data("plotly_selected", source = "swimlane")
     })
 
-    observeEvent(input$show_tooltips, {
-      sel <- plotly_selected()
-
-      if (!is.null(sel) && nrow(sel) > 0) {
-        tooltip_points <- lapply(seq_len(nrow(sel)), function(i) {
-          list(
-            curve = sel$curveNumber[i],
-            index = sel$pointNumber[i]
-          )
-        })
-
-        session$sendCustomMessage(
-          "triggerTooltips",
-          list(
-            plotID = session$ns("plot"),
-            tooltipPoints = jsonlite::toJSON(tooltip_points, auto_unbox = TRUE)
-          )
-        )
-      }
-    })
-
     observeEvent(input$subject_tooltips, {
       hovervalues <- data()[[plot_dataname]] |>
         dplyr::mutate(customdata = dplyr::row_number()) |>
