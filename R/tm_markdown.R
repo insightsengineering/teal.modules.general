@@ -20,22 +20,22 @@
 #'     iris <- iris
 #'     mtcars <- mtcars
 #'   })
-#
+#' #
 #'
 #' @export
 #'
 tm_rmarkdown <- function(label = "App Info",
-                        text = character(0),
-                        params = list(title = "Document"),
-                        datanames = "all") {
+                         text = character(0),
+                         params = list(title = "Document"),
+                         datanames = "all") {
   message("Initializing tm_rmarkdown")
-  
+
   # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_character(text, min.len = 0, any.missing = FALSE)
   checkmate::assert_list(params)
 
-  
+
   ans <- module(
     label = label,
     server = srv_rmarkdown,
@@ -65,15 +65,15 @@ srv_rmarkdown <- function(id, data, text, params) {
         cat(text, file = file)
       }
       rmarkdown::render(
-        file, 
-        envir = data(), 
+        file,
+        envir = data(),
         params = utils::modifyList(
-          params, 
-          list(output = list(github_document = list(html_preview = FALSE)))  # html_document always as we renderUI below
+          params,
+          list(output = list(github_document = list(html_preview = FALSE))) # html_document always as we renderUI below
         )
       )
     })
-    
+
     output$output <- renderUI({
       on.exit(unlink(rmd_out()))
       # todo: includeMarkdown breaks css of the app

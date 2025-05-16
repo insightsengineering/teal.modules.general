@@ -159,7 +159,7 @@ tm_swimlane <- function(label = "Swimlane", plot_height = 700) {
                     extreme_grade
                   )
                 )
-              
+
               p <- plotly::plot_ly(
                 source = "swimlane",
                 colors = c(

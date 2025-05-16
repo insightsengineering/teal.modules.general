@@ -170,18 +170,18 @@ ui_data_table <- function(id, pre_output = NULL, post_output = NULL) {
 
 # Server page module
 srv_data_table <- function(id,
-                            data,
-                            datanames,
-                            variables_selected = list(),
-                            dt_args = list(),
-                            dt_options = list(
-                              searching = FALSE,
-                              pageLength = 30,
-                              lengthMenu = c(5, 15, 30, 100),
-                              scrollX = TRUE
-                            ),
-                            server_rendering = FALSE,
-                            filter_panel_api) {
+                           data,
+                           datanames,
+                           variables_selected = list(),
+                           dt_args = list(),
+                           dt_options = list(
+                             searching = FALSE,
+                             pageLength = 30,
+                             lengthMenu = c(5, 15, 30, 100),
+                             scrollX = TRUE
+                           ),
+                           server_rendering = FALSE,
+                           filter_panel_api) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -192,7 +192,7 @@ srv_data_table <- function(id,
 
     datanames_r <- reactive({
       Filter(
-        function(name) is.data.frame(data()[[name]]), 
+        function(name) is.data.frame(data()[[name]]),
         if (identical(datanames, "all")) names(data()) else datanames
       )
     })
@@ -241,8 +241,8 @@ srv_data_table <- function(id,
     }) |>
       bindCache(datanames_r()) |>
       bindEvent(datanames_r())
-    
-    
+
+
     # server should be run only once
     modules_run <- reactiveVal()
     modules_to_run <- reactive(setdiff(datanames_r(), isolate(modules_run())))
@@ -297,14 +297,14 @@ ui_dataset_table <- function(id, choices, selected) {
 
 # Server function for the data_table module
 srv_dataset_table <- function(id,
-                             data,
-                             dataname,
-                             if_filtered,
-                             if_distinct,
-                             dt_args,
-                             dt_options,
-                             server_rendering,
-                             filter_panel_api) {
+                              data,
+                              dataname,
+                              if_filtered,
+                              if_distinct,
+                              dt_args,
+                              dt_options,
+                              server_rendering,
+                              filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     iv <- shinyvalidate::InputValidator$new()
     iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))

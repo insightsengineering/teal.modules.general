@@ -55,10 +55,10 @@ roxygen_ggplot2_args_param <- function(...) {
 #' decorator for tables or plots included in the module output reported.
 #' The decorators are applied to the respective output objects.
 #'
-#' @param table_datanames (`character`) names of the datasets which should be listed below the plot 
+#' @param table_datanames (`character`) names of the datasets which should be listed below the plot
 #'  when some data points are selected. Objects named after `table_datanames` will be pulled from
 #'  `data` so it is important that data actually contains these datasets. Please be aware that
-#'  table datasets must be linked with `plot_dataname` by the relevant [join_keys()].  
+#'  table datasets must be linked with `plot_dataname` by the relevant [join_keys()].
 #' See section "Decorating Module" below for more details.
 #'
 #' @return Object of class `teal_module` to be used in `teal` applications.
