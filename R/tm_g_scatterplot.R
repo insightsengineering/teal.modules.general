@@ -716,7 +716,7 @@ srv_g_scatterplot <- function(id,
         ))
       }
 
-      teal::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(ANL[, c(x_var, y_var)], 1, complete = TRUE, allow_inf = FALSE)
 
       if (log_x) {
         validate(
