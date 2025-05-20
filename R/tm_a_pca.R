@@ -235,9 +235,6 @@ ui_a_pca <- function(id, ...) {
         uiOutput(ns("all_plots"))
       ),
       encoding = tags$div(
-        ### Reporter
-        teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-        ###
         tags$label("Encodings", class = "text-primary"),
         teal.transform::datanames_input(args["dat"]),
         teal.transform::data_extract_ui(
@@ -353,8 +350,7 @@ ui_a_pca <- function(id, ...) {
 }
 
 # Server function for the PCA module
-srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args, decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, ggplot2_args, decorators) {
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -436,13 +432,15 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       selector_list = selector_list,
       datasets = data
     )
+
     qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tidyr")') # nolint quotes
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tidyr")', label = "libraries") # nolint quotes
     )
+    
     anl_merged_q <- reactive({
       req(anl_merged_input())
       qenv() %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+        teal.code::eval_code(as.expression(anl_merged_input()$expr), label = "data preparations")
     })
 
     merged <- list(
@@ -496,38 +494,39 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         substitute(
           expr = keep_columns <- keep_cols,
           env = list(keep_cols = keep_cols)
-        )
+        ),
+        label = "computation model"
       )
 
       if (na_action == "drop") {
         qenv <- teal.code::eval_code(
           qenv,
-          quote(ANL <- tidyr::drop_na(ANL, keep_columns))
+          quote(ANL <- tidyr::drop_na(ANL, keep_columns)),
+          label = "computation model"
         )
       }
 
-      qenv <- teal.code::eval_code(
+      teal.code::eval_code(
         qenv,
         substitute(
           expr = pca <- summary(stats::prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
           env = list(center = center, scale = scale)
-        )
-      )
-
-      qenv <- teal.code::eval_code(
-        qenv,
+        ),
+        label = "computation model"
+      ) %>%
+      teal.code::eval_code(
         quote({
           tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
           tbl_importance
-        })
-      )
-
+        }),
+        label = "computation tbl imp"
+      ) %>%
       teal.code::eval_code(
-        qenv,
         quote({
           tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
           tbl_eigenvector
-        })
+        }),
+        label = "computation tbl eig"
       )
     })
 
@@ -641,7 +640,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             labs = parsed_ggplot2_args$labs,
             themes = parsed_ggplot2_args$theme
           )
-        )
+        ),
+        label = "plot"
       )
     }
 
@@ -713,7 +713,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             labs = `if`(is.null(parsed_ggplot2_args$labs), quote(labs()), parsed_ggplot2_args$labs),
             themes = parsed_ggplot2_args$theme
           )
-        )
+        ),
+        label = "plot"
       )
     }
 
@@ -742,7 +743,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         substitute(
           expr = pca_rot <- dplyr::as_tibble(pca$x[, c(x_axis, y_axis)]),
           env = list(x_axis = x_axis, y_axis = y_axis)
-        )
+        ),
+        label = "plot"
       )
 
       # rot_vars = data frame that displays arrows in the plot, need to be scaled to data
@@ -759,7 +761,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
                 dplyr::mutate_at(vars(c(x_axis, y_axis)), function(x) r * x / sqrt(max(v_scale)))
             },
             env = list(x_axis = x_axis, y_axis = y_axis)
-          )
+          ),
+          label = "plot"
         ) %>%
           teal.code::eval_code(
             if (is.logical(pca$center) && !pca$center) {
@@ -778,13 +781,15 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
               )
             } else {
               quote(rot_vars <- rot_vars %>% dplyr::mutate(xstart = 0, ystart = 0))
-            }
+            },
+            label = "plot"
           ) %>%
           teal.code::eval_code(
             substitute(
               expr = rot_vars <- rot_vars %>% dplyr::filter(label %in% variables),
               env = list(variables = variables)
-            )
+            ),
+            label = "plot"
           )
       }
 
@@ -813,7 +818,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
 
         qenv <- teal.code::eval_code(
           qenv,
-          substitute(response <- ANL[[resp_col]], env = list(resp_col = resp_col))
+          substitute(response <- ANL[[resp_col]], env = list(resp_col = resp_col)),
+          label = "plot"
         )
 
         dev_labs <- list(color = varname_w_label(resp_col, ANL))
@@ -826,13 +832,15 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           ) {
             qenv <- teal.code::eval_code(
               qenv,
-              quote(pca_rot$response <- as.factor(response))
+              quote(pca_rot$response <- as.factor(response)),
+              label = "plot"
             )
             quote(ggplot2::scale_color_brewer(palette = "Dark2"))
           } else if (inherits(response, "Date")) {
             qenv <- teal.code::eval_code(
               qenv,
-              quote(pca_rot$response <- numeric(response))
+              quote(pca_rot$response <- numeric(response)),
+              label = "plot"
             )
 
             quote(
@@ -845,7 +853,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           } else {
             qenv <- teal.code::eval_code(
               qenv,
-              quote(pca_rot$response <- response)
+              quote(pca_rot$response <- response),
+              label = "plot"
             )
             quote(ggplot2::scale_color_gradient(
               low = c(getOption("ggplot2.discrete.colour")[2], "darkred")[1],
@@ -931,7 +940,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           env = list(
             plot_call = Reduce(function(x, y) call("+", x, y), pca_plot_biplot_expr)
           )
-        )
+        ),
+        label = "plot"
       )
     }
 
@@ -1009,7 +1019,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             pc = pc,
             plot_call = Reduce(function(x, y) call("+", x, y), ggplot_exprs)
           )
-        )
+        ),
+        label = "plot"
       )
     }
 
@@ -1040,7 +1051,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           expr = reactive({
             substitute(print(.plot), env = list(.plot = as.name(obj_name)))
           }),
-          expr_is_reactive = TRUE
+          expr_is_reactive = TRUE,
+          label = "plot"
         )
       },
       names(output_q),
@@ -1133,30 +1145,38 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       title = "R Code for PCA"
     )
 
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Principal Component Analysis Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Principal Components Table", "header3")
-        card$append_table(computation()[["tbl_importance"]])
-        card$append_text("Eigenvectors Table", "header3")
-        card$append_table(computation()[["tbl_eigenvector"]])
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+    card_fun <- reactive({
+      req(data(), decorated_output_q(), plot_r())
+
+      teal.reporter::report_document(
+        "## Setup",
+        teal.reporter::code_chunk(teal.code::get_code(data())),
+
+        "## Libraries",
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "libraries"), eval = TRUE),
+
+        "## Data Preparations",
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "data preparations")),
+
+        "## PCA Model",
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "computation model")),
+
+        "### Principal Components Table",
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "computation tbl imp")),
+        decorated_output_q()[["tbl_importance"]],
+
+        "### Eigenvectors Table",
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "computation tbl eig")),
+        decorated_output_q()[["tbl_eigenvector"]],
+
+        "## PCA Plot",
+        teal.reporter::code_chunk(teal.code::get_code(decorated_output_q(), label = "plot")),
+        plot_r()
+      )
+    })
+
+    list(
+      report_card = card_fun
+    )
   })
 }
