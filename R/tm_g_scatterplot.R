@@ -366,9 +366,7 @@ ui_g_scatterplot <- function(id, ...) {
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
-        tags$h1(tags$strong("Selected points:"), class = "text-center font-150p"),
-        teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
-        DT::dataTableOutput(ns("data_table"), width = "100%")
+        teal::ui_brush_filter(ns("brush_filter"))
       ),
       encoding = tags$div(
         ### Reporter
@@ -1034,36 +1032,20 @@ srv_g_scatterplot <- function(id,
       plot_r = plot_r,
       height = plot_height,
       width = plot_width,
-      brushing = TRUE
+      brushing = TRUE,
+      click = TRUE
     )
 
-    output$data_table <- DT::renderDataTable({
-      plot_brush <- pws$brush()
-
-      if (!is.null(plot_brush)) {
-        validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
-      }
-
-      merged_data <- isolate(teal.code::dev_suppress(output_q()[["ANL"]]))
-
-      brushed_df <- teal.widgets::clean_brushedPoints(merged_data, plot_brush)
-      numeric_cols <- names(brushed_df)[
-        vapply(brushed_df, function(x) is.numeric(x) && !is.integer(x), FUN.VALUE = logical(1))
-      ]
-
-      if (length(numeric_cols) > 0) {
-        DT::formatRound(
-          DT::datatable(brushed_df,
-            rownames = FALSE,
-            options = list(scrollX = TRUE, pageLength = input$data_table_rows)
-          ),
-          numeric_cols,
-          table_dec
-        )
-      } else {
-        DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows))
-      }
-    })
+    # todo:
+    # validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
+    teal::srv_brush_filter(
+      "brush_filter",
+      brush = pws$brush,
+      dataset = reactive(teal.code::dev_suppress(output_q()[["ANL"]])),
+      filter_panel_api = filter_panel_api,
+      selectors = selector_list,
+      table_dec = table_dec
+    )
 
     # Render R code.
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_plot_q())))
