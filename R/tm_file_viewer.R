@@ -116,7 +116,8 @@ ui_viewer <- function(id, ...) {
           dragAndDrop = FALSE,
           sort = FALSE,
           theme = "proton",
-          multiple = FALSE
+          multiple = FALSE,
+          search = TRUE
         )
       )
     )
