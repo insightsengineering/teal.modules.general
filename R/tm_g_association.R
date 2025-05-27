@@ -525,10 +525,10 @@ srv_tm_g_association <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = {
+      expr = quote({
         grid::grid.newpage()
         grid::grid.draw(plot)
-      }
+      })
     )
 
     plot_r <- reactive({

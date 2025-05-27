@@ -289,8 +289,6 @@ assert_single_selection <- function(x,
 #' @param expr (`expression` or `reactive`) to evaluate on the output of the decoration.
 #' When an expression it must be inline code. See [within()]
 #' Default is `NULL` which won't evaluate any appending code.
-#' @param expr_is_reactive (`logical(1)`) whether `expr` is a reactive expression
-#' that skips defusing the argument.
 #' @details
 #' `srv_decorate_teal_data` is a wrapper around `srv_transform_teal_data` that
 #' allows to decorate the data with additional expressions.
@@ -298,33 +296,29 @@ assert_single_selection <- function(x,
 #' first.
 #'
 #' @keywords internal
-srv_decorate_teal_data <- function(id, data, decorators, expr, expr_is_reactive = FALSE) {
+srv_decorate_teal_data <- function(id, data, decorators, expr) {
   checkmate::assert_class(data, classes = "reactive")
   checkmate::assert_list(decorators, "teal_transform_module")
-  checkmate::assert_flag(expr_is_reactive)
-
-  missing_expr <- missing(expr)
-  if (!missing_expr && !expr_is_reactive) {
-    expr <- dplyr::enexpr(expr) # Using dplyr re-export to avoid adding rlang to Imports
-  }
+  expr_is_missing <- missing(expr)
 
   moduleServer(id, function(input, output, session) {
     decorated_output <- srv_transform_teal_data("inner", data = data, transformators = decorators)
 
-    reactive({
-      data_out <- try(data(), silent = TRUE)
-      if (inherits(data_out, "qenv.error")) {
-        data()
+    expr_r <- reactive({
+      if (is.reactive(expr)) {
+        expr()
       } else {
-        # ensure original errors are displayed and `eval_code` is never executed with NULL
-        req(data(), decorated_output())
-        if (missing_expr) {
-          decorated_output()
-        } else if (expr_is_reactive) {
-          teal.code::eval_code(decorated_output(), expr())
-        } else {
-          teal.code::eval_code(decorated_output(), expr)
-        }
+        expr
+      }
+    })
+
+    reactive({
+      req(data(), decorated_output())
+      if (expr_is_missing) {
+        decorated_output()
+      } else {
+        req(expr_r())
+        teal.code::eval_code(decorated_output(), expr_r(), cache = TRUE)
       }
     })
   })
