@@ -982,7 +982,7 @@ srv_a_regression <- function(id,
 
     output_q <- reactive({
       teal::validate_inputs(iv_r())
-      switch(input$plot_type,
+      obj <- switch(input$plot_type,
         "Response vs Regressor" = output_plot_0(),
         "Residuals vs Fitted" = output_plot_1(),
         "Normal Q-Q" = output_plot_2(),
@@ -991,6 +991,9 @@ srv_a_regression <- function(id,
         "Residuals vs Leverage" = output_plot_5(),
         "Cook's dist vs Leverage" = output_plot_6()
       )
+
+      teal.data::report(obj) <- c(teal.data::report(obj), "# Plot", obj[["plot"]])
+      obj
     })
 
     decorated_output_q <- srv_decorate_teal_data(
@@ -1001,11 +1004,11 @@ srv_a_regression <- function(id,
     )
 
     fitted <- reactive({
-      req(output_q())
+      req(decorated_output_q())
       decorated_output_q()[["fit"]]
     })
     plot_r <- reactive({
-      req(output_q())
+      req(decorated_output_q())
       decorated_output_q()[["plot"]]
     })
 
@@ -1055,5 +1058,7 @@ srv_a_regression <- function(id,
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
+
+    decorated_output_q
   })
 }

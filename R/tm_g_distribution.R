@@ -1417,5 +1417,12 @@ srv_distribution <- function(id,
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
+    reactive(
+      if (input$tabs == "Histogram") {
+        decorated_output_dist_q()
+      } else if (input$tabs == "QQplot") {
+        decorated_output_qq_q()
+      }
+    )
   })
 }

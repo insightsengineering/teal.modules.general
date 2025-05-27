@@ -622,5 +622,7 @@ srv_g_response <- function(id,
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
+
+    decorated_output_plot_q
   })
 }
