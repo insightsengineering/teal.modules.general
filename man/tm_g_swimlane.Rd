@@ -13,7 +13,6 @@ tm_g_swimlane(
   group_var,
   sort_var = NULL,
   tooltip_vars = NULL,
-  size_var = NULL,
   point_size = 10,
   point_colors = character(0),
   point_symbols = character(0),
@@ -48,10 +47,8 @@ value determines order of the subjects displayed on the y-axis.}
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
 If \code{NULL}, default tooltip is created.}
 
-\item{size_var}{(\code{character(1)} or \code{NULL}) If provided, this numeric column from the \code{plot_dataname}
-will be used to determine the size of the points. If \code{NULL}, a fixed size based on the \code{point_size} is used.}
-
-\item{point_size}{(\code{numeric(1)}) Default point size of the points in the plot.}
+\item{point_size}{(\code{numeric(1)} or \verb{named numeric}) Default point size of the points in the plot.
+If \code{point_size} is a named numeric vector, it should be named by levels of \code{color_var} column.}
 
 \item{point_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named
 by levels of \code{color_var} column.}

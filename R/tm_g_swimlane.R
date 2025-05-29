@@ -19,9 +19,8 @@
 #'  value determines order of the subjects displayed on the y-axis.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
 #' If `NULL`, default tooltip is created.
-#' @param size_var (`character(1)` or `NULL`) If provided, this numeric column from the `plot_dataname`
-#' will be used to determine the size of the points. If `NULL`, a fixed size based on the `point_size` is used.
-#' @param point_size (`numeric(1)`) Default point size of the points in the plot.
+#' @param point_size (`numeric(1)` or `named numeric`) Default point size of the points in the plot.
+#' If `point_size` is a named numeric vector, it should be named by levels of `color_var` column.
 #' @param point_colors (`named character`) valid color names (see [colors()]) or hex-colors named
 #'  by levels of `color_var` column.
 #' @param point_symbols (`named character`) valid plotly symbol name named  by levels of `color_var` column.
@@ -82,7 +81,6 @@ tm_g_swimlane <- function(label = "Swimlane",
                           group_var,
                           sort_var = NULL,
                           tooltip_vars = NULL,
-                          size_var = NULL,
                           point_size = 10,
                           point_colors = character(0),
                           point_symbols = character(0),
@@ -119,7 +117,6 @@ tm_g_swimlane <- function(label = "Swimlane",
       color_var = color_var,
       group_var = group_var,
       sort_var = sort_var,
-      size_var = size_var,
       point_size = point_size,
       point_colors = point_colors,
       point_symbols = point_symbols,
@@ -164,7 +161,6 @@ srv_g_swimlane <- function(id,
                            color_var,
                            group_var,
                            sort_var = time_var,
-                           size_var = NULL,
                            point_size = 10,
                            point_colors,
                            point_symbols,
@@ -203,7 +199,6 @@ srv_g_swimlane <- function(id,
         color_var = input$color_var,
         group_var = input$group_var,
         sort_var = input$sort_var,
-        size_var = size_var,
         point_size = point_size,
         colors = color_inputs(),
         symbols = adjusted_symbols,
@@ -217,7 +212,6 @@ srv_g_swimlane <- function(id,
             color_var = color_var,
             group_var = group_var,
             sort_var = sort_var,
-            size_var = size_var,
             point_size = point_size,
             colors = colors,
             symbols = symbols,
@@ -307,17 +301,11 @@ srv_g_swimlane <- function(id,
 #' @export
 swimlanely <- function(
     data, time_var, subject_var, color_var, group_var, sort_var,
-    colors, symbols, height, tooltip_vars = NULL, size_var = NULL, point_size = 10) {
+    colors, symbols, height, tooltip_vars = NULL, point_size = 10) {
   subject_var_label <- .get_column_label(data, subject_var)
   time_var_label <- .get_column_label(data, time_var)
   data <- data |>
     dplyr::mutate(customdata = dplyr::row_number())
-
-  if (is.null(size_var)) {
-    size <- point_size
-  } else {
-    size <- stats::as.formula(sprintf("~%s", size_var))
-  }
 
   # forcats::fct_reorder doesn't seem to work here
   subject_levels <- data %>%
@@ -327,6 +315,19 @@ swimlanely <- function(
     dplyr::arrange(v) %>%
     dplyr::pull(!!as.name(subject_var))
   data[[subject_var]] <- factor(data[[subject_var]], levels = subject_levels)
+
+  min_size <- min(point_size, na.rm = TRUE)
+
+  if (length(point_size) > 1) {
+    data <- data %>%
+      dplyr::mutate(
+        size_var = ifelse(
+          as.character(color_var) %in% names(point_size),
+          point_size[as.character(color_var)],
+          min_size
+        )
+      )
+  }
 
   data %>%
     dplyr::mutate(
@@ -367,7 +368,7 @@ swimlanely <- function(
       y = stats::as.formula(sprintf("~%s", subject_var)),
       color = stats::as.formula(sprintf("~%s", color_var)),
       symbol = stats::as.formula(sprintf("~%s", color_var)),
-      size = size,
+      size = ~size_var,
       text = ~tooltip,
       hoverinfo = "text"
     ) %>%
