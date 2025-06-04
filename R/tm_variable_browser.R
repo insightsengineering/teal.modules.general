@@ -387,13 +387,11 @@ srv_variable_browser <- function(id,
       varname <- plot_var$variable[[dataname]]
       df <- data()[[dataname]]
 
-      numeric_ui <- shinyWidgets::switchInput(
-        inputId = session$ns("remove_NA_hist"),
+      numeric_ui <- bslib::input_switch(
+        id = session$ns("remove_NA_hist"),
         label = "Remove NA values",
         value = FALSE,
-        width = "50%",
-        labelWidth = "100px",
-        handleWidth = "50px"
+        width = "100%"
       )
 
       var <- df[[varname]]
