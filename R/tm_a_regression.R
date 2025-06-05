@@ -464,7 +464,7 @@ srv_a_regression <- function(id,
 
     qenv <- reactive({
       obj <- data()
-      teal.reporter::teal_document(obj) <- c(teal.reporter::teal_document(obj), "# Module's computation")
+      teal.reporter::card(obj) <- c(teal.reporter::card(obj), "# Module's computation")
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint quotes
     })
 
