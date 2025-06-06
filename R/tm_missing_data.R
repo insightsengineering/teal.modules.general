@@ -265,7 +265,7 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, dataname
       })
     })
 
-    lapply(
+    result <- sapply(
       datanames,
       function(x) {
         srv_missing_data(
@@ -280,8 +280,18 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, dataname
           ggplot2_args = ggplot2_args,
           decorators = decorators
         )
-      }
+      },
+      USE.NAMES = TRUE,
+      simplify = FALSE
     )
+
+    reactive({
+      if (is.null(input$dataname_tab)) {
+        teal.data::teal_data()
+      } else {
+        result[[input$dataname_tab]]()
+      }
+    })
   })
 }
 
@@ -521,7 +531,10 @@ srv_missing_data <- function(id,
 
       group_var <- input$group_by_var
       anl <- data_r()
-      qenv <- teal.code::eval_code(data(), {
+      obj <- data()
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Module's computation")
+
+      qenv <- teal.code::eval_code(obj, {
         'library("dplyr");library("ggplot2");library("tidyr");library("gridExtra")' # nolint quotes
       })
 
@@ -1269,34 +1282,36 @@ srv_missing_data <- function(id,
       id = "dec_summary_plot",
       data = summary_plot_q,
       decorators = select_decorators(decorators, "summary_plot"),
-      expr = {
+      expr = quote({
         grid::grid.newpage()
         grid::grid.draw(summary_plot)
-      }
+        summary_plot
+      })
     )
 
     decorated_combination_plot_q <- srv_decorate_teal_data(
       id = "dec_combination_plot",
       data = combination_plot_q,
       decorators = select_decorators(decorators, "combination_plot"),
-      expr = {
+      expr = quote({
         grid::grid.newpage()
         grid::grid.draw(combination_plot)
-      }
+        combination_plot
+      })
     )
 
     decorated_summary_table_q <- srv_decorate_teal_data(
       id = "dec_summary_table",
       data = summary_table_q,
       decorators = select_decorators(decorators, "table"),
-      expr = table
+      expr = quote(table)
     )
 
     decorated_by_subject_plot_q <- srv_decorate_teal_data(
       id = "dec_by_subject_plot",
       data = by_subject_plot_q,
       decorators = select_decorators(decorators, "by_subject_plot"),
-      expr = print(by_subject_plot)
+      expr = quote(by_subject_plot)
     )
 
     # Plots & tables reactives
@@ -1417,5 +1432,7 @@ srv_missing_data <- function(id,
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
+
+    decorated_final_q
   })
 }

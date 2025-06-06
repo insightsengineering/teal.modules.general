@@ -1038,9 +1038,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           data = q,
           decorators = select_decorators(decorators, obj_name),
           expr = reactive({
-            substitute(print(.plot), env = list(.plot = as.name(obj_name)))
-          }),
-          expr_is_reactive = TRUE
+            substitute(.plot, env = list(.plot = as.name(obj_name)))
+          })
         )
       },
       names(output_q),
@@ -1158,5 +1157,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
+
+    decorated_output_q
   })
 }

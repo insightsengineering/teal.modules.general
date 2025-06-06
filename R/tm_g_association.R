@@ -347,7 +347,7 @@ srv_tm_g_association <- function(id,
     )
 
     qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")') # nolint quotes
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("ggmosaic")') # nolint quotes
     )
     anl_merged_q <- reactive({
       req(anl_merged_input())
@@ -506,9 +506,7 @@ srv_tm_g_association <- function(id,
           substitute(
             expr = {
               plots <- plot_calls
-              plot_top <- plots[[1]]
-              plot_bottom <- plots[[2]]
-              plot <- tern::stack_grobs(grobs = lapply(list(plot_top, plot_bottom), ggplot2::ggplotGrob))
+              plot <- grid.arrange(plots[[1]], plots[[2]], ncol = 1)
             },
             env = list(
               plot_calls = do.call(
@@ -525,10 +523,7 @@ srv_tm_g_association <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = {
-        grid::grid.newpage()
-        grid::grid.draw(plot)
-      }
+      expr = quote(plot)
     )
 
     plot_r <- reactive({
@@ -576,6 +571,8 @@ srv_tm_g_association <- function(id,
       }
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
+
+    decorated_output_grob_q
     ###
   })
 }

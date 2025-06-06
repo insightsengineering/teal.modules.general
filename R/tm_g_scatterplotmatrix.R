@@ -333,7 +333,9 @@ srv_g_scatterplotmatrix <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv <- teal.code::eval_code(data(), 'library("dplyr");library("lattice")') # nolint quotes
+      obj <- data()
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Module's computation")
+      qenv <- teal.code::eval_code(obj, 'library("dplyr");library("lattice")') # nolint: quotes.
       teal.code::eval_code(qenv, as.expression(anl_merged_input()$expr))
     })
 
@@ -464,7 +466,7 @@ srv_g_scatterplotmatrix <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = print(plot)
+      expr = quote(plot)
     )
 
     plot_r <- reactive(req(decorated_output_q())[["plot"]])
@@ -529,6 +531,7 @@ srv_g_scatterplotmatrix <- function(id,
       teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
+    decorated_output_q
   })
 }
 
