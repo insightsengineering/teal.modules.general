@@ -318,7 +318,7 @@ srv_decorate_teal_data <- function(id, data, decorators, expr) {
         decorated_output()
       } else {
         req(expr_r())
-        teal.code::eval_code(decorated_output(), expr_r(), cache = TRUE)
+        teal.code::eval_code(decorated_output(), expr_r(), keep_output = TRUE)
       }
     })
   })
