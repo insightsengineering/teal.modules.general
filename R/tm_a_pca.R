@@ -235,9 +235,6 @@ ui_a_pca <- function(id, ...) {
         uiOutput(ns("all_plots"))
       ),
       encoding = tags$div(
-        ### Reporter
-        teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-        ###
         tags$label("Encodings", class = "text-primary"),
         teal.transform::datanames_input(args["dat"]),
         teal.transform::data_extract_ui(
@@ -353,8 +350,7 @@ ui_a_pca <- function(id, ...) {
 }
 
 # Server function for the PCA module
-srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, plot_width, ggplot2_args, decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
+srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, ggplot2_args, decorators) {
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -436,9 +432,11 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       selector_list = selector_list,
       datasets = data
     )
-    qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tidyr")') # nolint quotes
-    )
+    qenv <- reactive({
+      obj <- data()
+      teal_card(obj) <- append(teal_card(obj), "# Principal Component Analysis Plot", after = 0)
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tidyr")') # nolint quotes
+    })
     anl_merged_q <- reactive({
       req(anl_merged_input())
       qenv() %>%
@@ -514,20 +512,24 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         )
       )
 
+      teal_card(qenv) <- append(teal_card(qenv), "## Principal Components Table")
+
       qenv <- teal.code::eval_code(
         qenv,
         quote({
           tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
-          tbl_importance
-        })
+        }),
+        keep_output = TRUE
       )
+
+      teal_card(qenv) <- append(teal_card(qenv), "## Eigenvectors Table")
 
       teal.code::eval_code(
         qenv,
         quote({
           tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
-          tbl_eigenvector
-        })
+        }),
+        keep_output = TRUE
       )
     })
 
@@ -602,7 +604,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         ),
         ggtheme = ggtheme
       )
-
+      teal_card(base_q) <- append(teal_card(base_q), "# Elbow plot")
       teal.code::eval_code(
         base_q,
         substitute(
@@ -641,7 +643,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             labs = parsed_ggplot2_args$labs,
             themes = parsed_ggplot2_args$theme
           )
-        )
+        ),
+        keep_output = TRUE
       )
     }
 
@@ -679,6 +682,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         ggtheme = ggtheme
       )
 
+      teal_card(base_q) <- append(teal_card(base_q), "# Circle plot")
       teal.code::eval_code(
         base_q,
         substitute(
@@ -713,7 +717,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             labs = `if`(is.null(parsed_ggplot2_args$labs), quote(labs()), parsed_ggplot2_args$labs),
             themes = parsed_ggplot2_args$theme
           )
-        )
+        ),
+        keep_output = TRUE
       )
     }
 
@@ -737,6 +742,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       size <- input$size
       font_size <- input$font_size
 
+      teal_card(base_q) <- append(teal_card(base_q), "# Biplot")
       qenv <- teal.code::eval_code(
         qenv,
         substitute(
@@ -931,7 +937,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
           env = list(
             plot_call = Reduce(function(x, y) call("+", x, y), pca_plot_biplot_expr)
           )
-        )
+        ),
+        keep_output = TRUE
       )
     }
 
@@ -997,6 +1004,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         parsed_ggplot2_args$theme
       )
 
+      teal_card(base_q) <- append(teal_card(base_q), "# Eigenvector plot")
       teal.code::eval_code(
         base_q,
         substitute(
@@ -1009,7 +1017,8 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
             pc = pc,
             plot_call = Reduce(function(x, y) call("+", x, y), ggplot_exprs)
           )
-        )
+        ),
+        keep_output = TRUE
       )
     }
 
@@ -1036,10 +1045,7 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
         srv_decorate_teal_data(
           id = sprintf("d_%s", obj_name),
           data = q,
-          decorators = select_decorators(decorators, obj_name),
-          expr = reactive({
-            substitute(.plot, env = list(.plot = as.name(obj_name)))
-          })
+          decorators = select_decorators(decorators, obj_name)
         )
       },
       names(output_q),
@@ -1131,33 +1137,6 @@ srv_a_pca <- function(id, data, reporter, filter_panel_api, dat, plot_height, pl
       verbatim_content = source_code_r,
       title = "R Code for PCA"
     )
-
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Principal Component Analysis Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Principal Components Table", "header3")
-        card$append_table(computation()[["tbl_importance"]])
-        card$append_text("Eigenvectors Table", "header3")
-        card$append_table(computation()[["tbl_eigenvector"]])
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
-
     decorated_output_q
   })
 }
