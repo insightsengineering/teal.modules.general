@@ -1044,7 +1044,7 @@ srv_g_scatterplot <- function(id,
         validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
       }
 
-      merged_data <- isolate(teal.code::dev_suppress(output_q()[["ANL"]]))
+      merged_data <- isolate(output_q()[["ANL"]])
 
       brushed_df <- teal.widgets::clean_brushedPoints(merged_data, plot_brush)
       numeric_cols <- names(brushed_df)[

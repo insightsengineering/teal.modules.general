@@ -711,7 +711,7 @@ srv_g_bivariate <- function(id,
         without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
 
         print_call <- if (without_facet) {
-          quote(print(plot))
+          quote(plot)
         } else {
           substitute(
             expr = {
