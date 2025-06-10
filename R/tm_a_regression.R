@@ -997,7 +997,7 @@ srv_a_regression <- function(id,
       "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = print(plot)
+      expr = plot
     )
 
     fitted <- reactive({
