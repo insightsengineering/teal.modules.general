@@ -1020,9 +1020,7 @@ srv_a_regression <- function(id,
     output$text <- renderText({
       req(iv_r()$is_valid())
       req(iv_out$is_valid())
-      paste(utils::capture.output(summary(teal.code::dev_suppress(fitted())))[-1],
-        collapse = "\n"
-      )
+      paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
     })
 
     # Render R code.
