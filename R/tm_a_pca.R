@@ -518,6 +518,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
         qenv,
         quote({
           tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
+          tbl_importance
         }),
         keep_output = TRUE
       )
@@ -528,6 +529,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
         qenv,
         quote({
           tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
+          tbl_eigenvector
         }),
         keep_output = TRUE
       )
@@ -643,8 +645,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
             labs = parsed_ggplot2_args$labs,
             themes = parsed_ggplot2_args$theme
           )
-        ),
-        keep_output = TRUE
+        )
       )
     }
 
@@ -717,8 +718,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
             labs = `if`(is.null(parsed_ggplot2_args$labs), quote(labs()), parsed_ggplot2_args$labs),
             themes = parsed_ggplot2_args$theme
           )
-        ),
-        keep_output = TRUE
+        )
       )
     }
 
@@ -937,8 +937,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
           env = list(
             plot_call = Reduce(function(x, y) call("+", x, y), pca_plot_biplot_expr)
           )
-        ),
-        keep_output = TRUE
+        )
       )
     }
 
@@ -1017,8 +1016,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
             pc = pc,
             plot_call = Reduce(function(x, y) call("+", x, y), ggplot_exprs)
           )
-        ),
-        keep_output = TRUE
+        )
       )
     }
 
@@ -1045,7 +1043,10 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
         srv_decorate_teal_data(
           id = sprintf("d_%s", obj_name),
           data = q,
-          decorators = select_decorators(decorators, obj_name)
+          decorators = select_decorators(decorators, obj_name),
+          expr = reactive({
+            substitute(.plot, env = list(.plot = as.name(obj_name)))
+          })
         )
       },
       names(output_q),
