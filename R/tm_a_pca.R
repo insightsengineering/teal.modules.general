@@ -606,7 +606,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
         ),
         ggtheme = ggtheme
       )
-      teal_card(base_q) <- append(teal_card(base_q), "# Elbow plot")
+      teal_card(base_q) <- append(teal_card(base_q), "## Elbow plot")
       teal.code::eval_code(
         base_q,
         substitute(
@@ -683,7 +683,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
         ggtheme = ggtheme
       )
 
-      teal_card(base_q) <- append(teal_card(base_q), "# Circle plot")
+      teal_card(base_q) <- append(teal_card(base_q), "## Circle plot")
       teal.code::eval_code(
         base_q,
         substitute(
@@ -742,7 +742,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
       size <- input$size
       font_size <- input$font_size
 
-      teal_card(base_q) <- append(teal_card(base_q), "# Biplot")
+      teal_card(base_q) <- append(teal_card(base_q), "## Biplot")
       qenv <- teal.code::eval_code(
         qenv,
         substitute(
@@ -1003,7 +1003,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
         parsed_ggplot2_args$theme
       )
 
-      teal_card(base_q) <- append(teal_card(base_q), "# Eigenvector plot")
+      teal_card(base_q) <- append(teal_card(base_q), "## Eigenvector plot")
       teal.code::eval_code(
         base_q,
         substitute(
