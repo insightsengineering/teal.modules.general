@@ -434,7 +434,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
     )
     qenv <- reactive({
       obj <- data()
-      teal_card(obj) <- append(teal_card(obj), "# Principal Component Analysis Plot", after = 0)
+      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Principal Component Analysis Plot", after = 0)
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tidyr")') # nolint quotes
     })
     anl_merged_q <- reactive({
@@ -512,7 +512,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
         )
       )
 
-      teal_card(qenv) <- append(teal_card(qenv), "## Principal Components Table")
+      teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Principal Components Table")
 
       qenv <- teal.code::eval_code(
         qenv,
@@ -523,7 +523,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
         keep_output = TRUE
       )
 
-      teal_card(qenv) <- append(teal_card(qenv), "## Eigenvectors Table")
+      teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Eigenvectors Table")
 
       teal.code::eval_code(
         qenv,
@@ -606,7 +606,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
         ),
         ggtheme = ggtheme
       )
-      teal_card(base_q) <- append(teal_card(base_q), "## Elbow plot")
+      teal.reporter::teal_card(base_q) <- append(teal.reporter::teal_card(base_q), "## Elbow plot")
       teal.code::eval_code(
         base_q,
         substitute(
@@ -683,7 +683,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
         ggtheme = ggtheme
       )
 
-      teal_card(base_q) <- append(teal_card(base_q), "## Circle plot")
+      teal.reporter::teal_card(base_q) <- append(teal.reporter::teal_card(base_q), "## Circle plot")
       teal.code::eval_code(
         base_q,
         substitute(
