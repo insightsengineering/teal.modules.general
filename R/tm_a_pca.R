@@ -444,7 +444,7 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
     )
     qenv <- reactive({
       obj <- data()
-      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Principal Component Analysis Plot", after = 0)
+      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Principal Component Analysis", after = 0)
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tidyr")') # nolint quotes
     })
     anl_merged_q <- reactive({
