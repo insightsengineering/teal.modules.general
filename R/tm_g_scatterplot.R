@@ -370,11 +370,8 @@ ui_g_scatterplot <- function(id, ...) {
         teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
         DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
-      encoding = tags$div(
-        ### Reporter
-        teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-        ###
-        tags$label("Encodings", class = "text-primary"),
+          encoding = tags$div(
+      tags$label("Encodings", class = "text-primary"),
         teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
         teal.transform::data_extract_ui(
           id = ns("x"),
@@ -509,7 +506,6 @@ ui_g_scatterplot <- function(id, ...) {
 # Server function for the scatterplot module
 srv_g_scatterplot <- function(id,
                               data,
-                              reporter,
                               filter_panel_api,
                               x,
                               y,
@@ -522,7 +518,6 @@ srv_g_scatterplot <- function(id,
                               table_dec,
                               ggplot2_args,
                               decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -590,9 +585,11 @@ srv_g_scatterplot <- function(id,
       datasets = data,
       merge_function = "dplyr::inner_join"
     )
-    qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
-    )
+    qenv <- reactive({
+      obj <- data()
+      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Scatter Plot", after = 0)
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint quotes
+    })
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
@@ -1016,6 +1013,7 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = plot <- plot_call, env = list(plot_call = plot_call))
 
+      teal.reporter::teal_card(plot_q) <- append(teal.reporter::teal_card(plot_q), "## Plot")
       teal.code::eval_code(plot_q, plot_call)
     })
 
@@ -1074,27 +1072,7 @@ srv_g_scatterplot <- function(id,
       title = "R Code for scatterplot"
     )
 
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Scatter Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+
 
     decorated_output_plot_q
   })

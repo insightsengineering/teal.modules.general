@@ -263,9 +263,6 @@ ui_g_response <- function(id, ...) {
       teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = tags$div(
-      ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("response", "x", "row_facet", "col_facet")]),
       teal.transform::data_extract_ui(
@@ -332,7 +329,6 @@ ui_g_response <- function(id, ...) {
 # Server function for the response module
 srv_g_response <- function(id,
                            data,
-                           reporter,
                            filter_panel_api,
                            response,
                            x,
@@ -342,7 +338,6 @@ srv_g_response <- function(id,
                            plot_width,
                            ggplot2_args,
                            decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -413,6 +408,7 @@ srv_g_response <- function(id,
       teal::validate_inputs(iv_r())
 
       qenv <- merged$anl_q_r()
+      teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "# Response Plot", after = 0)
       ANL <- qenv[["ANL"]]
       resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
       x <- as.vector(merged$anl_input_r()$columns_source$x)
@@ -572,6 +568,7 @@ srv_g_response <- function(id,
         ggthemes = parsed_ggplot2_args$ggtheme
       ))
 
+      teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Plot")
       teal.code::eval_code(qenv, plot_call)
     })
 
@@ -601,27 +598,7 @@ srv_g_response <- function(id,
       title = "Show R Code for Response"
     )
 
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Response Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+
 
     decorated_output_plot_q
   })
