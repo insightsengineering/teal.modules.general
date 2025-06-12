@@ -370,8 +370,8 @@ ui_g_scatterplot <- function(id, ...) {
         teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
         DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
-          encoding = tags$div(
-      tags$label("Encodings", class = "text-primary"),
+      encoding = tags$div(
+          tags$label("Encodings", class = "text-primary"),
         teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
         teal.transform::data_extract_ui(
           id = ns("x"),
