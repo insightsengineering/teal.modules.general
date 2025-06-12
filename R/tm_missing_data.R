@@ -370,9 +370,6 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
   ns <- NS(id)
 
   tagList(
-    ### Reporter
-    teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-    ###
     tags$label("Encodings", class = "text-primary"),
     helpText(
       paste0("Dataset", `if`(length(datanames) > 1, "s", ""), ":"),
@@ -532,7 +529,7 @@ srv_missing_data <- function(id,
       group_var <- input$group_by_var
       anl <- data_r()
       obj <- data()
-      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Module's computation")
+      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Missing Data", after = 0)
 
       qenv <- teal.code::eval_code(obj, {
         'library("dplyr");library("ggplot2");library("tidyr");library("gridExtra")' # nolint quotes
@@ -700,8 +697,10 @@ srv_missing_data <- function(id,
 
     combination_cutoff_q <- reactive({
       req(common_code_q())
+      qenv <- common_code_q()
+      teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Combination Plot")
       teal.code::eval_code(
-        common_code_q(),
+        qenv,
         quote(
           combination_cutoff <- ANL %>%
             dplyr::mutate_all(is.na) %>%
@@ -756,10 +755,14 @@ srv_missing_data <- function(id,
           expr = analysis_vars <- setdiff(colnames(ANL), data_keys),
           env = list(data_keys = data_keys())
         )
-      ) %>%
-        teal.code::eval_code(
-          substitute(
-            expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
+      )
+      
+      teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Summary Plot")
+      
+      qenv <- teal.code::eval_code(
+        qenv,
+        substitute(
+          expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
               dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
               tidyr::pivot_longer(dplyr::everything(), names_to = "col", values_to = "n_na") %>%
               dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
@@ -1113,9 +1116,12 @@ srv_missing_data <- function(id,
         function(x) round(sum(is.na(x)) / length(x), 4)
       }
 
+      qenv <- common_code_q()
+      teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Summary Table")
+      
       qenv <- if (!is.null(group_var)) {
         common_code_libraries_q <- teal.code::eval_code(
-          common_code_q(),
+          qenv,
           'library("forcats");library("glue");' # nolint quotes
         )
         teal.code::eval_code(
@@ -1142,7 +1148,7 @@ srv_missing_data <- function(id,
         )
       } else {
         teal.code::eval_code(
-          common_code_q(),
+          qenv,
           substitute(
             expr = summary_data <- ANL %>%
               dplyr::summarise_all(summ_fn) %>%
@@ -1188,8 +1194,11 @@ srv_missing_data <- function(id,
         function(x) paste(as.integer(x), collapse = "")
       }
 
-      teal.code::eval_code(
-        common_code_q(),
+      qenv <- common_code_q()
+      teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## By Subject Plot")
+      
+      qenv <- teal.code::eval_code(
+        qenv,
         substitute(
           expr = parent_keys <- keys,
           env = list(keys = data_parent_keys())
@@ -1240,11 +1249,13 @@ srv_missing_data <- function(id,
             },
             env = list(hashing_function = hashing_function)
           )
-        ) %>%
-        teal.code::eval_code(
-          substitute(
-            expr = {
-              by_subject_plot <- ggplot2::ggplot(summary_plot_patients, ggplot2::aes(
+        )
+      
+      qenv <- teal.code::eval_code(
+        qenv,
+        substitute(
+          expr = {
+            by_subject_plot <- ggplot2::ggplot(summary_plot_patients, ggplot2::aes(
                 x = factor(id, levels = order_subjects),
                 y = factor(col, levels = ordered_columns[["column"]]),
                 fill = isna
@@ -1389,49 +1400,7 @@ srv_missing_data <- function(id,
       title = "Show R Code for Missing Data"
     )
 
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::TealReportCard$new()
-        sum_type <- input$summary_type
-        title <- if (sum_type == "By Variable Levels") paste0(sum_type, " Table") else paste0(sum_type, " Plot")
-        title_dataname <- paste(title, dataname, sep = " - ")
-        label <- if (label == "") {
-          paste("Missing Data", sum_type, dataname, sep = " - ")
-        } else {
-          label
-        }
-        card$set_name(label)
-        card$append_text(title_dataname, "header2")
-        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
-        if (sum_type == "Summary") {
-          card$append_text("Plot", "header3")
-          card$append_plot(summary_plot_r(), dim = pws1$dim())
-        } else if (sum_type == "Combinations") {
-          card$append_text("Plot", "header3")
-          card$append_plot(combination_plot_r(), dim = pws2$dim())
-        } else if (sum_type == "By Variable Levels") {
-          card$append_text("Table", "header3")
-          table <- decorated_summary_table_q()[["table"]]
-          if (nrow(table) == 0L) {
-            card$append_text("No data available for table.")
-          } else {
-            card$append_table(table)
-          }
-        } else if (sum_type == "Grouped by Subject") {
-          card$append_text("Plot", "header3")
-          card$append_plot(by_subject_plot_r(), dim = pws3$dim())
-        }
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+
 
     decorated_final_q
   })
