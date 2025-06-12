@@ -47,6 +47,16 @@
 #' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
+#' @section Reporting:
+#'
+#' This module returns an object of class `teal_module`, that contains a `server` function.
+#' Since the server function returns a `teal_report` object, this makes `tm_a_pca` a reportable module where 
+#' the reporting functionality will be turned on automatically by the `teal` framework.
+#'
+#' For more information on reporting in `teal`, see the vignettes:
+#' - `vignette("managing-reproducible-report-documents-in-teal", package = "teal")`
+#' - `vignette("adding-support-for-reporting-to-custom-modules", package = "teal")`
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
