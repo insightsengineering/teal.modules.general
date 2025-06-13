@@ -932,15 +932,11 @@ srv_missing_data <- function(id,
 
       if (isTRUE(input$if_patients_plot)) {
         within(qenv, {
-          g1 <- ggplot2::ggplotGrob(summary_plot_top)
-          g2 <- ggplot2::ggplotGrob(summary_plot_bottom)
-          summary_plot <- gridExtra::gtable_cbind(g1, g2, size = "first")
-          summary_plot$heights <- grid::unit.pmax(g1$heights, g2$heights)
+          summary_plot <- gridExtra::grid.arrange(summary_plot_top, summary_plot_bottom, ncol = 2)
         })
       } else {
         within(qenv, {
-          g1 <- ggplot2::ggplotGrob(summary_plot_top)
-          summary_plot <- g1
+          summary_plot <- summary_plot_top
         })
       }
     })
