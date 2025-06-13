@@ -48,6 +48,8 @@
 #' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
+#' @inheritSection teal::example_module Reporting
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -427,7 +429,8 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "table"),
-      expr = quote(table)
+      expr = quote(table),
+      keep_output = "table"
     )
 
     output$title <- renderText(req(decorated_output_q())[["title"]])
