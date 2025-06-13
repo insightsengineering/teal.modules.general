@@ -535,7 +535,10 @@ srv_a_regression <- function(id,
             )
           }
         })) %>%
-        teal.code::eval_code(quote(summary(fit)))
+        teal.code::eval_code(quote({
+          fit_summary <- summary(fit)
+          fit_summary
+        }), keep_output = "fit_summary")
       teal.reporter::teal_card(anl_fit) <- append(teal.reporter::teal_card(anl_fit), "## Plot")
       anl_fit
     })
@@ -999,7 +1002,8 @@ srv_a_regression <- function(id,
       "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = quote(plot)
+      expr = quote(plot),
+      keep_output = "plot"
     )
 
     fitted <- reactive({
