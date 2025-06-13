@@ -1022,7 +1022,8 @@ srv_g_scatterplot <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = quote(plot)
+      expr = quote(plot),
+      keep_output = "plot"
     )
 
     plot_r <- reactive(req(decorated_output_plot_q())[["plot"]])

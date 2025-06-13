@@ -1044,7 +1044,8 @@ srv_outliers <- function(id, data, filter_panel_api, outlier_var,
               },
               env = list(table_columns = input$table_ui_columns, .plot = as.name(obj_name))
             )
-          })
+          }),
+          keep_output = obj_name
         )
       },
       stats::setNames(nm = c("box_plot", "density_plot", "cumulative_plot")),
@@ -1057,7 +1058,8 @@ srv_outliers <- function(id, data, filter_panel_api, outlier_var,
       "d_table",
       data = decorated_final_q_no_table,
       decorators = select_decorators(decorators, "table"),
-      expr = quote(table)
+      expr = quote(table),
+      keep_output = "table"
     )
 
     output$summary_table <- DT::renderDataTable(

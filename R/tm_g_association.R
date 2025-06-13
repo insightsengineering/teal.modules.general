@@ -524,7 +524,8 @@ srv_tm_g_association <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = quote(plot)
+      expr = quote(plot),
+      keep_output = "plot"
     )
 
     plot_r <- reactive({

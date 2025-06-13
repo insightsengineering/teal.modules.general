@@ -1045,7 +1045,8 @@ srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, 
           decorators = select_decorators(decorators, obj_name),
           expr = reactive({
             substitute(.plot, env = list(.plot = as.name(obj_name)))
-          })
+          }),
+          keep_output = obj_name
         )
       },
       names(output_q),

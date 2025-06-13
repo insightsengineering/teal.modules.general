@@ -1295,7 +1295,8 @@ srv_missing_data <- function(id,
         grid::grid.newpage()
         grid::grid.draw(summary_plot)
         summary_plot
-      })
+      }),
+      keep_output = "summary_plot"
     )
 
     decorated_combination_plot_q <- srv_decorate_teal_data(
@@ -1306,21 +1307,24 @@ srv_missing_data <- function(id,
         grid::grid.newpage()
         grid::grid.draw(combination_plot)
         combination_plot
-      })
+      }),
+      keep_output = "combination_plot"
     )
 
     decorated_summary_table_q <- srv_decorate_teal_data(
       id = "dec_summary_table",
       data = summary_table_q,
       decorators = select_decorators(decorators, "table"),
-      expr = quote(table)
+      expr = quote(table),
+      keep_output = "table"
     )
 
     decorated_by_subject_plot_q <- srv_decorate_teal_data(
       id = "dec_by_subject_plot",
       data = by_subject_plot_q,
       decorators = select_decorators(decorators, "by_subject_plot"),
-      expr = quote(by_subject_plot)
+      expr = quote(by_subject_plot),
+      keep_output = "by_subject_plot"
     )
 
     # Plots & tables reactives
