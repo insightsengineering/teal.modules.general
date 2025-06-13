@@ -20,7 +20,7 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `summary_plot` (`grob` created with [ggplot2::ggplotGrob()])
+#' - `summary_plot` (`ggplot`)
 #' - `combination_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `by_subject_plot` (`ggplot`)
 #' - `table` (`datatables` created with [DT::datatable()])
