@@ -1292,8 +1292,6 @@ srv_missing_data <- function(id,
       data = summary_plot_q,
       decorators = select_decorators(decorators, "summary_plot"),
       expr = quote({
-        grid::grid.newpage()
-        grid::grid.draw(summary_plot)
         summary_plot
       }),
       keep_output = "summary_plot"
