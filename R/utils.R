@@ -303,12 +303,14 @@ srv_decorate_teal_data <- function(id, data, decorators, expr, keep_output = NUL
   checkmate::assert_class(data, classes = "reactive")
   checkmate::assert_list(decorators, "teal_transform_module")
 
+  no_expr <- missing(expr)
+
   moduleServer(id, function(input, output, session) {
     decorated_output <- srv_transform_teal_data("inner", data = data, transformators = decorators)
 
     reactive({
       req(data(), decorated_output())
-      if (missing(expr)) {
+      if (no_expr) {
         decorated_output()
       } else {
         req(expr())
