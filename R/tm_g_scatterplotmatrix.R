@@ -299,12 +299,10 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 # Server function for the scatterplot matrix module
 srv_g_scatterplotmatrix <- function(id,
                                     data,
-                                    filter_panel_api,
                                     variables,
                                     plot_height,
                                     plot_width,
                                     decorators) {
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

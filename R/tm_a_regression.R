@@ -385,7 +385,6 @@ ui_a_regression <- function(id, ...) {
 # Server function for the regression module
 srv_a_regression <- function(id,
                              data,
-                             filter_panel_api,
                              response,
                              regressor,
                              plot_height,
@@ -393,7 +392,6 @@ srv_a_regression <- function(id,
                              ggplot2_args,
                              default_outlier_label,
                              decorators) {
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

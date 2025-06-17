@@ -507,7 +507,6 @@ ui_g_scatterplot <- function(id, ...) {
 # Server function for the scatterplot module
 srv_g_scatterplot <- function(id,
                               data,
-                              filter_panel_api,
                               x,
                               y,
                               color_by,
@@ -519,7 +518,6 @@ srv_g_scatterplot <- function(id,
                               table_dec,
                               ggplot2_args,
                               decorators) {
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

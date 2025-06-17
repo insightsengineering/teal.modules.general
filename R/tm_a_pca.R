@@ -349,8 +349,7 @@ ui_a_pca <- function(id, ...) {
 }
 
 # Server function for the PCA module
-srv_a_pca <- function(id, data, filter_panel_api, dat, plot_height, plot_width, ggplot2_args, decorators) {
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

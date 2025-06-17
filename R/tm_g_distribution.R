@@ -401,7 +401,6 @@ ui_distribution <- function(id, ...) {
 # Server function for the distribution module
 srv_distribution <- function(id,
                              data,
-                             filter_panel_api,
                              dist_var,
                              strata_var,
                              group_var,
@@ -409,7 +408,6 @@ srv_distribution <- function(id,
                              plot_width,
                              ggplot2_args,
                              decorators) {
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

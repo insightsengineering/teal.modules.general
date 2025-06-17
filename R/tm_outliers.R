@@ -388,9 +388,8 @@ ui_outliers <- function(id, ...) {
 
 # Server function for the outliers module
 # Server function for the outliers module
-srv_outliers <- function(id, data, filter_panel_api, outlier_var,
+srv_outliers <- function(id, data, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args, decorators) {
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

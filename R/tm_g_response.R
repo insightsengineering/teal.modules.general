@@ -331,7 +331,6 @@ ui_g_response <- function(id, ...) {
 # Server function for the response module
 srv_g_response <- function(id,
                            data,
-                           filter_panel_api,
                            response,
                            x,
                            row_facet,
@@ -340,7 +339,6 @@ srv_g_response <- function(id,
                            plot_width,
                            ggplot2_args,
                            decorators) {
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

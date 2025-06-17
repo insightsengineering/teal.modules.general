@@ -201,10 +201,9 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
 }
 
 # Server function for the missing data module (all datasets)
-srv_page_missing_data <- function(id, data, reporter, filter_panel_api, datanames, parent_dataname,
+srv_page_missing_data <- function(id, data, reporter, datanames, parent_dataname,
                                   plot_height, plot_width, ggplot2_args, ggtheme, decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
@@ -274,7 +273,6 @@ srv_page_missing_data <- function(id, data, reporter, filter_panel_api, dataname
           id = x,
           data = data,
           reporter = if (with_reporter) reporter,
-          filter_panel_api = if (with_filter) filter_panel_api,
           dataname = x,
           parent_dataname = parent_dataname,
           plot_height = plot_height,
@@ -460,7 +458,6 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
 srv_missing_data <- function(id,
                              data,
                              reporter,
-                             filter_panel_api,
                              dataname,
                              parent_dataname,
                              plot_height,
@@ -468,7 +465,6 @@ srv_missing_data <- function(id,
                              ggplot2_args,
                              decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

@@ -300,14 +300,12 @@ ui_tm_g_association <- function(id, ...) {
 # Server function for the association module
 srv_tm_g_association <- function(id,
                                  data,
-                                 filter_panel_api,
                                  ref,
                                  vars,
                                  plot_height,
                                  plot_width,
                                  ggplot2_args,
                                  decorators) {
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
 

@@ -477,7 +477,6 @@ ui_g_bivariate <- function(id, ...) {
 # Server function for the bivariate module
 srv_g_bivariate <- function(id,
                             data,
-                            filter_panel_api,
                             x,
                             y,
                             row_facet,
@@ -490,7 +489,6 @@ srv_g_bivariate <- function(id,
                             plot_width,
                             ggplot2_args,
                             decorators) {
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
