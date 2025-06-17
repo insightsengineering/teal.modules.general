@@ -5,7 +5,7 @@
 \alias{ui_decorate_teal_data}
 \title{Wrappers around \code{srv_transform_teal_data} that allows to decorate the data}
 \usage{
-srv_decorate_teal_data(id, data, decorators, expr)
+srv_decorate_teal_data(id, data, decorators, expr, keep_output = NULL)
 
 ui_decorate_teal_data(id, decorators, ...)
 }
@@ -14,9 +14,15 @@ ui_decorate_teal_data(id, decorators, ...)
 
 \item{data}{(\code{reactive} returning \code{teal_data})}
 
-\item{expr}{(\code{expression} or \code{reactive}) to evaluate on the output of the decoration.
-When an expression it must be inline code. See \code{\link[=within]{within()}}
+\item{expr}{(\code{reactive}) with expression to evaluate on the output of the
+decoration. It must be compatible with \code{code} argument of \code{\link[teal.code:eval_code]{teal.code::eval_code()}}.
 Default is \code{NULL} which won't evaluate any appending code.}
+
+\item{keep_output}{(\code{character} or \code{NULL}) Names of output objects in the environment
+that are will be added in the card for the reporter.
+These are shown in the card via the \code{\link[tools:toHTML]{tools::toHTML()}} and \code{\link[teal.reporter:to_rmd]{to_rmd()}} implementations.}
+
+\item{...}{(\code{\link{dots}}) additional arguments passed to future methods.}
 }
 \description{
 Wrappers around \code{srv_transform_teal_data} that allows to decorate the data

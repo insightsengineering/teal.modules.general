@@ -286,8 +286,9 @@ assert_single_selection <- function(x,
 
 #' Wrappers around `srv_transform_teal_data` that allows to decorate the data
 #' @inheritParams teal::srv_transform_teal_data
-#' @param expr (`expression` or `reactive`) to evaluate on the output of the decoration.
-#' When an expression it must be inline code. See [within()]
+#' @inheritParams teal.reporter::`eval_code,teal_report-method`
+#' @param expr (`reactive`) with expression to evaluate on the output of the
+#' decoration. It must be compatible with `code` argument of [teal.code::eval_code()].
 #' Default is `NULL` which won't evaluate any appending code.
 #' @param keep_output (`character`) optional, names of the outputs to keep.
 #' Default is `NULL` which won't keep any outputs.
@@ -301,26 +302,17 @@ assert_single_selection <- function(x,
 srv_decorate_teal_data <- function(id, data, decorators, expr, keep_output = NULL) {
   checkmate::assert_class(data, classes = "reactive")
   checkmate::assert_list(decorators, "teal_transform_module")
-  expr_is_missing <- missing(expr)
 
   moduleServer(id, function(input, output, session) {
     decorated_output <- srv_transform_teal_data("inner", data = data, transformators = decorators)
 
-    expr_r <- reactive({
-      if (is.reactive(expr)) {
-        expr()
-      } else {
-        expr
-      }
-    })
-
     reactive({
       req(data(), decorated_output())
-      if (expr_is_missing) {
+      if (missing(expr)) {
         decorated_output()
       } else {
-        req(expr_r())
-        teal.code::eval_code(decorated_output(), expr_r(), keep_output = keep_output)
+        req(expr())
+        teal.code::eval_code(decorated_output(), expr(), keep_output = keep_output)
       }
     })
   })
