@@ -754,25 +754,25 @@ srv_missing_data <- function(id,
           env = list(data_keys = data_keys())
         )
       )
-      
+
       teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Summary Plot")
-      
+
       qenv <- teal.code::eval_code(
         qenv,
         substitute(
           expr = summary_plot_obs <- data_frame_call[, analysis_vars] %>%
-              dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
-              tidyr::pivot_longer(dplyr::everything(), names_to = "col", values_to = "n_na") %>%
-              dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
-              tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
-              dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
-            env = list(data_frame_call = if (!inherits(data_r(), "tbl_df")) {
-              quote(tibble::as_tibble(ANL))
-            } else {
-              quote(ANL)
-            })
-          )
-        ) %>%
+            dplyr::summarise_all(list(function(x) sum(is.na(x)))) %>%
+            tidyr::pivot_longer(dplyr::everything(), names_to = "col", values_to = "n_na") %>%
+            dplyr::mutate(n_not_na = nrow(ANL) - n_na) %>%
+            tidyr::pivot_longer(-col, names_to = "isna", values_to = "n") %>%
+            dplyr::mutate(isna = isna == "n_na", n_pct = n / nrow(ANL) * 100),
+          env = list(data_frame_call = if (!inherits(data_r(), "tbl_df")) {
+            quote(tibble::as_tibble(ANL))
+          } else {
+            quote(ANL)
+          })
+        )
+      ) %>%
         # x axis ordering according to number of missing values and alphabet
         teal.code::eval_code(
           quote(
@@ -1112,7 +1112,7 @@ srv_missing_data <- function(id,
 
       qenv <- common_code_q()
       teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Summary Table")
-      
+
       qenv <- if (!is.null(group_var)) {
         common_code_libraries_q <- teal.code::eval_code(
           qenv,
@@ -1190,7 +1190,7 @@ srv_missing_data <- function(id,
 
       qenv <- common_code_q()
       teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## By Subject Plot")
-      
+
       qenv <- teal.code::eval_code(
         qenv,
         substitute(
@@ -1244,40 +1244,40 @@ srv_missing_data <- function(id,
             env = list(hashing_function = hashing_function)
           )
         )
-      
+
       qenv <- teal.code::eval_code(
         qenv,
         substitute(
           expr = {
             by_subject_plot <- ggplot2::ggplot(summary_plot_patients, ggplot2::aes(
-                x = factor(id, levels = order_subjects),
-                y = factor(col, levels = ordered_columns[["column"]]),
-                fill = isna
-              )) +
-                ggplot2::geom_raster() +
-                ggplot2::annotate(
-                  "text",
-                  x = length(order_subjects),
-                  y = seq_len(nrow(ordered_columns)),
-                  hjust = 1,
-                  label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
-                ) +
-                ggplot2::scale_fill_manual(
-                  name = "",
-                  values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
-                  labels = c("Present", "Missing (at least one)")
-                ) +
-                labs +
-                ggthemes +
-                themes
-            },
-            env = list(
-              labs = parsed_ggplot2_args$labs,
-              themes = parsed_ggplot2_args$theme,
-              ggthemes = parsed_ggplot2_args$ggtheme
-            )
+              x = factor(id, levels = order_subjects),
+              y = factor(col, levels = ordered_columns[["column"]]),
+              fill = isna
+            )) +
+              ggplot2::geom_raster() +
+              ggplot2::annotate(
+                "text",
+                x = length(order_subjects),
+                y = seq_len(nrow(ordered_columns)),
+                hjust = 1,
+                label = sprintf("%d [%.02f%%]", ordered_columns[["na_count"]], ordered_columns[["na_percent"]])
+              ) +
+              ggplot2::scale_fill_manual(
+                name = "",
+                values = c("grey90", c(getOption("ggplot2.discrete.colour")[2], "#ff2951ff")[1]),
+                labels = c("Present", "Missing (at least one)")
+              ) +
+              labs +
+              ggthemes +
+              themes
+          },
+          env = list(
+            labs = parsed_ggplot2_args$labs,
+            themes = parsed_ggplot2_args$theme,
+            ggthemes = parsed_ggplot2_args$ggtheme
           )
         )
+      )
     })
 
     # Decorated outputs
@@ -1289,8 +1289,7 @@ srv_missing_data <- function(id,
       decorators = select_decorators(decorators, "summary_plot"),
       expr = quote({
         summary_plot
-      }),
-      keep_output = "summary_plot"
+      })
     )
 
     decorated_combination_plot_q <- srv_decorate_teal_data(
@@ -1301,24 +1300,21 @@ srv_missing_data <- function(id,
         grid::grid.newpage()
         grid::grid.draw(combination_plot)
         combination_plot
-      }),
-      keep_output = "combination_plot"
+      })
     )
 
     decorated_summary_table_q <- srv_decorate_teal_data(
       id = "dec_summary_table",
       data = summary_table_q,
       decorators = select_decorators(decorators, "table"),
-      expr = quote(table),
-      keep_output = "table"
+      expr = quote(table)
     )
 
     decorated_by_subject_plot_q <- srv_decorate_teal_data(
       id = "dec_by_subject_plot",
       data = by_subject_plot_q,
       decorators = select_decorators(decorators, "by_subject_plot"),
-      expr = quote(by_subject_plot),
-      keep_output = "by_subject_plot"
+      expr = quote(by_subject_plot)
     )
 
     # Plots & tables reactives

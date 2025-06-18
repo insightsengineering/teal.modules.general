@@ -392,7 +392,7 @@ srv_g_scatterplotmatrix <- function(id,
 
       # create plot
       teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Plot")
-      
+
       if (add_cor) {
         shinyjs::show("cor_method")
         shinyjs::show("cor_use")

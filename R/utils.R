@@ -290,8 +290,6 @@ assert_single_selection <- function(x,
 #' @param expr (`reactive`) with expression to evaluate on the output of the
 #' decoration. It must be compatible with `code` argument of [teal.code::eval_code()].
 #' Default is `NULL` which won't evaluate any appending code.
-#' @param keep_output (`character`) optional, names of the outputs to keep.
-#' Default is `NULL` which won't keep any outputs.
 #' @details
 #' `srv_decorate_teal_data` is a wrapper around `srv_transform_teal_data` that
 #' allows to decorate the data with additional expressions.
@@ -299,7 +297,7 @@ assert_single_selection <- function(x,
 #' first.
 #'
 #' @keywords internal
-srv_decorate_teal_data <- function(id, data, decorators, expr, keep_output = NULL) {
+srv_decorate_teal_data <- function(id, data, decorators, expr) {
   checkmate::assert_class(data, classes = "reactive")
   checkmate::assert_list(decorators, "teal_transform_module")
 
@@ -309,12 +307,11 @@ srv_decorate_teal_data <- function(id, data, decorators, expr, keep_output = NUL
     decorated_output <- srv_transform_teal_data("inner", data = data, transformators = decorators)
 
     reactive({
-      req(data(), decorated_output())
+      req(decorated_output())
       if (no_expr) {
         decorated_output()
       } else {
-        req(expr())
-        teal.code::eval_code(decorated_output(), expr(), keep_output = keep_output)
+        teal.code::eval_code(decorated_output(), expr)
       }
     })
   })

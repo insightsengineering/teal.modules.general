@@ -637,7 +637,7 @@ srv_distribution <- function(id,
 
       obj <- merged$anl_q_r()
       teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Distribution Plot", after = 0)
-      
+
       ANL <- obj[["ANL"]]
       dist_var <- merge_vars()$dist_var
       s_var <- merge_vars()$s_var
@@ -1297,32 +1297,28 @@ srv_distribution <- function(id,
       "d_density",
       data = output_dist_q,
       decorators = select_decorators(decorators, "histogram_plot"),
-      expr = quote(histogram_plot),
-      keep_output = "histogram_plot"
+      expr = quote(histogram_plot)
     )
 
     decorated_output_qq_q <- srv_decorate_teal_data(
       "d_qq",
       data = output_qq_q,
       decorators = select_decorators(decorators, "qq_plot"),
-      expr = quote(qq_plot),
-      keep_output = "qq_plot"
+      expr = quote(qq_plot)
     )
 
     decorated_output_summary_q <- srv_decorate_teal_data(
       "d_summary",
       data = output_summary_q,
       decorators = select_decorators(decorators, "summary_table"),
-      expr = quote(summary_table),
-      keep_output = "summary_table"
+      expr = quote(summary_table)
     )
 
     decorated_output_test_q <- srv_decorate_teal_data(
       "d_test",
       data = output_test_q,
       decorators = select_decorators(decorators, "test_table"),
-      expr = quote(test_table),
-      keep_output = "test_table"
+      expr = quote(test_table)
     )
 
     decorated_output_q <- reactive({

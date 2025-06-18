@@ -728,8 +728,7 @@ srv_g_bivariate <- function(id,
           )
         }
         print_call
-      }),
-      keep_output = "plot"
+      })
     )
 
     plot_r <- reactive(req(decorated_output_q_facets())[["plot"]])

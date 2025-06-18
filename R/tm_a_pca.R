@@ -517,8 +517,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         quote({
           tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
           tbl_importance
-        }),
-        keep_output = "tbl_importance"
+        })
       )
 
       teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Eigenvectors Table")
@@ -528,8 +527,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         quote({
           tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
           tbl_eigenvector
-        }),
-        keep_output = "tbl_eigenvector"
+        })
       )
     })
 
@@ -1044,8 +1042,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
           decorators = select_decorators(decorators, obj_name),
           expr = reactive({
             substitute(.plot, env = list(.plot = as.name(obj_name)))
-          }),
-          keep_output = obj_name
+          })
         )
       },
       names(output_q),

@@ -492,7 +492,7 @@ srv_tm_g_association <- function(id,
             )
           )
         }
-      obj <-  merged$anl_q_r()
+      obj <- merged$anl_q_r()
       teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "## Plot")
       teal.code::eval_code(
         obj,
@@ -522,8 +522,7 @@ srv_tm_g_association <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = quote(plot),
-      keep_output = "plot"
+      expr = quote(plot)
     )
 
     plot_r <- reactive({
@@ -538,9 +537,7 @@ srv_tm_g_association <- function(id,
       width = plot_width
     )
 
-    output$title <- renderText({
-      teal.code::dev_suppress(output_q()[["title"]])
-    })
+    output$title <- renderText(output_q()[["title"]])
 
     # Render R code.
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_grob_q())))
