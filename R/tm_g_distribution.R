@@ -56,6 +56,8 @@
 #' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
+#' @inheritSection teal::example_module Reporting
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -258,9 +260,6 @@ ui_distribution <- function(id, ...) {
       )
     ),
     encoding = tags$div(
-      ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("dist_var", "strata_var")]),
       teal.transform::data_extract_ui(
@@ -402,8 +401,6 @@ ui_distribution <- function(id, ...) {
 # Server function for the distribution module
 srv_distribution <- function(id,
                              data,
-                             reporter,
-                             filter_panel_api,
                              dist_var,
                              strata_var,
                              group_var,
@@ -411,8 +408,6 @@ srv_distribution <- function(id,
                              plot_width,
                              ggplot2_args,
                              decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -640,7 +635,10 @@ srv_distribution <- function(id,
     common_q <- reactive({
       # Create a private stack for this function only.
 
-      ANL <- merged$anl_q_r()[["ANL"]]
+      obj <- merged$anl_q_r()
+      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Distribution Plot", after = 0)
+      
+      ANL <- obj[["ANL"]]
       dist_var <- merge_vars()$dist_var
       s_var <- merge_vars()$s_var
       g_var <- merge_vars()$g_var
@@ -655,7 +653,7 @@ srv_distribution <- function(id,
       # isolated as dist_param1/dist_param2 already triggered the reactivity
       t_dist <- isolate(input$t_dist)
 
-      qenv <- merged$anl_q_r()
+      qenv <- obj
 
       if (length(g_var) > 0) {
         validate(
@@ -954,6 +952,7 @@ srv_distribution <- function(id,
           ggtheme = ggtheme
         )
 
+        teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Histogram Plot")
         teal.code::eval_code(
           qenv,
           substitute(
@@ -1084,6 +1083,7 @@ srv_distribution <- function(id,
           ggtheme = ggtheme
         )
 
+        teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## QQ Plot")
         teal.code::eval_code(
           qenv,
           substitute(
@@ -1297,28 +1297,32 @@ srv_distribution <- function(id,
       "d_density",
       data = output_dist_q,
       decorators = select_decorators(decorators, "histogram_plot"),
-      expr = quote(histogram_plot)
+      expr = quote(histogram_plot),
+      keep_output = "histogram_plot"
     )
 
     decorated_output_qq_q <- srv_decorate_teal_data(
       "d_qq",
       data = output_qq_q,
       decorators = select_decorators(decorators, "qq_plot"),
-      expr = quote(qq_plot)
+      expr = quote(qq_plot),
+      keep_output = "qq_plot"
     )
 
     decorated_output_summary_q <- srv_decorate_teal_data(
       "d_summary",
       data = output_summary_q,
       decorators = select_decorators(decorators, "summary_table"),
-      expr = quote(summary_table)
+      expr = quote(summary_table),
+      keep_output = "summary_table"
     )
 
     decorated_output_test_q <- srv_decorate_teal_data(
       "d_test",
       data = output_test_q,
       decorators = select_decorators(decorators, "test_table"),
-      expr = quote(test_table)
+      expr = quote(test_table),
+      keep_output = "test_table"
     )
 
     decorated_output_q <- reactive({
@@ -1384,39 +1388,7 @@ srv_distribution <- function(id,
       title = "R Code for distribution"
     )
 
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Distribution Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        if (input$tabs == "Histogram") {
-          card$append_plot(dist_r(), dim = pws1$dim())
-        } else if (input$tabs == "QQplot") {
-          card$append_plot(qq_r(), dim = pws2$dim())
-        }
-        card$append_text("Statistics table", "header3")
-        card$append_table(decorated_output_summary_q()[["summary_table"]])
-        tests_error <- tryCatch(expr = tests_r(), error = function(e) "error")
-        if (inherits(tests_error, "data.frame")) {
-          card$append_text("Tests table", "header3")
-          card$append_table(tests_r())
-        }
 
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
     reactive(
       if (input$tabs == "Histogram") {
         decorated_output_dist_q()
