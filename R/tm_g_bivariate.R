@@ -553,16 +553,17 @@ srv_g_bivariate <- function(id,
       selector_list = selector_list,
       datasets = data
     )
-    qenv <- reactive({
-      obj <- data()
-      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Bivariate Plot", after = 0)
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("teal.modules.general")') # nolint quotes
-    })
 
     anl_merged_q <- reactive({
-      req(anl_merged_input())
-      qenv() %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+      obj <- data()
+      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Bivariate Plot", after = 0)
+      obj |>
+        teal.code::eval_code(
+          c(
+            expression(library(ggplot2), library(dplyr), library(teal.modules.general)),
+            as.expression(anl_merged_input()$expr)
+          )
+        )
     })
 
     merged <- list(

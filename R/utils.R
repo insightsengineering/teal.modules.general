@@ -306,12 +306,14 @@ srv_decorate_teal_data <- function(id, data, decorators, expr) {
   moduleServer(id, function(input, output, session) {
     decorated_output <- srv_transform_teal_data("inner", data = data, transformators = decorators)
 
+    expr_r <- if (is.reactive(expr)) expr else reactive(expr)
+
     reactive({
       req(decorated_output())
       if (no_expr) {
         decorated_output()
       } else {
-        teal.code::eval_code(decorated_output(), expr)
+        teal.code::eval_code(decorated_output(), expr_r())
       }
     })
   })
