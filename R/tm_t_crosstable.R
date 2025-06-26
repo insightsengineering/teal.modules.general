@@ -428,8 +428,7 @@ srv_t_crosstable <- function(id, data, label, x, y, basic_table_args, decorators
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "table"),
-      expr = quote(table),
-      keep_output = "table"
+      expr = quote(table)
     )
 
     output$title <- renderText(req(decorated_output_q())[["title"]])
