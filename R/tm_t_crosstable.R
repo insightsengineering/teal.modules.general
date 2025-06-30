@@ -25,6 +25,14 @@
 #'
 #' @inherit shared_params return
 #'
+#' @section Table Settings:
+#' The module provides several table settings that can be adjusted:
+#' \itemize{
+#'   \item \code{Show column percentage}: Shows column percentages when enabled
+#'   \item \code{Show total column}: Shows a total column when enabled
+#'   \item \code{Remove zero-only columns}: Removes columns that contain only zeros from the output table
+#' }
+#'
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
@@ -245,7 +253,8 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
         bslib::accordion_panel(
           title = "Table settings",
           checkboxInput(ns("show_percentage"), "Show column percentage", value = show_percentage),
-          checkboxInput(ns("show_total"), "Show total column", value = show_total)
+          checkboxInput(ns("show_total"), "Show total column", value = show_total),
+          checkboxInput(ns("remove_zero_columns"), "Remove zero-only columns", value = FALSE)
         )
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "table"))
@@ -352,6 +361,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
       show_percentage <- input$show_percentage
       show_total <- input$show_total
+      remove_zero_columns <- input$remove_zero_columns
 
       plot_title <- paste(
         "Cross-Table of",
@@ -416,9 +426,12 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
           substitute(
             expr = {
               ANL <- tern::df_explicit_na(ANL)
+              if (remove_zero_columns) {
+                ANL[[y_name]] <- droplevels(ANL[[y_name]])
+              }
               table <- rtables::build_table(lyt = table, df = ANL[order(ANL[[y_name]]), ])
             },
-            env = list(y_name = y_name)
+            env = list(y_name = y_name, remove_zero_columns = remove_zero_columns)
           )
         )
     })
