@@ -120,6 +120,9 @@ See code snippet below:
 
 For additional details and examples of decorators, refer to the vignette
 \code{vignette("decorate-module-output", package = "teal.modules.general")}.
+
+To learn more please refer to the vignette
+\code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
 \examples{
