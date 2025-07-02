@@ -738,7 +738,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
       size <- input$size
       font_size <- input$font_size
 
-      teal_card(base_q) <- append(teal_card(base_q), "## Biplot")
+      teal.reporter::teal_card(base_q) <- append(teal.reporter::teal_card(base_q), "## Biplot")
       qenv <- teal.code::eval_code(
         qenv,
         substitute(
@@ -999,7 +999,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         parsed_ggplot2_args$theme
       )
 
-      teal_card(base_q) <- append(teal_card(base_q), "## Eigenvector plot")
+      teal.reporter::teal_card(base_q) <- append(teal.reporter::teal_card(base_q), "## Eigenvector plot")
       teal.code::eval_code(
         base_q,
         substitute(
