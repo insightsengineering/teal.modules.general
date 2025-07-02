@@ -528,6 +528,7 @@ srv_missing_data <- function(id,
       anl <- data_r()
       obj <- data()
       teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Missing Data", after = 0)
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Module's code")
 
       qenv <- teal.code::eval_code(obj, {
         'library("dplyr");library("ggplot2");library("tidyr");library("gridExtra")' # nolint quotes

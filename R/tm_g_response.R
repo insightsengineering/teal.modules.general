@@ -409,6 +409,7 @@ srv_g_response <- function(id,
 
       qenv <- merged$anl_q_r()
       teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "# Response Plot", after = 0)
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Module's code")
       ANL <- qenv[["ANL"]]
       resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
       x <- as.vector(merged$anl_input_r()$columns_source$x)

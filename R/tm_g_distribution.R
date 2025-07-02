@@ -637,6 +637,7 @@ srv_distribution <- function(id,
 
       obj <- merged$anl_q_r()
       teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Distribution Plot", after = 0)
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Module's code")
 
       ANL <- obj[["ANL"]]
       dist_var <- merge_vars()$dist_var

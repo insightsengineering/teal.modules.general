@@ -557,7 +557,8 @@ srv_g_bivariate <- function(id,
     anl_merged_q <- reactive({
       obj <- data()
       teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Bivariate Plot", after = 0)
-      obj |>
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Module's code")
+      obj %>%
         teal.code::eval_code(
           c(
             expression(library(ggplot2), library(dplyr), library(teal.modules.general)),

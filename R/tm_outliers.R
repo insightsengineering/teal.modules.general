@@ -474,6 +474,7 @@ srv_outliers <- function(id, data, outlier_var,
       ANL <- merged$anl_q_r()[["ANL"]]
       qenv <- merged$anl_q_r()
       teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "# Outliers Analysis", after = 0)
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Module's code")
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
