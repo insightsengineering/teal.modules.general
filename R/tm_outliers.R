@@ -474,7 +474,7 @@ srv_outliers <- function(id, data, outlier_var,
       ANL <- merged$anl_q_r()[["ANL"]]
       qenv <- merged$anl_q_r()
       teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "# Outliers Analysis", after = 0)
-      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Module's code")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "# Module's code")
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
@@ -733,14 +733,7 @@ srv_outliers <- function(id, data, outlier_var,
 
       # Generate decoratable object from data
       qenv <- within(qenv, {
-        table <- DT::datatable(
-          summary_table,
-          options = list(
-            dom = "t",
-            autoWidth = TRUE,
-            columnDefs = list(list(width = "200px", targets = "_all"))
-          )
-        )
+        table <- summary_table
       })
 
       if (length(categorical_var) > 0 && nrow(qenv[["ANL_OUTLIER"]]) > 0) {
@@ -1065,7 +1058,14 @@ srv_outliers <- function(id, data, outlier_var,
         if (iv_r()$is_valid()) {
           categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
           if (!is.null(categorical_var)) {
-            decorated_final_q()[["table"]]
+            DT::datatable(
+              decorated_final_q()[["table"]],
+              options = list(
+                dom = "t",
+                autoWidth = TRUE,
+                columnDefs = list(list(width = "200px", targets = "_all"))
+              )
+            )
           }
         }
       }
