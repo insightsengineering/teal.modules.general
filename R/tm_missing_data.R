@@ -1157,7 +1157,7 @@ srv_missing_data <- function(id,
         )
       }
 
-      within(qenv, table <- DT::datatable(summary_data))
+      within(qenv, table <- summary_data)
     })
 
     by_subject_plot_q <- reactive({
@@ -1339,7 +1339,7 @@ srv_missing_data <- function(id,
           options = list(language = list(zeroRecords = "No variable selected."), pageLength = input$levels_table_rows)
         )
       } else {
-        decorated_summary_table_q()[["table"]]
+        DT::datatable(decorated_summary_table_q()[["table"]])
       }
     })
 
