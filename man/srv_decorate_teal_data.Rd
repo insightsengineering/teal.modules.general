@@ -17,6 +17,8 @@ ui_decorate_teal_data(id, decorators, ...)
 \item{expr}{(\code{reactive}) with expression to evaluate on the output of the
 decoration. It must be compatible with \code{code} argument of \code{\link[teal.code:eval_code]{teal.code::eval_code()}}.
 Default is \code{NULL} which won't evaluate any appending code.}
+
+\item{...}{(\code{\link{dots}}) additional arguments passed to future methods.}
 }
 \description{
 Wrappers around \code{srv_transform_teal_data} that allows to decorate the data
