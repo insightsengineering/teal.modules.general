@@ -445,7 +445,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
           )
       } else {
         obj <- obj %>%
-        teal.code::eval_code(
+          teal.code::eval_code(
             substitute(
               expr = {
                 table <- rtables::build_table(lyt = table, df = ANL[order(ANL[[y_name]]), ])
