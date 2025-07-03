@@ -378,7 +378,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         ANL
       )
 
-      teal.code::eval_code(
+      obj <- teal.code::eval_code(
         merged$anl_q_r(),
         substitute(
           expr = {
@@ -423,17 +423,32 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
           )
         ) %>%
         teal.code::eval_code(
-          substitute(
-            expr = {
-              ANL <- tern::df_explicit_na(ANL)
-              if (remove_zero_columns) {
-                ANL[[y_name]] <- droplevels(ANL[[y_name]])
-              }
-              table <- rtables::build_table(lyt = table, df = ANL[order(ANL[[y_name]]), ])
-            },
-            env = list(y_name = y_name, remove_zero_columns = remove_zero_columns)
-          )
+          expression(ANL <- tern::df_explicit_na(ANL))
         )
+
+      if (remove_zero_columns) {
+        obj <- obj %>%
+          teal.code::eval_code(
+            substitute(
+              expr = {
+                ANL[[y_name]] <- droplevels(ANL[[y_name]])
+                table <- rtables::build_table(lyt = table, df = ANL[order(ANL[[y_name]]), ])
+              },
+              env = list(y_name = y_name)
+            )
+          )
+      } else {
+        obj <- obj %>%
+        teal.code::eval_code(
+            substitute(
+              expr = {
+                table <- rtables::build_table(lyt = table, df = ANL[order(ANL[[y_name]]), ])
+              },
+              env = list(y_name = y_name)
+            )
+          )
+      }
+      obj
     })
 
     decorated_output_q <- srv_decorate_teal_data(
