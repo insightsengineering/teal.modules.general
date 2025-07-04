@@ -486,11 +486,66 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
     })
 
-    anl_merged_input <- teal.transform::merge_expression_srv(
-      selector_list = reactive_select_input,
-      datasets = data,
-      merge_function = "dplyr::inner_join"
-    )
+    anl_merged_input <- reactive({
+      # Check if we have join keys available
+      dataname_first <- names(data())[[1]]
+      join_keys <- teal.data::join_keys(data())[dataname_first, dataname_first]
+      
+      if (length(join_keys) == 0) {
+        # No join keys available - create a simple data extract without merging
+        # This handles the case where we have only one dataset without join keys
+        selectors <- reactive_select_input()
+        
+        # Get the first (primary) selector for the outlier variable
+        outlier_selector <- selectors$outlier_var
+        
+        if (!is.null(outlier_selector)) {
+          sel_result <- outlier_selector()
+          if (!is.null(sel_result)) {
+            # Create a simple ANL assignment without merging
+            dataname <- sel_result$dataname
+            
+            # Handle categorical variable if present
+            categorical_selector <- selectors$categorical_var
+            categorical_cols <- character(0)
+            if (!is.null(categorical_selector)) {
+              cat_result <- categorical_selector()
+              if (!is.null(cat_result) && !is.null(cat_result$filter)) {
+                # Extract filter variable names
+                filter_vars <- cat_result$filter
+                if (length(filter_vars) > 0) {
+                  categorical_cols <- names(filter_vars)
+                }
+              }
+            }
+            
+            return(list(
+              expr = substitute(ANL <- dataname, list(dataname = as.name(dataname))),
+              columns_source = list(
+                outlier_var = sel_result$select,
+                categorical_var = categorical_cols
+              )
+            ))
+          }
+        }
+        
+        # Fallback - return first dataset
+        return(list(
+          expr = substitute(ANL <- dataname, list(dataname = as.name(dataname_first))),
+          columns_source = list(
+            outlier_var = character(0),
+            categorical_var = character(0)
+          )
+        ))
+      } else {
+        # Join keys exist - use the standard merge approach
+        teal.transform::merge_expression_srv(
+          selector_list = reactive_select_input,
+          datasets = data,
+          merge_function = "dplyr::inner_join"
+        )()
+      }
+    })
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
