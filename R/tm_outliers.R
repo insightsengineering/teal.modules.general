@@ -490,21 +490,21 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       # Check if we have join keys available
       dataname_first <- names(data())[[1]]
       join_keys <- teal.data::join_keys(data())[dataname_first, dataname_first]
-      
+
       if (length(join_keys) == 0) {
         # No join keys available - create a simple data extract without merging
         # This handles the case where we have only one dataset without join keys
         selectors <- reactive_select_input()
-        
+
         # Get the first (primary) selector for the outlier variable
         outlier_selector <- selectors$outlier_var
-        
+
         if (!is.null(outlier_selector)) {
           sel_result <- outlier_selector()
           if (!is.null(sel_result)) {
             # Create a simple ANL assignment without merging
             dataname <- sel_result$dataname
-            
+
             # Handle categorical variable if present
             categorical_selector <- selectors$categorical_var
             categorical_cols <- character(0)
@@ -518,7 +518,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
                 }
               }
             }
-            
+
             return(list(
               expr = substitute(ANL <- dataname, list(dataname = as.name(dataname))),
               columns_source = list(
@@ -528,7 +528,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
             ))
           }
         }
-        
+
         # Fallback - return first dataset
         return(list(
           expr = substitute(ANL <- dataname, list(dataname = as.name(dataname_first))),
