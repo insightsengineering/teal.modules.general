@@ -441,7 +441,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     anl_merged_input <- reactive({
       dataname_first <- names(data())[[1]]
       join_keys <- teal.data::join_keys(data())[dataname_first, dataname_first]
-      
+
       if (length(join_keys) == 0) {
         # No join keys - create simple assignment expression
         list(
@@ -638,7 +638,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       # ANL_OUTLIER_EXTENDED is the base table
       join_keys <- as.character(teal.data::join_keys(data())[dataname_first, dataname_first])
-      
+
       if (length(join_keys) == 0) {
         # No join keys - no join needed
         qenv <- teal.code::eval_code(qenv, quote(ANL_OUTLIER_EXTENDED <- ANL_OUTLIER))
