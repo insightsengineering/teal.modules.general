@@ -665,7 +665,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       # ANL_OUTLIER_EXTENDED is the base table
       join_keys <- as.character(teal.data::join_keys(data())[dataname_first, dataname_first])
-      
+
       if (length(join_keys) == 0) {
         # No join keys defined - working with single dataset, no join needed
         # ANL_OUTLIER already contains all necessary columns

@@ -325,21 +325,21 @@ testthat::test_that("e2e - tm_outliers: works without join keys", {
   # This test reproduces the exact scenario described in the issue
   testthat::skip("chromium")
   skip_if_too_deep(5)
-  
+
   # Create data without join keys (as per issue description)
   data <- teal.data::teal_data()
   data <- within(data, {
     CO2 <- CO2 # nolint: object_name
   })
   # Note: No join_keys defined here, which should NOT cause the issue after fix
-  
+
   vars <- teal.transform::choices_selected(
     teal.transform::variable_choices(
-      data[["CO2"]], 
+      data[["CO2"]],
       c("Plant", "Type", "Treatment")
     )
   )
-  
+
   # This should NOT fail after the fix
   app_driver <- init_teal_app_driver(
     data = data,
@@ -374,14 +374,14 @@ testthat::test_that("e2e - tm_outliers: works without join keys", {
       )
     )
   )
-  
+
   app_driver$expect_no_shiny_error()
-  
+
   # Verify the module loads correctly
   testthat::expect_equal(
     app_driver$get_text("#teal-teal_modules-active_tab .active"),
     "Outliers Module"
   )
-  
+
   app_driver$stop()
 })
