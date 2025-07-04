@@ -569,50 +569,103 @@ srv_distribution <- function(id,
       }
     })
 
+    params_manually_set <- reactiveVal(FALSE)
+    prev_t_dist <- reactiveVal(NULL)
+    prev_variable <- reactiveVal(NULL)
+
+    get_dist_params <- function(x, dist) {
+      if (dist == "unif") {
+        return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
+      }
+      tryCatch(
+        MASS::fitdistr(x, densfun = dist)$estimate,
+        error = function(e) c(param1 = NA_real_, param2 = NA_real_)
+      )
+    }
+
     observeEvent(
       eventExpr = list(
         input$t_dist,
-        input$params_reset,
         selector_list()$dist_i()$select
       ),
       handlerExpr = {
-        params <-
-          if (length(input$t_dist) != 0) {
-            get_dist_params <- function(x, dist) {
-              if (dist == "unif") {
-                return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
-              }
-              tryCatch(
-                MASS::fitdistr(x, densfun = dist)$estimate,
-                error = function(e) c(param1 = NA_real_, param2 = NA_real_)
-              )
+        current_t_dist <- input$t_dist
+        current_variable <- selector_list()$dist_i()$select
+
+        # Only recalculate parameters if:
+        # 1. Distribution type changed
+        # 2. Reset button was clicked (we'll handle this separately)
+        # 3. Variable changed AND parameters haven't been manually set yet
+        should_recalculate <- 
+          !identical(current_t_dist, prev_t_dist()) || 
+          (!identical(current_variable, prev_variable()) && !is.null(current_variable) && !params_manually_set())
+
+        if (should_recalculate) {
+          params <-
+            if (length(input$t_dist) != 0) {
+              ANL <- merged$anl_q_r()[["ANL"]]
+              round(get_dist_params(as.numeric(stats::na.omit(ANL[[merge_vars()$dist_var]])), input$t_dist), 2)
+            } else {
+              c("param1" = NA_real_, "param2" = NA_real_)
             }
 
-            ANL <- merged$anl_q_r()[["ANL"]]
-            round(get_dist_params(as.numeric(stats::na.omit(ANL[[merge_vars()$dist_var]])), input$t_dist), 2)
-          } else {
-            c("param1" = NA_real_, "param2" = NA_real_)
+          params_vals <- unname(params)
+          params_names <- names(params)
+
+          if (length(params_vals) >= 2 && !all(is.na(params_vals))) {
+            updateNumericInput(
+              inputId = "dist_param1",
+              label = params_names[1],
+              value = restoreInput(ns("dist_param1"), params_vals[1])
+            )
+            updateNumericInput(
+              inputId = "dist_param2",
+              label = params_names[2],
+              value = restoreInput(ns("dist_param2"), params_vals[2])
+            )
           }
+          params_manually_set(FALSE)
+        }
+        prev_t_dist(current_t_dist)
+        prev_variable(current_variable)
+      },
+      ignoreInit = TRUE
+    )
+    observeEvent(input$dist_param1, {
+      if (!is.null(input$dist_param1) && !is.na(input$dist_param1)) {
+        params_manually_set(TRUE)
+      }
+    })
+
+    observeEvent(input$dist_param2, {
+      if (!is.null(input$dist_param2) && !is.na(input$dist_param2)) {
+        params_manually_set(TRUE)
+      }
+    })
+
+    observeEvent(input$params_reset, {
+      updateActionButton(inputId = "params_reset", label = "Reset params")
+      if (length(input$t_dist) != 0) {
+        ANL <- merged$anl_q_r()[["ANL"]]
+        params <- round(get_dist_params(as.numeric(stats::na.omit(ANL[[merge_vars()$dist_var]])), input$t_dist), 2)
 
         params_vals <- unname(params)
         params_names <- names(params)
 
-        updateNumericInput(
-          inputId = "dist_param1",
-          label = params_names[1],
-          value = restoreInput(ns("dist_param1"), params_vals[1])
-        )
-        updateNumericInput(
-          inputId = "dist_param2",
-          label = params_names[2],
-          value = restoreInput(ns("dist_param1"), params_vals[2])
-        )
-      },
-      ignoreInit = TRUE
-    )
-
-    observeEvent(input$params_reset, {
-      updateActionButton(inputId = "params_reset", label = "Reset params")
+        if (length(params_vals) >= 2 && !all(is.na(params_vals))) {
+          updateNumericInput(
+            inputId = "dist_param1",
+            label = params_names[1],
+            value = params_vals[1]
+          )
+          updateNumericInput(
+            inputId = "dist_param2",
+            label = params_names[2],
+            value = params_vals[2]
+          )
+        }
+        params_manually_set(FALSE)
+      }
     })
 
     merge_vars <- reactive({
