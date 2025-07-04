@@ -51,54 +51,6 @@
 #' {{ next_example }}
 #' @examples
 #'
-#' # simple data example without join keys
-#' data <- teal_data()
-#' data <- within(data, {
-#'   CO2 <- CO2
-#' })
-#'
-#' vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
-#'
-#' app <- init(
-#'   data = data,
-#'   modules = modules(
-#'     tm_outliers(
-#'       outlier_var = list(
-#'         data_extract_spec(
-#'           dataname = "CO2",
-#'           select = select_spec(
-#'             label = "Select variable:",
-#'             choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-#'             selected = "uptake",
-#'             multiple = FALSE,
-#'             fixed = FALSE
-#'           )
-#'         )
-#'       ),
-#'       categorical_var = list(
-#'         data_extract_spec(
-#'           dataname = "CO2",
-#'           filter = filter_spec(
-#'             vars = vars,
-#'             choices = value_choices(data[["CO2"]], vars$selected),
-#'             selected = value_choices(data[["CO2"]], vars$selected),
-#'             multiple = TRUE
-#'           )
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' if (interactive()) {
-#'   shinyApp(app$ui, app$server)
-#' }
-#'
-#' @examplesShinylive
-#' library(teal.modules.general)
-#' interactive <- function() TRUE
-#' {{ next_example }}
-#' @examples
-#'
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -487,58 +439,24 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     })
 
     anl_merged_input <- reactive({
-      # Check if we have join keys available
       dataname_first <- names(data())[[1]]
       join_keys <- teal.data::join_keys(data())[dataname_first, dataname_first]
-
+      
       if (length(join_keys) == 0) {
-        # No join keys available - create a simple data extract without merging
-        # This handles the case where we have only one dataset without join keys
-        selectors <- reactive_select_input()
-
-        # Get the first (primary) selector for the outlier variable
-        outlier_selector <- selectors$outlier_var
-
-        if (!is.null(outlier_selector)) {
-          sel_result <- outlier_selector()
-          if (!is.null(sel_result)) {
-            # Create a simple ANL assignment without merging
-            dataname <- sel_result$dataname
-
-            # Handle categorical variable if present
-            categorical_selector <- selectors$categorical_var
-            categorical_cols <- character(0)
-            if (!is.null(categorical_selector)) {
-              cat_result <- categorical_selector()
-              if (!is.null(cat_result) && !is.null(cat_result$filter)) {
-                # Extract filter variable names
-                filter_vars <- cat_result$filter
-                if (length(filter_vars) > 0) {
-                  categorical_cols <- names(filter_vars)
-                }
-              }
-            }
-
-            return(list(
-              expr = substitute(ANL <- dataname, list(dataname = as.name(dataname))),
-              columns_source = list(
-                outlier_var = sel_result$select,
-                categorical_var = categorical_cols
-              )
-            ))
-          }
-        }
-
-        # Fallback - return first dataset
-        return(list(
+        # No join keys - create simple assignment expression
+        list(
           expr = substitute(ANL <- dataname, list(dataname = as.name(dataname_first))),
           columns_source = list(
-            outlier_var = character(0),
-            categorical_var = character(0)
+            outlier_var = reactive_select_input()$outlier_var()$select,
+            categorical_var = if (!is.null(reactive_select_input()$categorical_var)) {
+              names(reactive_select_input()$categorical_var()$filter)
+            } else {
+              character(0)
+            }
           )
-        ))
+        )
       } else {
-        # Join keys exist - use the standard merge approach
+        # Join keys exist - use standard merge
         teal.transform::merge_expression_srv(
           selector_list = reactive_select_input,
           datasets = data,
@@ -720,16 +638,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       # ANL_OUTLIER_EXTENDED is the base table
       join_keys <- as.character(teal.data::join_keys(data())[dataname_first, dataname_first])
-
+      
       if (length(join_keys) == 0) {
-        # No join keys defined - working with single dataset, no join needed
-        # ANL_OUTLIER already contains all necessary columns
-        qenv <- teal.code::eval_code(
-          qenv,
-          quote(ANL_OUTLIER_EXTENDED <- ANL_OUTLIER)
-        )
+        # No join keys - no join needed
+        qenv <- teal.code::eval_code(qenv, quote(ANL_OUTLIER_EXTENDED <- ANL_OUTLIER))
       } else {
-        # Join keys exist - perform left join as before
+        # Join keys exist - perform left join
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
