@@ -441,9 +441,10 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     anl_merged_input <- reactive({
       dataname_first <- names(data())[[1]]
       join_keys <- teal.data::join_keys(data())[dataname_first, dataname_first]
-
+      
       if (length(join_keys) == 0) {
-        # No join keys - create simple assignment expression
+        # No join keys - single dataset, no merging needed
+        # Return the same structure as merge_expression_srv but with simple assignment
         list(
           expr = substitute(ANL <- dataname, list(dataname = as.name(dataname_first))),
           columns_source = list(
@@ -456,7 +457,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         )
       } else {
-        # Join keys exist - use standard merge
+        # Join keys exist - use merge_expression_srv
         teal.transform::merge_expression_srv(
           selector_list = reactive_select_input,
           datasets = data,
@@ -637,33 +638,25 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
 
       # ANL_OUTLIER_EXTENDED is the base table
-      join_keys <- as.character(teal.data::join_keys(data())[dataname_first, dataname_first])
-
-      if (length(join_keys) == 0) {
-        # No join keys - no join needed
-        qenv <- teal.code::eval_code(qenv, quote(ANL_OUTLIER_EXTENDED <- ANL_OUTLIER))
-      } else {
-        # Join keys exist - perform left join
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = {
-              ANL_OUTLIER_EXTENDED <- dplyr::left_join(
-                ANL_OUTLIER,
-                dplyr::select(
-                  dataname,
-                  dplyr::setdiff(names(dataname), dplyr::setdiff(names(ANL_OUTLIER), join_keys))
-                ),
-                by = join_keys
-              )
-            },
-            env = list(
-              dataname = as.name(dataname_first),
-              join_keys = join_keys
+      qenv <- teal.code::eval_code(
+        qenv,
+        substitute(
+          expr = {
+            ANL_OUTLIER_EXTENDED <- dplyr::left_join(
+              ANL_OUTLIER,
+              dplyr::select(
+                dataname,
+                dplyr::setdiff(names(dataname), dplyr::setdiff(names(ANL_OUTLIER), join_keys))
+              ),
+              by = join_keys
             )
+          },
+          env = list(
+            dataname = as.name(dataname_first),
+            join_keys = as.character(teal.data::join_keys(data())[dataname_first, dataname_first])
           )
         )
-      }
+      )
 
       qenv <- if (length(categorical_var) > 0) {
         qenv <- teal.code::eval_code(
