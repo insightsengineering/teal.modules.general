@@ -596,9 +596,9 @@ srv_distribution <- function(id,
         # 1. Distribution type changed
         # 2. Reset button was clicked (we'll handle this separately)
         # 3. Variable changed AND parameters haven't been manually set yet
-        should_recalculate <- 
-          !identical(current_t_dist, prev_t_dist()) || 
-          (!identical(current_variable, prev_variable()) && !is.null(current_variable) && !params_manually_set())
+        should_recalculate <-
+          !identical(current_t_dist, prev_t_dist()) ||
+            (!identical(current_variable, prev_variable()) && !is.null(current_variable) && !params_manually_set())
 
         if (should_recalculate) {
           params <-
