@@ -51,6 +51,54 @@
 #' {{ next_example }}
 #' @examples
 #'
+#' # simple data example without join keys
+#' data <- teal_data()
+#' data <- within(data, {
+#'   CO2 <- CO2
+#' })
+#'
+#' vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_outliers(
+#'       outlier_var = list(
+#'         data_extract_spec(
+#'           dataname = "CO2",
+#'           select = select_spec(
+#'             label = "Select variable:",
+#'             choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
+#'             selected = "uptake",
+#'             multiple = FALSE,
+#'             fixed = FALSE
+#'           )
+#'         )
+#'       ),
+#'       categorical_var = list(
+#'         data_extract_spec(
+#'           dataname = "CO2",
+#'           filter = filter_spec(
+#'             vars = vars,
+#'             choices = value_choices(data[["CO2"]], vars$selected),
+#'             selected = value_choices(data[["CO2"]], vars$selected),
+#'             multiple = TRUE
+#'           )
+#'         )
+#'       )
+#'     )
+#'   )
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examples
+#'
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
