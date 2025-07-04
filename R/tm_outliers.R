@@ -616,25 +616,37 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
 
       # ANL_OUTLIER_EXTENDED is the base table
-      qenv <- teal.code::eval_code(
-        qenv,
-        substitute(
-          expr = {
-            ANL_OUTLIER_EXTENDED <- dplyr::left_join(
-              ANL_OUTLIER,
-              dplyr::select(
-                dataname,
-                dplyr::setdiff(names(dataname), dplyr::setdiff(names(ANL_OUTLIER), join_keys))
-              ),
-              by = join_keys
+      join_keys <- as.character(teal.data::join_keys(data())[dataname_first, dataname_first])
+      
+      if (length(join_keys) == 0) {
+        # No join keys defined - working with single dataset, no join needed
+        # ANL_OUTLIER already contains all necessary columns
+        qenv <- teal.code::eval_code(
+          qenv,
+          quote(ANL_OUTLIER_EXTENDED <- ANL_OUTLIER)
+        )
+      } else {
+        # Join keys exist - perform left join as before
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
+            expr = {
+              ANL_OUTLIER_EXTENDED <- dplyr::left_join(
+                ANL_OUTLIER,
+                dplyr::select(
+                  dataname,
+                  dplyr::setdiff(names(dataname), dplyr::setdiff(names(ANL_OUTLIER), join_keys))
+                ),
+                by = join_keys
+              )
+            },
+            env = list(
+              dataname = as.name(dataname_first),
+              join_keys = join_keys
             )
-          },
-          env = list(
-            dataname = as.name(dataname_first),
-            join_keys = as.character(teal.data::join_keys(data())[dataname_first, dataname_first])
           )
         )
-      )
+      }
 
       qenv <- if (length(categorical_var) > 0) {
         qenv <- teal.code::eval_code(
