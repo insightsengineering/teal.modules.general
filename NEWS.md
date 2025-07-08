@@ -5,6 +5,9 @@
 ### Bug fixes
 * Fixes output is not updated when filter is added for the modules:  `tm_a_pca`, `tm_a_regression`, `tm_g_scatterplot`, `tm_g_association`, `tm_g_bivariate`, `tm_g_distribution`, `tm_g_response`, `tm_t_crosstable` (#870)
 
+### Enhancements
+* Added `remove_zero_columns` to `tm_t_crosstable` to add an option to remove empty columns (#890)
+
 # teal.modules.general 0.4.0
 
 ### Enhancements
