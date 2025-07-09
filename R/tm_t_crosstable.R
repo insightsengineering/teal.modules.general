@@ -19,11 +19,22 @@
 #' @param show_total (`logical(1)`)
 #' Indicates whether to show total column.
 #' Defaults to `TRUE`.
+#' @param remove_zero_columns (`logical(1)`)
+#' Indicates whether to remove columns that contain only zeros from the output table.
+#' Defaults to `FALSE`.
 #'
 #' @note For more examples, please see the vignette "Using cross table" via
 #' `vignette("using-cross-table", package = "teal.modules.general")`.
 #'
 #' @inherit shared_params return
+#'
+#' @section Table Settings:
+#' The module provides several table settings that can be adjusted:
+#' \itemize{
+#'   \item \code{Show column percentage}: Shows column percentages when enabled
+#'   \item \code{Show total column}: Shows a total column when enabled
+#'   \item \code{Remove zero-only columns}: Removes columns that contain only zeros from the output table
+#' }
 #'
 #' @section Decorating Module:
 #'
@@ -155,6 +166,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                             y,
                             show_percentage = TRUE,
                             show_total = TRUE,
+                            remove_zero_columns = FALSE,
                             pre_output = NULL,
                             post_output = NULL,
                             basic_table_args = teal.widgets::basic_table_args(),
@@ -175,6 +187,7 @@ tm_t_crosstable <- function(label = "Cross Table",
 
   checkmate::assert_flag(show_percentage)
   checkmate::assert_flag(show_total)
+  checkmate::assert_flag(remove_zero_columns)
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
@@ -189,6 +202,7 @@ tm_t_crosstable <- function(label = "Cross Table",
     label = label,
     x = x,
     y = y,
+    remove_zero_columns = remove_zero_columns,
     basic_table_args = basic_table_args,
     decorators = decorators
   )
@@ -207,7 +221,7 @@ tm_t_crosstable <- function(label = "Cross Table",
 }
 
 # UI function for the cross-table module
-ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, post_output, ...) {
+ui_t_crosstable <- function(id, x, y, show_percentage, show_total, remove_zero_columns, pre_output, post_output, ...) {
   args <- list(...)
   ns <- NS(id)
   is_single_dataset <- teal.transform::is_single_dataset(x, y)
@@ -245,7 +259,8 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
         bslib::accordion_panel(
           title = "Table settings",
           checkboxInput(ns("show_percentage"), "Show column percentage", value = show_percentage),
-          checkboxInput(ns("show_total"), "Show total column", value = show_total)
+          checkboxInput(ns("show_total"), "Show total column", value = show_total),
+          checkboxInput(ns("remove_zero_columns"), "Remove zero-only columns", value = remove_zero_columns)
         )
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "table"))
@@ -259,7 +274,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, pre_output, p
 }
 
 # Server function for the cross-table module
-srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, basic_table_args, decorators) {
+srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, remove_zero_columns, basic_table_args, decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
@@ -352,6 +367,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
 
       show_percentage <- input$show_percentage
       show_total <- input$show_total
+      remove_zero_columns <- input$remove_zero_columns
 
       plot_title <- paste(
         "Cross-Table of",
@@ -368,7 +384,7 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
         ANL
       )
 
-      teal.code::eval_code(
+      obj <- teal.code::eval_code(
         merged$anl_q_r(),
         substitute(
           expr = {
@@ -413,14 +429,32 @@ srv_t_crosstable <- function(id, data, reporter, filter_panel_api, label, x, y, 
           )
         ) %>%
         teal.code::eval_code(
-          substitute(
-            expr = {
-              ANL <- tern::df_explicit_na(ANL)
-              table <- rtables::build_table(lyt = table, df = ANL[order(ANL[[y_name]]), ])
-            },
-            env = list(y_name = y_name)
-          )
+          expression(ANL <- tern::df_explicit_na(ANL))
         )
+
+      if (remove_zero_columns) {
+        obj <- obj %>%
+          teal.code::eval_code(
+            substitute(
+              expr = {
+                ANL[[y_name]] <- droplevels(ANL[[y_name]])
+                table <- rtables::build_table(lyt = table, df = ANL[order(ANL[[y_name]]), ])
+              },
+              env = list(y_name = y_name)
+            )
+          )
+      } else {
+        obj <- obj %>%
+          teal.code::eval_code(
+            substitute(
+              expr = {
+                table <- rtables::build_table(lyt = table, df = ANL[order(ANL[[y_name]]), ])
+              },
+              env = list(y_name = y_name)
+            )
+          )
+      }
+      obj
     })
 
     decorated_output_q <- srv_decorate_teal_data(
