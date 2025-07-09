@@ -605,7 +605,7 @@ srv_distribution <- function(id,
           params_names <- map_distr_nams[[input$t_dist]] %||% names(params)
         } else {
           params_names <- names(params)
-          }
+        }
 
         updateNumericInput(
           inputId = "dist_param1",
