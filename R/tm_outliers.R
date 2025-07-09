@@ -442,7 +442,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       dataname_first <- names(data())[[1]]
       join_keys <- teal.data::join_keys(data())[dataname_first, dataname_first]
       obj <- data()
-
+      
       if (length(join_keys) == 0) {
         if (!".row_id" %in% names(obj[[dataname_first]])) {
           obj[[dataname_first]]$.row_id <- seq_len(nrow(obj[[dataname_first]]))
@@ -631,8 +631,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       # ANL_OUTLIER_EXTENDED is the base table
       join_keys <- as.character(teal.data::join_keys(data())[dataname_first, dataname_first])
 
-      if (length(join_keys) == 0) {
-        # No join keys - single dataset, no join needed
+      if (length(join_keys) == 1 && join_keys == ".row_id") {
+        # Dummy join key - single dataset, no join needed
         qenv <- teal.code::eval_code(qenv, quote(ANL_OUTLIER_EXTENDED <- ANL_OUTLIER))
       } else {
         # Join keys exist - perform left join
