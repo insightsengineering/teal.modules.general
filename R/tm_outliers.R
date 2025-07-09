@@ -441,29 +441,20 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     anl_merged_input <- reactive({
       dataname_first <- names(data())[[1]]
       join_keys <- teal.data::join_keys(data())[dataname_first, dataname_first]
+      obj <- data()
 
       if (length(join_keys) == 0) {
-        # No join keys - single dataset, no merging needed
-        # Return the same structure as merge_expression_srv but with simple assignment
-        list(
-          expr = substitute(ANL <- dataname, list(dataname = as.name(dataname_first))),
-          columns_source = list(
-            outlier_var = reactive_select_input()$outlier_var()$select,
-            categorical_var = if (!is.null(reactive_select_input()$categorical_var)) {
-              names(reactive_select_input()$categorical_var()$filter)
-            } else {
-              character(0)
-            }
-          )
-        )
-      } else {
-        # Join keys exist - use merge_expression_srv
-        teal.transform::merge_expression_srv(
-          selector_list = reactive_select_input,
-          datasets = data,
-          merge_function = "dplyr::inner_join"
-        )()
+        if (!".row_id" %in% names(obj[[dataname_first]])) {
+          obj[[dataname_first]]$.row_id <- seq_len(nrow(obj[[dataname_first]]))
+        }
+        join_keys(obj) <- join_keys(join_key(dataname_first, dataname_first, ".row_id"))
       }
+
+      teal.transform::merge_expression_srv(
+        selector_list = reactive_select_input,
+        datasets = reactive(obj),
+        merge_function = "dplyr::inner_join"
+      )()
     })
 
     anl_merged_q <- reactive({
