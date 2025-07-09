@@ -442,7 +442,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       dataname_first <- names(data())[[1]]
       join_keys <- teal.data::join_keys(data())[dataname_first, dataname_first]
       obj <- data()
-      
+
       if (length(join_keys) == 0) {
         if (!".row_id" %in% names(obj[[dataname_first]])) {
           obj[[dataname_first]]$.row_id <- seq_len(nrow(obj[[dataname_first]]))
