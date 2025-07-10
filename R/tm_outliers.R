@@ -443,11 +443,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     data_obj <- reactive({
       obj <- data()
-      if (length(join_keys(obj)) == 0) {
+      if (length(teal.data::join_keys(obj)) == 0) {
         if (!".row_id" %in% names(obj[[dataname_first]])) {
           obj[[dataname_first]]$.row_id <- seq_len(nrow(obj[[dataname_first]]))
         }
-        join_keys(obj) <- join_keys(join_key(dataname_first, dataname_first, ".row_id"))
+        teal.data::join_keys(obj) <- teal.data::join_keys(teal.data::join_key(dataname_first, dataname_first, ".row_id"))
       }
       obj
     })
