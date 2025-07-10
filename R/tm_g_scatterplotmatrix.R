@@ -42,6 +42,8 @@
 #' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
+#' @inheritSection teal::example_module Reporting
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -251,9 +253,6 @@ ui_g_scatterplotmatrix <- function(id, ...) {
       teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = tags$div(
-      ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args$variables),
       teal.transform::data_extract_ui(
@@ -300,14 +299,10 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 # Server function for the scatterplot matrix module
 srv_g_scatterplotmatrix <- function(id,
                                     data,
-                                    reporter,
-                                    filter_panel_api,
                                     variables,
                                     plot_height,
                                     plot_width,
                                     decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -333,7 +328,13 @@ srv_g_scatterplotmatrix <- function(id,
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv <- teal.code::eval_code(data(), 'library("dplyr");library("lattice")') # nolint quotes
+      obj <- data()
+      teal.reporter::teal_card(obj) <- c(
+        teal.reporter::teal_card("# Scatter Plot Matrix"),
+        teal.reporter::teal_card(obj),
+        teal.reporter::teal_card("## Module's code")
+      )
+      qenv <- teal.code::eval_code(obj, 'library("dplyr");library("lattice")') # nolint: quotes.
       teal.code::eval_code(qenv, as.expression(anl_merged_input()$expr))
     })
 
@@ -370,7 +371,7 @@ srv_g_scatterplotmatrix <- function(id,
 
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
-      qenv <- teal.code::eval_code(qenv, 'library("dplyr")') # nolint quotes
+      qenv <- teal.code::eval_code(qenv, 'library("dplyr")') # nolint: quotes.
       if (any(check_char)) {
         qenv <- teal.code::eval_code(
           qenv,
@@ -394,6 +395,8 @@ srv_g_scatterplotmatrix <- function(id,
 
 
       # create plot
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Plot")
+
       if (add_cor) {
         shinyjs::show("cor_method")
         shinyjs::show("cor_use")
@@ -464,7 +467,7 @@ srv_g_scatterplotmatrix <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = plot
+      expr = quote(plot)
     )
 
     plot_r <- reactive(req(decorated_output_q())[["plot"]])
@@ -508,27 +511,8 @@ srv_g_scatterplotmatrix <- function(id,
       title = "Show R Code for Scatterplotmatrix"
     )
 
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Scatter Plot Matrix",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+
+    decorated_output_q
   })
 }
 

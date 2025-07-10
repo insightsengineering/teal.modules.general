@@ -67,6 +67,8 @@
 #' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
+#' @inheritSection teal::example_module Reporting
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -285,9 +287,6 @@ ui_a_regression <- function(id, ...) {
       tags$div(verbatimTextOutput(ns("text")))
     )),
     encoding = tags$div(
-      ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
-      ###
       tags$label("Encodings", class = "text-primary"), tags$br(),
       teal.transform::datanames_input(args[c("response", "regressor")]),
       teal.transform::data_extract_ui(
@@ -386,8 +385,6 @@ ui_a_regression <- function(id, ...) {
 # Server function for the regression module
 srv_a_regression <- function(id,
                              data,
-                             reporter,
-                             filter_panel_api,
                              response,
                              regressor,
                              plot_height,
@@ -395,8 +392,6 @@ srv_a_regression <- function(id,
                              ggplot2_args,
                              default_outlier_label,
                              decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -462,9 +457,16 @@ srv_a_regression <- function(id,
       )
     })
 
-    qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
-    )
+    qenv <- reactive({
+      obj <- data()
+      teal.reporter::teal_card(obj) <-
+        c(
+          teal.reporter::teal_card("# Linear Regression Plot"),
+          teal.reporter::teal_card(obj),
+          teal.reporter::teal_card("## Module's code")
+        )
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint: quotes.
+    })
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
@@ -526,7 +528,7 @@ srv_a_regression <- function(id,
         )
       }
 
-      anl_merged_q() %>%
+      anl_fit <- anl_merged_q() %>%
         teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form))) %>%
         teal.code::eval_code(quote({
           for (regressor in names(fit$contrasts)) {
@@ -536,7 +538,12 @@ srv_a_regression <- function(id,
             )
           }
         })) %>%
-        teal.code::eval_code(quote(summary(fit)))
+        teal.code::eval_code(quote({
+          fit_summary <- summary(fit)
+          fit_summary
+        }))
+      teal.reporter::teal_card(anl_fit) <- c(teal.reporter::teal_card(anl_fit), "## Plot")
+      anl_fit
     })
 
     label_col <- reactive({
@@ -982,7 +989,7 @@ srv_a_regression <- function(id,
 
     output_q <- reactive({
       teal::validate_inputs(iv_r())
-      switch(input$plot_type,
+      obj <- switch(input$plot_type,
         "Response vs Regressor" = output_plot_0(),
         "Residuals vs Fitted" = output_plot_1(),
         "Normal Q-Q" = output_plot_2(),
@@ -991,21 +998,22 @@ srv_a_regression <- function(id,
         "Residuals vs Leverage" = output_plot_5(),
         "Cook's dist vs Leverage" = output_plot_6()
       )
+      obj
     })
 
     decorated_output_q <- srv_decorate_teal_data(
       "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = plot
+      expr = quote(plot)
     )
 
     fitted <- reactive({
-      req(output_q())
+      req(decorated_output_q())
       decorated_output_q()[["fit"]]
     })
     plot_r <- reactive({
-      req(output_q())
+      req(decorated_output_q())
       decorated_output_q()[["plot"]]
     })
 
@@ -1032,26 +1040,6 @@ srv_a_regression <- function(id,
       title = "R code for the regression plot",
     )
 
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Linear Regression Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+    decorated_output_q
   })
 }
