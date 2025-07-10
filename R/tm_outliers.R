@@ -438,16 +438,31 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
     })
 
+    # Used to create outlier table and the dropdown with additional columns
+    dataname_first <- isolate(names(data())[[1]])
+
+    data_obj <- reactive({
+      obj <- data()
+      if (length(teal.data::join_keys(obj)) == 0) {
+        if (!".row_id" %in% names(obj[[dataname_first]])) {
+          obj[[dataname_first]]$.row_id <- seq_len(nrow(obj[[dataname_first]]))
+        }
+        teal.data::join_keys(obj) <-
+          teal.data::join_keys(teal.data::join_key(dataname_first, dataname_first, ".row_id"))
+      }
+      obj
+    })
+
     anl_merged_input <- teal.transform::merge_expression_srv(
       selector_list = reactive_select_input,
-      datasets = data,
+      datasets = data_obj,
       merge_function = "dplyr::inner_join"
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
       teal.code::eval_code(
-        data(),
+        data_obj(),
         paste0(
           'library("dplyr");library("tidyr");', # nolint quotes
           'library("tibble");library("ggplot2");'
@@ -467,9 +482,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       ANL <- merged$anl_q_r()[["ANL"]]
       sum(is.na(ANL[[outlier_var]]))
     })
-
-    # Used to create outlier table and the dropdown with additional columns
-    dataname_first <- isolate(names(data())[[1]])
 
     common_code_q <- reactive({
       req(iv_r()$is_valid())
@@ -616,25 +628,33 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
 
       # ANL_OUTLIER_EXTENDED is the base table
-      qenv <- teal.code::eval_code(
-        qenv,
-        substitute(
-          expr = {
-            ANL_OUTLIER_EXTENDED <- dplyr::left_join(
-              ANL_OUTLIER,
-              dplyr::select(
-                dataname,
-                dplyr::setdiff(names(dataname), dplyr::setdiff(names(ANL_OUTLIER), join_keys))
-              ),
-              by = join_keys
+      join_keys <- as.character(teal.data::join_keys(data_obj())[dataname_first, dataname_first])
+
+      if (length(join_keys) == 1 && join_keys == ".row_id") {
+        # Dummy join key - single dataset, no join needed
+        qenv <- teal.code::eval_code(qenv, quote(ANL_OUTLIER_EXTENDED <- ANL_OUTLIER))
+      } else {
+        # Join keys exist - perform left join
+        qenv <- teal.code::eval_code(
+          qenv,
+          substitute(
+            expr = {
+              ANL_OUTLIER_EXTENDED <- dplyr::left_join(
+                ANL_OUTLIER,
+                dplyr::select(
+                  dataname,
+                  dplyr::setdiff(names(dataname), dplyr::setdiff(names(ANL_OUTLIER), join_keys))
+                ),
+                by = join_keys
+              )
+            },
+            env = list(
+              dataname = as.name(dataname_first),
+              join_keys = join_keys
             )
-          },
-          env = list(
-            dataname = as.name(dataname_first),
-            join_keys = as.character(teal.data::join_keys(data())[dataname_first, dataname_first])
           )
         )
-      )
+      }
 
       qenv <- if (length(categorical_var) > 0) {
         qenv <- teal.code::eval_code(
@@ -1150,7 +1170,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       brushing = TRUE
     )
 
-    choices <- reactive(teal.transform::variable_choices(data()[[dataname_first]]))
+    choices <- reactive(teal.transform::variable_choices(data_obj()[[dataname_first]]))
 
     observeEvent(common_code_q(), {
       ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]]
