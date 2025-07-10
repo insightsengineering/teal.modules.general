@@ -595,7 +595,13 @@ srv_distribution <- function(id,
           }
 
         params_vals <- unname(params)
-        params_names <- names(params)
+        map_distr_nams <- list(
+          normal = c("mean", "sd"),
+          lognormal = c("meanlog", "sdlog"),
+          gamma = c("shape", "rate"),
+          unif = c("min", "max")
+        )
+        params_names <- map_distr_nams[[input$t_dist]] %||% names(params)
 
         updateNumericInput(
           inputId = "dist_param1",
