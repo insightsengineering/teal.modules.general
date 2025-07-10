@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.4.1.9006
-Date: 2025-07-08
+Version: 0.4.1.9007
+Date: 2025-07-10
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -60,7 +60,7 @@ Imports:
     stringr (>= 1.4.1),
     teal.code (>= 0.6.1),
     teal.data (>= 0.7.0),
-    teal.logger (>= 0.3.2.9001),
+    teal.logger (>= 0.4.0),
     teal.reporter (>= 0.4.0.9004),
     teal.widgets (>= 0.4.3.9005),
     tern (>= 0.9.7),
@@ -70,7 +70,7 @@ Imports:
     utils
 Suggests:
     knitr (>= 1.42),
-    logger (>= 0.2.0),
+    logger (>= 0.4.0),
     nestcolor (>= 0.1.0),
     pkgload,
     rlang (>= 1.0.0),
@@ -84,7 +84,6 @@ VignetteBuilder:
     knitr,
     rmarkdown
 Remotes:
-    insightsengineering/teal.logger@main,
     insightsengineering/teal.reporter@main,
     insightsengineering/teal.transform@main,
     insightsengineering/teal.widgets@main,
