@@ -534,7 +534,7 @@ srv_missing_data <- function(id,
       )
 
       qenv <- teal.code::eval_code(obj, {
-        'library("dplyr");library("ggplot2");library("tidyr");library("gridExtra")' # nolint quotes
+        'library("dplyr");library("ggplot2");library("tidyr");library("gridExtra")'# nolint: quotes.
       })
 
       qenv <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
@@ -1120,7 +1120,7 @@ srv_missing_data <- function(id,
       qenv <- if (!is.null(group_var)) {
         common_code_libraries_q <- teal.code::eval_code(
           qenv,
-          'library("forcats");library("glue");' # nolint quotes
+          'library("forcats");library("glue");'# nolint: quotes.
         )
         teal.code::eval_code(
           common_code_libraries_q,
