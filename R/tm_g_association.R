@@ -543,9 +543,7 @@ srv_tm_g_association <- function(id,
       width = plot_width
     )
 
-    output$title <- renderText({
-      teal.code::dev_suppress(output_q()[["title"]])
-    })
+    output$title <- renderText(output_q()[["title"]])
 
     # Render R code.
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_grob_q())))
