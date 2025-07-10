@@ -310,7 +310,7 @@ srv_data_table <- function(id,
       teal::validate_has_data(df, min_nrow = 1L, msg = paste("data", dataname, "is empty"))
       qenv <- teal.code::eval_code(
         data(),
-        'library("dplyr");library("DT")'# nolint: quotes.
+        'library("dplyr");library("DT")' # nolint: quotes.
       )
       teal.code::eval_code(
         qenv,
