@@ -459,7 +459,7 @@ srv_a_regression <- function(id,
 
     qenv <- reactive({
       obj <- data()
-      teal.reporter::teal_card(obj) <- 
+      teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Linear Regression Plot"),
           teal.reporter::teal_card(obj),

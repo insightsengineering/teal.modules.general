@@ -343,7 +343,7 @@ srv_tm_g_association <- function(id,
 
     qenv <- reactive({
       obj <- data()
-      teal.reporter::teal_card(obj) <- 
+      teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Association Plot"),
           teal.reporter::teal_card(obj),

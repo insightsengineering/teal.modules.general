@@ -556,7 +556,7 @@ srv_g_bivariate <- function(id,
 
     anl_merged_q <- reactive({
       obj <- data()
-      teal.reporter::teal_card(obj) <- 
+      teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Bivariate Plot"),
           teal.reporter::teal_card(obj),

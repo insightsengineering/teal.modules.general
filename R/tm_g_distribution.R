@@ -636,7 +636,7 @@ srv_distribution <- function(id,
       # Create a private stack for this function only.
 
       obj <- merged$anl_q_r()
-      teal.reporter::teal_card(obj) <- 
+      teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Distribution Plot"),
           teal.reporter::teal_card(obj),
