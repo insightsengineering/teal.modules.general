@@ -586,8 +586,11 @@ srv_g_scatterplot <- function(id,
     )
     qenv <- reactive({
       obj <- data()
-      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Scatter Plot", after = 0)
-      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Module's code")
+      teal.reporter::teal_card(obj) <- c(
+        teal.reporter::teal_card("# Scatter Plot"),
+        teal.reporter::teal_card(obj),
+        teal.reporter::teal_card("## Module's code")
+      )
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint quotes
     })
 
@@ -1013,7 +1016,7 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = plot <- plot_call, env = list(plot_call = plot_call))
 
-      teal.reporter::teal_card(plot_q) <- append(teal.reporter::teal_card(plot_q), "## Plot")
+      teal.reporter::teal_card(plot_q) <- c(teal.reporter::teal_card(plot_q), "## Plot")
       teal.code::eval_code(plot_q, plot_call)
     })
 

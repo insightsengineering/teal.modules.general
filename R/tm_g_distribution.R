@@ -636,8 +636,12 @@ srv_distribution <- function(id,
       # Create a private stack for this function only.
 
       obj <- merged$anl_q_r()
-      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Distribution Plot", after = 0)
-      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Module's code")
+      teal.reporter::teal_card(obj) <- 
+        c(
+          teal.reporter::teal_card("# Distribution Plot"),
+          teal.reporter::teal_card(obj),
+          teal.reporter::teal_card("## Module's code")
+        )
 
       ANL <- obj[["ANL"]]
       dist_var <- merge_vars()$dist_var
@@ -953,7 +957,7 @@ srv_distribution <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## Histogram Plot")
+        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Histogram Plot")
         teal.code::eval_code(
           qenv,
           substitute(
@@ -1084,7 +1088,7 @@ srv_distribution <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.reporter::teal_card(qenv) <- append(teal.reporter::teal_card(qenv), "## QQ Plot")
+        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## QQ Plot")
         teal.code::eval_code(
           qenv,
           substitute(

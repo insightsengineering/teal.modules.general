@@ -343,8 +343,12 @@ srv_tm_g_association <- function(id,
 
     qenv <- reactive({
       obj <- data()
-      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Association Plot", after = 0)
-      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Module's code")
+      teal.reporter::teal_card(obj) <- 
+        c(
+          teal.reporter::teal_card("# Association Plot"),
+          teal.reporter::teal_card(obj),
+          teal.reporter::teal_card("## Module's code")
+        )
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("ggmosaic")') # nolint quotes
     })
     anl_merged_q <- reactive({
@@ -494,7 +498,7 @@ srv_tm_g_association <- function(id,
           )
         }
       obj <- merged$anl_q_r()
-      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "## Plot")
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Plot")
       teal.code::eval_code(
         obj,
         substitute(
