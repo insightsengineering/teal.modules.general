@@ -390,7 +390,7 @@ srv_t_crosstable <- function(id, data, label, x, y, remove_zero_columns, basic_t
 
       obj <- merged$anl_q_r()
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Table")
-      teal.code::eval_code(
+      obj <- teal.code::eval_code(
         obj,
         substitute(
           expr = {
