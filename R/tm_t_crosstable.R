@@ -329,8 +329,12 @@ srv_t_crosstable <- function(id, data, label, x, y, remove_zero_columns, basic_t
     )
     qenv <- reactive({
       obj <- data()
-      teal.reporter::teal_card(obj) <- append(teal.reporter::teal_card(obj), "# Cross Table", after = 0)
-      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Module's code")
+      teal.reporter::teal_card(obj) <-
+        c(
+          teal.reporter::teal_card("# Cross Table"),
+          teal.reporter::teal_card(obj),
+          teal.reporter::teal_card("## Module's code")
+        )
       teal.code::eval_code(obj, 'library("rtables");library("tern");library("dplyr")') # nolint: quotes.
     })
     anl_merged_q <- reactive({
