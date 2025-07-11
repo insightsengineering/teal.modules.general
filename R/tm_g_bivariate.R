@@ -565,7 +565,7 @@ srv_g_bivariate <- function(id,
       obj %>%
         teal.code::eval_code(
           c(
-            expression(library(ggplot2), library(dplyr), library(teal.modules.general)),
+            expression(library(ggplot2), library(dplyr)),
             as.expression(anl_merged_input()$expr)
           )
         )
