@@ -1303,7 +1303,6 @@ srv_missing_data <- function(id,
       expr = quote({
         grid::grid.newpage()
         grid::grid.draw(combination_plot)
-        combination_plot
       })
     )
 
