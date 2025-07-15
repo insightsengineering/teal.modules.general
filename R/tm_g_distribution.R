@@ -601,7 +601,12 @@ srv_distribution <- function(id,
           gamma = c("shape", "rate"),
           unif = c("min", "max")
         )
-        params_names <- map_distr_nams[[input$t_dist]] %||% names(params)
+
+        if (!is.null(input$t_dist) && input$t_dist %in% names(map_distr_nams)) {
+          params_names <- map_distr_nams[[input$t_dist]]
+        } else {
+          params_names <- names(params)
+        }
 
         updateNumericInput(
           inputId = "dist_param1",
