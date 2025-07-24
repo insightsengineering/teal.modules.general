@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.4.1.9011
-Date: 2025-07-15
+Version: 0.4.1.9012
+Date: 2025-07-24
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -89,10 +89,11 @@ Remotes:
     insightsengineering/teal.widgets@main,
     insightsengineering/teal@main
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
-    rstudio/shiny, insightsengineering/teal, insightsengineering/teal.transform,
-    mllg/checkmate, tidyverse/dplyr, rstudio/DT, tidyverse/forcats,
-    r-lib/lifecycle, r-lib/scales, daattali/shinyjs, shinyTree/shinyTree,
-    rstudio/shinyvalidate, dreamRs/shinyWidgets, tidyverse/stringr,
+    rstudio/shiny, insightsengineering/teal,
+    insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
+    rstudio/DT, tidyverse/forcats, r-lib/lifecycle, r-lib/scales,
+    daattali/shinyjs, shinyTree/shinyTree, rstudio/shinyvalidate,
+    dreamRs/shinyWidgets, tidyverse/stringr,
     insightsengineering/teal.code, insightsengineering/teal.data,
     insightsengineering/teal.logger, insightsengineering/teal.reporter,
     insightsengineering/teal.widgets, insightsengineering/tern,
