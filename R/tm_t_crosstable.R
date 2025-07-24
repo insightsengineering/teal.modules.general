@@ -275,9 +275,16 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, remove_zero_c
 }
 
 # Server function for the cross-table module
-srv_t_crosstable <- function(
-    id, data, reporter, filter_panel_api, label, x, y,
-    remove_zero_columns, basic_table_args, decorators) {
+srv_t_crosstable <- function(id,
+                             data,
+                             reporter,
+                             filter_panel_api,
+                             label,
+                             x,
+                             y,
+                             remove_zero_columns,
+                             basic_table_args,
+                             decorators) {
   with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
