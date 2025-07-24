@@ -156,7 +156,8 @@ ui_variable_browser <- function(id,
             })
           ),
           teal.widgets::white_small_well(
-            teal.reporter::simple_reporter_ui(ns("simple_reporter")),
+            teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
+            tags$br(), tags$br(),
             uiOutput(ns("ui_histogram_display")),
             uiOutput(ns("ui_numeric_display")),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
@@ -511,7 +512,7 @@ srv_variable_browser <- function(id,
         }
         card
       }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
+      teal.reporter::add_card_button_srv("add_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
   })
