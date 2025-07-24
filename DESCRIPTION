@@ -89,8 +89,7 @@ Remotes:
     insightsengineering/teal.widgets@main,
     insightsengineering/teal@main
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
-    rstudio/shiny, insightsengineering/teal,
-    insightsengineering/teal.slice, insightsengineering/teal.transform,
+    rstudio/shiny, insightsengineering/teal, insightsengineering/teal.transform,
     mllg/checkmate, tidyverse/dplyr, rstudio/DT, tidyverse/forcats,
     r-lib/lifecycle, r-lib/scales, daattali/shinyjs, shinyTree/shinyTree,
     rstudio/shinyvalidate, dreamRs/shinyWidgets, tidyverse/stringr,
