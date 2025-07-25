@@ -662,7 +662,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = summary_table_pre <- ANL_OUTLIER %>%
+            expr = summary_data_pre <- ANL_OUTLIER %>%
               dplyr::filter(is_outlier_selected) %>%
               dplyr::select(outlier_var_name, categorical_var_name) %>%
               dplyr::group_by(categorical_var_name) %>%
@@ -707,9 +707,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           qenv <- teal.code::eval_code(
             qenv,
             quote(
-              summary_table_pre <- summary_table_pre %>%
+              summary_data_pre <- summary_data_pre %>%
                 dplyr::arrange(desc(n_outliers / total_in_cat)) %>%
-                dplyr::mutate(order = seq_len(nrow(summary_table_pre)))
+                dplyr::mutate(order = seq_len(nrow(summary_data_pre)))
             )
           )
         }
@@ -723,17 +723,17 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               # In this case, the column used for reordering is `order`.
               ANL_OUTLIER <- dplyr::left_join(
                 ANL_OUTLIER,
-                summary_table_pre[, c("order", categorical_var)],
+                summary_data_pre[, c("order", categorical_var)],
                 by = categorical_var
               )
               # so that x axis of plot aligns with columns of summary table, from most outliers to least by percentage
               ANL <- ANL %>%
                 dplyr::left_join(
-                  dplyr::select(summary_table_pre, categorical_var_name, order),
+                  dplyr::select(summary_data_pre, categorical_var_name, order),
                   by = categorical_var
                 ) %>%
                 dplyr::arrange(order)
-              summary_table <- summary_table_pre %>%
+              summary_data <- summary_data_pre %>%
                 dplyr::select(
                   categorical_var_name,
                   Outliers = display_str, Missings = display_str_na, Total = total_in_cat
@@ -750,11 +750,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         )
       } else {
-        within(qenv, summary_table <- data.frame())
+        within(qenv, summary_data <- data.frame())
       }
 
       # Generate decoratable object from data
-      qenv <- within(qenv, table <- rtables::df_to_tt(summary_table))
+      qenv <- within(qenv, table <- rtables::df_to_tt(summary_data))
 
       if (length(categorical_var) > 0 && nrow(qenv[["ANL_OUTLIER"]]) > 0) {
         shinyjs::show("order_by_outlier")
@@ -1072,7 +1072,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         if (iv_r()$is_valid()) {
           categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
           if (!is.null(categorical_var)) {
-            decorated_final_q()[["summary_table"]]
+            decorated_final_q()[["summary_data"]]
           }
         }
       },
@@ -1352,9 +1352,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         )
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
         if (length(categorical_var) > 0) {
-          summary_table <- decorated_final_q()[["table"]]
           card$append_text("Summary Table", "header3")
-          card$append_table(summary_table)
+          card$append_table(decorated_final_q()[["table"]])
         }
         card$append_text("Plot", "header3")
         if (tab_type == "Boxplot") {
