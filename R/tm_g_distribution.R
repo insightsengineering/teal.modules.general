@@ -31,8 +31,8 @@
 #' This module generates the following objects, which can be modified in place using decorators::
 #' - `histogram_plot` (`ggplot`)
 #' - `qq_plot` (`ggplot`)
-#' - `summary_table` (`datatables` created with [DT::datatable()])
-#' - `test_table` (`datatables` created with [DT::datatable()])
+#' - `summary_table` (`ElementaryTable` created with [rtables::df_to_tt()])
+#' - `test_table` (`ElementaryTable` created with [rtables::df_to_tt()])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -1284,24 +1284,22 @@ srv_distribution <- function(id,
     # Summary table listing has to be created separately to allow for qenv join
     output_summary_q <- reactive({
       if (iv_r()$is_valid()) {
-        within(common_q(), summary_table <- DT::datatable(summary_table_data))
+        within(common_q(), summary_table <- rtables::df_to_tt(summary_table_data))
       } else {
-        within(common_q(), summary_table <- DT::datatable(summary_table_data[0L, ]))
+        within(
+          common_q(), 
+          summary_table <- rtables::rtable(header = rtables::rheader(colnames(summary_table_data)))
+        )
       }
     })
 
     output_test_q <- reactive({
       # wrapped in if since could lead into validate error - we do want to continue
       test_q_out <- try(test_q(), silent = TRUE)
-      if (!inherits(test_q_out, c("try-error", "error"))) {
-        c(
-          common_q(),
-          within(test_q_out, {
-            test_table <- DT::datatable(test_table_data)
-          })
-        )
+      if (inherits(test_q_out, c("try-error", "error"))) {
+        within(common_q(), test_table <- rtables::rtable(header = rtables::rheader("No data available in table")))
       } else {
-        within(common_q(), test_table <- DT::datatable(data.frame(missing = character(0L))))
+        within(c(common_q(), test_q_out), test_table <- rtables::df_to_tt(test_table_data))
       }
     })
 
@@ -1354,7 +1352,7 @@ srv_distribution <- function(id,
     qq_r <- reactive(req(decorated_output_qq_q())[["qq_plot"]])
 
     output$summary_table <- DT::renderDataTable(
-      expr = decorated_output_summary_q()[["summary_table"]],
+      expr = decorated_output_summary_q()[["summary_table_data"]],
       options = list(
         autoWidth = TRUE,
         columnDefs = list(list(width = "200px", targets = "_all"))
@@ -1366,7 +1364,7 @@ srv_distribution <- function(id,
       req(iv_r()$is_valid())
       teal::validate_inputs(iv_r_dist())
       req(test_q()) # Ensure original errors are displayed
-      decorated_output_test_q()[["test_table"]]
+      decorated_output_test_q()[["test_table_data"]]
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
@@ -1416,7 +1414,7 @@ srv_distribution <- function(id,
         tests_error <- tryCatch(expr = tests_r(), error = function(e) "error")
         if (inherits(tests_error, "data.frame")) {
           card$append_text("Tests table", "header3")
-          card$append_table(tests_r())
+          card$append_table(decorated_output_test_q()[["test_table"]])
         }
 
         if (!comment == "") {
