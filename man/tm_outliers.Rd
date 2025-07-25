@@ -75,7 +75,10 @@ This module generates the following objects, which can be modified in place usin
 \item \code{box_plot} (\code{ggplot})
 \item \code{density_plot} (\code{ggplot})
 \item \code{cumulative_plot} (\code{ggplot})
-\item \code{table} (\code{datatables} created with \code{\link[DT:datatable]{DT::datatable()}})
+\item \code{table} (\code{ElementaryTable} created with \code{\link[rtables:df_to_tt]{rtables::df_to_tt()}})
+\itemize{
+\item The decorated table is only shown in the reporter as it is presented as an interactive DataTable in the module.
+}
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
