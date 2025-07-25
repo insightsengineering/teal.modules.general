@@ -1289,7 +1289,7 @@ srv_distribution <- function(id,
         within(common_q(), summary_table <- rtables::df_to_tt(summary_table_data))
       } else {
         within(
-          common_q(), 
+          common_q(),
           summary_table <- rtables::rtable(header = rtables::rheader(colnames(summary_table_data)))
         )
       }
