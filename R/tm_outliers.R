@@ -21,7 +21,7 @@
 #' - `box_plot` (`ggplot`)
 #' - `density_plot` (`ggplot`)
 #' - `cumulative_plot` (`ggplot`)
-#' - `table` (`datatables` created with [DT::datatable()])
+#' - `table` (`ElementaryTable` created with [rtables::df_to_tt()])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -753,16 +753,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
 
       # Generate decoratable object from data
-      qenv <- within(qenv, {
-        table <- DT::datatable(
-          summary_table,
-          options = list(
-            dom = "t",
-            autoWidth = TRUE,
-            columnDefs = list(list(width = "200px", targets = "_all"))
-          )
-        )
-      })
+      qenv <- within(qenv, table <- rtables::df_to_tt(summary_table))
 
       if (length(categorical_var) > 0 && nrow(qenv[["ANL_OUTLIER"]]) > 0) {
         shinyjs::show("order_by_outlier")
@@ -1080,10 +1071,15 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         if (iv_r()$is_valid()) {
           categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
           if (!is.null(categorical_var)) {
-            decorated_final_q()[["table"]]
+            decorated_final_q()[["summary_table"]]
           }
         }
-      }
+      },
+      options = list(
+        dom = "t",
+        autoWidth = TRUE,
+        columnDefs = list(list(width = "200px", targets = "_all"))
+      )
     )
 
     # slider text
