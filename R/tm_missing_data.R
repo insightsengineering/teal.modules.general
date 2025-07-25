@@ -23,7 +23,7 @@
 #' - `summary_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `combination_plot` (`grob` created with [ggplot2::ggplotGrob()])
 #' - `by_subject_plot` (`ggplot`)
-#' - `table` (`datatables` created with [DT::datatable()])
+#' - `table` (`ElementaryTable` created with [rtables::df_to_tt()])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -1144,7 +1144,7 @@ srv_missing_data <- function(id,
         )
       }
 
-      within(qenv, table <- DT::datatable(summary_data))
+      within(qenv, table <- rtables::df_to_tt(summary_data))
     })
 
     by_subject_plot_q <- reactive({
@@ -1321,7 +1321,7 @@ srv_missing_data <- function(id,
           options = list(language = list(zeroRecords = "No variable selected."), pageLength = input$levels_table_rows)
         )
       } else {
-        decorated_summary_table_q()[["table"]]
+        decorated_summary_table_q()[["summary_data"]]
       }
     })
 
@@ -1398,11 +1398,10 @@ srv_missing_data <- function(id,
           card$append_plot(combination_plot_r(), dim = pws2$dim())
         } else if (sum_type == "By Variable Levels") {
           card$append_text("Table", "header3")
-          table <- decorated_summary_table_q()[["table"]]
-          if (nrow(table) == 0L) {
+          if (nrow(decorated_summary_table_q()[["summary_data"]]) == 0L) {
             card$append_text("No data available for table.")
           } else {
-            card$append_table(table)
+            card$append_table(decorated_summary_table_q()[["table"]])
           }
         } else if (sum_type == "Grouped by Subject") {
           card$append_text("Plot", "header3")
