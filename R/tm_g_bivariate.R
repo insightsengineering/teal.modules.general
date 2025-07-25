@@ -561,7 +561,7 @@ srv_g_bivariate <- function(id,
       datasets = data
     )
     qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("teal.modules.general")') # nolint quotes
     )
 
     anl_merged_q <- reactive({
