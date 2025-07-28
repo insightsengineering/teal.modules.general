@@ -32,7 +32,7 @@
 #' - `histogram_plot` (`ggplot`)
 #' - `qq_plot` (`ggplot`)
 #' - `summary_table` (`ElementaryTable` created with [rtables::df_to_tt()])
-#'   - The decorated table is only shown in the reporter as it is presented as an interactive `DataTable`` in the module.
+#'   - The decorated table is only shown in the reporter as it is presented as an interactive `DataTable` in the module.
 #' - `test_table` (`ElementaryTable` created with [rtables::df_to_tt()])
 #'   - The decorated table is only shown in the reporter as it is presented as an interactive `DataTable` in the module.
 #'

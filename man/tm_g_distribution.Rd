@@ -92,7 +92,7 @@ This module generates the following objects, which can be modified in place usin
 \item \code{qq_plot} (\code{ggplot})
 \item \code{summary_table} (\code{ElementaryTable} created with \code{\link[rtables:df_to_tt]{rtables::df_to_tt()}})
 \itemize{
-\item The decorated table is only shown in the reporter as it is presented as an interactive `DataTable`` in the module.
+\item The decorated table is only shown in the reporter as it is presented as an interactive \code{DataTable} in the module.
 }
 \item \code{test_table} (\code{ElementaryTable} created with \code{\link[rtables:df_to_tt]{rtables::df_to_tt()}})
 \itemize{
