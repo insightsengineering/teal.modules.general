@@ -1,5 +1,9 @@
 # teal.modules.general 0.4.1.9012
 
+### Bug fixes
+
+- Fixes "Add to Report" functionality in `tm_outliers`, `tm_missing_data` and `tm_g_distribution` modules (#899 and #897). Table decorators in this modules use `rtables` as base object for decoration.
+
 # teal.modules.general 0.4.1
 
 ### Bug fixes
