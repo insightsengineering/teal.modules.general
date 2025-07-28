@@ -119,33 +119,32 @@ ui_front_page <- function(id, ...) {
   ns <- NS(id)
 
   tagList(
-    include_css_files("custom"),
     tags$div(
       id = "front_page_content",
-      class = "ml-8",
+      style = "margin-left: 2rem;",
       tags$div(
         id = "front_page_headers",
         get_header_tags(args$header_text)
       ),
       tags$div(
         id = "front_page_tables",
-        class = "ml-4",
+        style = "margin-left: 2rem;",
         get_table_tags(args$tables, ns)
       ),
       tags$div(
         id = "front_page_custom_html",
-        class = "my-4",
+        style = "margin-left: 2rem;",
         args$additional_tags
       ),
       if (length(args$datanames) > 0L) {
         tags$div(
           id = "front_page_metabutton",
-          class = "m-4",
+          style = "margin: 1rem;",
           actionButton(ns("metadata_button"), "Show metadata")
         )
       },
       tags$footer(
-        class = ".small",
+        class = "small",
         get_footer_tags(args$footnotes)
       )
     )

@@ -142,7 +142,6 @@ ui_variable_browser <- function(id,
   ns <- NS(id)
 
   tags$div(
-    include_css_files("custom"),
     shinyjs::useShinyjs(),
     teal.widgets::standard_layout(
       output = tags$div(
@@ -236,11 +235,11 @@ srv_variable_browser <- function(id,
               tabPanel(
                 dataname,
                 tags$div(
-                  class = "mt-4",
+                  style = "margin-top: 1rem;",
                   textOutput(ns(paste0("dataset_summary_", dataname)))
                 ),
                 tags$div(
-                  class = "mt-4",
+                  style = "margin-top: 1rem;",
                   teal.widgets::get_dt_rows(
                     ns(paste0("variable_browser_", dataname)),
                     ns(paste0("variable_browser_", dataname, "_rows"))
