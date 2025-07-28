@@ -32,9 +32,9 @@
 #' - `histogram_plot` (`ggplot`)
 #' - `qq_plot` (`ggplot`)
 #' - `summary_table` (`ElementaryTable` created with [rtables::df_to_tt()])
-#'   - The decorated table is only shown in the reporter as it is presented as an interactive DataTable in the module.
+#'   - The decorated table is only shown in the reporter as it is presented as an interactive `DataTable`` in the module.
 #' - `test_table` (`ElementaryTable` created with [rtables::df_to_tt()])
-#'   - The decorated table is only shown in the reporter as it is presented as an interactive DataTable in the module.
+#'   - The decorated table is only shown in the reporter as it is presented as an interactive `DataTable` in the module.
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
