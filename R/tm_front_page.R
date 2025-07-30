@@ -227,7 +227,7 @@ get_table_tags <- function(tables, ns) {
       tableOutput(ns(paste0("table_", idx)))
     )
   }))
-  return(table_tags)
+  table_tags
 }
 
 get_footer_tags <- function(footnotes) {
@@ -254,11 +254,11 @@ convert_metadata_to_dataframe <- function(raw_metadata, datanames) {
     if (is.null(metadata)) {
       return(data.frame(Dataset = character(0), Name = character(0), Value = character(0)))
     }
-    return(data.frame(
+    data.frame(
       Dataset = dataname,
       Name = names(metadata),
       Value = unname(unlist(lapply(metadata, as.character)))
-    ))
+    )
   }, raw_metadata, datanames, SIMPLIFY = FALSE)
   do.call(rbind, output)
 }
