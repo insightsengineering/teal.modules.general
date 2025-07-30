@@ -156,7 +156,6 @@ ui_variable_browser <- function(id,
           ),
           teal.widgets::white_small_well(
             teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
-            tags$br(), tags$br(),
             uiOutput(ns("ui_histogram_display")),
             uiOutput(ns("ui_numeric_display")),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
