@@ -365,13 +365,15 @@ ui_g_scatterplot <- function(id, ...) {
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
-        tags$h1(tags$strong("Selected points:"), style = "text-align: center !important; font-size: 150%;"),
+        tags$br(),
+        tags$h1(tags$strong("Selected points:"), style = "font-size: 150%;"),
         teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
         DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
       encoding = tags$div(
         ### Reporter
         teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
+        tags$br(), tags$br(),
         ###
         tags$label("Encodings", class = "text-primary"),
         teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),

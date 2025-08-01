@@ -241,6 +241,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, remove_zero_c
     encoding = tags$div(
       ### Reporter
       teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
+      tags$br(), tags$br(),
       ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(list(x, y)),
