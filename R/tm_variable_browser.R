@@ -142,7 +142,6 @@ ui_variable_browser <- function(id,
   ns <- NS(id)
 
   tags$div(
-    include_css_files("custom"),
     shinyjs::useShinyjs(),
     teal.widgets::standard_layout(
       output = tags$div(
@@ -156,8 +155,10 @@ ui_variable_browser <- function(id,
             })
           ),
           teal.widgets::white_small_well(
+            ### Reporter
             teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
             tags$br(), tags$br(),
+            ###
             uiOutput(ns("ui_histogram_display")),
             uiOutput(ns("ui_numeric_display")),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
@@ -236,11 +237,11 @@ srv_variable_browser <- function(id,
               tabPanel(
                 dataname,
                 tags$div(
-                  class = "mt-4",
+                  style = "margin-top: 1rem;",
                   textOutput(ns(paste0("dataset_summary_", dataname)))
                 ),
                 tags$div(
-                  class = "mt-4",
+                  style = "margin-top: 1rem;",
                   teal.widgets::get_dt_rows(
                     ns(paste0("variable_browser_", dataname)),
                     ns(paste0("variable_browser_", dataname, "_rows"))
