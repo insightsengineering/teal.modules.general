@@ -183,7 +183,6 @@ tm_missing_data <- function(label = "Missing data",
 ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
   tagList(
-    include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         uiOutput(ns("dataset_tabs"))
@@ -372,9 +371,9 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
     uiOutput(ns("variables")),
     actionButton(
       ns("filter_na"),
-      tags$span("Select only vars with missings", class = "whitespace-normal"),
+      tags$span("Select only vars with missings", style = "white-space: normal;"),
       width = "100%",
-      class = "mb-4"
+      style = "margin-bottom: 1rem;"
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Summary"),
