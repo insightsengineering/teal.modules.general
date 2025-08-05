@@ -1311,18 +1311,24 @@ srv_missing_data <- function(id,
     })
 
     summary_table_r <- reactive({
-      req(decorated_summary_table_q())
+      q <- req(decorated_summary_table_q())
 
-      if (length(input$variables_select) == 0) {
-        # so that zeroRecords message gets printed
-        # using tibble as it supports weird column names, such as " "
-        DT::datatable(
-          tibble::tibble(` ` = logical(0)),
-          options = list(language = list(zeroRecords = "No variable selected."), pageLength = input$levels_table_rows)
-        )
-      } else {
-        decorated_summary_table_q()[["summary_data"]]
-      }
+      list(
+        html = if (length(input$variables_select) == 0) {
+          # so that zeroRecords message gets printed
+          # using tibble as it supports weird column names, such as " "
+          DT::datatable(
+            tibble::tibble(` ` = logical(0)),
+            options = list(
+              language = list(zeroRecords = "No variable selected."),
+              pageLength = input$levels_table_rows
+            )
+          )
+        } else {
+          DT::datatable(q[["summary_data"]])
+        },
+        report = q[["table"]]
+      )
     })
 
     by_subject_plot_r <- reactive({
@@ -1344,7 +1350,7 @@ srv_missing_data <- function(id,
       width = plot_width
     )
 
-    output$levels_table <- DT::renderDataTable(summary_table_r())
+    output$levels_table <- DT::renderDataTable(summary_table_r()[["html"]])
 
     pws3 <- teal.widgets::plot_with_settings_srv(
       id = "by_subject_plot",
@@ -1401,7 +1407,7 @@ srv_missing_data <- function(id,
           if (nrow(decorated_summary_table_q()[["summary_data"]]) == 0L) {
             card$append_text("No data available for table.")
           } else {
-            card$append_table(decorated_summary_table_q()[["table"]])
+            card$append_table(summary_table_r()[["report"]])
           }
         } else if (sum_type == "Grouped by Subject") {
           card$append_text("Plot", "header3")

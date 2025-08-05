@@ -1067,21 +1067,27 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       expr = table
     )
 
-    output$summary_table <- DT::renderDataTable(
-      expr = {
-        if (iv_r()$is_valid()) {
-          categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
-          if (!is.null(categorical_var)) {
-            decorated_final_q()[["summary_data"]]
-          }
-        }
-      },
-      options = list(
-        dom = "t",
-        autoWidth = TRUE,
-        columnDefs = list(list(width = "200px", targets = "_all"))
+    summary_table_r <-reactive({
+      q <- req(decorated_final_q())
+
+      list(
+        html = DT::datatable(
+          data = if (iv_r()$is_valid()) {
+            categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
+            if (!is.null(categorical_var)) q[["summary_data"]]
+          },
+          option = list(
+            dom = "t",
+            autoWidth = TRUE,
+            columnDefs = list(list(width = "200px", targets = "_all"))
+          )
+        ),
+        report = q[["table"]]
       )
-    )
+
+    })
+
+    output$summary_table <- DT::renderDataTable(summary_table_r()[["html"]])
 
     # slider text
     output$ui_outlier_help <- renderUI({
@@ -1353,7 +1359,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
         if (length(categorical_var) > 0) {
           card$append_text("Summary Table", "header3")
-          card$append_table(decorated_final_q()[["table"]])
+          card$append_table(summary_table_r()[["report"]])
         }
         card$append_text("Plot", "header3")
         if (tab_type == "Boxplot") {

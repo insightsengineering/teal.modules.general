@@ -1299,7 +1299,10 @@ srv_distribution <- function(id,
       # wrapped in if since could lead into validate error - we do want to continue
       test_q_out <- try(test_q(), silent = TRUE)
       if (inherits(test_q_out, c("try-error", "error"))) {
-        within(common_q(), test_table <- rtables::rtable(header = rtables::rheader("No data available in table")))
+        within(
+          common_q(),
+          test_table <- rtables::rtable(header = rtables::rheader("No data available in table"), rtables::rrow())
+        )
       } else {
         within(c(common_q(), test_q_out), test_table <- rtables::df_to_tt(test_table_data))
       }
@@ -1336,11 +1339,7 @@ srv_distribution <- function(id,
     decorated_output_q <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
       test_q_out <- try(test_q(), silent = TRUE)
-      decorated_test_q_out <- if (inherits(test_q_out, c("try-error", "error"))) {
-        teal.code::qenv()
-      } else {
-        decorated_output_test_q()
-      }
+      decorated_test_q_out <- decorated_output_test_q()
 
       out_q <- switch(tab,
         Histogram = decorated_output_dist_q(),
@@ -1363,10 +1362,12 @@ srv_distribution <- function(id,
     )
 
     tests_r <- reactive({
-      req(iv_r()$is_valid())
-      teal::validate_inputs(iv_r_dist())
-      req(test_q()) # Ensure original errors are displayed
-      decorated_output_test_q()[["test_table_data"]]
+      q <- req(decorated_output_test_q())
+
+      list(
+        html = DT::datatable(q[["test_table_data"]]),
+        report = q[["test_table"]]
+      )
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
@@ -1385,7 +1386,7 @@ srv_distribution <- function(id,
       brushing = FALSE
     )
 
-    output$t_stats <- DT::renderDataTable(expr = tests_r())
+    output$t_stats <- DT::renderDataTable(expr = tests_r()[["html"]])
 
     # Render R code.
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
@@ -1414,9 +1415,9 @@ srv_distribution <- function(id,
         card$append_text("Statistics table", "header3")
         card$append_table(decorated_output_summary_q()[["summary_table"]])
         tests_error <- tryCatch(expr = tests_r(), error = function(e) "error")
-        if (inherits(tests_error, "data.frame")) {
+        if (!identical(tests_error, "error")) {
           card$append_text("Tests table", "header3")
-          card$append_table(decorated_output_test_q()[["test_table"]])
+          card$append_table(tests_r()[["report"]])
         }
 
         if (!comment == "") {
