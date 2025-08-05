@@ -1067,7 +1067,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       expr = table
     )
 
-    summary_table_r <-reactive({
+    summary_table_r <- reactive({
       q <- req(decorated_final_q())
 
       list(
@@ -1084,7 +1084,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         ),
         report = q[["table"]]
       )
-
     })
 
     output$summary_table <- DT::renderDataTable(summary_table_r()[["html"]])
