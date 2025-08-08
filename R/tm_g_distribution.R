@@ -1281,7 +1281,7 @@ srv_distribution <- function(id,
           summary_table <- rtables::rtable(header = rtables::rheader(colnames(summary_table_data)))
         )
       }
-        })
+    })
 
     output_test_q <- reactive({
       # wrapped in if since could lead into validate error - we do want to continue
