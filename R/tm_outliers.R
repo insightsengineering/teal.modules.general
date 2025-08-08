@@ -21,7 +21,6 @@
 #' - `box_plot` (`ggplot`)
 #' - `density_plot` (`ggplot`)
 #' - `cumulative_plot` (`ggplot`)
-#' - `table` (`datatables` created with [DT::datatable()])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -33,8 +32,7 @@
 #'    decorators = list(
 #'      box_plot = teal_transform_module(...), # applied only to `box_plot` output
 #'      density_plot = teal_transform_module(...), # applied only to `density_plot` output
-#'      cumulative_plot = teal_transform_module(...), # applied only to `cumulative_plot` output
-#'      table = teal_transform_module(...) # applied only to `table` output
+#'      cumulative_plot = teal_transform_module(...) # applied only to `cumulative_plot` output
 #'    )
 #' )
 #' ```
@@ -197,8 +195,7 @@ tm_outliers <- function(label = "Outliers Module",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  available_decorators <- c("box_plot", "density_plot", "cumulative_plot", "table")
-  assert_decorators(decorators, names = available_decorators)
+  assert_decorators(decorators, names = c("box_plot", "density_plot", "cumulative_plot"))
   # End of assertions
 
   # Make UI args
@@ -368,7 +365,6 @@ ui_outliers <- function(id, ...) {
           decorators = select_decorators(args$decorators, "cumulative_plot")
         )
       ),
-      ui_decorate_teal_data(ns("d_table"), decorators = select_decorators(args$decorators, "table")),
       bslib::accordion_panel(
         title = "Plot settings",
         selectInput(
@@ -661,7 +657,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = summary_table_pre <- ANL_OUTLIER %>%
+            expr = summary_data_pre <- ANL_OUTLIER %>%
               dplyr::filter(is_outlier_selected) %>%
               dplyr::select(outlier_var_name, categorical_var_name) %>%
               dplyr::group_by(categorical_var_name) %>%
@@ -706,9 +702,9 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           qenv <- teal.code::eval_code(
             qenv,
             quote(
-              summary_table_pre <- summary_table_pre %>%
+              summary_data_pre <- summary_data_pre %>%
                 dplyr::arrange(desc(n_outliers / total_in_cat)) %>%
-                dplyr::mutate(order = seq_len(nrow(summary_table_pre)))
+                dplyr::mutate(order = seq_len(nrow(summary_data_pre)))
             )
           )
         }
@@ -722,17 +718,17 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               # In this case, the column used for reordering is `order`.
               ANL_OUTLIER <- dplyr::left_join(
                 ANL_OUTLIER,
-                summary_table_pre[, c("order", categorical_var)],
+                summary_data_pre[, c("order", categorical_var)],
                 by = categorical_var
               )
               # so that x axis of plot aligns with columns of summary table, from most outliers to least by percentage
               ANL <- ANL %>%
                 dplyr::left_join(
-                  dplyr::select(summary_table_pre, categorical_var_name, order),
+                  dplyr::select(summary_data_pre, categorical_var_name, order),
                   by = categorical_var
                 ) %>%
                 dplyr::arrange(order)
-              summary_table <- summary_table_pre %>%
+              summary_data <- summary_data_pre %>%
                 dplyr::select(
                   categorical_var_name,
                   Outliers = display_str, Missings = display_str_na, Total = total_in_cat
@@ -749,19 +745,13 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
           )
         )
       } else {
-        within(qenv, summary_table <- data.frame())
+        within(qenv, summary_data <- data.frame())
       }
 
       # Generate decoratable object from data
       qenv <- within(qenv, {
-        table <- DT::datatable(
-          summary_table,
-          options = list(
-            dom = "t",
-            autoWidth = TRUE,
-            columnDefs = list(list(width = "200px", targets = "_all"))
-          )
-        )
+        table <- rtables::df_to_tt(summary_data)
+        table
       })
 
       if (length(categorical_var) > 0 && nrow(qenv[["ANL_OUTLIER"]]) > 0) {
@@ -1066,25 +1056,28 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       c(box_plot_q, density_plot_q, cumulative_plot_q)
     )
 
-    decorated_final_q_no_table <- reactive(decorated_q[[req(current_tab_r())]]())
+    decorated_final_q <- reactive(decorated_q[[req(current_tab_r())]]())
 
-    decorated_final_q <- srv_decorate_teal_data(
-      "d_table",
-      data = decorated_final_q_no_table,
-      decorators = select_decorators(decorators, "table"),
-      expr = table
-    )
+    summary_table_r <- reactive({
+      q <- req(decorated_final_q())
 
-    output$summary_table <- DT::renderDataTable(
-      expr = {
-        if (iv_r()$is_valid()) {
-          categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
-          if (!is.null(categorical_var)) {
-            decorated_final_q()[["table"]]
-          }
-        }
-      }
-    )
+      list(
+        html = DT::datatable(
+          data = if (iv_r()$is_valid()) {
+            categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
+            if (!is.null(categorical_var)) q[["summary_data"]]
+          },
+          option = list(
+            dom = "t",
+            autoWidth = TRUE,
+            columnDefs = list(list(width = "200px", targets = "_all"))
+          )
+        ),
+        report = q[["table"]]
+      )
+    })
+
+    output$summary_table <- DT::renderDataTable(summary_table_r()[["html"]])
 
     # slider text
     output$ui_outlier_help <- renderUI({
@@ -1355,9 +1348,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         )
         categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
         if (length(categorical_var) > 0) {
-          summary_table <- decorated_final_q()[["table"]]
           card$append_text("Summary Table", "header3")
-          card$append_table(summary_table)
+          card$append_table(summary_table_r()[["report"]])
         }
         card$append_text("Plot", "header3")
         if (tab_type == "Boxplot") {
