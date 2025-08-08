@@ -90,14 +90,6 @@ This module generates the following objects, which can be modified in place usin
 \itemize{
 \item \code{histogram_plot} (\code{ggplot})
 \item \code{qq_plot} (\code{ggplot})
-\item \code{summary_table} (\code{ElementaryTable} created with \code{\link[rtables:df_to_tt]{rtables::df_to_tt()}})
-\itemize{
-\item The decorated table is only shown in the reporter as it is presented as an interactive \code{DataTable} in the module.
-}
-\item \code{test_table} (\code{ElementaryTable} created with \code{\link[rtables:df_to_tt]{rtables::df_to_tt()}})
-\itemize{
-\item The decorated table is only shown in the reporter as it is presented as an interactive \code{DataTable} in the module.
-}
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
@@ -108,9 +100,7 @@ See code snippet below:
    ..., # arguments for module
    decorators = list(
      histogram_plot = teal_transform_module(...), # applied only to `histogram_plot` output
-     qq_plot = teal_transform_module(...), # applied only to `qq_plot` output
-     summary_table = teal_transform_module(...), # applied only to `summary_table` output
-     test_table = teal_transform_module(...) # applied only to `test_table` output
+     qq_plot = teal_transform_module(...) # applied only to `qq_plot` output
    )
 )
 }\if{html}{\out{</div>}}
