@@ -31,10 +31,6 @@
 #' This module generates the following objects, which can be modified in place using decorators::
 #' - `histogram_plot` (`ggplot`)
 #' - `qq_plot` (`ggplot`)
-#' - `summary_table` (`ElementaryTable` created with [rtables::df_to_tt()])
-#'   - The decorated table is only shown in the reporter as it is presented as an interactive `DataTable` in the module.
-#' - `test_table` (`ElementaryTable` created with [rtables::df_to_tt()])
-#'   - The decorated table is only shown in the reporter as it is presented as an interactive `DataTable` in the module.
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -45,9 +41,7 @@
 #'    ..., # arguments for module
 #'    decorators = list(
 #'      histogram_plot = teal_transform_module(...), # applied only to `histogram_plot` output
-#'      qq_plot = teal_transform_module(...), # applied only to `qq_plot` output
-#'      summary_table = teal_transform_module(...), # applied only to `summary_table` output
-#'      test_table = teal_transform_module(...) # applied only to `test_table` output
+#'      qq_plot = teal_transform_module(...) # applied only to `qq_plot` output
 #'    )
 #' )
 #' ```
@@ -196,8 +190,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  available_decorators <- c("histogram_plot", "qq_plot", "test_table", "summary_table")
-  assert_decorators(decorators, names = available_decorators)
+  assert_decorators(decorators, names = c("histogram_plot", "qq_plot"))
 
   # End of assertions
 
@@ -323,14 +316,6 @@ ui_distribution <- function(id, ...) {
             ),
             collapsed = FALSE
           )
-        ),
-        ui_decorate_teal_data(
-          ns("d_summary"),
-          decorators = select_decorators(args$decorators, "summary_table")
-        ),
-        ui_decorate_teal_data(
-          ns("d_test"),
-          decorators = select_decorators(args$decorators, "test_table")
         ),
         conditionalPanel(
           condition = paste0("input['", ns("main_type"), "'] == 'Density'"),
@@ -1286,14 +1271,17 @@ srv_distribution <- function(id,
     # Summary table listing has to be created separately to allow for qenv join
     output_summary_q <- reactive({
       if (iv_r()$is_valid()) {
-        within(common_q(), summary_table <- rtables::df_to_tt(summary_table_data))
+        within(common_q(), {
+          summary_table <- rtables::df_to_tt(summary_table_data)
+          summary_table
+        })
       } else {
         within(
           common_q(),
           summary_table <- rtables::rtable(header = rtables::rheader(colnames(summary_table_data)))
         )
       }
-    })
+        })
 
     output_test_q <- reactive({
       # wrapped in if since could lead into validate error - we do want to continue
@@ -1304,7 +1292,10 @@ srv_distribution <- function(id,
           test_table <- rtables::rtable(header = rtables::rheader("No data available in table"), rtables::rrow())
         )
       } else {
-        within(c(common_q(), test_q_out), test_table <- rtables::df_to_tt(test_table_data))
+        within(c(common_q(), test_q_out), {
+          test_table <- rtables::df_to_tt(test_table_data)
+          test_table
+        })
       }
     })
 
@@ -1322,47 +1313,42 @@ srv_distribution <- function(id,
       expr = print(qq_plot)
     )
 
-    decorated_output_summary_q <- srv_decorate_teal_data(
-      "d_summary",
-      data = output_summary_q,
-      decorators = select_decorators(decorators, "summary_table"),
-      expr = summary_table
-    )
-
-    decorated_output_test_q <- srv_decorate_teal_data(
-      "d_test",
-      data = output_test_q,
-      decorators = select_decorators(decorators, "test_table"),
-      expr = test_table
-    )
-
     decorated_output_q <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
       test_q_out <- try(test_q(), silent = TRUE)
-      decorated_test_q_out <- decorated_output_test_q()
+      test_q_out <- output_test_q()
 
       out_q <- switch(tab,
         Histogram = decorated_output_dist_q(),
         QQplot = decorated_output_qq_q()
       )
-      c(out_q, decorated_output_summary_q(), decorated_test_q_out)
+      c(out_q, output_summary_q(), test_q_out)
     })
 
     dist_r <- reactive(req(decorated_output_dist_q())[["histogram_plot"]])
 
     qq_r <- reactive(req(decorated_output_qq_q())[["qq_plot"]])
 
-    output$summary_table <- DT::renderDataTable(
-      expr = decorated_output_summary_q()[["summary_table_data"]],
-      options = list(
-        autoWidth = TRUE,
-        columnDefs = list(list(width = "200px", targets = "_all"))
-      ),
-      rownames = FALSE
-    )
+    summary_r <- reactive({
+      q <- req(output_summary_q())
+
+      list(
+        html = DT::datatable(
+          q[["summary_table_data"]],
+          options = list(
+            autoWidth = TRUE,
+            columnDefs = list(list(width = "200px", targets = "_all"))
+          ),
+          rownames = FALSE
+        ),
+        report = q[["summary_table"]]
+      )
+    })
+
+    output$summary_table <- DT::renderDataTable(summary_r()[["html"]])
 
     tests_r <- reactive({
-      q <- req(decorated_output_test_q())
+      q <- req(output_test_q())
 
       list(
         html = DT::datatable(q[["test_table_data"]]),
@@ -1386,7 +1372,7 @@ srv_distribution <- function(id,
       brushing = FALSE
     )
 
-    output$t_stats <- DT::renderDataTable(expr = tests_r()[["html"]])
+    output$t_stats <- DT::renderDataTable(tests_r()[["html"]])
 
     # Render R code.
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
@@ -1413,7 +1399,7 @@ srv_distribution <- function(id,
           card$append_plot(qq_r(), dim = pws2$dim())
         }
         card$append_text("Statistics table", "header3")
-        card$append_table(decorated_output_summary_q()[["summary_table"]])
+        card$append_table(summary_r()[["report"]])
         tests_error <- tryCatch(expr = tests_r(), error = function(e) "error")
         if (!identical(tests_error, "error")) {
           card$append_text("Tests table", "header3")

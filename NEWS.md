@@ -1,8 +1,13 @@
 # teal.modules.general 0.4.1.9015
 
+### Breaking changes
+
+- Removed the `table` object decoration in `tm_missing_data` and `tm_outliers` (#899).
+- Removed the `summary_table` and `test_table` object decoration in `tm_g_distribution` (#897).
+
 ### Bug fixes
 
-- Fixes "Add to Report" functionality in `tm_outliers`, `tm_missing_data` and `tm_g_distribution` modules (#899 and #897). Table decorators in this modules use `rtables` as base object for decoration.
+- Fixes "Add to Report" functionality in `tm_outliers`, `tm_missing_data` and `tm_g_distribution` modules (#899 and #897).
 
 # teal.modules.general 0.4.1
 
