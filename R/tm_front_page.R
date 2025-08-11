@@ -83,7 +83,7 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_multi_class(additional_tags, classes = c("shiny.tag.list", "html"))
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
   if (!missing(show_metadata)) {
-    lifecycle::deprecate_soft(
+    lifecycle::deprecate_stop(
       when = "0.4.0",
       what = "tm_front_page(show_metadata)",
       with = "tm_front_page(datanames)",

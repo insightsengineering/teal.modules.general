@@ -91,7 +91,7 @@ tm_variable_browser <- function(label = "Variable Browser",
   # Start of assertions
   checkmate::assert_string(label)
   if (!missing(datasets_selected)) {
-    lifecycle::deprecate_soft(
+    lifecycle::deprecate_stop(
       when = "0.4.0",
       what = "tm_variable_browser(datasets_selected)",
       with = "tm_variable_browser(datanames)",
