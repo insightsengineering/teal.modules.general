@@ -7,7 +7,11 @@
 
 ### Bug fixes
 
-- Fixes "Add to Report" functionality in `tm_outliers`, `tm_missing_data` and `tm_g_distribution` modules (#899 and #897).
+- Fixed "Add to Report" functionality in `tm_outliers`, `tm_missing_data` and `tm_g_distribution` modules (#899 and #897).
+
+### Miscellaneous
+
+- Fixed deprecation warning for `tern::stack_grobs` in `tm_g_association` (#903).
 
 # teal.modules.general 0.4.1
 
