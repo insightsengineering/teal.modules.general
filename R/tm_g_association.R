@@ -509,7 +509,7 @@ srv_tm_g_association <- function(id,
               plots <- plot_calls
               plot_top <- plots[[1]]
               plot_bottom <- plots[[2]]
-              plot <- tern::stack_grobs(grobs = lapply(list(plot_top, plot_bottom), ggplot2::ggplotGrob))
+              plot <- gridExtra::grid.arrange(plot_top, plot_bottom, ncol = 1)
             },
             env = list(
               plot_calls = do.call(
