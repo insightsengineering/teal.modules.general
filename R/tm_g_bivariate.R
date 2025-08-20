@@ -340,7 +340,8 @@ ui_g_bivariate <- function(id, ...) {
     ),
     encoding = tags$div(
       ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
+      teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
+      tags$br(), tags$br(),
       ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("x", "y", "row_facet", "col_facet", "color", "fill", "size")]),
@@ -559,14 +560,13 @@ srv_g_bivariate <- function(id,
       selector_list = selector_list,
       datasets = data
     )
-    qenv <- teal.code::eval_code(
-      data(),
-      'library("ggplot2");library("dplyr");library("teal.modules.general")' # nolint quotes
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint: quotes.
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>%
+      qenv() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -712,7 +712,7 @@ srv_g_bivariate <- function(id,
         without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
 
         print_call <- if (without_facet) {
-          quote(print(plot))
+          quote(plot)
         } else {
           substitute(
             expr = {
@@ -772,7 +772,7 @@ srv_g_bivariate <- function(id,
         card$append_src(source_code_r())
         card
       }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
+      teal.reporter::add_card_button_srv("add_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
   })

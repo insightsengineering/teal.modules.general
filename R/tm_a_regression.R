@@ -286,7 +286,8 @@ ui_a_regression <- function(id, ...) {
     )),
     encoding = tags$div(
       ### Reporter
-      teal.reporter::simple_reporter_ui(ns("simple_reporter")),
+      teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
+      tags$br(), tags$br(),
       ###
       tags$label("Encodings", class = "text-primary"), tags$br(),
       teal.transform::datanames_input(args[c("response", "regressor")]),
@@ -462,14 +463,13 @@ srv_a_regression <- function(id,
       )
     })
 
-    qenv <- teal.code::eval_code(
-      data(),
-      'library("ggplot2");library("dplyr")' # nolint quotes
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
     )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>%
+      qenv() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -830,18 +830,15 @@ srv_a_regression <- function(id,
               color = "red",
               linetype = "dashed"
             ) +
-            ggplot2::geom_text(
-              ggplot2::aes(
-                x = 0,
-                y = mean(data$.cooksd, na.rm = TRUE),
-                label = paste("mu", "=", round(mean(data$.cooksd, na.rm = TRUE), 4)),
-                vjust = -1,
-                hjust = 0,
-                color = "red",
-                angle = 90
-              ),
-              parse = TRUE,
-              show.legend = FALSE
+            ggplot2::annotate(
+              geom = "text",
+              x = 0,
+              y = mean(data$.cooksd, na.rm = TRUE),
+              label = paste("mu", "=", round(mean(data$.cooksd, na.rm = TRUE), 4)),
+              vjust = -1,
+              hjust = 0,
+              color = "red",
+              angle = 90
             ) +
             outlier_label,
           env = list(plot = plot, outlier = input$outlier, outlier_label = outlier_label())
@@ -998,7 +995,7 @@ srv_a_regression <- function(id,
       "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = print(plot)
+      expr = plot
     )
 
     fitted <- reactive({
@@ -1021,9 +1018,7 @@ srv_a_regression <- function(id,
     output$text <- renderText({
       req(iv_r()$is_valid())
       req(iv_out$is_valid())
-      paste(utils::capture.output(summary(teal.code::dev_suppress(fitted())))[-1],
-        collapse = "\n"
-      )
+      paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
     })
 
     # Render R code.
@@ -1053,7 +1048,7 @@ srv_a_regression <- function(id,
         card$append_src(source_code_r())
         card
       }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
+      teal.reporter::add_card_button_srv("add_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
   })

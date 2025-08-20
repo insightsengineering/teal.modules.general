@@ -362,7 +362,6 @@ ui_g_scatterplot <- function(id, ...) {
   )
 
   tagList(
-    include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
@@ -370,7 +369,8 @@ ui_g_scatterplot <- function(id, ...) {
       ),
       encoding = tags$div(
         ### Reporter
-        teal.reporter::simple_reporter_ui(ns("simple_reporter")),
+        teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
+        tags$br(), tags$br(),
         ###
         tags$label("Encodings", class = "text-primary"),
         teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
@@ -467,16 +467,16 @@ ui_g_scatterplot <- function(id, ...) {
             tags$div(
               id = ns("label_pos"),
               tags$div(tags$strong("Stats position")),
-              tags$div(class = "inline-block w-10", helpText("Left")),
+              tags$div(style = "display: inline-block; width: 70%;", helpText("Left")),
               tags$div(
-                class = "inline-block w-70",
+                style = "display: inline-block; width: 70%;",
                 teal.widgets::optionalSliderInput(
                   ns("pos"),
                   label = NULL,
                   min = 0, max = 1, value = .99, ticks = FALSE, step = .01
                 )
               ),
-              tags$div(class = "inline-block w-10", helpText("Right"))
+              tags$div(style = "display: inline-block; width: 10%;", helpText("Right"))
             ),
             teal.widgets::optionalSliderInput(
               ns("label_size"), "Stats font size",
@@ -588,11 +588,13 @@ srv_g_scatterplot <- function(id,
       datasets = data,
       merge_function = "dplyr::inner_join"
     )
-    qenv <- teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
+    )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
-      qenv %>%
+      qenv() %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr)) %>%
         teal.code::eval_code(quote(ANL)) # used to display table when running show-r-code code
     })
@@ -712,7 +714,7 @@ srv_g_scatterplot <- function(id,
         ))
       }
 
-      teal::validate_has_data(ANL[, c(x_var, y_var)], 10, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(ANL[, c(x_var, y_var)], 1, complete = TRUE, allow_inf = FALSE)
 
       if (log_x) {
         validate(
@@ -1072,7 +1074,7 @@ srv_g_scatterplot <- function(id,
         card$append_src(source_code_r())
         card
       }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
+      teal.reporter::add_card_button_srv("add_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
   })

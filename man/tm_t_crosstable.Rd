@@ -10,6 +10,7 @@ tm_t_crosstable(
   y,
   show_percentage = TRUE,
   show_total = TRUE,
+  remove_zero_columns = FALSE,
   pre_output = NULL,
   post_output = NULL,
   basic_table_args = teal.widgets::basic_table_args(),
@@ -38,6 +39,10 @@ Defaults to \code{TRUE}.}
 \item{show_total}{(\code{logical(1)})
 Indicates whether to show total column.
 Defaults to \code{TRUE}.}
+
+\item{remove_zero_columns}{(\code{logical(1)})
+Indicates whether to remove columns that contain only zeros from the output table.
+Defaults to \code{FALSE}.}
 
 \item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
 providing context or a title.
@@ -71,6 +76,16 @@ options for showing percentages and sub-totals.
 For more examples, please see the vignette "Using cross table" via
 \code{vignette("using-cross-table", package = "teal.modules.general")}.
 }
+\section{Table Settings}{
+
+The module provides several table settings that can be adjusted:
+\itemize{
+\item \code{Show column percentage}: Shows column percentages when enabled
+\item \code{Show total column}: Shows a total column when enabled
+\item \code{Remove zero-only columns}: Removes columns that contain only zeros from the output table
+}
+}
+
 \section{Decorating Module}{
 
 

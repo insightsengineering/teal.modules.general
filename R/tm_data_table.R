@@ -112,7 +112,7 @@ tm_data_table <- function(label = "Data Table",
     })
   }
   if (!missing(datasets_selected)) {
-    lifecycle::deprecate_soft(
+    lifecycle::deprecate_stop(
       when = "0.4.0",
       what = "tm_data_table(datasets_selected)",
       with = "tm_data_table(datanames)",
@@ -156,7 +156,6 @@ tm_data_table <- function(label = "Data Table",
 ui_data_table <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
   bslib::page_fluid(
-    include_css_files("custom"),
     teal.widgets::standard_layout(
       output = bslib::page_fluid(
         div(checkboxInput(ns("if_distinct"), "Show only distinct rows:", value = FALSE)),

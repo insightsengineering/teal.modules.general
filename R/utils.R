@@ -186,29 +186,6 @@ variable_type_icons <- function(var_type) {
   ))
 }
 
-#' Include `CSS` files from `/inst/css/` package directory to application header
-#'
-#' `system.file` should not be used to access files in other packages, it does
-#' not work with `devtools`. Therefore, we redefine this method in each package
-#' as needed. Thus, we do not export this method
-#'
-#' @param pattern (`character`) optional, regular expression to match the file names to be included.
-#'
-#' @return HTML code that includes `CSS` files.
-#' @keywords internal
-#'
-include_css_files <- function(pattern = "*") {
-  css_files <- list.files(
-    system.file("css", package = "teal.modules.general", mustWork = TRUE),
-    pattern = pattern, full.names = TRUE
-  )
-  if (length(css_files) == 0) {
-    return(NULL)
-  }
-  singleton(tags$head(lapply(css_files, includeCSS)))
-}
-
-#' JavaScript condition to check if a specific tab is active
 #'
 #' @param id (`character(1)`) the id of the tab panel with tabs.
 #' @param name (`character(1)`) the name of the tab.

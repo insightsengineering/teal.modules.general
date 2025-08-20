@@ -91,7 +91,7 @@ tm_variable_browser <- function(label = "Variable Browser",
   # Start of assertions
   checkmate::assert_string(label)
   if (!missing(datasets_selected)) {
-    lifecycle::deprecate_soft(
+    lifecycle::deprecate_stop(
       when = "0.4.0",
       what = "tm_variable_browser(datasets_selected)",
       with = "tm_variable_browser(datanames)",
@@ -142,7 +142,6 @@ ui_variable_browser <- function(id,
   ns <- NS(id)
 
   tags$div(
-    include_css_files("custom"),
     shinyjs::useShinyjs(),
     teal.widgets::standard_layout(
       output = tags$div(
@@ -156,7 +155,10 @@ ui_variable_browser <- function(id,
             })
           ),
           teal.widgets::white_small_well(
-            teal.reporter::simple_reporter_ui(ns("simple_reporter")),
+            ### Reporter
+            teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
+            tags$br(), tags$br(),
+            ###
             uiOutput(ns("ui_histogram_display")),
             uiOutput(ns("ui_numeric_display")),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
@@ -235,11 +237,11 @@ srv_variable_browser <- function(id,
               tabPanel(
                 dataname,
                 tags$div(
-                  class = "mt-4",
+                  style = "margin-top: 1rem;",
                   textOutput(ns(paste0("dataset_summary_", dataname)))
                 ),
                 tags$div(
-                  class = "mt-4",
+                  style = "margin-top: 1rem;",
                   teal.widgets::get_dt_rows(
                     ns(paste0("variable_browser_", dataname)),
                     ns(paste0("variable_browser_", dataname, "_rows"))
@@ -387,13 +389,11 @@ srv_variable_browser <- function(id,
       varname <- plot_var$variable[[dataname]]
       df <- data()[[dataname]]
 
-      numeric_ui <- shinyWidgets::switchInput(
-        inputId = session$ns("remove_NA_hist"),
+      numeric_ui <- bslib::input_switch(
+        id = session$ns("remove_NA_hist"),
         label = "Remove NA values",
         value = FALSE,
-        width = "50%",
-        labelWidth = "100px",
-        handleWidth = "50px"
+        width = "100%"
       )
 
       var <- df[[varname]]
@@ -513,7 +513,7 @@ srv_variable_browser <- function(id,
         }
         card
       }
-      teal.reporter::simple_reporter_srv("simple_reporter", reporter = reporter, card_fun = card_fun)
+      teal.reporter::add_card_button_srv("add_reporter", reporter = reporter, card_fun = card_fun)
     }
     ###
   })
