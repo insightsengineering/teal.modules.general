@@ -14,7 +14,7 @@
 
 - Improved the layout and appearance of the app using `bslib` components.
 - Fixed deprecation warning for `tern::stack_grobs` in `tm_g_association` (#903).
-- Allow search feature in tm_file_viewer (#152).
+- Allow search feature in `tm_file_viewer` (#152).
 - Added `remove_zero_columns` to `tm_t_crosstable` to add an option to remove empty columns (#890)
 
 # teal.modules.general 0.4.1
