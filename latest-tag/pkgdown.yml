@@ -1,5 +1,5 @@
-pandoc: 3.6.3
-pkgdown: 2.1.1
+pandoc: 3.7.0.2
+pkgdown: 2.1.3
 pkgdown_sha: ~
 articles:
   decorate-module-output: decorate-module-output.html
@@ -13,7 +13,7 @@ articles:
   using-response-plot: using-response-plot.html
   using-scatterplot-matrix: using-scatterplot-matrix.html
   using-scatterplot: using-scatterplot.html
-last_built: 2025-04-02T17:26Z
+last_built: 2025-08-20T20:46Z
 urls:
   reference: https://insightsengineering.github.io/teal.modules.general/reference
   article: https://insightsengineering.github.io/teal.modules.general/articles
