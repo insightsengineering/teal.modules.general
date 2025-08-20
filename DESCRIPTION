@@ -61,7 +61,7 @@ Imports:
     teal.code (>= 0.7.0),
     teal.data (>= 0.7.0),
     teal.logger (>= 0.4.0),
-    teal.reporter (>= 0.4.0.9005),
+    teal.reporter (>= 0.5.0),
     teal.widgets (>= 0.4.3.9005),
     tern (>= 0.9.7),
     tibble (>= 2.0.0),
@@ -84,7 +84,6 @@ VignetteBuilder:
     knitr,
     rmarkdown
 Remotes:
-    insightsengineering/teal.reporter@main,
     insightsengineering/teal.transform@main,
     insightsengineering/teal.widgets@main,
     insightsengineering/teal@main
