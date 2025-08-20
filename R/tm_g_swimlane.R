@@ -327,6 +327,9 @@ swimlanely <- function(
           min_size
         )
       )
+  } else {
+    data <- data %>%
+      dplyr::mutate(size_var = point_size)
   }
 
   data %>%

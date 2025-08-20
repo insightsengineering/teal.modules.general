@@ -63,7 +63,13 @@ srv_t_reactables <- function(
         return(NULL)
       }
       div(
-        include_css_files("reactable.css"),
+        htmltools::htmlDependency(
+          name = "teal-modules-general-reactable",
+          version = utils::packageVersion("teal.modules.general"),
+          package = "teal.modules.general",
+          src = "css",
+          stylesheet = "reactable.css"
+        ),
         do.call(
           bslib::accordion,
           c(
