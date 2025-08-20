@@ -78,8 +78,8 @@ Suggests:
     roxy.shinylive,
     rvest,
     shinytest2,
-    testthat (>= 3.1.9),
-    withr (>= 2.0.0)
+    testthat (>= 3.2.3),
+    withr (>= 3.0.0)
 VignetteBuilder:
     knitr,
     rmarkdown
