@@ -334,7 +334,7 @@ srv_g_scatterplotmatrix <- function(id,
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's code")
       )
-      qenv <- teal.code::eval_code(obj, 'library("dplyr");library("lattice")') # nolint: quotes.
+      qenv <- teal.code::eval_code(obj, expression(library("dplyr"),library("lattice")))
       teal.code::eval_code(qenv, as.expression(anl_merged_input()$expr))
     })
 
@@ -371,7 +371,6 @@ srv_g_scatterplotmatrix <- function(id,
 
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
-      qenv <- teal.code::eval_code(qenv, 'library("dplyr")') # nolint: quotes.
       if (any(check_char)) {
         qenv <- teal.code::eval_code(
           qenv,

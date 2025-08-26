@@ -591,7 +591,7 @@ srv_g_scatterplot <- function(id,
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's code")
       )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint: quotes.
+      teal.code::eval_code(data(), expression(library("ggplot2"), library("dplyr")))
     })
 
     anl_merged_q <- reactive({

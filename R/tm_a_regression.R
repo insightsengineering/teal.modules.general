@@ -465,7 +465,7 @@ srv_a_regression <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint: quotes.
+      teal.code::eval_code(obj, expression(library("ggplot2"), library("dplyr")))
     })
 
     anl_merged_q <- reactive({
@@ -986,7 +986,7 @@ srv_a_regression <- function(id,
 
     output_q <- reactive({
       teal::validate_inputs(iv_r())
-      obj <- switch(input$plot_type,
+      switch(input$plot_type,
         "Response vs Regressor" = output_plot_0(),
         "Residuals vs Fitted" = output_plot_1(),
         "Normal Q-Q" = output_plot_2(),
@@ -995,7 +995,6 @@ srv_a_regression <- function(id,
         "Residuals vs Leverage" = output_plot_5(),
         "Cook's dist vs Leverage" = output_plot_6()
       )
-      obj
     })
 
     decorated_output_q <- srv_decorate_teal_data(
