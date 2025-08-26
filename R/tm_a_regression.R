@@ -836,18 +836,15 @@ srv_a_regression <- function(id,
               color = "red",
               linetype = "dashed"
             ) +
-            ggplot2::geom_text(
-              ggplot2::aes(
-                x = 0,
-                y = mean(data$.cooksd, na.rm = TRUE),
-                label = paste("mu", "=", round(mean(data$.cooksd, na.rm = TRUE), 4)),
-                vjust = -1,
-                hjust = 0,
-                color = "red",
-                angle = 90
-              ),
-              parse = TRUE,
-              show.legend = FALSE
+            ggplot2::annotate(
+              geom = "text",
+              x = 0,
+              y = mean(data$.cooksd, na.rm = TRUE),
+              label = paste("mu", "=", round(mean(data$.cooksd, na.rm = TRUE), 4)),
+              vjust = -1,
+              hjust = 0,
+              color = "red",
+              angle = 90
             ) +
             outlier_label,
           env = list(plot = plot, outlier = input$outlier, outlier_label = outlier_label())
@@ -1039,7 +1036,6 @@ srv_a_regression <- function(id,
       verbatim_content = source_code_r,
       title = "R code for the regression plot",
     )
-
     decorated_output_q
   })
 }

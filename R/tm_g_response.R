@@ -602,9 +602,6 @@ srv_g_response <- function(id,
       verbatim_content = source_code_r,
       title = "Show R Code for Response"
     )
-
-
-
     decorated_output_plot_q
   })
 }

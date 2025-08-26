@@ -85,7 +85,6 @@ This module generates the following objects, which can be modified in place usin
 \item \code{summary_plot} (\code{ggplot})
 \item \code{combination_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
 \item \code{by_subject_plot} (\code{ggplot})
-\item \code{table} (\code{datatables} created with \code{\link[DT:datatable]{DT::datatable()}})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
@@ -97,8 +96,7 @@ See code snippet below:
    decorators = list(
      summary_plot = teal_transform_module(...), # applied only to `summary_plot` output
      combination_plot = teal_transform_module(...), # applied only to `combination_plot` output
-     by_subject_plot = teal_transform_module(...), # applied only to `by_subject_plot` output
-     table = teal_transform_module(...) # applied only to `table` output
+     by_subject_plot = teal_transform_module(...) # applied only to `by_subject_plot` output
    )
 )
 }\if{html}{\out{</div>}}

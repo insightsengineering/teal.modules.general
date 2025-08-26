@@ -75,7 +75,6 @@ This module generates the following objects, which can be modified in place usin
 \item \code{box_plot} (\code{ggplot})
 \item \code{density_plot} (\code{ggplot})
 \item \code{cumulative_plot} (\code{ggplot})
-\item \code{table} (\code{datatables} created with \code{\link[DT:datatable]{DT::datatable()}})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
@@ -87,8 +86,7 @@ See code snippet below:
    decorators = list(
      box_plot = teal_transform_module(...), # applied only to `box_plot` output
      density_plot = teal_transform_module(...), # applied only to `density_plot` output
-     cumulative_plot = teal_transform_module(...), # applied only to `cumulative_plot` output
-     table = teal_transform_module(...) # applied only to `table` output
+     cumulative_plot = teal_transform_module(...) # applied only to `cumulative_plot` output
    )
 )
 }\if{html}{\out{</div>}}

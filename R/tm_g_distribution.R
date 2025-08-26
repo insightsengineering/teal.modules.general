@@ -31,8 +31,6 @@
 #' This module generates the following objects, which can be modified in place using decorators::
 #' - `histogram_plot` (`ggplot`)
 #' - `qq_plot` (`ggplot`)
-#' - `summary_table` (`datatables` created with [DT::datatable()])
-#' - `test_table` (`datatables` created with [DT::datatable()])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -43,9 +41,7 @@
 #'    ..., # arguments for module
 #'    decorators = list(
 #'      histogram_plot = teal_transform_module(...), # applied only to `histogram_plot` output
-#'      qq_plot = teal_transform_module(...), # applied only to `qq_plot` output
-#'      summary_table = teal_transform_module(...), # applied only to `summary_table` output
-#'      test_table = teal_transform_module(...) # applied only to `test_table` output
+#'      qq_plot = teal_transform_module(...) # applied only to `qq_plot` output
 #'    )
 #' )
 #' ```
@@ -196,8 +192,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  available_decorators <- c("histogram_plot", "qq_plot", "test_table", "summary_table")
-  assert_decorators(decorators, names = available_decorators)
+  assert_decorators(decorators, names = c("histogram_plot", "qq_plot"))
 
   # End of assertions
 
@@ -319,14 +314,6 @@ ui_distribution <- function(id, ...) {
             ),
             collapsed = FALSE
           )
-        ),
-        ui_decorate_teal_data(
-          ns("d_summary"),
-          decorators = select_decorators(args$decorators, "summary_table")
-        ),
-        ui_decorate_teal_data(
-          ns("d_test"),
-          decorators = select_decorators(args$decorators, "test_table")
         ),
         conditionalPanel(
           condition = paste0("input['", ns("main_type"), "'] == 'Density'"),
@@ -590,7 +577,18 @@ srv_distribution <- function(id,
           }
 
         params_vals <- unname(params)
-        params_names <- names(params)
+        map_distr_nams <- list(
+          normal = c("mean", "sd"),
+          lognormal = c("meanlog", "sdlog"),
+          gamma = c("shape", "rate"),
+          unif = c("min", "max")
+        )
+
+        if (!is.null(input$t_dist) && input$t_dist %in% names(map_distr_nams)) {
+          params_names <- map_distr_nams[[input$t_dist]]
+        } else {
+          params_names <- names(params)
+        }
 
         updateNumericInput(
           inputId = "dist_param1",
@@ -1277,24 +1275,31 @@ srv_distribution <- function(id,
     # Summary table listing has to be created separately to allow for qenv join
     output_summary_q <- reactive({
       if (iv_r()$is_valid()) {
-        within(common_q(), summary_table <- DT::datatable(summary_table_data))
+        within(common_q(), {
+          summary_table <- rtables::df_to_tt(summary_table_data)
+          summary_table
+        })
       } else {
-        within(common_q(), summary_table <- DT::datatable(summary_table_data[0L, ]))
+        within(
+          common_q(),
+          summary_table <- rtables::rtable(header = rtables::rheader(colnames(summary_table_data)))
+        )
       }
     })
 
     output_test_q <- reactive({
       # wrapped in if since could lead into validate error - we do want to continue
       test_q_out <- try(test_q(), silent = TRUE)
-      if (!inherits(test_q_out, c("try-error", "error"))) {
-        c(
+      if (inherits(test_q_out, c("try-error", "error"))) {
+        within(
           common_q(),
-          within(test_q_out, {
-            test_table <- DT::datatable(test_table_data)
-          })
+          test_table <- rtables::rtable(header = rtables::rheader("No data available in table"), rtables::rrow())
         )
       } else {
-        within(common_q(), test_table <- DT::datatable(data.frame(missing = character(0L))))
+        within(c(common_q(), test_q_out), {
+          test_table <- rtables::df_to_tt(test_table_data)
+          test_table
+        })
       }
     })
 
@@ -1329,37 +1334,44 @@ srv_distribution <- function(id,
     decorated_output_q <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
       test_q_out <- try(test_q(), silent = TRUE)
-      decorated_test_q_out <- if (inherits(test_q_out, c("try-error", "error"))) {
-        teal.code::qenv()
-      } else {
-        decorated_output_test_q()
-      }
+      test_q_out <- output_test_q()
 
       out_q <- switch(tab,
         Histogram = decorated_output_dist_q(),
         QQplot = decorated_output_qq_q()
       )
-      c(out_q, decorated_output_summary_q(), decorated_test_q_out)
+      c(out_q, output_summary_q(), test_q_out)
     })
 
     dist_r <- reactive(req(decorated_output_dist_q())[["histogram_plot"]])
 
     qq_r <- reactive(req(decorated_output_qq_q())[["qq_plot"]])
 
-    output$summary_table <- DT::renderDataTable(
-      expr = decorated_output_summary_q()[["summary_table"]],
-      options = list(
-        autoWidth = TRUE,
-        columnDefs = list(list(width = "200px", targets = "_all"))
-      ),
-      rownames = FALSE
-    )
+    summary_r <- reactive({
+      q <- req(output_summary_q())
+
+      list(
+        html = DT::datatable(
+          q[["summary_table_data"]],
+          options = list(
+            autoWidth = TRUE,
+            columnDefs = list(list(width = "200px", targets = "_all"))
+          ),
+          rownames = FALSE
+        ),
+        report = q[["summary_table"]]
+      )
+    })
+
+    output$summary_table <- DT::renderDataTable(summary_r()[["html"]])
 
     tests_r <- reactive({
-      req(iv_r()$is_valid())
-      teal::validate_inputs(iv_r_dist())
-      req(test_q()) # Ensure original errors are displayed
-      decorated_output_test_q()[["test_table"]]
+      q <- req(output_test_q())
+
+      list(
+        html = DT::datatable(q[["test_table_data"]]),
+        report = q[["test_table"]]
+      )
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(
@@ -1378,7 +1390,7 @@ srv_distribution <- function(id,
       brushing = FALSE
     )
 
-    output$t_stats <- DT::renderDataTable(expr = tests_r())
+    output$t_stats <- DT::renderDataTable(tests_r()[["html"]])
 
     # Render R code.
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
@@ -1388,8 +1400,6 @@ srv_distribution <- function(id,
       verbatim_content = source_code_r,
       title = "R Code for distribution"
     )
-
-
     reactive(
       if (input$tabs == "Histogram") {
         decorated_output_dist_q()

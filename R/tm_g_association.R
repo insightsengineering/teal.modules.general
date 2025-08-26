@@ -552,7 +552,6 @@ srv_tm_g_association <- function(id,
       verbatim_content = source_code_r,
       title = "Association Plot"
     )
-
     decorated_output_grob_q
   })
 }

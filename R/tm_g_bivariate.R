@@ -755,9 +755,6 @@ srv_g_bivariate <- function(id,
       verbatim_content = source_code_r,
       title = "Bivariate Plot"
     )
-
-
-
     decorated_output_q_facets
   })
 }

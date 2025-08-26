@@ -231,7 +231,6 @@ ui_a_pca <- function(id, ...) {
   }
 
   tagList(
-    include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         uiOutput(ns("all_plots"))

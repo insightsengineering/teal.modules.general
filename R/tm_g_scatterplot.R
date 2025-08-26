@@ -363,11 +363,11 @@ ui_g_scatterplot <- function(id, ...) {
   )
 
   tagList(
-    include_css_files("custom"),
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
-        tags$h1(tags$strong("Selected points:"), class = "text-center font-150p"),
+        tags$br(),
+        tags$h1(tags$strong("Selected points:"), style = "font-size: 150%;"),
         teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
         DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
@@ -467,16 +467,16 @@ ui_g_scatterplot <- function(id, ...) {
             tags$div(
               id = ns("label_pos"),
               tags$div(tags$strong("Stats position")),
-              tags$div(class = "inline-block w-10", helpText("Left")),
+              tags$div(style = "display: inline-block; width: 70%;", helpText("Left")),
               tags$div(
-                class = "inline-block w-70",
+                style = "display: inline-block; width: 70%;",
                 teal.widgets::optionalSliderInput(
                   ns("pos"),
                   label = NULL,
                   min = 0, max = 1, value = .99, ticks = FALSE, step = .01
                 )
               ),
-              tags$div(class = "inline-block w-10", helpText("Right"))
+              tags$div(style = "display: inline-block; width: 10%;", helpText("Right"))
             ),
             teal.widgets::optionalSliderInput(
               ns("label_size"), "Stats font size",
@@ -1074,9 +1074,6 @@ srv_g_scatterplot <- function(id,
       verbatim_content = source_code_r,
       title = "R Code for scatterplot"
     )
-
-
-
     decorated_output_plot_q
   })
 }

@@ -83,7 +83,7 @@ tm_front_page <- function(label = "Front page",
   checkmate::assert_multi_class(additional_tags, classes = c("shiny.tag.list", "html"))
   checkmate::assert_character(footnotes, min.len = 0, any.missing = FALSE)
   if (!missing(show_metadata)) {
-    lifecycle::deprecate_soft(
+    lifecycle::deprecate_stop(
       when = "0.4.0",
       what = "tm_front_page(show_metadata)",
       with = "tm_front_page(datanames)",
@@ -119,33 +119,32 @@ ui_front_page <- function(id, ...) {
   ns <- NS(id)
 
   tagList(
-    include_css_files("custom"),
     tags$div(
       id = "front_page_content",
-      class = "ml-8",
+      style = "margin-left: 2rem;",
       tags$div(
         id = "front_page_headers",
         get_header_tags(args$header_text)
       ),
       tags$div(
         id = "front_page_tables",
-        class = "ml-4",
+        style = "margin-left: 2rem;",
         get_table_tags(args$tables, ns)
       ),
       tags$div(
         id = "front_page_custom_html",
-        class = "my-4",
+        style = "margin-left: 2rem;",
         args$additional_tags
       ),
       if (length(args$datanames) > 0L) {
         tags$div(
           id = "front_page_metabutton",
-          class = "m-4",
+          style = "margin: 1rem;",
           actionButton(ns("metadata_button"), "Show metadata")
         )
       },
       tags$footer(
-        class = ".small",
+        class = "small",
         get_footer_tags(args$footnotes)
       )
     )
@@ -228,7 +227,7 @@ get_table_tags <- function(tables, ns) {
       tableOutput(ns(paste0("table_", idx)))
     )
   }))
-  return(table_tags)
+  table_tags
 }
 
 get_footer_tags <- function(footnotes) {
@@ -255,11 +254,11 @@ convert_metadata_to_dataframe <- function(raw_metadata, datanames) {
     if (is.null(metadata)) {
       return(data.frame(Dataset = character(0), Name = character(0), Value = character(0)))
     }
-    return(data.frame(
+    data.frame(
       Dataset = dataname,
       Name = names(metadata),
       Value = unname(unlist(lapply(metadata, as.character)))
-    ))
+    )
   }, raw_metadata, datanames, SIMPLIFY = FALSE)
   do.call(rbind, output)
 }

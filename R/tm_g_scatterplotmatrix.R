@@ -510,8 +510,6 @@ srv_g_scatterplotmatrix <- function(id,
       verbatim_content = source_code_r,
       title = "Show R Code for Scatterplotmatrix"
     )
-
-
     decorated_output_q
   })
 }

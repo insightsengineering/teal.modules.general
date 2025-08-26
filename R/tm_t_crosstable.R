@@ -490,7 +490,6 @@ srv_t_crosstable <- function(id, data, label, x, y, remove_zero_columns, basic_t
       verbatim_content = source_code_r,
       title = "Show R Code for Cross-Table"
     )
-
     decorated_output_q
   })
 }
