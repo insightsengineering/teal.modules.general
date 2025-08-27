@@ -62,7 +62,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_g_spiderplot(
+#'     tm_p_spiderplot(
 #'       plot_dataname = "spiderplot_ds",
 #'       table_datanames = "subjects",
 #'       time_var = "time_var",
@@ -85,7 +85,7 @@
 #' }
 #'
 #' @export
-tm_g_spiderplot <- function(label = "Spiderplot",
+tm_p_spiderplot <- function(label = "Spiderplot",
                             plot_dataname,
                             time_var,
                             value_var,
@@ -246,23 +246,86 @@ srv_g_spiderplot <- function(id,
         symbols = adjusted_symbols,
         size_var = size_var,
         height = input$plot_height,
+        point_size = 10,
         title = sprintf("%s over time", input$filter_event_var_level),
         tooltip_vars = tooltip_vars,
         expr = {
-          p <- dataname %>%
+          plot_data <- dataname %>%
             dplyr::filter(filter_event_var_lang == selected_event) %>%
-            spiderplotly(
-              time_var = time_var,
-              value_var = value_var,
-              subject_var = subject_var,
-              filter_event_var = filter_event_var,
-              color_var = color_var,
-              colors = colors,
-              symbols = symbols,
-              size_var = size_var,
-              height = height,
-              tooltip_vars = tooltip_vars
+            dplyr::arrange(!!as.name(subject_var), !!as.name(time_var)) %>%
+            dplyr::group_by(!!as.name(subject_var))
+          subject_var_label <- attr(plot_data[[subject_var]], "label")
+          if (!length(subject_var_label)) subject_var_label <- subject_var
+          time_var_label <- attr(plot_data[[time_var]], "label")
+          if (!length(time_var_label)) time_var_label <- time_var
+          value_var_label <- attr(plot_data[[value_var]], "label")
+          if (!length(value_var_label)) value_var_label <- value_var
+          plot_data <- plot_data |>
+            dplyr::mutate(customdata = dplyr::row_number())
+
+          if (is.null(size_var)) {
+            size <- point_size
+          } else {
+            size <- stats::as.formula(sprintf("~%s", size_var))
+          }
+
+          p <- plot_data %>%
+            dplyr::mutate(
+              x = dplyr::lag(!!as.name(time_var), default = 0),
+              y = dplyr:::lag(!!as.name(value_var), default = 0),
+              tooltip = {
+                if (is.null(tooltip_vars)) {
+                  sprintf(
+                    "%s: %s <br>%s: %s <br>%s: %s%% <br>",
+                    subject_var_label, !!as.name(subject_var),
+                    time_var_label, !!as.name(time_var),
+                    value_var_label, !!as.name(value_var) * 100
+                  )
+                } else {
+                  tooltip_lines <- sapply(tooltip_vars, function(col) {
+                    label <- .get_column_label(.data, col)
+                    value <- .data[[col]]
+                    paste0(label, ": ", value)
+                  })
+                  if (is.vector(tooltip_lines)) {
+                    paste(tooltip_lines, collapse = "<br>")
+                  } else {
+                    apply(tooltip_lines, 1, function(row) paste(row, collapse = "<br>"))
+                  }
+                }
+              }
             ) %>%
+            dplyr::ungroup() %>%
+            plotly::plot_ly(
+              source = "spiderplot",
+              height = height,
+              color = stats::as.formula(sprintf("~%s", color_var)),
+              colors = colors,
+              symbols = symbols
+            ) %>%
+            plotly::add_segments(
+              x = ~x,
+              y = ~y,
+              xend = stats::as.formula(sprintf("~%s", time_var)),
+              yend = stats::as.formula(sprintf("~%s", value_var)),
+              customdata = NULL
+            ) %>%
+            plotly::add_markers(
+              x = stats::as.formula(sprintf("~%s", time_var)),
+              y = stats::as.formula(sprintf("~%s", value_var)),
+              symbol = stats::as.formula(sprintf("~%s", color_var)),
+              size = size,
+              text = ~tooltip,
+              hoverinfo = "text",
+              customdata = ~customdata
+            ) %>%
+            plotly::layout(
+              xaxis = list(title = time_var_label),
+              yaxis = list(title = value_var_label),
+              title = title,
+              dragmode = "select"
+            ) %>%
+            plotly::config(displaylogo = FALSE) %>%
             plotly::layout(title = title)
         }
       )
@@ -335,73 +398,4 @@ srv_g_spiderplot <- function(id,
       reactable_args = reactable_args
     )
   })
-}
-
-# todo: export is temporary, this should go to a new package teal.graphs or another bird species
-#' @export
-spiderplotly <- function(
-    data, time_var, value_var, subject_var, filter_event_var,
-    color_var, colors, symbols, height, tooltip_vars = NULL, size_var = NULL, point_size = 10) {
-  subject_var_label <- .get_column_label(data, subject_var)
-  time_var_label <- .get_column_label(data, time_var)
-  value_var_label <- .get_column_label(data, value_var)
-  data <- data |>
-    dplyr::mutate(customdata = dplyr::row_number())
-
-  if (is.null(size_var)) {
-    size <- point_size
-  } else {
-    size <- stats::as.formula(sprintf("~%s", size_var))
-  }
-
-  data %>%
-    dplyr::arrange(!!as.name(subject_var), !!as.name(time_var)) %>%
-    dplyr::group_by(!!as.name(subject_var)) %>%
-    dplyr::mutate(
-      x = dplyr::lag(!!as.name(time_var), default = 0),
-      y = dplyr:::lag(!!as.name(value_var), default = 0),
-      tooltip = {
-        if (is.null(tooltip_vars)) {
-          sprintf(
-            "%s: %s <br>%s: %s <br>%s: %s%% <br>",
-            subject_var_label, !!as.name(subject_var),
-            time_var_label, !!as.name(time_var),
-            value_var_label, !!as.name(value_var) * 100
-          )
-        } else {
-          .generate_tooltip(.data, tooltip_vars)
-        }
-      }
-    ) %>%
-    dplyr::ungroup() %>%
-    plotly::plot_ly(
-      source = "spiderplot",
-      height = height,
-      color = stats::as.formula(sprintf("~%s", color_var)),
-      colors = colors,
-      symbols = symbols
-    ) %>%
-    plotly::add_segments(
-      x = ~x,
-      y = ~y,
-      xend = stats::as.formula(sprintf("~%s", time_var)),
-      yend = stats::as.formula(sprintf("~%s", value_var)),
-      customdata = NULL
-    ) %>%
-    plotly::add_markers(
-      x = stats::as.formula(sprintf("~%s", time_var)),
-      y = stats::as.formula(sprintf("~%s", value_var)),
-      symbol = stats::as.formula(sprintf("~%s", color_var)),
-      size = size,
-      text = ~tooltip,
-      hoverinfo = "text",
-      customdata = ~customdata
-    ) %>%
-    plotly::layout(
-      xaxis = list(title = time_var_label),
-      yaxis = list(title = value_var_label),
-      title = title,
-      dragmode = "select"
-    ) %>%
-    plotly::config(displaylogo = FALSE)
 }

@@ -43,7 +43,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_g_waterfall(
+#'     tm_p_waterfall(
 #'       plot_dataname = "waterfall_ds",
 #'       table_datanames = "subjects",
 #'       subject_var = "subject_var",
@@ -63,7 +63,7 @@
 #' }
 #'
 #' @export
-tm_g_waterfall <- function(label = "Waterfall",
+tm_p_waterfall <- function(label = "Waterfall",
                            plot_dataname,
                            subject_var,
                            value_var,
@@ -188,17 +188,66 @@ srv_g_waterfall <- function(id,
         title = sprintf("Waterfall plot"),
         tooltip_vars = tooltip_vars,
         expr = {
-          p <- waterfally(
-            dataname,
-            subject_var = subject_var,
-            value_var = value_var,
-            sort_var = sort_var,
-            color_var = color_var,
-            colors = colors,
-            value_arbitrary_hlines = value_arbitrary_hlines,
-            height = height,
-            tooltip_vars = tooltip_vars
+          subject_var_label <- attr(dataname[[subject_var]], "label")
+          if (!length(subject_var_label)) subject_var_label <- subject_var
+          value_var_label <- attr(dataname[[value_var]], "label")
+          if (!length(value_var_label)) value_var_label <- value_var
+          color_var_label <- attr(dataname[[color_var]], "label")
+          if (!length(color_var_label)) color_var_label <- color_var
+
+
+          p <- dplyr::mutate(
+            if (identical(sort_var, value_var) || is.null(sort_var)) {
+              dplyr::arrange(dataname, desc(!!as.name(value_var)))
+            } else {
+              dplyr::arrange(dataname, !!as.name(sort_var), desc(!!as.name(value_var)))
+            },
+            !!as.name(subject_var) := factor(!!as.name(subject_var), levels = unique(!!as.name(subject_var))),
+            tooltip = {
+              if (is.null(tooltip_vars)) {
+                sprintf(
+                  "%s: %s <br>%s: %s%% <br>%s: %s",
+                  subject_var_label, !!as.name(subject_var),
+                  value_var_label, !!as.name(value_var),
+                  color_var_label, !!as.name(color_var)
+                )
+              } else {
+                .generate_tooltip(.data, tooltip_vars)
+              }
+            }
           ) %>%
+            dplyr::filter(!duplicated(!!as.name(subject_var))) %>%
+            plotly::plot_ly(
+              source = "waterfall",
+              height = height
+            ) %>%
+            plotly::add_bars(
+              x = stats::as.formula(sprintf("~%s", subject_var)),
+              y = stats::as.formula(sprintf("~%s", value_var)),
+              color = stats::as.formula(sprintf("~%s", color_var)),
+              colors = colors,
+              text = ~tooltip,
+              hoverinfo = "text"
+            ) %>%
+            plotly::layout(
+              shapes = lapply(value_arbitrary_hlines, function(y) {
+                list(
+                  type = "line",
+                  x0 = 0,
+                  x1 = 1,
+                  xref = "paper",
+                  y0 = y,
+                  y1 = y,
+                  line = list(color = "black", dash = "dot")
+                )
+              }),
+              xaxis = list(title = subject_var_label, tickangle = -45),
+              yaxis = list(title = value_var_label),
+              legend = list(title = list(text = "<b>Color by:</b>")),
+              barmode = "relative"
+            ) %>%
+            plotly::layout(dragmode = "select") %>%
+            plotly::config(displaylogo = FALSE) %>%
             plotly::layout(title = title)
         },
         height = input$plot_height
@@ -225,68 +274,4 @@ srv_g_waterfall <- function(id,
       reactable_args = reactable_args
     )
   })
-}
-
-
-# todo: export is temporary, this should go to a new package teal.graphs or another bird species
-#' @export
-waterfally <- function(
-    data, subject_var, value_var, sort_var, color_var, colors,
-    value_arbitrary_hlines, height, tooltip_vars = NULL) {
-  subject_var_label <- .get_column_label(data, subject_var)
-  value_var_label <- .get_column_label(data, value_var)
-  color_var_label <- .get_column_label(data, color_var)
-
-  dplyr::mutate(
-    if (identical(sort_var, value_var) || is.null(sort_var)) {
-      dplyr::arrange(data, desc(!!as.name(value_var)))
-    } else {
-      dplyr::arrange(data, !!as.name(sort_var), desc(!!as.name(value_var)))
-    },
-    !!as.name(subject_var) := factor(!!as.name(subject_var), levels = unique(!!as.name(subject_var))),
-    tooltip = {
-      if (is.null(tooltip_vars)) {
-        sprintf(
-          "%s: %s <br>%s: %s%% <br>%s: %s",
-          subject_var_label, !!as.name(subject_var),
-          value_var_label, !!as.name(value_var),
-          color_var_label, !!as.name(color_var)
-        )
-      } else {
-        .generate_tooltip(.data, tooltip_vars)
-      }
-    }
-  ) %>%
-    dplyr::filter(!duplicated(!!as.name(subject_var))) %>%
-    plotly::plot_ly(
-      source = "waterfall",
-      height = height
-    ) %>%
-    plotly::add_bars(
-      x = stats::as.formula(sprintf("~%s", subject_var)),
-      y = stats::as.formula(sprintf("~%s", value_var)),
-      color = stats::as.formula(sprintf("~%s", color_var)),
-      colors = colors,
-      text = ~tooltip,
-      hoverinfo = "text"
-    ) %>%
-    plotly::layout(
-      shapes = lapply(value_arbitrary_hlines, function(y) {
-        list(
-          type = "line",
-          x0 = 0,
-          x1 = 1,
-          xref = "paper",
-          y0 = y,
-          y1 = y,
-          line = list(color = "black", dash = "dot")
-        )
-      }),
-      xaxis = list(title = subject_var_label, tickangle = -45),
-      yaxis = list(title = value_var_label),
-      legend = list(title = list(text = "<b>Color by:</b>")),
-      barmode = "relative"
-    ) %>%
-    plotly::layout(dragmode = "select") %>%
-    plotly::config(displaylogo = FALSE)
 }
