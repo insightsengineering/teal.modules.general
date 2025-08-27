@@ -1402,9 +1402,9 @@ srv_distribution <- function(id,
     )
     reactive(
       if (input$tabs == "Histogram") {
-        decorated_output_dist_q()
+        c(decorated_output_dist_q(), decorated_output_summary_q(), decorated_output_test_q())
       } else if (input$tabs == "QQplot") {
-        decorated_output_qq_q()
+        c(decorated_output_qq_q(), decorated_output_summary_q(), decorated_output_test_q())
       }
     )
   })
