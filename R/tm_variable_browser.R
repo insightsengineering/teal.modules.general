@@ -155,10 +155,6 @@ ui_variable_browser <- function(id,
             })
           ),
           teal.widgets::white_small_well(
-            ### Reporter
-            teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
-            tags$br(), tags$br(),
-            ###
             uiOutput(ns("ui_histogram_display")),
             uiOutput(ns("ui_numeric_display")),
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
@@ -201,11 +197,7 @@ ui_variable_browser <- function(id,
 # Server function for the variable browser module
 srv_variable_browser <- function(id,
                                  data,
-                                 reporter,
-                                 filter_panel_api,
                                  datanames, parent_dataname, ggplot2_args) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -498,24 +490,28 @@ srv_variable_browser <- function(id,
       )
     })
 
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment) {
-        card <- teal::TealReportCard$new()
-        card$set_name("Variable Browser Plot")
-        card$append_text("Variable Browser Plot", "header2")
-        if (with_filter) card$append_fs(filter_panel_api$get_filter_state())
-        card$append_text("Plot", "header3")
-        card$append_plot(variable_plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card
-      }
-      teal.reporter::add_card_button_srv("add_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+    reactive({
+      # Version 1
+      # since data() is not being build up in this module, we need to create a reactive that will
+      # return the plot in the reactive teal_data()
+      validation_checks()
+      obj <- data()
+      env <- new.env()
+      assign("plot", variable_plot_r(), envir = env)
+      obj@.xData <- rlang::env_clone(env)
+      teal.reporter::teal_card(obj) <-
+        c(
+          teal.reporter::teal_card("# Variable Browser Plot"),
+          teal.reporter::teal_card(obj),
+          teal.reporter::teal_card("## Module's code")
+        )
+      teal.code::eval_code(obj, "plot")
+
+
+      # VERSION 2
+      # validation_checks()
+      # teal.data::teal_data(plot = variable_plot_r()) |> teal.code::eval_code("plot")
+    })
   })
 }
 
