@@ -83,7 +83,7 @@ srv_p_scatterplot <- function(id,
             dplyr::filter(filter_var == input_event_type) |>
             dplyr::select(subject_var, x_var, y_var, color_var) |>
             dplyr::mutate(color_var = factor(color_var, levels = names(colors)))
-          p <- plot_ly(
+          p <- plotly::plot_ly(
             data = plot_data,
             x = ~x_var,
             y = ~y_var,
