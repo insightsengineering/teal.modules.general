@@ -91,8 +91,8 @@ tm_p_waterfall <- function(label = "Waterfall",
 
   module(
     label = label,
-    ui = ui_g_waterfall,
-    server = srv_g_waterfall,
+    ui = ui_p_waterfall,
+    server = srv_p_waterfall,
     datanames = union(plot_dataname, table_datanames),
     ui_args = list(height = plot_height),
     server_args = list(
@@ -111,7 +111,7 @@ tm_p_waterfall <- function(label = "Waterfall",
   )
 }
 
-ui_g_waterfall <- function(id, height) {
+ui_p_waterfall <- function(id, height) {
   ns <- NS(id)
 
   bslib::page_sidebar(
@@ -142,7 +142,7 @@ ui_g_waterfall <- function(id, height) {
     )
   )
 }
-srv_g_waterfall <- function(id,
+srv_p_waterfall <- function(id,
                             data,
                             plot_dataname,
                             subject_var,

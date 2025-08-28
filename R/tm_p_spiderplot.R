@@ -117,8 +117,8 @@ tm_p_spiderplot <- function(label = "Spiderplot",
 
   module(
     label = label,
-    ui = ui_g_spiderplot,
-    server = srv_g_spiderplot,
+    ui = ui_p_spiderplot,
+    server = srv_p_spiderplot,
     ui_args = list(height = plot_height),
     server_args = list(
       plot_dataname = plot_dataname,
@@ -139,7 +139,7 @@ tm_p_spiderplot <- function(label = "Spiderplot",
 }
 
 
-ui_g_spiderplot <- function(id, height) {
+ui_p_spiderplot <- function(id, height) {
   ns <- NS(id)
   bslib::page_sidebar(
     sidebar = div(
@@ -171,7 +171,7 @@ ui_g_spiderplot <- function(id, height) {
   )
 }
 
-srv_g_spiderplot <- function(id,
+srv_p_spiderplot <- function(id,
                              data,
                              plot_dataname,
                              time_var,

@@ -106,8 +106,8 @@ tm_p_swimlane <- function(label = "Swimlane",
   }
   module(
     label = label,
-    ui = ui_g_swimlane,
-    server = srv_g_swimlane,
+    ui = ui_p_swimlane,
+    server = srv_p_swimlane,
     datanames = c(plot_dataname, table_datanames),
     ui_args = list(height = plot_height),
     server_args = list(
@@ -127,7 +127,7 @@ tm_p_swimlane <- function(label = "Swimlane",
   )
 }
 
-ui_g_swimlane <- function(id, height) {
+ui_p_swimlane <- function(id, height) {
   ns <- NS(id)
   bslib::page_sidebar(
     sidebar = div(
@@ -153,7 +153,7 @@ ui_g_swimlane <- function(id, height) {
     )
   )
 }
-srv_g_swimlane <- function(id,
+srv_p_swimlane <- function(id,
                            data,
                            plot_dataname,
                            time_var,
