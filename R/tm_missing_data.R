@@ -197,9 +197,8 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
 }
 
 # Server function for the missing data module (all datasets)
-srv_page_missing_data <- function(id, data, reporter, datanames, parent_dataname,
+srv_page_missing_data <- function(id, data, datanames, parent_dataname,
                                   plot_height, plot_width, ggplot2_args, ggtheme, decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
@@ -268,7 +267,6 @@ srv_page_missing_data <- function(id, data, reporter, datanames, parent_dataname
         srv_missing_data(
           id = x,
           data = data,
-          reporter = if (with_reporter) reporter,
           dataname = x,
           parent_dataname = parent_dataname,
           plot_height = plot_height,
@@ -452,14 +450,12 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
 # Server function for the missing data (single dataset)
 srv_missing_data <- function(id,
                              data,
-                             reporter,
                              dataname,
                              parent_dataname,
                              plot_height,
                              plot_width,
                              ggplot2_args,
                              decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
