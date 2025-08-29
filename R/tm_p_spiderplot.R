@@ -283,7 +283,8 @@ srv_p_spiderplot <- function(id,
                   )
                 } else {
                   tooltip_lines <- sapply(tooltip_vars, function(col) {
-                    label <- .get_column_label(.data, col)
+                    label <- attr(dataname[[col]], "label")
+                    if (!length(label)) label <- col
                     value <- .data[[col]]
                     paste0(label, ": ", value)
                   })

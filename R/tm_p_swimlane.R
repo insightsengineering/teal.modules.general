@@ -244,23 +244,37 @@ srv_p_swimlane <- function(id,
             dplyr::group_by(!!as.name(subject_var), !!as.name(time_var)) %>%
             dplyr::mutate(
               tooltip = {
-                if (is.null(tooltip_vars)) {
-                  paste(
-                    unique(
-                      c(
-                        paste(subject_var_label, !!as.name(subject_var)),
-                        paste(time_var_label, !!as.name(time_var)),
-                        sprintf(
-                          "%s: %s",
-                          tools::toTitleCase(gsub("[^0-9A-Za-z]+", " ", !!as.name(group_var))),
-                          !!as.name(color_var)
-                        )
+                default_tip <- paste(
+                  unique(
+                    c(
+                      paste(subject_var_label, !!as.name(subject_var)),
+                      paste(time_var_label, !!as.name(time_var)),
+                      sprintf(
+                        "%s: %s",
+                        tools::toTitleCase(gsub("[^0-9A-Za-z]+", " ", !!as.name(group_var))),
+                        !!as.name(color_var)
                       )
-                    ),
-                    collapse = "<br>"
-                  )
+                    )
+                  ),
+                  collapse = "<br>"
+                )
+                if (is.null(tooltip_vars)) {
+                  default_tip
                 } else {
-                  .generate_tooltip(.data, tooltip_vars)
+                  cur_data <- dplyr::pick(dplyr::everything())
+                  cols <- intersect(tooltip_vars, names(cur_data))
+                  if (!length(cols)) {
+                    default_tip
+                  } else {
+                    sub <- cur_data[cols]
+                    labels <- vapply(cols, function(cn) {
+                      lb <- attr(sub[[cn]], "label")
+                      if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
+                    }, character(1))
+                    values <- lapply(sub, as.character)
+                    parts <- Map(function(v, l) paste0(l, ": ", v), values, labels)
+                    do.call(paste, c(parts, sep = "<br>"))
+                  }
                 }
               }
             ) %>%
