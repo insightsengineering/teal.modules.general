@@ -51,7 +51,7 @@ srv_p_bargraph <- function(id, data, plot_dataname, y_var, color_var, count_var,
 
       plot_data[[y_var]] <- factor(plot_data[[y_var]], levels = event_type_order)
 
-      p <- plot_ly(
+      p <- plotly::plot_ly(
         data = plot_data,
         y = as.formula(paste0("~", y_var)),
         x = ~count,
@@ -60,7 +60,7 @@ srv_p_bargraph <- function(id, data, plot_dataname, y_var, color_var, count_var,
         type = "bar",
         orientation = "h"
       ) %>%
-        layout(
+        plotly::layout(
           barmode = "stack",
           xaxis = list(title = "Count"),
           yaxis = list(title = "Adverse Event Type"),
