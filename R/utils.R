@@ -456,7 +456,6 @@ setup_trigger_tooltips <- function(plot, ns) {
     paste0(
       "function(el) {
           const targetDiv = document.querySelector('#", ns("plot"), " .modebar-group:nth-child(4)');
-            console.log(el.data);
             if (targetDiv) {
               const button = document.createElement('button');
               button.setAttribute('data-count', '0');
