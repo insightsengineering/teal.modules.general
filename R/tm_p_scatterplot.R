@@ -6,7 +6,8 @@ tm_p_scatterplot <- function(label = "Scatter Plot",
                              y_var,
                              color_var,
                              filter_var,
-                             point_colors = character(0)) {
+                             point_colors = character(0),
+                             transformators = list()) {
   module(
     label = label,
     ui = ui_p_scatterplot,
@@ -20,7 +21,8 @@ tm_p_scatterplot <- function(label = "Scatter Plot",
       color_var = color_var,
       filter_var = filter_var,
       point_colors = point_colors
-    )
+    ),
+    transformators = transformators
   )
 }
 
@@ -28,7 +30,6 @@ ui_p_scatterplot <- function(id) {
   ns <- NS(id)
   bslib::page_sidebar(
     sidebar = div(
-      shinyWidgets::pickerInput(ns("event_type"), label = "Select Event Type", choices = NULL),
       colour_picker_ui(ns("colors"))
     ),
     tags$div(
@@ -53,13 +54,6 @@ srv_p_scatterplot <- function(id,
                               filter_var,
                               point_colors) {
   moduleServer(id, function(input, output, session) {
-    observeEvent(data(), {
-      shinyWidgets::updatePickerInput(
-        session, "event_type",
-        choices = unique(data()[[plot_dataname]][[filter_var]])
-      )
-    })
-
     color_inputs <- colour_picker_srv(
       "colors",
       x = reactive({
@@ -69,7 +63,7 @@ srv_p_scatterplot <- function(id,
     )
 
     plotly_q <- reactive({
-      req(input$event_type, color_inputs())
+      req(color_inputs())
       within(
         data(),
         filter_var = str2lang(filter_var),
@@ -80,7 +74,6 @@ srv_p_scatterplot <- function(id,
         colors = color_inputs(),
         expr = {
           plot_data <- scatterplot_ds |>
-            dplyr::filter(filter_var == input_event_type) |>
             dplyr::select(subject_var, x_var, y_var, color_var) |>
             dplyr::mutate(color_var = factor(color_var, levels = names(colors)))
           p <- plotly::plot_ly(
@@ -94,8 +87,7 @@ srv_p_scatterplot <- function(id,
           ) |>
             plotly::layout(dragmode = "select")
           p()
-        },
-        input_event_type = input$event_type
+        }
       )
     })
 
