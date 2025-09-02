@@ -485,6 +485,7 @@ setup_trigger_tooltips <- function(plot, ns) {
 #' @keywords internal
 #' @noRd
 set_plot_data <- function(plot, data_id) {
+  # Make sure to have a `customdata` column in the dataset and pass it to `plotly::plot_ly`.
   htmlwidgets::onRender(
     plot,
     paste0(

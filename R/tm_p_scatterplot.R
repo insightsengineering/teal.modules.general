@@ -30,6 +30,7 @@ ui_p_scatterplot <- function(id) {
   ns <- NS(id)
   bslib::page_sidebar(
     sidebar = div(
+      bslib::input_switch(ns("add_lines"), "Add lines", value = FALSE),
       colour_picker_ui(ns("colors"))
     ),
     tags$div(
@@ -72,6 +73,7 @@ srv_p_scatterplot <- function(id,
         y_var = str2lang(y_var),
         color_var = str2lang(color_var),
         colors = color_inputs(),
+        add_lines = input$add_lines,
         expr = {
           plot_data <- scatterplot_ds |>
             dplyr::select(subject_var, x_var, y_var, color_var) |>
@@ -83,10 +85,24 @@ srv_p_scatterplot <- function(id,
             color = ~color_var,
             colors = colors,
             mode = "markers",
-            type = "scatter"
+            type = "scatter",
+            source = "scatterplot"
           ) |>
             plotly::layout(dragmode = "select")
-          p()
+
+          if (add_lines) {
+            p <- p %>%
+              plotly::add_trace(
+                x = ~x_var,
+                y = ~y_var,
+                split = ~subject_var,
+                mode = "lines",
+                line = list(color = "grey"),
+                showlegend = FALSE,
+                inherit = FALSE
+              )
+          }
+          p
         }
       )
     })
