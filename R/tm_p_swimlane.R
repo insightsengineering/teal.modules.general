@@ -184,7 +184,6 @@ srv_p_swimlane <- function(id,
 
     plotly_q <- reactive({
       req(data(), input$time_var, input$subject_var, input$color_var, input$group_var, input$sort_var, color_inputs())
-      print(input$subject_var)
       adjusted_symbols <- .shape_palette_discrete(
         levels = unique(data()[[plot_dataname]][[input$color_var]]),
         symbol = point_symbols
@@ -237,7 +236,15 @@ srv_p_swimlane <- function(id,
 
           p <- plot_data %>%
             dplyr::mutate(
-              !!as.name(color_var) := factor(!!as.name(color_var), levels = names(colors)),
+              !!as.name(color_var) := {
+                # Store the original label
+                original_label <- attr(.data[[color_var]], "label")
+                # Create the factor
+                new_factor <- factor(.data[[color_var]], levels = names(colors))
+                # Restore the label
+                attr(new_factor, "label") <- original_label
+                new_factor
+              }
             ) %>%
             dplyr::group_by(!!as.name(subject_var), !!as.name(time_var)) %>%
             dplyr::mutate(
@@ -259,14 +266,25 @@ srv_p_swimlane <- function(id,
                 if (is.null(tooltip_vars)) {
                   default_tip
                 } else {
-                  cur_data <- dplyr::pick(dplyr::everything())
+                  cur_data <- dplyr::cur_data()
+                  grouping_vars <- list()
+                  grouping_vars[[subject_var]] <- dplyr::cur_group()[[subject_var]]
+                  grouping_vars[[time_var]] <- dplyr::cur_group()[[time_var]]
+                  cur_data <- c(cur_data, grouping_vars)
+
                   cols <- intersect(tooltip_vars, names(cur_data))
                   if (!length(cols)) {
                     default_tip
                   } else {
                     sub <- cur_data[cols]
                     labels <- vapply(cols, function(cn) {
-                      lb <- attr(sub[[cn]], "label")
+                      if (cn == subject_var) {
+                        lb <- subject_var_label
+                      } else if (cn == time_var) {
+                        lb <- time_var_label
+                      } else {
+                        lb <- attr(sub[[cn]], "label")
+                      }
                       if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
                     }, character(1))
                     values <- lapply(sub, as.character)
