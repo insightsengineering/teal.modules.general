@@ -239,6 +239,7 @@ srv_p_swimlane <- function(id,
             dplyr::mutate(
               !!as.name(color_var) := factor(!!as.name(color_var), levels = names(colors)),
             ) %>%
+            dplyr::group_by(!!as.name(subject_var), !!as.name(time_var)) %>%
             dplyr::mutate(
               tooltip = {
                 default_tip <- paste(
@@ -275,6 +276,7 @@ srv_p_swimlane <- function(id,
                 }
               }
             ) %>%
+            dplyr::ungroup() %>%
             plotly::plot_ly(
               source = "swimlane",
               colors = colors,
