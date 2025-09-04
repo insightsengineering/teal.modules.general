@@ -236,7 +236,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
   as.call(
     c(
       list(
-        name = quote(reactable),
+        name = quote(reactable::reactable),
         data = str2lang(dataname)
       ),
       call_args
