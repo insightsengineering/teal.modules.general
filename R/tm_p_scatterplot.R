@@ -38,7 +38,7 @@ ui_p_scatterplot <- function(id) {
         slim = TRUE,
         inline = TRUE
       ),
-      colour_picker_ui(ns("colors")),
+      tags$span(id = ns("colors_span"), colour_picker_ui(ns("colors"))),
       bslib::card(
         full_screen = TRUE,
         tags$div(
@@ -70,7 +70,7 @@ srv_p_scatterplot <- function(id,
 
     if (!show_widgets) {
       shinyjs::hide("add_lines")
-      shinyjs::hide("colors")
+      shinyjs::hide("colors_span")
     }
 
     plotly_q <- reactive({
