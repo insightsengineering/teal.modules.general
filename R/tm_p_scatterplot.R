@@ -6,7 +6,8 @@ tm_p_scatterplot <- function(label = "Scatter Plot",
                              y_var,
                              color_var,
                              point_colors = character(0),
-                             transformators = list()) {
+                             transformators = list(),
+                             show_widgets = TRUE) {
   module(
     label = label,
     ui = ui_p_scatterplot,
@@ -18,7 +19,8 @@ tm_p_scatterplot <- function(label = "Scatter Plot",
       x_var = x_var,
       y_var = y_var,
       color_var = color_var,
-      point_colors = point_colors
+      point_colors = point_colors,
+      show_widgets = show_widgets
     ),
     transformators = transformators
   )
@@ -27,6 +29,7 @@ tm_p_scatterplot <- function(label = "Scatter Plot",
 ui_p_scatterplot <- function(id) {
   ns <- NS(id)
   bslib::page_fluid(
+    shinyjs::useShinyjs(),
     tags$div(
       shinyWidgets::prettySwitch(
         ns("add_lines"),
@@ -54,7 +57,8 @@ srv_p_scatterplot <- function(id,
                               x_var,
                               y_var,
                               color_var,
-                              point_colors) {
+                              point_colors,
+                              show_widgets) {
   moduleServer(id, function(input, output, session) {
     color_inputs <- colour_picker_srv(
       "colors",
@@ -63,6 +67,11 @@ srv_p_scatterplot <- function(id,
       }),
       default_colors = point_colors
     )
+
+    if (!show_widgets) {
+      shinyjs::hide("add_lines")
+      shinyjs::hide("colors")
+    }
 
     plotly_q <- reactive({
       req(color_inputs())
