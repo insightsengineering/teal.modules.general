@@ -2,9 +2,9 @@
 
 colour_picker_ui <- function(id) {
   ns <- NS(id)
-  bslib::accordion(
-    uiOutput(ns("module"), title = "Event colors:", container = bslib::accordion_panel),
-    open = FALSE
+  bslib::popover(
+    actionButton(ns("toggle"), "Edit colors"),
+    uiOutput(ns("module"))
   )
 }
 

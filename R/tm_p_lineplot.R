@@ -3,6 +3,7 @@ tm_p_lineplot <- function(label = "Line Plot",
                           plot_dataname,
                           x_var,
                           y_var,
+                          group_var,
                           transformators = list()) {
   module(
     label = label,
@@ -12,7 +13,8 @@ tm_p_lineplot <- function(label = "Line Plot",
     server_args = list(
       plot_dataname = plot_dataname,
       x_var = x_var,
-      y_var = y_var
+      y_var = y_var,
+      group_var = group_var
     ),
     transformators = transformators
   )
@@ -28,7 +30,7 @@ ui_p_lineplot <- function(id) {
   )
 }
 
-srv_p_lineplot <- function(id, data, plot_dataname, x_var, y_var) {
+srv_p_lineplot <- function(id, data, plot_dataname, x_var, y_var, group_var) {
   moduleServer(id, function(input, output, session) {
     plotly_q <- reactive({
       df <- data()[[plot_dataname]]
@@ -39,7 +41,7 @@ srv_p_lineplot <- function(id, data, plot_dataname, x_var, y_var) {
       y_low_last <- if ("si_low" %in% names(df)) utils::tail(stats::na.omit(df[["si_low"]]), 1) else NA
       y_high_last <- if ("si_high" %in% names(df)) utils::tail(stats::na.omit(df[["si_high"]]), 1) else NA
 
-      p <- plotly::plot_ly(data = df, x = df[[x_var]]) |>
+      p <- plotly::plot_ly(data = df |> dplyr::group_by(!!sym(group_var)), x = df[[x_var]]) |>
         plotly::add_trace(
           y = df[[y_var]],
           mode = "lines+markers", type = "scatter", name = "Lab Result",
