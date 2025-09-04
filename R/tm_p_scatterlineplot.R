@@ -49,7 +49,8 @@ srv_p_scatterlineplot <- function(id,
       x_var = x_var,
       y_var = y_var,
       color_var = color_var,
-      point_colors = point_colors
+      point_colors = point_colors,
+      show_widgets = FALSE
     )
     srv_p_lineplot(
       "line",
