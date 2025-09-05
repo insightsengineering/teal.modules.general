@@ -334,7 +334,7 @@ srv_g_scatterplotmatrix <- function(id,
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's code")
       )
-      qenv <- teal.code::eval_code(obj, expression(library("dplyr"), library("lattice")))
+      qenv <- teal.code::eval_code(obj, 'library("dplyr");library("lattice")') # nolint quotes
       teal.code::eval_code(qenv, as.expression(anl_merged_input()$expr))
     })
 

@@ -335,7 +335,7 @@ srv_t_crosstable <- function(id, data, label, x, y, remove_zero_columns, basic_t
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      teal.code::eval_code(obj, expression(library("rtables"), library("tern"), library("dplyr")))
+      teal.code::eval_code(obj, 'library("rtables");library("tern");library("dplyr")') # nolint quotes
     })
     anl_merged_q <- reactive({
       req(anl_merged_input())
