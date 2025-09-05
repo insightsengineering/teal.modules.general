@@ -1409,11 +1409,18 @@ srv_distribution <- function(id,
       title = "R Code for distribution"
     )
     reactive(
-      if (input$tabs == "Histogram") {
-        c(decorated_output_dist_q(), decorated_output_summary_q(), decorated_output_test_q())
-      } else if (input$tabs == "QQplot") {
-        c(decorated_output_qq_q(), decorated_output_summary_q(), decorated_output_test_q())
-      }
+      withCallingHandlers(
+        if (input$tabs == "Histogram") {
+          c(decorated_output_dist_q(), decorated_output_summary_q(), decorated_output_test_q())
+        } else if (input$tabs == "QQplot") {
+          c(decorated_output_qq_q(), decorated_output_summary_q(), decorated_output_test_q())
+        },
+        warning = function(w) {
+          if (grepl("Restoring original content and adding only", conditionMessage(w))) {
+            invokeRestart("muffleWarning")
+          }
+        }
+      )
     )
   })
 }
