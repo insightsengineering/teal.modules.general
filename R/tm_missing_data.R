@@ -1325,7 +1325,7 @@ srv_missing_data <- function(id,
     })
 
     summary_table_r <- reactive({
-      q <- req(summary_table_q())
+      q <- req(decorated_summary_table_q())
 
       list(
         html = if (length(input$variables_select) == 0) {
@@ -1380,7 +1380,7 @@ srv_missing_data <- function(id,
       } else if (sum_type == "Combinations") {
         decorated_combination_plot_q()
       } else if (sum_type == "By Variable Levels") {
-        summary_table_q()
+        decorated_summary_table_q()
       } else if (sum_type == "Grouped by Subject") {
         decorated_by_subject_plot_q()
       }
