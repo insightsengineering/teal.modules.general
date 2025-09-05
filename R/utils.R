@@ -363,3 +363,54 @@ select_decorators <- function(decorators, scope) {
     list()
   }
 }
+
+#' Set the attributes of the last chunk outputs
+#' @param data (`teal_card`) object to modify.
+#' @param attributes (`list`) of attributes to set on the last chunk outputs.
+#' @param n (`integer(1)`) number of the last element of `teal_card` to modify.
+#' it will only change `chunk_output` objects.
+#' @param inner_classes (`character`) classes within `chunk_output` that should be modified.
+#' This can be used to only change `recordedplot`, `ggplot2` or other type of objects.
+#' @keywords internal
+modify_last_chunk_outputs_attributes <- function(teal_card,
+                                                 attributes,
+                                                 n = 1,
+                                                 inner_classes = NULL,
+                                                 quiet = FALSE) {
+  checkmate::assert_class(teal_card, "teal_card")
+  checkmate::assert_list(attributes, names = "unique")
+  checkmate::assert_int(n, lower = 1)
+  checkmate::assert_character(inner_classes, null.ok = TRUE)
+  checkmate::assert_flag(quiet)
+
+  if (!inherits(teal_card[[length(teal_card)]], "chunk_output")) {
+    if (!quiet) {
+      warning("The last element of the `teal_card` is not a `chunk_output` object. No attributes were modified.")
+    }
+    return(teal_card)
+  }
+
+  for (ix in seq_len(length(teal_card))) {
+    if (ix > n) {
+      break
+    }
+    current_ix <- length(teal_card) + 1 - ix
+    if (!inherits(teal_card[[current_ix]], "chunk_output")) {
+      if (!quiet) {
+        warning("The ", ix, " to last element of the `teal_card` is not a `chunk_output` object. Skipping any further modifications.")
+      }
+      return(teal_card)
+    }
+
+    if (length(inner_classes) > 0 && !checkmate::test_multi_class(teal_card[[current_ix]][[1]], inner_classes)) {
+      next
+    }
+
+    attributes(teal_card[[current_ix]]) <- modifyList(
+      attributes(teal_card[[current_ix]]),
+      attributes
+    )
+  }
+
+  teal_card
+}
