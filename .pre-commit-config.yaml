@@ -18,33 +18,45 @@ repos:
           - ggmosaic
           - ggplot2
           - shiny
+          - insightsengineering/teal
+          - insightsengineering/teal.transform
+          - bslib
           - checkmate
+          - colourpicker
           - dplyr
           - DT
           - forcats
+          - ggExtra
+          - ggpmisc
+          - ggpp
+          - ggrepel
+          - goftest
           - grid
-          - logger
+          - gridExtra
+          - htmlwidgets
+          - jsonlite
+          - lattice
+          - lifecycle
+          - MASS
+          - rtables
           - scales
           - shinyjs
           - shinyTree
           - shinyvalidate
           - shinyWidgets
+          - sparkline
           - stats
           - stringr
-          - insightsengineering/roxy.shinylive
-          - insightsengineering/teal
-          - insightsengineering/teal.transform
           - insightsengineering/teal.code
           - insightsengineering/teal.data
           - insightsengineering/teal.logger
           - insightsengineering/teal.reporter
-          - insightsengineering/teal.slice
           - insightsengineering/teal.widgets
           - tern
           - tibble
           - tidyr
-          - utils
-
+          - insightsengineering/teal.slice
+          - insightsengineering/roxy.shinylive
       - id: spell-check
         name: Check spelling with `spelling`
         exclude: >

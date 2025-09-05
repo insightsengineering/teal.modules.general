@@ -1273,15 +1273,19 @@ srv_distribution <- function(id,
     output_qq_q <- reactive(c(common_q(), req(qq_q())))
 
     # Summary table listing has to be created separately to allow for qenv join
+    q_common <- common_q()
+    teal.reporter::teal_card(q_common) <- c(
+      teal.reporter::teal_card(q_common),
+      "## Statistics table"
+    )
     output_summary_q <- reactive({
       if (iv_r()$is_valid()) {
-        within(common_q(), {
+        within(q_common, {
           summary_table <- rtables::df_to_tt(summary_table_data)
-          summary_table
         })
       } else {
         within(
-          common_q(),
+          q_common,
           summary_table <- rtables::rtable(header = rtables::rheader(colnames(summary_table_data)))
         )
       }
@@ -1290,15 +1294,19 @@ srv_distribution <- function(id,
     output_test_q <- reactive({
       # wrapped in if since could lead into validate error - we do want to continue
       test_q_out <- try(test_q(), silent = TRUE)
+      q_common <- common_q()
+      teal.reporter::teal_card(q_common) <- c(
+        teal.reporter::teal_card(q_common),
+        "## Distribution Tests table"
+      )
       if (inherits(test_q_out, c("try-error", "error"))) {
         within(
-          common_q(),
+          q_common,
           test_table <- rtables::rtable(header = rtables::rheader("No data available in table"), rtables::rrow())
         )
       } else {
-        within(c(common_q(), test_q_out), {
+        within(c(q_common, test_q_out), {
           test_table <- rtables::df_to_tt(test_table_data)
-          test_table
         })
       }
     })
