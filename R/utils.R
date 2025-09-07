@@ -409,7 +409,9 @@ children <- function(x, dataset_name = character(0)) {
           join_cols <- teal.data::join_keys(plotly_selected_q())[childname, plot_dataname]
           substitute(
             expr = {
-              childname <- dplyr::right_join(childname, swimlane_selected, by = by)
+              if (nrow(childname) > 0) {
+                childname <- dplyr::right_join(childname, swimlane_selected, by = by)
+              }
             },
             list(
               childname = str2lang(childname),
