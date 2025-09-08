@@ -13,6 +13,8 @@ modify_last_chunk_outputs_attributes(
 )
 }
 \arguments{
+\item{teal_card}{(\code{teal_card}) object to modify.}
+
 \item{attributes}{(\code{list}) of attributes to set on the last chunk outputs.}
 
 \item{n}{(\code{integer(1)}) number of the last element of \code{teal_card} to modify.
@@ -20,8 +22,6 @@ it will only change \code{chunk_output} objects.}
 
 \item{inner_classes}{(\code{character}) classes within \code{chunk_output} that should be modified.
 This can be used to only change \code{recordedplot}, \code{ggplot2} or other type of objects.}
-
-\item{data}{(\code{teal_card}) object to modify.}
 }
 \description{
 Set the attributes of the last chunk outputs
