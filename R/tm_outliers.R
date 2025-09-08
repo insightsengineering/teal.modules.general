@@ -1062,28 +1062,65 @@ srv_outliers <- function(id, data, outlier_var,
       c(box_plot_q, density_plot_q, cumulative_plot_q)
     )
 
-    decorated_final_q <- reactive(decorated_q[[req(current_tab_r())]]())
+    box_plot_r <- reactive({
+      teal::validate_inputs(iv_r())
+      req(decorated_q$box_plot())[["box_plot"]]
+    })
+    density_plot_r <- reactive({
+      teal::validate_inputs(iv_r())
+      req(decorated_q$density_plot())[["density_plot"]]
+    })
+    cumulative_plot_r <- reactive({
+      teal::validate_inputs(iv_r())
+      req(decorated_q$cumulative_plot())[["cumulative_plot"]]
+    })
+
+    box_pws <- teal.widgets::plot_with_settings_srv(
+      id = "box_plot",
+      plot_r = box_plot_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = TRUE
+    )
+
+    density_pws <- teal.widgets::plot_with_settings_srv(
+      id = "density_plot",
+      plot_r = density_plot_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = TRUE
+    )
+
+    cum_density_pws <- teal.widgets::plot_with_settings_srv(
+      id = "cum_density_plot",
+      plot_r = cumulative_plot_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = TRUE
+    )
+
+    pws_list <- list(box_plot = box_pws, density_plot = density_pws, cumulative_plot = cum_density_pws)
+    decorated_final_q <- reactive({
+      set_chunk_dims(pws_list[[req(current_tab_r())]], decorated_q[[current_tab_r()]])()
+    })
 
     summary_table_r <- reactive({
       q <- req(decorated_final_q())
 
-      list(
-        html = DT::datatable(
-          data = if (iv_r()$is_valid()) {
-            categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
-            if (!is.null(categorical_var)) q[["summary_data"]]
-          },
-          option = list(
-            dom = "t",
-            autoWidth = TRUE,
-            columnDefs = list(list(width = "200px", targets = "_all"))
-          )
-        ),
-        report = q[["table"]]
+      DT::datatable(
+        data = if (iv_r()$is_valid()) {
+          categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
+          if (!is.null(categorical_var)) q[["summary_data"]]
+        },
+        option = list(
+          dom = "t",
+          autoWidth = TRUE,
+          columnDefs = list(list(width = "200px", targets = "_all"))
+        )
       )
     })
 
-    output$summary_table <- DT::renderDataTable(summary_table_r()[["html"]])
+    output$summary_table <- DT::renderDataTable(summary_table_r())
 
     # slider text
     output$ui_outlier_help <- renderUI({
@@ -1132,45 +1169,6 @@ srv_outliers <- function(id, data, outlier_var,
         )
       }
     })
-
-    box_plot_r <- reactive({
-      teal::validate_inputs(iv_r())
-      req(decorated_q$box_plot())[["box_plot"]]
-    })
-    density_plot_r <- reactive({
-      teal::validate_inputs(iv_r())
-      req(decorated_q$density_plot())[["density_plot"]]
-    })
-    cumulative_plot_r <- reactive({
-      teal::validate_inputs(iv_r())
-      req(decorated_q$cumulative_plot())[["cumulative_plot"]]
-    })
-
-    box_pws <- teal.widgets::plot_with_settings_srv(
-      id = "box_plot",
-      plot_r = box_plot_r,
-      height = plot_height,
-      width = plot_width,
-      brushing = TRUE
-    )
-
-    density_pws <- teal.widgets::plot_with_settings_srv(
-      id = "density_plot",
-      plot_r = density_plot_r,
-      height = plot_height,
-      width = plot_width,
-      brushing = TRUE
-    )
-
-    cum_density_pws <- teal.widgets::plot_with_settings_srv(
-      id = "cum_density_plot",
-      plot_r = cumulative_plot_r,
-      height = plot_height,
-      width = plot_width,
-      brushing = TRUE
-    )
-
-
 
     choices <- reactive(teal.transform::variable_choices(data_obj()[[dataname_first]]))
 
