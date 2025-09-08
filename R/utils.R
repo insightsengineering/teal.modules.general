@@ -371,6 +371,7 @@ select_decorators <- function(decorators, scope) {
 #' it will only change `chunk_output` objects.
 #' @param inner_classes (`character`) classes within `chunk_output` that should be modified.
 #' This can be used to only change `recordedplot`, `ggplot2` or other type of objects.
+#' @importFrom utils modifyList
 #' @keywords internal
 modify_last_chunk_outputs_attributes <- function(teal_card,
                                                  attributes,
