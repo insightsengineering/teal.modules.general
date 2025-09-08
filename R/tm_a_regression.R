@@ -1021,14 +1021,7 @@ srv_a_regression <- function(id,
       width = plot_width
     )
 
-    decorated_output_dims_q <- reactive({
-      dims <- req(pws$dim())
-      q <- req(decorated_output_q())
-      teal.reporter::teal_card(q) <- modify_last_chunk_outputs_attributes(
-        teal.reporter::teal_card(q), list(dev.width = dims[[1]], dev.height = dims[[2]])
-      )
-      q
-    })
+    decorated_output_dims_q <- set_plot_dims(pws, decorated_output_q)
 
     output$text <- renderText({
       req(iv_r()$is_valid())

@@ -1080,14 +1080,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
       graph_align = "center"
     )
 
-    decorated_output_dims_q <- reactive({
-      dims <- req(pws$dim())
-      q <- req(decorated_output_q())
-      teal.reporter::teal_card(q) <- modify_last_chunk_outputs_attributes(
-        teal.reporter::teal_card(q), list(dev.width = dims[[1]], dev.height = dims[[2]])
-      )
-      q
-    })
+    decorated_output_dims_q <- set_plot_dims(pws, decorated_output_q)
 
     # tables ----
     output$tbl_importance <- renderTable(

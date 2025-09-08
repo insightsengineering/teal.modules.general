@@ -1373,32 +1373,11 @@ srv_missing_data <- function(id,
       width = plot_width
     )
 
-    decorated_summary_plot_dims_q <- reactive({
-      dims <- req(pws1$dim())
-      q <- req(decorated_summary_plot_q())
-      teal.reporter::teal_card(q) <- modify_last_chunk_outputs_attributes(
-        teal.reporter::teal_card(q), list(dev.width = dims[[1]], dev.height = dims[[2]])
-      )
-      q
-    })
+    decorated_summary_plot_dims_q <- set_plot_dims(pws1, decorated_summary_plot_q)
 
-    decorated_combination_plot_dims_q <- reactive({
-      dims <- req(pws2$dim())
-      q <- req(decorated_combination_plot_q())
-      teal.reporter::teal_card(q) <- modify_last_chunk_outputs_attributes(
-        teal.reporter::teal_card(q), list(dev.width = dims[[1]], dev.height = dims[[2]])
-      )
-      q
-    })
+    decorated_combination_plot_dims_q <- set_plot_dims(pws2, decorated_combination_plot_q)
 
-    decorated_by_subject_plot_dims_q <- reactive({
-      dims <- req(pws3$dim())
-      q <- req(decorated_by_subject_plot_q())
-      teal.reporter::teal_card(q) <- modify_last_chunk_outputs_attributes(
-        teal.reporter::teal_card(q), list(dev.width = dims[[1]], dev.height = dims[[2]])
-      )
-      q
-    })
+    decorated_by_subject_plot_dims_q <- set_plot_dims(pws3, decorated_by_subject_plot_q)
 
     decorated_final_q <- reactive({
       sum_type <- req(input$summary_type)

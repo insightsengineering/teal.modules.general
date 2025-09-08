@@ -1385,23 +1385,9 @@ srv_distribution <- function(id,
       brushing = FALSE
     )
 
-    decorated_output_dist_dims_q <- reactive({
-      dims <- req(pws1$dim())
-      q <- req(decorated_output_dist_q())
-      teal.reporter::teal_card(q) <- modify_last_chunk_outputs_attributes(
-        teal.reporter::teal_card(q), list(dev.width = dims[[1]], dev.height = dims[[2]])
-      )
-      q
-    })
+    decorated_output_dist_dims_q <- set_plot_dims(pws1, decorated_output_dist_q)
 
-    decorated_output_qq_dims_q <- reactive({
-      dims <- req(pws2$dim())
-      q <- req(decorated_output_qq_q())
-      teal.reporter::teal_card(q) <- modify_last_chunk_outputs_attributes(
-        teal.reporter::teal_card(q), list(dev.width = dims[[1]], dev.height = dims[[2]])
-      )
-      q
-    })
+    decorated_output_qq_dims_q <- set_plot_dims(pws2, decorated_output_qq_q)
 
     decorated_output_q <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement

@@ -542,14 +542,7 @@ srv_tm_g_association <- function(id,
       width = plot_width
     )
 
-    decorated_output_dims_q <- reactive({
-      dims <- req(pws$dim())
-      q <- req(decorated_output_grob_q())
-      teal.reporter::teal_card(q) <- modify_last_chunk_outputs_attributes(
-        teal.reporter::teal_card(q), list(dev.width = dims[[1]], dev.height = dims[[2]])
-      )
-      q
-    })
+    decorated_output_dims_q <- set_plot_dims(pws, decorated_output_grob_q)
 
     output$title <- renderText(output_q()[["title"]])
 
