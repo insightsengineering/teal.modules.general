@@ -441,7 +441,7 @@ set_chunk_dims <- function(pws, decorated_output_q, inner_classes = NULL) {
   reactive({
     dims <- req(pws$dim())
     q <- req(decorated_output_q())
-    teal.reporter::teal_card(q) <- set_chunkt_attrs(
+    teal.reporter::teal_card(q) <- set_chunk_attrs(
       teal.reporter::teal_card(q),
       list(dev.width = dims[[1]], dev.height = dims[[2]]),
       inner_classes = inner_classes
