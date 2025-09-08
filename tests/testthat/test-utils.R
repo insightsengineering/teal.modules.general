@@ -7,7 +7,7 @@ testthat::describe("modify_last_chunk_outputs_attributes", {
   )
 
   it("changes last chunk output with default parameters", {
-    new_card <- modify_last_chunk_outputs_attributes(teal_card, list(dev.height = 200))
+    new_card <- modify_last_chunk_outputs_attributes(card, list(dev.height = 200))
     testthat::expect_equal(attributes(new_card[[4]]), list(class = "chunk_output", dev.height = 200))
     testthat::expect_equal(attributes(new_card[[3]]), list(class = "chunk_output"))
   })
