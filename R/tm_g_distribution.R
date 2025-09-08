@@ -1339,20 +1339,7 @@ srv_distribution <- function(id,
       expr = quote(test_table)
     )
 
-    decorated_output_q <- reactive({
-      tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
-      test_q_out <- try(test_q(), silent = TRUE)
-      test_q_out <- output_test_q()
-
-      out_q <- switch(tab,
-        Histogram = decorated_output_dist_q(),
-        QQplot = decorated_output_qq_q()
-      )
-      c(out_q, output_summary_q(), test_q_out)
-    })
-
     dist_r <- reactive(req(decorated_output_dist_q())[["histogram_plot"]])
-
     qq_r <- reactive(req(decorated_output_qq_q())[["qq_plot"]])
 
     summary_r <- reactive({
@@ -1398,6 +1385,42 @@ srv_distribution <- function(id,
       brushing = FALSE
     )
 
+    decorated_output_dist_dims_q <- reactive({
+      dims <- req(pws1$dim())
+      q <- req(decorated_output_dist_q())
+      teal.reporter::teal_card(q) <- modify_last_chunk_outputs_attributes(
+        teal.reporter::teal_card(q), list(dev.width = dims[[1]], dev.height = dims[[2]])
+      )
+      q
+    })
+
+    decorated_output_qq_dims_q <- reactive({
+      dims <- req(pws2$dim())
+      q <- req(decorated_output_qq_q())
+      teal.reporter::teal_card(q) <- modify_last_chunk_outputs_attributes(
+        teal.reporter::teal_card(q), list(dev.width = dims[[1]], dev.height = dims[[2]])
+      )
+      q
+    })
+
+    decorated_output_q <- reactive({
+      tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
+      test_q_out <- output_test_q()
+
+      out_q <- switch(tab,
+        Histogram = decorated_output_dist_dims_q(),
+        QQplot = decorated_output_qq_dims_q()
+      )
+      withCallingHandlers(
+        c(out_q, output_summary_q(), test_q_out),
+        warning = function(w) {
+          if (grepl("Restoring original content and adding only", conditionMessage(w))) {
+            invokeRestart("muffleWarning")
+          }
+        }
+      )
+    })
+
     output$t_stats <- DT::renderDataTable(tests_r()[["html"]])
 
     # Render R code.
@@ -1408,19 +1431,6 @@ srv_distribution <- function(id,
       verbatim_content = source_code_r,
       title = "R Code for distribution"
     )
-    reactive(
-      withCallingHandlers(
-        if (input$tabs == "Histogram") {
-          c(decorated_output_dist_q(), decorated_output_summary_q(), decorated_output_test_q())
-        } else if (input$tabs == "QQplot") {
-          c(decorated_output_qq_q(), decorated_output_summary_q(), decorated_output_test_q())
-        },
-        warning = function(w) {
-          if (grepl("Restoring original content and adding only", conditionMessage(w))) {
-            invokeRestart("muffleWarning")
-          }
-        }
-      )
-    )
+    decorated_output_q
   })
 }

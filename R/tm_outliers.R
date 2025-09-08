@@ -1170,6 +1170,8 @@ srv_outliers <- function(id, data, outlier_var,
       brushing = TRUE
     )
 
+
+
     choices <- reactive(teal.transform::variable_choices(data_obj()[[dataname_first]]))
 
     observeEvent(common_code_q(), {
