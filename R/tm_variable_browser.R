@@ -493,7 +493,7 @@ srv_variable_browser <- function(id,
     reactive({
       validation_checks()
       qenv <- teal.data::teal_data(plot = variable_plot_r()) |> teal.code::eval_code("plot")
-      teal_card(qenv)[length(teal_card(qenv))]
+      teal.reporter::teal_card(qenv)[length(teal.reporter::teal_card(qenv))]
     })
   })
 }

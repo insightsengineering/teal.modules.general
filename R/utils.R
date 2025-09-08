@@ -435,7 +435,7 @@ set_chunk_attrs <- function(teal_card,
 set_chunk_dims <- function(pws, decorated_output_q, inner_classes = NULL) {
   checkmate::assert_list(pws)
   checkmate::assert_names(names(pws), must.include = "dim")
-  assert_reactive(pws$dim)
+  teal::assert_reactive(pws$dim)
   checkmate::assert_class(decorated_output_q, "reactive")
   checkmate::assert_character(inner_classes, null.ok = TRUE)
 
