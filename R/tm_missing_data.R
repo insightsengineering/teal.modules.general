@@ -1375,9 +1375,11 @@ srv_missing_data <- function(id,
 
     decorated_summary_plot_dims_q <- set_chunk_dims(pws1, decorated_summary_plot_q)
 
-    decorated_combination_plot_dims_q <- set_chunk_dims(pws2, decorated_combination_plot_q) # nolint: object_length_linter.
+    decorated_combination_plot_dims_q <- # nolint: object_length_linter.
+      set_chunk_dims(pws2, decorated_combination_plot_q) 
 
-    decorated_by_subject_plot_dims_q <- set_chunk_dims(pws3, decorated_by_subject_plot_q) # nolint: object_length_linter.
+    decorated_by_subject_plot_dims_q <- # nolint: object_length_linter.
+      set_chunk_dims(pws3, decorated_by_subject_plot_q) 
 
     decorated_final_q <- reactive({
       sum_type <- req(input$summary_type)
