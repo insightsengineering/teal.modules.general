@@ -399,7 +399,7 @@ set_chunk_attrs <- function(teal_card,
     if (!inherits(teal_card[[current_ix]], "chunk_output")) {
       if (!quiet) {
         warning(
-          "The ", ix, 
+          "The ", ix,
           " to last element of the `teal_card` is not a `chunk_output` object. Skipping any further modifications."
         )
       }
