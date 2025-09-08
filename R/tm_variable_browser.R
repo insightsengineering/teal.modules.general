@@ -491,26 +491,8 @@ srv_variable_browser <- function(id,
     })
 
     reactive({
-      # Version 1
-      # since data() is not being build up in this module, we need to create a reactive that will
-      # return the plot in the reactive teal_data()
       validation_checks()
-      obj <- data()
-      env <- new.env()
-      assign("plot", variable_plot_r(), envir = env)
-      obj@.xData <- rlang::env_clone(env)
-      teal.reporter::teal_card(obj) <-
-        c(
-          teal.reporter::teal_card("# Variable Browser Plot"),
-          teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
-        )
-      teal.code::eval_code(obj, "plot")
-
-
-      # VERSION 2
-      # validation_checks()
-      # teal.data::teal_data(plot = variable_plot_r()) |> teal.code::eval_code("plot")
+      teal.data::teal_data(plot = variable_plot_r()) |> teal.code::eval_code("plot")
     })
   })
 }
