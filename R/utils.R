@@ -373,7 +373,7 @@ select_decorators <- function(decorators, scope) {
 #' This can be used to only change `recordedplot`, `ggplot2` or other type of objects.
 #' @importFrom utils modifyList
 #' @keywords internal
-set_plot_attrs <- function(teal_card,
+set_chunk_attrs <- function(teal_card,
                            attributes,
                            n = 1,
                            inner_classes = NULL,
@@ -430,7 +430,7 @@ set_plot_attrs <- function(teal_card,
 #' @return A reactive expression that returns the teal_card with updated dimensions
 #' 
 #' @keywords internal
-set_plot_dims <- function(pws, decorated_output_q, inner_classes = NULL) {
+set_chunk_dims <- function(pws, decorated_output_q, inner_classes = NULL) {
   checkmate::assert_class(pws, "plot_widget")
   checkmate::assert_class(decorated_output_q, "reactive")
   checkmate::assert_character(inner_classes, null.ok = TRUE)
@@ -438,7 +438,7 @@ set_plot_dims <- function(pws, decorated_output_q, inner_classes = NULL) {
   reactive({
     dims <- req(pws$dim())
     q <- req(decorated_output_q())
-    teal.reporter::teal_card(q) <- set_plot_attrs(
+    teal.reporter::teal_card(q) <- set_chunkt_attrs(
       teal.reporter::teal_card(q), 
       list(dev.width = dims[[1]], dev.height = dims[[2]]),
       inner_classes = inner_classes
