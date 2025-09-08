@@ -1345,16 +1345,13 @@ srv_distribution <- function(id,
     summary_r <- reactive({
       q <- req(output_summary_q())
 
-      list(
-        html = DT::datatable(
-          q[["summary_table_data"]],
-          options = list(
-            autoWidth = TRUE,
-            columnDefs = list(list(width = "200px", targets = "_all"))
-          ),
-          rownames = FALSE
+      DT::datatable(
+        q[["summary_table_data"]],
+        options = list(
+          autoWidth = TRUE,
+          columnDefs = list(list(width = "200px", targets = "_all"))
         ),
-        report = q[["summary_table"]]
+        rownames = FALSE
       )
     })
 
@@ -1362,11 +1359,7 @@ srv_distribution <- function(id,
 
     tests_r <- reactive({
       q <- req(output_test_q())
-
-      list(
-        html = DT::datatable(q[["test_table_data"]]),
-        report = q[["test_table"]]
-      )
+      DT::datatable(q[["test_table_data"]])
     })
 
     pws1 <- teal.widgets::plot_with_settings_srv(

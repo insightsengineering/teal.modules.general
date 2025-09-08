@@ -1327,22 +1327,19 @@ srv_missing_data <- function(id,
     summary_table_r <- reactive({
       q <- req(decorated_summary_table_q())
 
-      list(
-        html = if (length(input$variables_select) == 0) {
-          # so that zeroRecords message gets printed
-          # using tibble as it supports weird column names, such as " "
-          DT::datatable(
-            tibble::tibble(` ` = logical(0)),
-            options = list(
-              language = list(zeroRecords = "No variable selected."),
-              pageLength = input$levels_table_rows
-            )
+      if (length(input$variables_select) == 0) {
+        # so that zeroRecords message gets printed
+        # using tibble as it supports weird column names, such as " "
+        DT::datatable(
+          tibble::tibble(` ` = logical(0)),
+          options = list(
+            language = list(zeroRecords = "No variable selected."),
+            pageLength = input$levels_table_rows
           )
-        } else {
-          DT::datatable(q[["summary_data"]])
-        },
-        report = q[["table"]]
-      )
+        )
+      } else {
+        DT::datatable(q[["summary_data"]])
+      }
     })
 
     by_subject_plot_r <- reactive({
@@ -1364,7 +1361,7 @@ srv_missing_data <- function(id,
       width = plot_width
     )
 
-    output$levels_table <- DT::renderDataTable(summary_table_r()[["html"]])
+    output$levels_table <- DT::renderDataTable(summary_table_r())
 
     pws3 <- teal.widgets::plot_with_settings_srv(
       id = "by_subject_plot",
