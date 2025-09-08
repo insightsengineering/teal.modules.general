@@ -2,24 +2,24 @@
 % Please edit documentation in R/utils.R
 \name{set_chunk_dims}
 \alias{set_chunk_dims}
-\title{Create a reactive that sets plot dimensions on a teal_card}
+\title{Create a reactive that sets plot dimensions on a \code{teal_card}}
 \usage{
 set_chunk_dims(pws, decorated_output_q, inner_classes = NULL)
 }
 \arguments{
 \item{pws}{(\code{plot_widget}) plot widget that provides dimensions via \code{dim()} method}
 
-\item{decorated_output_q}{(\code{reactive}) reactive expression that returns a teal_card}
+\item{decorated_output_q}{(\code{reactive}) reactive expression that returns a \code{teal_card}}
 
 \item{inner_classes}{(\code{character}) classes within \code{chunk_output} that should be modified.
 This can be used to only change \code{recordedplot}, \code{ggplot2} or other type of objects.}
 }
 \value{
-A reactive expression that returns the teal_card with updated dimensions
+A reactive expression that returns the \code{teal_card} with updated dimensions
 }
 \description{
 This is a convenience function that creates a reactive expression that
-automatically sets the dev.width and dev.height attributes on the last
-chunk outputs of a teal_card based on plot dimensions from a plot widget.
+automatically sets the \code{dev.width} and \code{dev.height} attributes on the last
+chunk outputs of a \code{teal_card} based on plot dimensions from a plot widget.
 }
 \keyword{internal}
