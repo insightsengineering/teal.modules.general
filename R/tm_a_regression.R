@@ -1021,7 +1021,7 @@ srv_a_regression <- function(id,
       width = plot_width
     )
 
-    decorated_output_dims_q <- set_plot_dims(pws, decorated_output_q)
+    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_q)
 
     output$text <- renderText({
       req(iv_r()$is_valid())

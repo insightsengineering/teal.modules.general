@@ -1080,7 +1080,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
       graph_align = "center"
     )
 
-    decorated_output_dims_q <- set_plot_dims(pws, decorated_output_q)
+    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_q)
 
     # tables ----
     output$tbl_importance <- renderTable(

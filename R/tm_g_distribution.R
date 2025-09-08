@@ -1385,9 +1385,9 @@ srv_distribution <- function(id,
       brushing = FALSE
     )
 
-    decorated_output_dist_dims_q <- set_plot_dims(pws1, decorated_output_dist_q)
+    decorated_output_dist_dims_q <- set_chunk_dims(pws1, decorated_output_dist_q)
 
-    decorated_output_qq_dims_q <- set_plot_dims(pws2, decorated_output_qq_q)
+    decorated_output_qq_dims_q <- set_chunk_dims(pws2, decorated_output_qq_q)
 
     decorated_output_q <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement

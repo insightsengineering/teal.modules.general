@@ -1037,7 +1037,7 @@ srv_g_scatterplot <- function(id,
       brushing = TRUE
     )
 
-    decorated_output_dims_q <- set_plot_dims(pws, decorated_output_plot_q)
+    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_plot_q)
 
     output$data_table <- DT::renderDataTable({
       plot_brush <- pws$brush()

@@ -594,7 +594,7 @@ srv_g_response <- function(id,
       width = plot_width
     )
 
-    decorated_output_dims_q <- set_plot_dims(pws, decorated_output_plot_q)
+    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_plot_q)
 
     # Render R code.
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_dims_q())))

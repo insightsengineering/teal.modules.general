@@ -479,7 +479,7 @@ srv_g_scatterplotmatrix <- function(id,
       width = plot_width
     )
 
-    decorated_output_dims_q <- set_plot_dims(pws, decorated_output_q)
+    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_q)
 
     # show a message if conversion to factors took place
     output$message <- renderText({
