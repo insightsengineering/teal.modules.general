@@ -365,7 +365,7 @@ select_decorators <- function(decorators, scope) {
 }
 
 #' Set the attributes of the last chunk outputs
-#' @param data (`teal_card`) object to modify.
+#' @param teal_card (`teal_card`) object to modify.
 #' @param attributes (`list`) of attributes to set on the last chunk outputs.
 #' @param n (`integer(1)`) number of the last element of `teal_card` to modify.
 #' it will only change `chunk_output` objects.

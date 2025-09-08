@@ -1403,7 +1403,7 @@ srv_missing_data <- function(id,
     decorated_final_q <- reactive({
       sum_type <- req(input$summary_type)
       if (sum_type == "Summary") {
-        decorated_output_summary_plot_dims_q()
+        decorated_summary_plot_dims_q()
       } else if (sum_type == "Combinations") {
         decorated_combination_plot_dims_q()
       } else if (sum_type == "By Variable Levels") {
