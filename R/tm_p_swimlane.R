@@ -24,8 +24,6 @@
 #' @param point_colors (`named character`) valid color names (see [colors()]) or hex-colors named
 #'  by levels of `color_var` column.
 #' @param point_symbols (`named character`) valid plotly symbol name named  by levels of `color_var` column.
-#' @param table_datanames (`character`) Names of the datasets to be displayed in the tables below the plot.
-#' @param reactable_args (`list`) Additional arguments passed to the `reactable` function for table customization.
 #'
 #' @examples
 #' data <- teal_data() |>
@@ -51,7 +49,6 @@
 #'   modules = modules(
 #'     tm_p_swimlane(
 #'       plot_dataname = "swimlane_ds",
-#'       table_datanames = "subjects",
 #'       time_var = "time_var",
 #'       subject_var = "subject_var",
 #'       color_var = "color_var",
@@ -85,8 +82,7 @@ tm_p_swimlane <- function(label = "Swimlane",
                           point_colors = character(0),
                           point_symbols = character(0),
                           plot_height = c(700, 400, 1200),
-                          table_datanames = character(0),
-                          reactable_args = list()) {
+                          show_widgets = TRUE) {
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   if (is.character(time_var)) {
@@ -108,7 +104,7 @@ tm_p_swimlane <- function(label = "Swimlane",
     label = label,
     ui = ui_p_swimlane,
     server = srv_p_swimlane,
-    datanames = c(plot_dataname, table_datanames),
+    datanames = c(plot_dataname),
     ui_args = list(height = plot_height),
     server_args = list(
       plot_dataname = plot_dataname,
@@ -120,34 +116,38 @@ tm_p_swimlane <- function(label = "Swimlane",
       point_size = point_size,
       point_colors = point_colors,
       point_symbols = point_symbols,
-      table_datanames = table_datanames,
-      reactable_args = reactable_args,
-      tooltip_vars = tooltip_vars
+      tooltip_vars = tooltip_vars,
+      show_widgets = show_widgets
     )
   )
 }
 
 ui_p_swimlane <- function(id, height) {
   ns <- NS(id)
-  bslib::page_sidebar(
-    sidebar = div(
-      selectInput(ns("time_var"), label = "Time variable:", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(ns("subject_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(ns("color_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(ns("group_var"), label = "Group by:", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(ns("sort_var"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
-      colour_picker_ui(ns("colors")),
-      sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1])
-    ),
+  bslib::page_fluid(
     tags$div(
+      shinyjs::useShinyjs(),
+      tags$div(
+        id = ns("top_widgets"),
+        style = "display: flex;",
+        selectInput(ns("subject_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
+        selectInput(ns("color_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
+        selectInput(ns("group_var"), label = "Group by:", choices = NULL, selected = NULL, multiple = FALSE),
+        selectInput(ns("sort_var"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
+        colour_picker_ui(ns("colors")),
+        sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1])
+      ),
       bslib::card(
         full_screen = TRUE,
         tags$div(
           trigger_tooltips_deps(),
-          plotly::plotlyOutput(ns("plot"), height = "100%")
+          plotly::plotlyOutput(ns("plot"), height = "100%"),
         )
       ),
-      ui_t_reactables(ns("subtables"))
+      tags$div(
+        id = ns("bottom_widgets"),
+        selectInput(ns("time_var"), label = "Time variable:", choices = NULL, selected = NULL, multiple = FALSE)
+      )
     )
   )
 }
@@ -162,16 +162,20 @@ srv_p_swimlane <- function(id,
                            point_size = 10,
                            point_colors,
                            point_symbols,
-                           table_datanames,
-                           reactable_args = list(),
                            tooltip_vars = NULL,
-                           filter_panel_api) {
+                           filter_panel_api,
+                           show_widgets) {
   moduleServer(id, function(input, output, session) {
     .update_cs_input(inputId = "time_var", data = reactive(data()[[dataname]]), cs = time_var)
     .update_cs_input(inputId = "subject_var", data = reactive(data()[[dataname]]), cs = subject_var)
     .update_cs_input(inputId = "color_var", data = reactive(data()[[dataname]]), cs = color_var)
     .update_cs_input(inputId = "group_var", data = reactive(data()[[dataname]]), cs = group_var)
     .update_cs_input(inputId = "sort_var", data = reactive(data()[[dataname]]), cs = sort_var)
+
+    if (!show_widgets) {
+      shinyjs::hide("top_widgets")
+      shinyjs::hide("bottom_widgets")
+    }
 
     color_inputs <- colour_picker_srv(
       "colors",
@@ -334,44 +338,30 @@ srv_p_swimlane <- function(id,
       )
     })
 
-    output$plot <- plotly::renderPlotly(plotly::event_register(
-      {
-        plotly_q()$p |>
-          set_plot_data(session$ns("plot_data")) |>
-          setup_trigger_tooltips(session$ns)
-      },
-      "plotly_selected"
-    ))
-
-    plotly_data <- reactive({
-      data.frame(
-        x = unlist(input$plot_data$x),
-        y = unlist(input$plot_data$y),
-        customdata = unlist(input$plot_data$customdata),
-        curve = unlist(input$plot_data$curveNumber),
-        index = unlist(input$plot_data$pointNumber)
-      )
+    output$plot <- plotly::renderPlotly({
+      plotly_q()$p |>
+        set_plot_data(session$ns("plot_data")) |>
+        setup_trigger_tooltips(session$ns) |>
+        plotly::event_register("plotly_selected")
     })
 
     plotly_selected <- reactive({
-      plotly::event_data("plotly_deselect", source = "swimlane") # todo: deselect doesn't work
       plotly::event_data("plotly_selected", source = "swimlane")
     })
 
-    tables_selected_q <- .plotly_selected_filter_children(
-      data = plotly_q,
-      plot_dataname = plot_dataname,
-      xvar = reactive(input$time_var),
-      yvar = reactive(input$subject_var),
-      plotly_selected = plotly_selected,
-      children_datanames = table_datanames
-    )
-
-    srv_t_reactables(
-      "subtables",
-      data = tables_selected_q,
-      datanames = table_datanames,
-      reactable_args = reactable_args
-    )
+    reactive({
+      req(plotly_selected())
+      plotly_q() |>
+        within(
+          {
+            selected_plot_data <- plot_data |>
+              dplyr::filter(customdata %in% plotly_selected_customdata)
+            dataname <- dataname |>
+              filter(subject %in% selected_plot_data$subject)
+          },
+          dataname = str2lang(plot_dataname),
+          plotly_selected_customdata = plotly_selected()$customdata
+        )
+    })
   })
 }
