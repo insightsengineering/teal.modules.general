@@ -48,6 +48,8 @@
 #' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
+#' @inheritSection teal::example_module Reporting
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -232,10 +234,6 @@ ui_tm_g_association <- function(id, ...) {
       teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = tags$div(
-      ### Reporter
-      teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
-      tags$br(), tags$br(),
-      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("ref", "vars")]),
       teal.transform::data_extract_ui(
@@ -302,16 +300,12 @@ ui_tm_g_association <- function(id, ...) {
 # Server function for the association module
 srv_tm_g_association <- function(id,
                                  data,
-                                 reporter,
-                                 filter_panel_api,
                                  ref,
                                  vars,
                                  plot_height,
                                  plot_width,
                                  ggplot2_args,
                                  decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
 
@@ -347,9 +341,16 @@ srv_tm_g_association <- function(id,
       selector_list = selector_list
     )
 
-    qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")') # nolint quotes
-    )
+    qenv <- reactive({
+      obj <- data()
+      teal.reporter::teal_card(obj) <-
+        c(
+          teal.reporter::teal_card("# Association Plot"),
+          teal.reporter::teal_card(obj),
+          teal.reporter::teal_card("## Module's code")
+        )
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("ggmosaic")') # nolint: quotes
+    })
     anl_merged_q <- reactive({
       req(anl_merged_input())
       qenv() %>% teal.code::eval_code(as.expression(anl_merged_input()$expr))
@@ -496,8 +497,10 @@ srv_tm_g_association <- function(id,
             )
           )
         }
+      obj <- merged$anl_q_r()
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Plot")
       teal.code::eval_code(
-        merged$anl_q_r(),
+        obj,
         substitute(
           expr = title <- new_title,
           env = list(new_title = new_title)
@@ -507,9 +510,7 @@ srv_tm_g_association <- function(id,
           substitute(
             expr = {
               plots <- plot_calls
-              plot_top <- plots[[1]]
-              plot_bottom <- plots[[2]]
-              plot <- gridExtra::grid.arrange(plot_top, plot_bottom, ncol = 1)
+              plot <- gridExtra::arrangeGrob(plots[[1]], plots[[2]], ncol = 1)
             },
             env = list(
               plot_calls = do.call(
@@ -526,10 +527,10 @@ srv_tm_g_association <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = {
+      expr = quote({
         grid::grid.newpage()
         grid::grid.draw(plot)
-      }
+      })
     )
 
     plot_r <- reactive({
@@ -544,37 +545,18 @@ srv_tm_g_association <- function(id,
       width = plot_width
     )
 
+    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_grob_q)
+
     output$title <- renderText(output_q()[["title"]])
 
     # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_grob_q())))
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_dims_q())))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
       verbatim_content = source_code_r,
       title = "Association Plot"
     )
-
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Association Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::add_card_button_srv("add_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+    decorated_output_dims_q
   })
 }
