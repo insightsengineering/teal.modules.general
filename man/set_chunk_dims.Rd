@@ -4,12 +4,12 @@
 \alias{set_chunk_dims}
 \title{Create a reactive that sets plot dimensions on a \code{teal_card}}
 \usage{
-set_chunk_dims(pws, decorated_output_q, inner_classes = NULL)
+set_chunk_dims(pws, q_r, inner_classes = NULL)
 }
 \arguments{
 \item{pws}{(\code{plot_widget}) plot widget that provides dimensions via \code{dim()} method}
 
-\item{decorated_output_q}{(\code{reactive}) reactive expression that returns a \code{teal_card}}
+\item{q_r}{(\code{reactive}) reactive expression that returns a \code{teal_reporter}}
 
 \item{inner_classes}{(\code{character}) classes within \code{chunk_output} that should be modified.
 This can be used to only change \code{recordedplot}, \code{ggplot2} or other type of objects.}
