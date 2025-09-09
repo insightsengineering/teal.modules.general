@@ -1355,7 +1355,7 @@ srv_distribution <- function(id,
       )
     })
 
-    output$summary_table <- DT::renderDataTable(summary_r()[["html"]])
+    output$summary_table <- DT::renderDataTable(summary_r())
 
     tests_r <- reactive({
       q <- req(output_test_q())
@@ -1400,7 +1400,7 @@ srv_distribution <- function(id,
       )
     })
 
-    output$t_stats <- DT::renderDataTable(tests_r()[["html"]])
+    output$t_stats <- DT::renderDataTable(tests_r())
 
     # Render R code.
     source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
