@@ -357,9 +357,10 @@ srv_p_swimlane <- function(id,
             selected_plot_data <- plot_data |>
               dplyr::filter(customdata %in% plotly_selected_customdata)
             dataname <- dataname |>
-              filter(subject %in% selected_plot_data$subject)
+              dplyr::filter(!!sym(subject_var) %in% selected_plot_data[[subject_var]])
           },
           dataname = str2lang(plot_dataname),
+          subject_var = input$subject_var,
           plotly_selected_customdata = plotly_selected()$customdata
         )
     })

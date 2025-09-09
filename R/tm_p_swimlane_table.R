@@ -164,9 +164,27 @@ srv_p_swimlane_table <- function(id,
       point_symbols = point_symbols,
       show_widgets = FALSE
     )
+
+    filtered_data_q <- reactive({
+      req(plot_q())
+      plot_q() |>
+        within(
+          {
+            table_names <- c("recist_listing")
+            for (table_name in table_names) {
+              current_table <- get(table_name)
+              filtered_table <- current_table |>
+                dplyr::filter(!!sym(subject_var) %in% plot_dataname[[subject_var]])
+              assign(table_name, filtered_table)
+            }
+          },
+          plot_dataname = str2lang(plot_dataname),
+          subject_var = subject_var$selected
+        )
+    })
     srv_t_reactables(
       "subtables",
-      data = plot_q,
+      data = filtered_data_q,
       filter_panel_api = filter_panel_api,
       datanames = table_datanames,
       reactable_args = reactable_args
