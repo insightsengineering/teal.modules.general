@@ -527,7 +527,10 @@ srv_tm_g_association <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = quote(plot)
+      expr = quote({
+        grid::grid.newpage()
+        grid::grid.draw(plot)
+      })
     )
 
     plot_r <- reactive({
@@ -555,5 +558,5 @@ srv_tm_g_association <- function(id,
       title = "Association Plot"
     )
     decorated_output_dims_q
-  })
+      })
 }
