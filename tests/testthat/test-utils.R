@@ -47,3 +47,18 @@ testthat::describe("set_chunk_attrs", {
     testthat::expect_equal(attributes(new_card[[3]]), list(class = "chunk_output"))
   })
 })
+
+testthat::describe("set_chunk_dims", {
+  it("skips when one of the dimensions is auto string", {
+    pws <- list(dim = shiny::reactive(list("auto", 200)))
+    q <- teal.reporter::teal_report()
+    teal.reporter::teal_card(q) <- teal.reporter::teal_card("## Header", structure(list(2), class = "chunk_output"))
+    q_r <- shiny::reactive(q)
+
+    q_dims_r <- set_chunk_dims(pws, q_r)
+    testthat::expect_equal(
+      attributes(teal.reporter::teal_card(shiny::isolate(q_dims_r()))[[2]]),
+      list(class = "chunk_output", dev.height = 200)
+    )
+  })
+})

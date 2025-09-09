@@ -1101,7 +1101,10 @@ srv_outliers <- function(id, data, outlier_var,
 
     pws_list <- list(box_plot = box_pws, density_plot = density_pws, cumulative_plot = cum_density_pws)
     decorated_final_q <- reactive({
-      set_chunk_dims(pws_list[[req(current_tab_r())]], decorated_q[[current_tab_r()]])()
+      pws <- pws_list[[req(current_tab_r())]]
+      req(pws$dim())
+      req(decorated_q[[current_tab_r()]]())
+      set_chunk_dims(pws, decorated_q[[current_tab_r()]])()
     })
 
     summary_table_r <- reactive({

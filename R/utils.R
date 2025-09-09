@@ -425,26 +425,32 @@ set_chunk_attrs <- function(teal_card,
 #' chunk outputs of a `teal_card` based on plot dimensions from a plot widget.
 #'
 #' @param pws (`plot_widget`) plot widget that provides dimensions via `dim()` method
-#' @param decorated_output_q (`reactive`) reactive expression that returns a `teal_card`
+#' @param q_r (`reactive`) reactive expression that returns a `teal_reporter`
 #' @param inner_classes (`character`) classes within `chunk_output` that should be modified.
 #' This can be used to only change `recordedplot`, `ggplot2` or other type of objects.
 #'
 #' @return A reactive expression that returns the `teal_card` with updated dimensions
 #'
 #' @keywords internal
-set_chunk_dims <- function(pws, decorated_output_q, inner_classes = NULL) {
+set_chunk_dims <- function(pws, q_r, inner_classes = NULL) {
   checkmate::assert_list(pws)
   checkmate::assert_names(names(pws), must.include = "dim")
   checkmate::assert_class(pws$dim, "reactive")
-  checkmate::assert_class(decorated_output_q, "reactive")
+  checkmate::assert_class(q_r, "reactive")
   checkmate::assert_character(inner_classes, null.ok = TRUE)
 
   reactive({
-    dims <- req(pws$dim())
-    q <- req(decorated_output_q())
+    pws_dim <- stats::setNames(as.list(req(pws$dim())), c("width", "height"))
+    if (identical(pws_dim$width, "auto")) { # ignore non-numeric values (such as "auto")
+      pws_dim$width <- NULL
+    }
+    if (identical(pws_dim$height, "auto")) { # ignore non-numeric values (such as "auto")
+      pws_dim$height <- NULL
+    }
+    q <- req(q_r())
     teal.reporter::teal_card(q) <- set_chunk_attrs(
       teal.reporter::teal_card(q),
-      list(dev.width = dims[[1]], dev.height = dims[[2]]),
+      list(dev.width = pws_dim$width, dev.height = pws_dim$height),
       inner_classes = inner_classes
     )
     q
