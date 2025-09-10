@@ -54,6 +54,7 @@
 #' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
+#' @inheritSection teal::example_module Reporting
 #'
 #' @examplesShinylive
 #' library(teal.modules.general)
@@ -368,10 +369,6 @@ ui_g_scatterplot <- function(id, ...) {
         teal::ui_brush_filter(ns("brush_filter"))
       ),
       encoding = tags$div(
-        ### Reporter
-        teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
-        tags$br(), tags$br(),
-        ###
         tags$label("Encodings", class = "text-primary"),
         teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
         teal.transform::data_extract_ui(
@@ -507,8 +504,6 @@ ui_g_scatterplot <- function(id, ...) {
 # Server function for the scatterplot module
 srv_g_scatterplot <- function(id,
                               data,
-                              reporter,
-                              filter_panel_api,
                               x,
                               y,
                               color_by,
@@ -520,8 +515,6 @@ srv_g_scatterplot <- function(id,
                               table_dec,
                               ggplot2_args,
                               decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -588,15 +581,20 @@ srv_g_scatterplot <- function(id,
       datasets = data,
       merge_function = "dplyr::inner_join"
     )
-    qenv <- reactive(
+    qenv <- reactive({
+      obj <- data()
+      teal.reporter::teal_card(obj) <- c(
+        teal.reporter::teal_card("# Scatter Plot"),
+        teal.reporter::teal_card(obj),
+        teal.reporter::teal_card("## Module's code")
+      )
       teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
-    )
+    })
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
       qenv() %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr)) %>%
-        teal.code::eval_code(quote(ANL)) # used to display table when running show-r-code code
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
     merged <- list(
@@ -1014,6 +1012,7 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = plot <- plot_call, env = list(plot_call = plot_call))
 
+      teal.reporter::teal_card(plot_q) <- c(teal.reporter::teal_card(plot_q), "## Plot")
       teal.code::eval_code(plot_q, plot_call)
     })
 
@@ -1021,7 +1020,7 @@ srv_g_scatterplot <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
-      expr = print(plot)
+      expr = quote(plot)
     )
 
     plot_r <- reactive(req(decorated_output_plot_q())[["plot"]])
@@ -1036,46 +1035,44 @@ srv_g_scatterplot <- function(id,
       click = TRUE
     )
 
-    # todo:
-    # validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
-    teal::srv_brush_filter(
-      "brush_filter",
-      brush = pws$brush,
-      dataset = reactive(teal.code::dev_suppress(output_q()[["ANL"]])),
-      filter_panel_api = filter_panel_api,
-      selectors = selector_list,
-      table_dec = table_dec
-    )
+    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_plot_q)
+
+    output$data_table <- DT::renderDataTable({
+      plot_brush <- pws$brush()
+
+      if (!is.null(plot_brush)) {
+        validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
+      }
+
+      merged_data <- isolate(output_q()[["ANL"]])
+
+      brushed_df <- teal.widgets::clean_brushedPoints(merged_data, plot_brush)
+      numeric_cols <- names(brushed_df)[
+        vapply(brushed_df, function(x) is.numeric(x) && !is.integer(x), FUN.VALUE = logical(1))
+      ]
+
+      if (length(numeric_cols) > 0) {
+        DT::formatRound(
+          DT::datatable(brushed_df,
+            rownames = FALSE,
+            options = list(scrollX = TRUE, pageLength = input$data_table_rows)
+          ),
+          numeric_cols,
+          table_dec
+        )
+      } else {
+        DT::datatable(brushed_df, rownames = FALSE, options = list(scrollX = TRUE, pageLength = input$data_table_rows))
+      }
+    })
 
     # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_plot_q())))
+    source_code_r <- reactive(teal.code::get_code(req(decorated_output_dims_q())))
 
     teal.widgets::verbatim_popup_srv(
       id = "rcode",
       verbatim_content = source_code_r,
       title = "R Code for scatterplot"
     )
-
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Scatter Plot",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Plot", "header3")
-        card$append_plot(plot_r(), dim = pws$dim())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::add_card_button_srv("add_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+    decorated_output_dims_q
   })
 }

@@ -80,7 +80,7 @@ adaptable for general data analysis purposes.
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{summary_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
+\item \code{summary_plot} (\code{ggplot})
 \item \code{combination_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
 \item \code{by_subject_plot} (\code{ggplot})
 }
