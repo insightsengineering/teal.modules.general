@@ -43,6 +43,8 @@
 #' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
+#' @inheritSection teal::example_module Reporting
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -261,10 +263,6 @@ ui_outliers <- function(id, ...) {
       DT::dataTableOutput(ns("table_ui"))
     ),
     encoding = tags$div(
-      ### Reporter
-      teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
-      tags$br(), tags$br(),
-      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("outlier_var", "categorical_var")]),
       teal.transform::data_extract_ui(
@@ -386,10 +384,8 @@ ui_outliers <- function(id, ...) {
 
 # Server function for the outliers module
 # Server function for the outliers module
-srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
+srv_outliers <- function(id, data, outlier_var,
                          categorical_var, plot_height, plot_width, ggplot2_args, decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -460,11 +456,8 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       req(anl_merged_input())
       teal.code::eval_code(
         data_obj(),
-        paste0(
-          'library("dplyr");library("tidyr");', # nolint quotes
-          'library("tibble");library("ggplot2");'
-        )
-      ) %>% # nolint quotes
+        'library("dplyr");library("tidyr");library("tibble");library("ggplot2")' # nolint quotes
+      ) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
@@ -485,6 +478,12 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
       ANL <- merged$anl_q_r()[["ANL"]]
       qenv <- merged$anl_q_r()
+      teal.reporter::teal_card(qenv) <-
+        c(
+          teal.reporter::teal_card("# Outliers Analysis"),
+          teal.reporter::teal_card(qenv),
+          teal.reporter::teal_card("## Module's code")
+        )
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
@@ -654,6 +653,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       }
 
       qenv <- if (length(categorical_var) > 0) {
+        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Summary Table")
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -766,8 +766,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     # boxplot/violinplot # nolint commented_code
     box_plot_q <- reactive({
       req(common_code_q())
-      ANL <- common_code_q()[["ANL"]]
-      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]]
+      qenv <- common_code_q()
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Box Plot")
+
+      ANL <- qenv[["ANL"]]
+      ANL_OUTLIER <- qenv[["ANL_OUTLIER"]]
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
@@ -840,7 +843,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
 
       teal.code::eval_code(
-        common_code_q(),
+        qenv,
         substitute(
           expr = box_plot <- plot_call +
             ggplot2::scale_color_manual(values = c("TRUE" = "red", "FALSE" = "black")) +
@@ -857,8 +860,11 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
 
     # density plot
     density_plot_q <- reactive({
-      ANL <- common_code_q()[["ANL"]]
-      ANL_OUTLIER <- common_code_q()[["ANL_OUTLIER"]]
+      qenv <- common_code_q()
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Density Plot")
+
+      ANL <- qenv[["ANL"]]
+      ANL_OUTLIER <- qenv[["ANL_OUTLIER"]]
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
       categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
@@ -901,7 +907,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       )
 
       teal.code::eval_code(
-        common_code_q(),
+        qenv,
         substitute(
           expr = density_plot <- plot_call + labs + ggthemes + themes,
           env = list(
@@ -917,6 +923,7 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
     # Cumulative distribution plot
     cumulative_plot_q <- reactive({
       qenv <- common_code_q()
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Cumulative Distribution Plot")
 
       ANL <- qenv[["ANL"]]
       ANL_OUTLIER <- qenv[["ANL_OUTLIER"]]
@@ -1048,36 +1055,75 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
               },
               env = list(table_columns = input$table_ui_columns, .plot = as.name(obj_name))
             )
-          }),
-          expr_is_reactive = TRUE
+          })
         )
       },
       stats::setNames(nm = c("box_plot", "density_plot", "cumulative_plot")),
       c(box_plot_q, density_plot_q, cumulative_plot_q)
     )
 
-    decorated_final_q <- reactive(decorated_q[[req(current_tab_r())]]())
+    box_plot_r <- reactive({
+      teal::validate_inputs(iv_r())
+      req(decorated_q$box_plot())[["box_plot"]]
+    })
+    density_plot_r <- reactive({
+      teal::validate_inputs(iv_r())
+      req(decorated_q$density_plot())[["density_plot"]]
+    })
+    cumulative_plot_r <- reactive({
+      teal::validate_inputs(iv_r())
+      req(decorated_q$cumulative_plot())[["cumulative_plot"]]
+    })
+
+    box_pws <- teal.widgets::plot_with_settings_srv(
+      id = "box_plot",
+      plot_r = box_plot_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = TRUE
+    )
+
+    density_pws <- teal.widgets::plot_with_settings_srv(
+      id = "density_plot",
+      plot_r = density_plot_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = TRUE
+    )
+
+    cum_density_pws <- teal.widgets::plot_with_settings_srv(
+      id = "cum_density_plot",
+      plot_r = cumulative_plot_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = TRUE
+    )
+
+    pws_list <- list(box_plot = box_pws, density_plot = density_pws, cumulative_plot = cum_density_pws)
+    decorated_final_q <- reactive({
+      pws <- pws_list[[req(current_tab_r())]]
+      req(pws$dim())
+      req(decorated_q[[current_tab_r()]]())
+      set_chunk_dims(pws, decorated_q[[current_tab_r()]])()
+    })
 
     summary_table_r <- reactive({
       q <- req(decorated_final_q())
 
-      list(
-        html = DT::datatable(
-          data = if (iv_r()$is_valid()) {
-            categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
-            if (!is.null(categorical_var)) q[["summary_data"]]
-          },
-          option = list(
-            dom = "t",
-            autoWidth = TRUE,
-            columnDefs = list(list(width = "200px", targets = "_all"))
-          )
-        ),
-        report = q[["table"]]
+      DT::datatable(
+        data = if (iv_r()$is_valid()) {
+          categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
+          if (!is.null(categorical_var)) q[["summary_data"]]
+        },
+        option = list(
+          dom = "t",
+          autoWidth = TRUE,
+          columnDefs = list(list(width = "200px", targets = "_all"))
+        )
       )
     })
 
-    output$summary_table <- DT::renderDataTable(summary_table_r()[["html"]])
+    output$summary_table <- DT::renderDataTable(summary_table_r())
 
     # slider text
     output$ui_outlier_help <- renderUI({
@@ -1126,43 +1172,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
         )
       }
     })
-
-    box_plot_r <- reactive({
-      teal::validate_inputs(iv_r())
-      req(decorated_q$box_plot())[["box_plot"]]
-    })
-    density_plot_r <- reactive({
-      teal::validate_inputs(iv_r())
-      req(decorated_q$density_plot())[["density_plot"]]
-    })
-    cumulative_plot_r <- reactive({
-      teal::validate_inputs(iv_r())
-      req(decorated_q$cumulative_plot())[["cumulative_plot"]]
-    })
-
-    box_pws <- teal.widgets::plot_with_settings_srv(
-      id = "box_plot",
-      plot_r = box_plot_r,
-      height = plot_height,
-      width = plot_width,
-      brushing = TRUE
-    )
-
-    density_pws <- teal.widgets::plot_with_settings_srv(
-      id = "density_plot",
-      plot_r = density_plot_r,
-      height = plot_height,
-      width = plot_width,
-      brushing = TRUE
-    )
-
-    cum_density_pws <- teal.widgets::plot_with_settings_srv(
-      id = "cum_density_plot",
-      plot_r = cumulative_plot_r,
-      height = plot_height,
-      width = plot_width,
-      brushing = TRUE
-    )
 
     choices <- reactive(teal.transform::variable_choices(data_obj()[[dataname_first]]))
 
@@ -1335,39 +1344,6 @@ srv_outliers <- function(id, data, reporter, filter_panel_api, outlier_var,
       verbatim_content = source_code_r,
       title = "Show R Code for Outlier"
     )
-
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        tab_type <- input$tabs
-        card <- teal::report_card_template(
-          title = paste0("Outliers - ", tab_type),
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
-        if (length(categorical_var) > 0) {
-          card$append_text("Summary Table", "header3")
-          card$append_table(summary_table_r()[["report"]])
-        }
-        card$append_text("Plot", "header3")
-        if (tab_type == "Boxplot") {
-          card$append_plot(box_plot_r(), dim = box_pws$dim())
-        } else if (tab_type == "Density Plot") {
-          card$append_plot(density_plot_r(), dim = density_pws$dim())
-        } else if (tab_type == "Cumulative Distribution Plot") {
-          card$append_plot(cumulative_plot_r(), dim = cum_density_pws$dim())
-        }
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::add_card_button_srv("add_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+    decorated_final_q
   })
 }

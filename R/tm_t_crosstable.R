@@ -59,6 +59,8 @@
 #' To learn more please refer to the vignette
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
+#' @inheritSection teal::example_module Reporting
+#'
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -239,10 +241,6 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, remove_zero_c
       teal.widgets::table_with_settings_ui(ns("table"))
     ),
     encoding = tags$div(
-      ### Reporter
-      teal.reporter::add_card_button_ui(ns("add_reporter"), label = "Add Report Card"),
-      tags$br(), tags$br(),
-      ###
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(list(x, y)),
       teal.transform::data_extract_ui(ns("x"), label = "Row values", x, is_single_dataset = is_single_dataset),
@@ -275,18 +273,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, remove_zero_c
 }
 
 # Server function for the cross-table module
-srv_t_crosstable <- function(id,
-                             data,
-                             reporter,
-                             filter_panel_api,
-                             label,
-                             x,
-                             y,
-                             remove_zero_columns,
-                             basic_table_args,
-                             decorators) {
-  with_reporter <- !missing(reporter) && inherits(reporter, "Reporter")
-  with_filter <- !missing(filter_panel_api) && inherits(filter_panel_api, "FilterPanelAPI")
+srv_t_crosstable <- function(id, data, label, x, y, remove_zero_columns, basic_table_args, decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -340,9 +327,16 @@ srv_t_crosstable <- function(id,
       selector_list = selector_list,
       merge_function = merge_function
     )
-    qenv <- reactive(
-      teal.code::eval_code(data(), 'library("rtables");library("tern");library("dplyr")') # nolint quotes
-    )
+    qenv <- reactive({
+      obj <- data()
+      teal.reporter::teal_card(obj) <-
+        c(
+          teal.reporter::teal_card("# Cross Table"),
+          teal.reporter::teal_card(obj),
+          teal.reporter::teal_card("## Module's code")
+        )
+      teal.code::eval_code(obj, 'library("rtables");library("tern");library("dplyr")') # nolint quotes
+    })
     anl_merged_q <- reactive({
       req(anl_merged_input())
       qenv() %>%
@@ -394,8 +388,10 @@ srv_t_crosstable <- function(id,
         ANL
       )
 
+      obj <- merged$anl_q_r()
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Table")
       obj <- teal.code::eval_code(
-        merged$anl_q_r(),
+        obj,
         substitute(
           expr = {
             title <- plot_title
@@ -471,7 +467,7 @@ srv_t_crosstable <- function(id,
       id = "decorator",
       data = output_q,
       decorators = select_decorators(decorators, "table"),
-      expr = table
+      expr = quote(table)
     )
 
     output$title <- renderText(req(decorated_output_q())[["title"]])
@@ -494,27 +490,6 @@ srv_t_crosstable <- function(id,
       verbatim_content = source_code_r,
       title = "Show R Code for Cross-Table"
     )
-
-    ### REPORTER
-    if (with_reporter) {
-      card_fun <- function(comment, label) {
-        card <- teal::report_card_template(
-          title = "Cross Table",
-          label = label,
-          with_filter = with_filter,
-          filter_panel_api = filter_panel_api
-        )
-        card$append_text("Table", "header3")
-        card$append_table(table_r())
-        if (!comment == "") {
-          card$append_text("Comment", "header3")
-          card$append_text(comment)
-        }
-        card$append_src(source_code_r())
-        card
-      }
-      teal.reporter::add_card_button_srv("add_reporter", reporter = reporter, card_fun = card_fun)
-    }
-    ###
+    decorated_output_q
   })
 }

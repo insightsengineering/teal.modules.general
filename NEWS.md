@@ -1,4 +1,6 @@
-# teal.modules.general 0.4.1.9020
+# teal.modules.general 0.5.0.9001
+
+# teal.modules.general 0.5.0
 
 ### Breaking changes
 
@@ -8,18 +10,19 @@
 ### Bug fixes
 
 - Fixed "Add to Report" functionality in `tm_outliers`, `tm_missing_data` and `tm_g_distribution` modules (#899 and #897).
+- Fixes a bug in `tm_outliers` that fails when data has no join keys (#650).
 
-### Miscellaneous
+### Enhancements
 
+- Improved the layout and appearance of the app using `bslib` components.
 - Fixed deprecation warning for `tern::stack_grobs` in `tm_g_association` (#903).
+- Allow search feature in `tm_file_viewer` (#152).
+- Added `remove_zero_columns` to `tm_t_crosstable` to add an option to remove empty columns (#890)
 
 # teal.modules.general 0.4.1
 
 ### Bug fixes
 * Fixes output is not updated when filter is added for the modules:  `tm_a_pca`, `tm_a_regression`, `tm_g_scatterplot`, `tm_g_association`, `tm_g_bivariate`, `tm_g_distribution`, `tm_g_response`, `tm_t_crosstable` (#870)
-
-### Enhancements
-* Added `remove_zero_columns` to `tm_t_crosstable` to add an option to remove empty columns (#890)
 
 # teal.modules.general 0.4.0
 
