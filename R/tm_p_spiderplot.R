@@ -4,29 +4,24 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param plot_dataname (`character(1)` or `choices_selected`) name of the dataset which visualization is builded on.
-#' @param time_var (`character(1)` or `choices_selected`) name of the `numeric` column
+#' @param time_var (`character(1)` or `variables`) name of the `numeric` column
 #' in `plot_dataname` to be used as x-axis.
-#' @param value_var (`character(1)` or `choices_selected`) name of the `numeric` column
+#' @param value_var (`character(1)` or `variables`) name of the `numeric` column
 #' in `plot_dataname` to be used as y-axis.
-#' @param subject_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column
+#' @param subject_var (`character(1)` or `variables`) name of the `factor` or `character` column
 #' in `plot_dataname` to be used as grouping variable for displayed lines/points.
-#' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname`
+#' @param color_var (`character(1)` or `variables`) name of the `factor` or `character` column in `plot_dataname`
 #'  to be used to differentiate colors and symbols.
-#' @param filter_event_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column
-#' in `plot_dataname` to be used to filter the data.
-#' The plot will be updated with just the filtereed data when the user selects an event from the dropdown menu.
-#' @param size_var (`character(1)` or `NULL`) If provided, this numeric column from the `plot_dataname`
+#' @param size_var (`character(1)` or `variables` or `NULL`) If provided, this numeric column from the `plot_dataname`
 #' will be used to determine the size of the points. If `NULL`, a fixed size based on the `point_size` is used.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
 #' If `NULL`, default tooltip is created.
 #' @param point_colors (`named character`) valid color names (see [colors()]) or hex-colors named
 #'  by levels of `color_var` column.
 #' @param point_symbols (`named character`) valid plotly symbol name named  by levels of `color_var`column.
-#' @param table_datanames (`character`) Names of the datasets to be displayed in the tables below the plot.
-#' @param reactable_args (`list`) Additional arguments passed to the `reactable` function for table customization.
 #'
 #' @examples
+#' library(teal.transform)
 #' data <- teal_data() |>
 #'   within({
 #'     subjects <- data.frame(
@@ -65,11 +60,17 @@
 #'     tm_p_spiderplot(
 #'       plot_dataname = "spiderplot_ds",
 #'       table_datanames = "subjects",
-#'       time_var = "time_var",
-#'       value_var = "value_var",
-#'       subject_var = "subject_var",
-#'       filter_event_var = "filter_event_var",
-#'       color_var = "color_var",
+#'       time_var = picks(datasets("spiderplot_ds"), variables("time_var")),
+#'       value_var = picks(datasets("spiderplot_ds"), variables("value_var")),
+#'       subject_var = picks(datasets("spiderplot_ds"), variables("subject_var")),
+#'       color_var = picks(datasets("spiderplot_ds"), variables("color_var")),
+#'       transformators = list(
+#'         teal_transform_filter(
+#'           picks(
+#'             datasets("spiderplot_ds"), variables("filter_event_var"), values()
+#'           )
+#'         )
+#'       ),
 #'       point_colors = c(
 #'         CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
 #'       ),
@@ -79,6 +80,7 @@
 #'     )
 #'   )
 #' )
+
 #'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
@@ -86,79 +88,75 @@
 #'
 #' @export
 tm_p_spiderplot <- function(label = "Spiderplot",
-                            plot_dataname,
                             time_var,
                             value_var,
                             subject_var,
                             color_var,
-                            filter_event_var,
                             size_var = NULL,
                             tooltip_vars = NULL,
                             point_colors = character(0),
                             point_symbols = character(0),
                             plot_height = c(600, 400, 1200),
-                            table_datanames = character(0),
-                            reactable_args = list()) {
-  if (is.character(time_var)) {
-    time_var <- choices_selected(choices = time_var, selected = time_var)
-  }
-  if (is.character(value_var)) {
-    value_var <- choices_selected(choices = value_var, selected = value_var)
-  }
-  if (is.character(subject_var)) {
-    subject_var <- choices_selected(choices = subject_var, selected = subject_var)
-  }
-  if (is.character(color_var)) {
-    color_var <- choices_selected(choices = color_var, selected = color_var)
-  }
-  if (is.character(filter_event_var)) {
-    filter_event_var <- choices_selected(choices = filter_event_var, selected = filter_event_var)
-  }
+                            transformators = list(),
+                            decorators = list()) {
+  # todo: filter_event_var shouldn't in arguments as it is not a dimension of the plot
+  #       title based on arbitrary filter is not an accepted solution.
+  #       additional filters should be passed to trasformers
+  checkmate::assert_string(label)
+  checkmate::assert_class(time_var, "picks")
+  checkmate::assert_class(subject_var, "picks")
+  checkmate::assert_class(color_var, "picks")
+  checkmate::assert_class(size_var, "picks", null.ok = TRUE)
 
+  args <- as.list(environment())
   module(
     label = label,
     ui = ui_p_spiderplot,
     server = srv_p_spiderplot,
-    ui_args = list(height = plot_height),
-    server_args = list(
-      plot_dataname = plot_dataname,
-      time_var = time_var,
-      value_var = value_var,
-      subject_var = subject_var,
-      filter_event_var = filter_event_var,
-      color_var = color_var,
-      size_var = size_var,
-      point_colors = point_colors,
-      point_symbols = point_symbols,
-      table_datanames = table_datanames,
-      reactable_args = reactable_args,
-      tooltip_vars = tooltip_vars
-    ),
-    datanames = union(plot_dataname, table_datanames)
+    ui_args = args[names(args) %in% names(formals(ui_p_spiderplot))],
+    server_args = args[names(args) %in% names(formals(srv_p_spiderplot))],
+    transformators = transformators,
+    datanames = {
+      datanames <- datanames(
+        list(
+          time_var = time_var, value_var = value_var, subject_var = subject_var,
+          color_var = color_var, size_var = size_var
+        )
+      )
+      if (length(datanames)) datanames else "all"
+    }
   )
 }
 
-
-ui_p_spiderplot <- function(id, height) {
+ui_p_spiderplot <- function(id, time_var, value_var, subject_var, color_var, size_var, plot_height, decorators) {
   ns <- NS(id)
   bslib::page_sidebar(
     sidebar = div(
-      selectInput(ns("time_var"), label = "Time variable (x-axis):", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(
-        ns("value_var"),
-        label = "Value variable (y-axis):",
-        choices = NULL, selected = NULL, multiple = FALSE
+      class = "standard-layout encoding-panel",
+      teal::teal_nav_item(
+        label = tags$strong("Time variable (x-axis):"),
+        teal.transform::module_input_ui(id = ns("time_var"), spec = time_var)
       ),
-      selectInput(ns("subject_var"), label = "Subject variable:", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(ns("color_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(ns("filter_event_var"), label = "Event variable:", choices = NULL, selected = NULL, multiple = FALSE),
-      selectInput(ns("filter_event_var_level"), label = "Select an event:", choices = NULL, selected = NULL, multiple = FALSE),
-      colour_picker_ui(ns("colors")),
-      sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1]),
-      selectInput(ns("subjects"), "Subjects", choices = NULL, selected = NULL, multiple = TRUE),
-      actionButton(ns("subject_tooltips"), "Show Subject Tooltips")
+      teal::teal_nav_item(
+        label = tags$strong("Value variable (y-axis):"),
+        teal.transform::module_input_ui(id = ns("value_var"), spec = value_var)
+      ),
+      teal::teal_nav_item(
+        label = tags$strong("Subject variable:"),
+        teal.transform::module_input_ui(id = ns("subject_var"), spec = subject_var)
+      ),
+      teal::teal_nav_item(
+        label = tags$strong("Color by:"),
+        teal.transform::module_input_ui(id = ns("color_var"), spec = color_var)
+      ),
+      if (!is.null(size_var)) {
+        colour_picker_ui(ns("colors"))
+      },
+      ui_decorate_teal_data(ns("decorator"), decorators = decorators),
+      sliderInput(ns("plot_height"), "Plot Height (px)", plot_height[2], plot_height[3], plot_height[1])
     ),
     tags$div(
+      class = "standard-layout output-panel",
       bslib::card(
         full_screen = TRUE,
         tags$div(
@@ -173,95 +171,91 @@ ui_p_spiderplot <- function(id, height) {
 
 srv_p_spiderplot <- function(id,
                              data,
-                             plot_dataname,
                              time_var,
                              value_var,
                              subject_var,
-                             filter_event_var,
                              color_var,
+                             size_var = NULL,
+                             tooltip_vars = NULL,
                              point_colors,
                              point_symbols,
-                             size_var = NULL,
                              plot_height = 600,
-                             table_datanames = character(0),
-                             reactable_args = list(),
-                             tooltip_vars = NULL,
+                             decorators = list(),
                              filter_panel_api) {
   moduleServer(id, function(input, output, session) {
-    .update_cs_input(inputId = "value_var", data = reactive(data()[[dataname]]), cs = value_var)
-    .update_cs_input(inputId = "time_var", data = reactive(data()[[dataname]]), cs = time_var)
-    .update_cs_input(inputId = "subject_var", data = reactive(data()[[dataname]]), cs = subject_var)
-    .update_cs_input(inputId = "color_var", data = reactive(data()[[dataname]]), cs = color_var)
-    .update_cs_input(inputId = "filter_event_var", data = reactive(data()[[dataname]]), cs = filter_event_var)
-
-    filter_event_var_levels <- reactive({
-      req(data(), input$filter_event_var)
-      # comment:
-      #  i don't know if it makes sense. I think it will be rare that dataset would have multiple
-      #  category variables. There would rather be another dataset (consider responses, interventions etc.)
-      unique(data()[[plot_dataname]][[input$filter_event_var]])
-    })
-    observeEvent(filter_event_var_levels(), {
-      label <- attr(data()[[plot_dataname]][[input$filter_event_var]], "label")
-      updateSelectInput(
-        inputId = "filter_event_var_level",
-        label = sprintf("Select %s:", if (length(label)) label else "en event:"),
-        choices = filter_event_var_levels(),
-        selected = filter_event_var_levels()[1]
+    selectors <- teal.transform::module_input_srv(
+      data = data,
+      spec = list(
+        time_var = time_var, value_var = value_var, subject_var = subject_var,
+        color_var = color_var, size_var = size_var
       )
-      if (length(filter_event_var_levels()) < 2) shinyjs::hide("filter_event_var_level")
-    })
+    )
 
     color_inputs <- colour_picker_srv(
       "colors",
       x = reactive({
-        req(input$color_var)
-        data()[[plot_dataname]][[input$color_var]]
+        selected_color <- req(map_merged(selectors)$color_var)
+        data()[[selected_color$datasets]][[selected_color$variables]]
       }),
       default_colors = point_colors
     )
 
-    plotly_q <- reactive({
-      req(
-        input$filter_event_var_level, input$time_var, input$value_var,
-        input$subject_var, input$filter_event_var, input$color_var, color_inputs()
-      )
+    merged_q <- reactive({
+      req(data(), map_merged(selectors))
+      obj <- data()
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Spiderplot data preparation")
+      qenv_merge_selectors(x = obj, selectors = selectors, output_name = "anl")
+    })
 
+    plot_data_q <- reactive({
+      obj <- req(merged_q())
+      within(obj,
+        {
+          anl <- anl %>%
+            dplyr::mutate(customdata = dplyr::row_number()) %>%
+            dplyr::arrange(subject_var_lang, time_var_lang) %>%
+            dplyr::group_by(subject_var_lang)
+        },
+        subject_var_lang = str2lang(map_merged(selectors)$subject_var$variables),
+        time_var_lang = str2lang(map_merged(selectors)$time_var$variables)
+      )
+    })
+
+    output_q <- reactive({
+      obj <- req(plot_data_q())
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Spiderplot Visualization")
       adjusted_symbols <- .shape_palette_discrete(
-        levels = unique(data()[[plot_dataname]][[input$color_var]]),
+        levels = unique(obj$anl[[map_merged(selectors)$color_var$variables]]),
         symbol = point_symbols
       )
 
       within(
-        data(),
-        dataname = str2lang(plot_dataname),
-        filter_event_var_lang = str2lang(input$filter_event_var),
-        time_var = input$time_var,
-        value_var = input$value_var,
-        subject_var = input$subject_var,
-        filter_event_var = input$filter_event_var,
-        selected_event = input$filter_event_var_level,
-        color_var = input$color_var,
+        obj,
+        dataname = str2lang("anl"),
+        time_var_lang = str2lang(map_merged(selectors)$time_var$variables),
+        value_var_lang = str2lang(map_merged(selectors)$value_var$variables),
+        subject_var_lang = str2lang(map_merged(selectors)$subject_var$variables),
+        color_var_lang = str2lang(map_merged(selectors)$color_var$variables),
+        time_var = map_merged(selectors)$time_var$variables,
+        value_var = map_merged(selectors)$value_var$variables,
+        subject_var = map_merged(selectors)$subject_var$variables,
+        color_var = map_merged(selectors)$color_var$variables,
         colors = color_inputs(),
         symbols = adjusted_symbols,
-        size_var = size_var,
+        size_var = if (!is.null(size_var)) map_merged(selectors)$size_var$variables,
         height = input$plot_height,
         point_size = 10,
-        title = sprintf("%s over time", input$filter_event_var_level),
         tooltip_vars = tooltip_vars,
         expr = {
-          plot_data <- dataname %>%
-            dplyr::filter(filter_event_var_lang == selected_event) %>%
-            dplyr::arrange(!!as.name(subject_var), !!as.name(time_var)) %>%
-            dplyr::group_by(!!as.name(subject_var))
-          subject_var_label <- attr(plot_data[[subject_var]], "label")
+          subject_var_label <- attr(anl[[subject_var]], "label")
           if (!length(subject_var_label)) subject_var_label <- subject_var
-          time_var_label <- attr(plot_data[[time_var]], "label")
+
+          time_var_label <- attr(anl[[time_var]], "label")
           if (!length(time_var_label)) time_var_label <- time_var
-          value_var_label <- attr(plot_data[[value_var]], "label")
+
+          value_var_label <- attr(anl[[value_var]], "label")
           if (!length(value_var_label)) value_var_label <- value_var
-          plot_data <- plot_data |>
-            dplyr::mutate(customdata = dplyr::row_number())
+
 
           if (is.null(size_var)) {
             size <- point_size
@@ -269,17 +263,17 @@ srv_p_spiderplot <- function(id,
             size <- stats::as.formula(sprintf("~%s", size_var))
           }
 
-          p <- plot_data %>%
+          plot <- anl %>%
             dplyr::mutate(
-              x = dplyr::lag(!!as.name(time_var), default = 0),
-              y = dplyr:::lag(!!as.name(value_var), default = 0),
+              x = dplyr::lag(time_var_lang, default = 0),
+              y = dplyr:::lag(value_var_lang, default = 0),
               tooltip = {
                 if (is.null(tooltip_vars)) {
                   sprintf(
                     "%s: %s <br>%s: %s <br>%s: %s%% <br>",
-                    subject_var_label, !!as.name(subject_var),
-                    time_var_label, !!as.name(time_var),
-                    value_var_label, !!as.name(value_var) * 100
+                    subject_var_label, subject_var_lang,
+                    time_var_label, time_var_lang,
+                    value_var_label, value_var_lang * 100
                   )
                 } else {
                   tooltip_lines <- sapply(tooltip_vars, function(col) {
@@ -323,35 +317,29 @@ srv_p_spiderplot <- function(id,
             plotly::layout(
               xaxis = list(title = time_var_label),
               yaxis = list(title = value_var_label),
-              title = title,
+              title = "Spiderplot",
               dragmode = "select"
             ) %>%
-            plotly::config(displaylogo = FALSE) %>%
-            plotly::layout(title = title)
+            plotly::config(displaylogo = FALSE)
         }
       )
     })
 
-    output$plot <- output$plot <- plotly::renderPlotly(plotly::event_register(
+    decorated_output_plot_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = decorators,
+      expr = quote(plot)
+    )
+
+    output$plot <- plotly::renderPlotly(plotly::event_register(
       {
-        plotly_q()$p |>
+        rev(teal.code::get_outputs(decorated_output_plot_q()))[[1]] |>
           set_plot_data(session$ns("plot_data")) |>
           setup_trigger_tooltips(session$ns)
       },
       "plotly_selected"
     ))
-
-    observeEvent(data(), {
-      if (class(subject_var) == "choices_selected") {
-        subject_col <- subject_var$selected
-      } else {
-        subject_col <- subject_var
-      }
-      updateSelectInput(
-        inputId = "subjects",
-        choices = data()[[plot_dataname]][[subject_col]]
-      )
-    })
 
     plotly_data <- reactive({
       data.frame(
@@ -365,38 +353,18 @@ srv_p_spiderplot <- function(id,
 
     plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "spiderplot"))
 
-    observeEvent(input$subject_tooltips, {
-      hovervalues <- data()[[plot_dataname]] |>
-        dplyr::mutate(customdata = dplyr::row_number()) |>
-        dplyr::filter(!!rlang::sym(input$subject_var) %in% input$subjects) |>
-        dplyr::pull(customdata)
 
-      hovertips <- plotly_data() |>
-        dplyr::filter(customdata %in% hovervalues)
-
-      session$sendCustomMessage(
-        "triggerTooltips",
-        list(
-          plotID = session$ns("plot"),
-          tooltipPoints = jsonlite::toJSON(hovertips)
+    reactive({
+      req(decorated_output_plot_q())
+      if (length(plotly_selected()) && nrow(plotly_selected())) {
+        within(
+          decorated_output_plot_q(),
+          anl <- dplyr::filter(anl, customdata %in% selected),
+          selected = unique(plotly_selected()$customdata)
         )
-      )
+      } else {
+        decorated_output_plot_q()
+      }
     })
-
-    tables_selected_q <- .plotly_selected_filter_children(
-      data = plotly_q,
-      plot_dataname = plot_dataname,
-      xvar = reactive(input$time_var),
-      yvar = reactive(input$value_var),
-      plotly_selected = plotly_selected,
-      children_datanames = table_datanames
-    )
-
-    srv_t_reactables(
-      "subtables",
-      data = tables_selected_q,
-      datanames = table_datanames,
-      reactable_args = reactable_args
-    )
   })
 }

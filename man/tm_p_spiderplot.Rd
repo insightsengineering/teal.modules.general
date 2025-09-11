@@ -6,44 +6,36 @@
 \usage{
 tm_p_spiderplot(
   label = "Spiderplot",
-  plot_dataname,
   time_var,
   value_var,
   subject_var,
   color_var,
-  filter_event_var,
   size_var = NULL,
   tooltip_vars = NULL,
   point_colors = character(0),
   point_symbols = character(0),
   plot_height = c(600, 400, 1200),
-  table_datanames = character(0),
-  reactable_args = list()
+  transformators = list(),
+  decorators = list()
 )
 }
 \arguments{
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{plot_dataname}{(\code{character(1)} or \code{choices_selected}) name of the dataset which visualization is builded on.}
-
-\item{time_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column
+\item{time_var}{(\code{character(1)} or \code{variables}) name of the \code{numeric} column
 in \code{plot_dataname} to be used as x-axis.}
 
-\item{value_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column
+\item{value_var}{(\code{character(1)} or \code{variables}) name of the \code{numeric} column
 in \code{plot_dataname} to be used as y-axis.}
 
-\item{subject_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
+\item{subject_var}{(\code{character(1)} or \code{variables}) name of the \code{factor} or \code{character} column
 in \code{plot_dataname} to be used as grouping variable for displayed lines/points.}
 
-\item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
+\item{color_var}{(\code{character(1)} or \code{variables}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
 to be used to differentiate colors and symbols.}
 
-\item{filter_event_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
-in \code{plot_dataname} to be used to filter the data.
-The plot will be updated with just the filtereed data when the user selects an event from the dropdown menu.}
-
-\item{size_var}{(\code{character(1)} or \code{NULL}) If provided, this numeric column from the \code{plot_dataname}
+\item{size_var}{(\code{character(1)} or \code{variables} or \code{NULL}) If provided, this numeric column from the \code{plot_dataname}
 will be used to determine the size of the points. If \code{NULL}, a fixed size based on the \code{point_size} is used.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
@@ -57,14 +49,19 @@ by levels of \code{color_var} column.}
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
-\item{table_datanames}{(\code{character}) Names of the datasets to be displayed in the tables below the plot.}
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
-\item{reactable_args}{(\code{list}) Additional arguments passed to the \code{reactable} function for table customization.}
+\item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+(named \code{list} of lists of \code{teal_transform_module}) optional,
+decorator for tables or plots included in the module output reported.
+The decorators are applied to the respective output objects.}
 }
 \description{
 Module visualizes value development in time grouped by subjects.
 }
 \examples{
+library(teal.transform)
 data <- teal_data() |>
   within({
     subjects <- data.frame(
@@ -103,11 +100,17 @@ app <- init(
     tm_p_spiderplot(
       plot_dataname = "spiderplot_ds",
       table_datanames = "subjects",
-      time_var = "time_var",
-      value_var = "value_var",
-      subject_var = "subject_var",
-      filter_event_var = "filter_event_var",
-      color_var = "color_var",
+      time_var = picks(datasets("spiderplot_ds"), variables("time_var")),
+      value_var = picks(datasets("spiderplot_ds"), variables("value_var")),
+      subject_var = picks(datasets("spiderplot_ds"), variables("subject_var")),
+      color_var = picks(datasets("spiderplot_ds"), variables("color_var")),
+      transformators = list(
+        teal_transform_filter(
+          picks(
+            datasets("spiderplot_ds"), variables("filter_event_var"), values()
+          )
+        )
+      ),
       point_colors = c(
         CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
       ),
