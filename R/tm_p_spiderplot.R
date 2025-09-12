@@ -249,6 +249,7 @@ srv_p_spiderplot <- function(id,
         point_size = 10,
         title = sprintf("%s over time", input$filter_event_var_level),
         tooltip_vars = tooltip_vars,
+        source = session$ns("spiderplot"),
         expr = {
           plot_data <- dataname %>%
             dplyr::filter(filter_event_var_lang == selected_event) %>%
@@ -298,7 +299,7 @@ srv_p_spiderplot <- function(id,
             ) %>%
             dplyr::ungroup() %>%
             plotly::plot_ly(
-              source = "spiderplot",
+              source = source,
               height = height,
               color = stats::as.formula(sprintf("~%s", color_var)),
               colors = colors,
@@ -363,7 +364,9 @@ srv_p_spiderplot <- function(id,
       )
     })
 
-    plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "spiderplot"))
+    plotly_selected <- reactive(
+      plotly::event_data("plotly_selected", source = session$ns("spiderplot"))
+    )
 
     observeEvent(input$subject_tooltips, {
       hovervalues <- data()[[plot_dataname]] |>

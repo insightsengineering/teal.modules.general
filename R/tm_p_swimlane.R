@@ -204,7 +204,8 @@ srv_p_swimlane <- function(id,
         colors = color_inputs(),
         symbols = adjusted_symbols,
         height = input$plot_height,
-        tooltip_vars = tooltip_vars,
+        tooltip_vars = tooltip_vars, ,
+        source = session$ns("swimlane"),
         expr = {
           subject_var_label <- attr(dataname[[subject_var]], "label")
           if (!length(subject_var_label)) subject_var_label <- subject_var
@@ -300,7 +301,7 @@ srv_p_swimlane <- function(id,
             ) %>%
             dplyr::ungroup() %>%
             plotly::plot_ly(
-              source = "swimlane",
+              source = source,
               colors = colors,
               symbols = symbols,
               height = height,
@@ -346,7 +347,7 @@ srv_p_swimlane <- function(id,
     })
 
     plotly_selected <- reactive({
-      plotly::event_data("plotly_selected", source = "swimlane")
+      plotly::event_data("plotly_selected", source = session$ns("swimlane"))
     })
 
     reactive({
