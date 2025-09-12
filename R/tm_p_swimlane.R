@@ -204,7 +204,7 @@ srv_p_swimlane <- function(id,
         colors = color_inputs(),
         symbols = adjusted_symbols,
         height = input$plot_height,
-        tooltip_vars = tooltip_vars, ,
+        tooltip_vars = tooltip_vars,
         source = session$ns("swimlane"),
         expr = {
           subject_var_label <- attr(dataname[[subject_var]], "label")
