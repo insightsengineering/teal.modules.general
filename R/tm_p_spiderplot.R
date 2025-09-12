@@ -154,9 +154,7 @@ ui_p_spiderplot <- function(id, height) {
       selectInput(ns("filter_event_var"), label = "Event variable:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("filter_event_var_level"), label = "Select an event:", choices = NULL, selected = NULL, multiple = FALSE),
       colour_picker_ui(ns("colors")),
-      sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1]),
-      selectInput(ns("subjects"), "Subjects", choices = NULL, selected = NULL, multiple = TRUE),
-      actionButton(ns("subject_tooltips"), "Show Subject Tooltips")
+      sliderInput(ns("plot_height"), "Plot Height (px)", height[2], height[3], height[1])
     ),
     tags$div(
       bslib::card(
@@ -367,24 +365,6 @@ srv_p_spiderplot <- function(id,
     plotly_selected <- reactive(
       plotly::event_data("plotly_selected", source = session$ns("spiderplot"))
     )
-
-    observeEvent(input$subject_tooltips, {
-      hovervalues <- data()[[plot_dataname]] |>
-        dplyr::mutate(customdata = dplyr::row_number()) |>
-        dplyr::filter(!!rlang::sym(input$subject_var) %in% input$subjects) |>
-        dplyr::pull(customdata)
-
-      hovertips <- plotly_data() |>
-        dplyr::filter(customdata %in% hovervalues)
-
-      session$sendCustomMessage(
-        "triggerTooltips",
-        list(
-          plotID = session$ns("plot"),
-          tooltipPoints = jsonlite::toJSON(hovertips)
-        )
-      )
-    })
 
     tables_selected_q <- .plotly_selected_filter_children(
       data = plotly_q,
