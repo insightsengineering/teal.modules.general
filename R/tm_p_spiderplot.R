@@ -246,6 +246,7 @@ srv_p_spiderplot <- function(id,
         height = input$plot_height,
         point_size = 10,
         tooltip_vars = tooltip_vars,
+        source = session$ns("spiderplot"),
         expr = {
           subject_var_label <- attr(anl[[subject_var]], "label")
           if (!length(subject_var_label)) subject_var_label <- subject_var
@@ -292,7 +293,7 @@ srv_p_spiderplot <- function(id,
             ) %>%
             dplyr::ungroup() %>%
             plotly::plot_ly(
-              source = "spiderplot",
+              source = source,
               height = height,
               color = stats::as.formula(sprintf("~%s", color_var)),
               colors = colors,
@@ -351,7 +352,9 @@ srv_p_spiderplot <- function(id,
       )
     })
 
-    plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "spiderplot"))
+    plotly_selected <- reactive(
+      plotly::event_data("plotly_selected", source = session$ns("spiderplot"))
+    )
 
 
     reactive({

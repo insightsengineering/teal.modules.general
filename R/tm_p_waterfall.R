@@ -187,6 +187,7 @@ srv_p_waterfall <- function(id,
         height = input$plot_height,
         title = sprintf("Waterfall plot"),
         tooltip_vars = tooltip_vars,
+        source = session$ns("waterfall"),
         expr = {
           subject_var_label <- attr(dataname[[subject_var]], "label")
           if (!length(subject_var_label)) subject_var_label <- subject_var
@@ -232,7 +233,7 @@ srv_p_waterfall <- function(id,
           ) %>%
             dplyr::filter(!duplicated(!!as.name(subject_var))) %>%
             plotly::plot_ly(
-              source = "waterfall",
+              source = source,
               height = height
             ) %>%
             plotly::add_bars(
@@ -270,7 +271,7 @@ srv_p_waterfall <- function(id,
 
     output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
 
-    plotly_selected <- reactive(plotly::event_data("plotly_selected", source = "waterfall"))
+    plotly_selected <- reactive(plotly::event_data("plotly_selected", source = session$ns("waterfall")))
 
     tables_selected_q <- .plotly_selected_filter_children(
       data = plotly_q,
