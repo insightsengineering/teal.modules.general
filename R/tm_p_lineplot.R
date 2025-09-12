@@ -265,7 +265,7 @@ srv_p_lineplot <- function(id,
             if (!is.null(reference_lines)) {
               ref_lines <- add_reference_lines(df, reference_lines)
               p <- p %>%
-                layout(
+                plotly::layout(
                   shapes = ref_lines$shapes,
                   annotations = ref_lines$annotations
                 )
