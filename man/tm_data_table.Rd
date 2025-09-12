@@ -47,7 +47,7 @@ argument.
 \code{list(searching = FALSE, pageLength = 30, lengthMenu = c(5, 15, 30, 100), scrollX = TRUE)}}
 
 \item{server_rendering}{(\code{logical}) should the data table be rendered server side
-(see \code{server} argument of \code{\link[DT:renderDataTable]{DT::renderDataTable()}})}
+(see \code{server} argument of \code{\link[DT:dataTableOutput]{DT::renderDataTable()}})}
 
 \item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
 providing context or a title.
