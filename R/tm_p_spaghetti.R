@@ -259,7 +259,6 @@ srv_p_spaghetti <- function(id,
       if (is.null(plotly_selected()) || is.null(group_var)) {
         plotly_q()
       } else {
-        print("selection is recorded")
         q <- plotly_q() |>
           within(
             {
