@@ -56,7 +56,7 @@ data <- teal_data() |>
       treatment = rep(c("Active", "Placebo"), each = 20),
       age_group = rep(c("Young", "Old"), 20)
     )
-    
+
     # Add labels
     attr(df$subject_id, "label") <- "Subject ID"
     attr(df$time_point, "label") <- "Time Point (days)"
@@ -74,7 +74,8 @@ app <- init(
       group_var = "subject_id",
       x_var = "time_point",
       y_var = "response",
-      color_var = "treatment"
+      color_var = "treatment",
+      tooltip_vars = c("subject_id", "treatment")
     )
   )
 )

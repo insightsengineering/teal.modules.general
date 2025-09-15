@@ -3,7 +3,7 @@
 #' This module creates a combined visualization with both scatter plot and line plot views.
 #' It displays a scatter plot where users can select points, and the selection is reflected
 #' in a corresponding line plot below.
-#' 
+#'
 #' The line plot uses `subject_var` as the grouping variable to connect points with lines.
 #' When no selection is made in the scatter plot, the line plot shows all data.
 #'
@@ -27,7 +27,7 @@
 #'       treatment = rep(c("A", "B", "A"), each = 4)
 #'     )
 #'   })
-#' 
+#'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
@@ -37,11 +37,12 @@
 #'       subject_var = "subject_id",
 #'       x_var = "time_point",
 #'       y_var = "response",
-#'       color_var = "treatment"
+#'       color_var = "treatment",
+#'       tooltip_vars = c("subject_id", "treatment")
 #'     )
 #'   )
 #' )
-#' 
+#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
@@ -53,6 +54,7 @@ tm_p_scatterlineplot <- function(label = "Scatter + Line Plot",
                                  x_var,
                                  y_var,
                                  color_var,
+                                 tooltip_vars = NULL,
                                  point_colors = character(0),
                                  transformators = list(),
                                  reference_lines = NULL) {
@@ -66,6 +68,7 @@ tm_p_scatterlineplot <- function(label = "Scatter + Line Plot",
       subject_var = subject_var,
       x_var = x_var,
       y_var = y_var,
+      tooltip_vars = tooltip_vars,
       color_var = color_var,
       point_colors = point_colors,
       reference_lines = reference_lines
@@ -88,6 +91,7 @@ srv_p_scatterlineplot <- function(id,
                                   subject_var,
                                   x_var,
                                   y_var,
+                                  tooltip_vars,
                                   color_var,
                                   point_colors,
                                   reference_lines) {
@@ -100,6 +104,7 @@ srv_p_scatterlineplot <- function(id,
       x_var = x_var,
       y_var = y_var,
       color_var = color_var,
+      tooltip_vars = tooltip_vars,
       point_colors = point_colors,
       show_widgets = FALSE
     )
@@ -112,6 +117,7 @@ srv_p_scatterlineplot <- function(id,
       color_var = color_var,
       group_var = subject_var,
       colors = point_colors,
+      tooltip_vars = tooltip_vars,
       reference_lines = reference_lines,
       activate_on_brushing = TRUE
     )

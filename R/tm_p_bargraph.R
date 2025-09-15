@@ -105,7 +105,7 @@ srv_p_bargraph <- function(id,
 
             plot_data <- df %>%
               dplyr::group_by(!!as.name(y_var), !!as.name(color_var)) %>%
-              dplyr::summarize(count = n_distinct(!!as.name(count_var)), .groups = "drop") %>%
+              dplyr::summarize(count = dplyr::n_distinct(!!as.name(count_var)), .groups = "drop") %>%
               dplyr::mutate(customdata = dplyr::row_number())
 
             event_type_order <- plot_data %>%

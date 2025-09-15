@@ -55,30 +55,14 @@ data <- teal_data() |>
       treatment = sample(c("Active", "Placebo"), 50, replace = TRUE),
       gender = sample(c("M", "F"), 50, replace = TRUE)
     )
-    
+
     # Add labels for better tooltips
     attr(df$age, "label") <- "Age (years)"
     attr(df$response, "label") <- "Response Score"
     attr(df$treatment, "label") <- "Treatment Group"
   })
 
-# Default tooltip example
-app1 <- init(
-  data = data,
-  modules = modules(
-    tm_p_scatterplot(
-      label = "Scatter Plot",
-      plot_dataname = "df",
-      subject_var = "subject_id",
-      x_var = "age",
-      y_var = "response",
-      color_var = "treatment"
-    )
-  )
-)
-
-# Custom tooltip example
-app2 <- init(
+app <- init(
   data = data,
   modules = modules(
     tm_p_scatterplot(
@@ -88,13 +72,13 @@ app2 <- init(
       x_var = "age",
       y_var = "response",
       color_var = "treatment",
-      tooltip_vars = c("subject_id", "age", "gender", "treatment")
+      tooltip_vars = c("age", "gender")
     )
   )
 )
 
 if (interactive()) {
-  shinyApp(app1$ui, app1$server)
+  shinyApp(app$ui, app$server)
 }
 
 }

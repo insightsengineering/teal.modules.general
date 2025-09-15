@@ -85,6 +85,7 @@ app <- init(
       value_var = "value_var",
       sort_var = "value_var",
       color_var = "color_var",
+      tooltip_vars = c("value_var", "subjects"),
       value_arbitrary_hlines = c(20, -30),
       bar_colors = c(
         CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"

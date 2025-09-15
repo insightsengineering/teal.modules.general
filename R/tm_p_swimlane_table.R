@@ -57,7 +57,8 @@
 #'       color_var = "color_var",
 #'       group_var = "color_var",
 #'       sort_var = "time_var",
-#'       plot_height = 400,
+#'       plot_height = c(700, 400, 1200),
+#'       tooltip_vars = c("subject_var", "color_var"),
 #'       point_colors = c(
 #'         CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
 #'       ),
@@ -162,6 +163,7 @@ srv_p_swimlane_table <- function(id,
       point_size = point_size,
       point_colors = point_colors,
       point_symbols = point_symbols,
+      tooltip_vars = tooltip_vars,
       show_widgets = FALSE
     )
 

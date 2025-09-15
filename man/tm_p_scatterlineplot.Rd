@@ -11,6 +11,7 @@ tm_p_scatterlineplot(
   x_var,
   y_var,
   color_var,
+  tooltip_vars = NULL,
   point_colors = character(0),
   transformators = list(),
   reference_lines = NULL
@@ -64,7 +65,8 @@ app <- init(
       subject_var = "subject_id",
       x_var = "time_point",
       y_var = "response",
-      color_var = "treatment"
+      color_var = "treatment",
+      tooltip_vars = c("subject_id", "treatment")
     )
   )
 )
