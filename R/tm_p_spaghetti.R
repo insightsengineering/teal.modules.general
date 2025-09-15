@@ -1,9 +1,9 @@
 #' Spaghetti Plot Module
 #'
-#' This module creates an interactive spaghetti plot visualization that shows individual 
-#' trajectories for each group over time. Each trajectory is represented by connected 
-#' points and lines, creating a "spaghetti-like" appearance. The plot supports customizable 
-#' tooltips and color coding by categorical variables. Users can select points by brushing 
+#' This module creates an interactive spaghetti plot visualization that shows individual
+#' trajectories for each group over time. Each trajectory is represented by connected
+#' points and lines, creating a "spaghetti-like" appearance. The plot supports customizable
+#' tooltips and color coding by categorical variables. Users can select points by brushing
 #' to filter the underlying data.
 #'
 #' @param label (`character(1)`) Label shown in the navigation item for the module.
@@ -28,14 +28,14 @@
 #'       treatment = rep(c("Active", "Placebo"), each = 20),
 #'       age_group = rep(c("Young", "Old"), 20)
 #'     )
-#'     
+#'
 #'     # Add labels
 #'     attr(df$subject_id, "label") <- "Subject ID"
 #'     attr(df$time_point, "label") <- "Time Point (days)"
 #'     attr(df$response, "label") <- "Response Score"
 #'     attr(df$treatment, "label") <- "Treatment Group"
 #'   })
-#' 
+#'
 #' # Default tooltip example
 #' app <- init(
 #'   data = data,
@@ -46,11 +46,12 @@
 #'       group_var = "subject_id",
 #'       x_var = "time_point",
 #'       y_var = "response",
-#'       color_var = "treatment"
+#'       color_var = "treatment",
+#'       tooltip_vars = c("subject_id", "treatment")
 #'     )
 #'   )
 #' )
-#' 
+#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
@@ -140,13 +141,13 @@ srv_p_spaghetti <- function(id,
           # Get label attributes for variables, fallback to column names
           group_var_label <- attr(df[[group_var]], "label")
           if (!length(group_var_label)) group_var_label <- group_var
-          
+
           x_var_label <- attr(df[[x_var]], "label")
           if (!length(x_var_label)) x_var_label <- x_var
-          
+
           y_var_label <- attr(df[[y_var]], "label")
           if (!length(y_var_label)) y_var_label <- y_var
-          
+
           color_var_label <- attr(df[[color_var]], "label")
           if (!length(color_var_label)) color_var_label <- color_var
 
@@ -209,9 +210,9 @@ srv_p_spaghetti <- function(id,
             dplyr::mutate(
               x = !!as.name(x_var),
               y = !!as.name(y_var),
-              xend = lead(!!as.name(x_var)),
-              yend = lead(!!as.name(y_var)),
-              color_var_seg = lead(!!as.name(color_var))
+              xend = dplyr::lead(!!as.name(x_var)),
+              yend = dplyr::lead(!!as.name(y_var)),
+              color_var_seg = dplyr::lead(!!as.name(color_var))
             ) %>%
             dplyr::filter(!is.na(xend))
 

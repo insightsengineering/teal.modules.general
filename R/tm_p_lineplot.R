@@ -29,7 +29,7 @@
 #'       treatment = rep(c("Active", "Placebo"), each = 20),
 #'       baseline = rep(rnorm(8, 18, 2), each = 5)
 #'     )
-#'     
+#'
 #'     # Add labels
 #'     attr(df$subject_id, "label") <- "Subject ID"
 #'     attr(df$time_week, "label") <- "Time (weeks)"
@@ -37,7 +37,7 @@
 #'     attr(df$treatment, "label") <- "Treatment Group"
 #'     attr(df$baseline, "label") <- "Baseline Value"
 #'   })
-#' 
+#'
 #' # Basic line plot example
 #' app <- init(
 #'   data = data,
@@ -48,11 +48,12 @@
 #'       x_var = "time_week",
 #'       y_var = "measurement",
 #'       color_var = "treatment",
-#'       group_var = "subject_id"
+#'       group_var = "subject_id",
+#'       tooltip_vars = c("subject_id", "time_week")
 #'     )
 #'   )
 #' )
-#' 
+#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
@@ -119,17 +120,17 @@ srv_p_lineplot <- function(id,
         within(
           {
             validate(need(nrow(df) > 0, "No data after applying filters."))
-            
+
             # Get label attributes for variables, fallback to column names
             group_var_label <- attr(df[[group_var]], "label")
             if (!length(group_var_label)) group_var_label <- group_var
-            
+
             x_var_label <- attr(df[[x_var]], "label")
             if (!length(x_var_label)) x_var_label <- x_var
-            
+
             y_var_label <- attr(df[[y_var]], "label")
             if (!length(y_var_label)) y_var_label <- y_var
-            
+
             color_var_label <- attr(df[[color_var]], "label")
             if (!length(color_var_label)) color_var_label <- color_var
 
@@ -233,9 +234,9 @@ srv_p_lineplot <- function(id,
               dplyr::arrange(!!as.name(group_var), !!as.name(x_var)) %>%
               dplyr::group_by(!!as.name(group_var)) %>%
               dplyr::mutate(
-                xend = lead(!!as.name(x_var)),
-                yend = lead(!!as.name(y_var)),
-                color_var_seg = lead(!!as.name(color_var))
+                xend = dplyr::lead(!!as.name(x_var)),
+                yend = dplyr::lead(!!as.name(y_var)),
+                color_var_seg = dplyr::lead(!!as.name(color_var))
               ) %>%
               dplyr::filter(!is.na(xend))
 

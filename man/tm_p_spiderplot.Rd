@@ -113,7 +113,8 @@ app <- init(
       ),
       point_symbols = c(
         CR = "circle", PR = "square", SD = "triangle-up", PD = "diamond"
-      )
+      ),
+      tooltip_vars = c("subject_var")
     )
   )
 )

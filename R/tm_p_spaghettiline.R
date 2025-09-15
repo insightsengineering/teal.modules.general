@@ -4,14 +4,14 @@
 #' It displays a spaghetti plot where users can select points, and the selection is reflected
 #' in a corresponding line plot below. The spaghetti plot shows individual trajectories for
 #' each group over time.
-#' 
+#'
 #' The spaghetti plot connects points within each `group_var` level to show individual trajectories.
 #' The line plot uses the same `group_var` for grouping and updates to show only the selected data
 #' when brushing occurs in the spaghetti plot.
-#' 
+#'
 #' @param label (`character(1)`) Label shown in the navigation item for the module.
 #' @param plot_dataname (`character(1)`) Name of the dataset to be used for plotting.
-#' @param group_var (`character(1)`) Name of the grouping variable used for creating individual 
+#' @param group_var (`character(1)`) Name of the grouping variable used for creating individual
 #'   trajectories in the spaghetti plot and grouping in the line plot.
 #' @param x_var (`character(1)`) Name of the variable to be used for x-axis in both plots.
 #' @param y_var (`character(1)`) Name of the variable to be used for y-axis in both plots.
@@ -30,7 +30,7 @@
 #'       treatment = rep(c("A", "B", "A", "B"), each = 4)
 #'     )
 #'   })
-#' 
+#'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
@@ -40,11 +40,12 @@
 #'       group_var = "subject_id",
 #'       x_var = "time_point",
 #'       y_var = "response",
-#'       color_var = "treatment"
+#'       color_var = "treatment",
+#'       tooltip_vars = c("subject_id", "treatment")
 #'     )
 #'   )
 #' )
-#' 
+#'
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
@@ -56,6 +57,7 @@ tm_p_spaghettiline <- function(label = "Scatter + Line Plot",
                                x_var,
                                y_var,
                                color_var,
+                               tooltip_vars = NULL,
                                point_colors = character(0),
                                transformators = list(),
                                reference_lines = NULL) {
@@ -71,7 +73,8 @@ tm_p_spaghettiline <- function(label = "Scatter + Line Plot",
       y_var = y_var,
       color_var = color_var,
       point_colors = point_colors,
-      reference_lines = reference_lines
+      reference_lines = reference_lines,
+      tooltip_vars = tooltip_vars
     ),
     transformators = transformators
   )
@@ -92,6 +95,7 @@ srv_p_spaghettiline <- function(id,
                                 x_var,
                                 y_var,
                                 color_var,
+                                tooltip_vars,
                                 point_colors,
                                 reference_lines) {
   moduleServer(id, function(input, output, session) {
@@ -103,6 +107,7 @@ srv_p_spaghettiline <- function(id,
       x_var = x_var,
       y_var = y_var,
       color_var = color_var,
+      tooltip_vars = tooltip_vars,
       point_colors = point_colors,
       show_widgets = FALSE
     )
@@ -116,6 +121,7 @@ srv_p_spaghettiline <- function(id,
       color_var = color_var,
       group_var = group_var,
       colors = point_colors,
+      tooltip_vars = tooltip_vars,
       reference_lines = reference_lines,
       activate_on_brushing = TRUE
     )

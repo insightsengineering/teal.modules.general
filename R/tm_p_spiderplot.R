@@ -75,7 +75,8 @@
 #'       ),
 #'       point_symbols = c(
 #'         CR = "circle", PR = "square", SD = "triangle-up", PD = "diamond"
-#'       )
+#'       ),
+#'       tooltip_vars = c("subject_var")
 #'     )
 #'   )
 #' )
@@ -259,6 +260,8 @@ srv_p_spiderplot <- function(id,
           if (!length(time_var_label)) time_var_label <- time_var
           value_var_label <- attr(plot_data[[value_var]], "label")
           if (!length(value_var_label)) value_var_label <- value_var
+          color_var_label <- attr(plot_data[[color_var]], "label")
+          if (!length(color_var_label)) color_var_label <- color_var
           plot_data <- plot_data |>
             dplyr::mutate(customdata = dplyr::row_number())
 
@@ -269,11 +272,13 @@ srv_p_spiderplot <- function(id,
           }
 
           p <- plot_data %>%
+          dplyr::ungroup() %>%
             dplyr::mutate(
               x = dplyr::lag(!!as.name(time_var), default = 0),
               y = dplyr:::lag(!!as.name(value_var), default = 0),
               tooltip = {
                 if (is.null(tooltip_vars)) {
+                  # Default tooltip: show subject, x, y, color variables with labels
                   sprintf(
                     "%s: %s <br>%s: %s <br>%s: %s%% <br>",
                     subject_var_label, !!as.name(subject_var),
@@ -281,16 +286,37 @@ srv_p_spiderplot <- function(id,
                     value_var_label, !!as.name(value_var) * 100
                   )
                 } else {
-                  tooltip_lines <- sapply(tooltip_vars, function(col) {
-                    label <- attr(dataname[[col]], "label")
-                    if (!length(label)) label <- col
-                    value <- .data[[col]]
-                    paste0(label, ": ", value)
-                  })
-                  if (is.vector(tooltip_lines)) {
-                    paste(tooltip_lines, collapse = "<br>")
+                  # Custom tooltip: show only specified columns
+                  cur_data <- dplyr::cur_data()
+                  cols <- intersect(tooltip_vars, names(cur_data))
+                  if (!length(cols)) {
+                    # Fallback to default if no valid columns found
+                    sprintf(
+                      "%s: %s <br>%s: %s <br>%s: %s%% <br>",
+                      subject_var_label, !!as.name(subject_var),
+                      time_var_label, !!as.name(time_var),
+                      value_var_label, !!as.name(value_var) * 100
+                    )
                   } else {
-                    apply(tooltip_lines, 1, function(row) paste(row, collapse = "<br>"))
+                    # Create tooltip from specified columns
+                    sub <- cur_data[cols]
+                    labels <- vapply(cols, function(cn) {
+                      if (cn == subject_var) {
+                        lb <- subject_var_label
+                      } else if (cn == time_var) {
+                        lb <- time_var_label
+                      } else if (cn == value_var) {
+                        lb <- value_var_label
+                      } else if (cn == color_var) {
+                        lb <- color_var_label
+                      } else {
+                        lb <- attr(sub[[cn]], "label")
+                      }
+                      if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
+                    }, character(1))
+                    values <- lapply(sub, as.character)
+                    parts <- Map(function(v, l) paste0(l, ": ", v), values, labels)
+                    do.call(paste, c(parts, sep = "<br>"))
                   }
                 }
               }

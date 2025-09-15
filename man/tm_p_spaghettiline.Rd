@@ -11,6 +11,7 @@ tm_p_spaghettiline(
   x_var,
   y_var,
   color_var,
+  tooltip_vars = NULL,
   point_colors = character(0),
   transformators = list(),
   reference_lines = NULL
@@ -67,7 +68,8 @@ app <- init(
       group_var = "subject_id",
       x_var = "time_point",
       y_var = "response",
-      color_var = "treatment"
+      color_var = "treatment",
+      tooltip_vars = c("subject_id", "treatment")
     )
   )
 )

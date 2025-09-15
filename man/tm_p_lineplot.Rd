@@ -59,7 +59,7 @@ data <- teal_data() |>
       treatment = rep(c("Active", "Placebo"), each = 20),
       baseline = rep(rnorm(8, 18, 2), each = 5)
     )
-    
+
     # Add labels
     attr(df$subject_id, "label") <- "Subject ID"
     attr(df$time_week, "label") <- "Time (weeks)"
@@ -78,7 +78,8 @@ app <- init(
       x_var = "time_week",
       y_var = "measurement",
       color_var = "treatment",
-      group_var = "subject_id"
+      group_var = "subject_id",
+      tooltip_vars = c("subject_id", "time_week")
     )
   )
 )
