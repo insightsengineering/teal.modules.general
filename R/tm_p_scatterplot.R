@@ -55,46 +55,113 @@
 #'
 #' @export
 tm_p_scatterplot <- function(label = "Scatter Plot",
-                             plot_dataname,
                              subject_var,
                              x_var,
                              y_var,
                              color_var,
                              point_colors = character(0),
                              tooltip_vars = NULL,
-                             transformators = list(),
-                             show_widgets = TRUE) {
+                             transformators = list()) {
+  checkmate::assert_string(label)
+  checkmate::assert_class(subject_var, "picks")
+  checkmate::assert_class(x_var, "picks")
+  checkmate::assert_class(y_var, "picks")
+  checkmate::assert_class(color_var, "picks")
+  args <- as.list(environment())
   module(
     label = label,
-    ui = ui_p_scatterplot,
-    server = srv_p_scatterplot,
-    ui_args = list(),
-    server_args = list(
-      plot_dataname = plot_dataname,
-      subject_var = subject_var,
-      x_var = x_var,
-      y_var = y_var,
-      color_var = color_var,
-      point_colors = point_colors,
-      tooltip_vars = tooltip_vars,
-      show_widgets = show_widgets
-    ),
-    transformators = transformators
+    ui = ui_p_scatterplot_module,
+    server = srv_p_scatterplot_module,
+    ui_args = args[names(args) %in% names(formals(ui_p_scatterplot_module))],
+    server_args = args[names(args) %in% names(formals(srv_p_scatterplot_module))],
+    transformators = transformators,
+    datanames = {
+      datanames <- datanames(list(subject_var = subject_var, x_var = x_var, y_var = y_var, color_var = color_var))
+      if (length(datanames)) datanames else "all"
+    }
   )
+}
+
+ui_p_scatterplot_module <- function(id, subject_var, x_var, y_var, color_var) {
+  ns <- NS(id)
+  bslib::page_sidebar(
+    sidebar = div(
+      class = "standard-layout encoding-panel",
+      teal::teal_nav_item(
+        label = tags$strong("Subject Variable:"),
+        teal.transform::module_input_ui(id = ns("subject_var"), spec = subject_var)
+      ),
+      teal::teal_nav_item(
+        label = tags$strong("X-axis Variable:"),
+        teal.transform::module_input_ui(id = ns("x_var"), spec = x_var)
+      ),
+      teal::teal_nav_item(
+        label = tags$strong("Y-axis Variable:"),
+        teal.transform::module_input_ui(id = ns("y_var"), spec = y_var)
+      ),
+      teal::teal_nav_item(
+        label = tags$strong("Color by:"),
+        teal.transform::module_input_ui(id = ns("color_var"), spec = color_var),
+        colour_picker_ui(ns("colors"))
+      )
+    ),
+    ui_p_scatterplot(ns("output"))
+  )
+}
+
+srv_p_scatterplot_module <- function(id,
+                                      data,
+                                      subject_var,
+                                      x_var,
+                                      y_var,
+                                      color_var,
+                                      point_colors,
+                                      tooltip_vars = NULL) {
+  moduleServer(id, function(input, output, session) {
+    selectors <- teal.transform::module_input_srv(
+      data = data,
+      spec = list(subject_var = subject_var, x_var = x_var, y_var = y_var, color_var = color_var, tooltip_vars = tooltip_vars)
+    )
+    merged_dataname <- "anl"
+    merged_q <- reactive({
+      req(data(), map_merged(selectors))
+      obj <- data()
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Scatterplot data preparation")
+      qenv_merge_selectors(x = obj, selectors = selectors, output_name = merged_dataname)
+    })
+
+    color_inputs <- colour_picker_srv(
+      "colors",
+      x = reactive({
+        selected_color <- req(map_merged(selectors)$color_var)
+        merged_q()[[merged_dataname]][[selected_color$variables]]
+      }),
+      default_colors = point_colors
+    )
+
+    srv_p_scatterplot(
+      "output",
+      data = merged_q,
+      dataname = merged_dataname,
+      x_var = reactive(map_merged(selectors)$x_var$variables),
+      y_var = reactive(map_merged(selectors)$y_var$variables),
+      color_var = reactive(map_merged(selectors)$color_var$variables),
+      color_inputs = color_inputs,
+      subject_var = reactive(map_merged(selectors)$subject_var$variables),
+      tooltip_vars = reactive(map_merged(selectors)$tooltip_vars$variables)
+    )
+  })
 }
 
 ui_p_scatterplot <- function(id) {
   ns <- NS(id)
-  bslib::page_fluid(
-    shinyjs::useShinyjs(),
-    tags$div(
-      tags$span(id = ns("colors_span"), colour_picker_ui(ns("colors"))),
-      bslib::card(
-        full_screen = TRUE,
-        tags$div(
-          trigger_tooltips_deps(),
-          plotly::plotlyOutput(ns("plot"), height = "100%")
-        )
+  tags$div(
+    class = "standard-layout output-panel",
+    bslib::card(
+      full_screen = TRUE,
+      tags$div(
+        trigger_tooltips_deps(),
+        plotly::plotlyOutput(ns("plot"), height = "100%")
       )
     )
   )
@@ -102,38 +169,26 @@ ui_p_scatterplot <- function(id) {
 
 srv_p_scatterplot <- function(id,
                               data,
-                              plot_dataname,
+                              dataname,
                               subject_var,
                               x_var,
                               y_var,
                               color_var,
-                              point_colors,
-                              tooltip_vars = NULL,
-                              show_widgets) {
+                              color_inputs,
+                              tooltip_vars = NULL) {
   moduleServer(id, function(input, output, session) {
-    color_inputs <- colour_picker_srv(
-      "colors",
-      x = reactive({
-        data()[[plot_dataname]][[color_var]]
-      }),
-      default_colors = point_colors
-    )
-
-    if (!show_widgets) {
-      shinyjs::hide("colors_span")
-    }
-
     plotly_q <- reactive({
-      req(color_inputs())
+      obj <- req(data(), x_var(), y_var(), subject_var(), color_var())
       within(
         data(),
-        x_var = x_var,
-        y_var = y_var,
-        color_var = color_var,
-        subject_var = subject_var,
+        df = str2lang(dataname),
+        x_var = x_var(),
+        y_var = y_var(),
+        color_var = color_var(),
+        subject_var = subject_var(),
         colors = color_inputs(),
         source = session$ns("scatterplot"),
-        tooltip_vars = tooltip_vars,
+        tooltip_vars = tooltip_vars(),
         expr = {
           # Get label attributes for variables, fallback to column names
           subject_var_label <- attr(df[[subject_var]], "label")
@@ -200,7 +255,7 @@ srv_p_scatterplot <- function(id,
               }
             )
 
-          p <- plotly::plot_ly(
+          plotly::plot_ly(
             data = plot_data,
             source = source,
             colors = colors,
@@ -215,27 +270,24 @@ srv_p_scatterplot <- function(id,
             ) |>
             plotly::layout(dragmode = "select") |>
             plotly::event_register("plotly_selected")
-
-          p
-        },
-        df = str2lang(plot_dataname)
+        }
       )
     })
 
-
-    output$plot <- plotly::renderPlotly(
-      plotly_q()$p |>
+    output$plot <- plotly::renderPlotly({
+      req(plotly_q())
+      tail(teal.code::get_outputs(plotly_q()), 1)[[1]] |>
         setup_trigger_tooltips(session$ns) |>
         set_plot_data(session$ns("plot_data")) |>
         plotly::event_register("plotly_selected")
-    )
+    })
 
 
     plotly_selected <- reactive(
       plotly::event_data("plotly_selected", source = session$ns("scatterplot"))
     )
     reactive({
-      if (is.null(plotly_selected()) || is.null(subject_var)) {
+      if (is.null(plotly_selected()) || is.null(subject_var())) {
         plotly_q()
       } else {
         q <- plotly_q() |>
@@ -246,8 +298,8 @@ srv_p_scatterplot <- function(id,
               df <- df |>
                 dplyr::filter(!!as.name(subject_var_string) %in% selected_plot_data[[subject_var_string]])
             },
-            df = str2lang(plot_dataname),
-            subject_var_string = subject_var,
+            df = str2lang(dataname),
+            subject_var_string = subject_var(),
             plotly_selected_customdata = plotly_selected()$customdata
           )
         attr(q, "has_brushing") <- TRUE

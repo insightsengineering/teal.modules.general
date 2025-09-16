@@ -17,7 +17,6 @@
 #' If `NULL`, default tooltip is created showing group, x, y, and color variables.
 #' @param transformators (`list`) Named list of transformator functions.
 #' @param reference_lines (`list` or `NULL`) Reference lines specification for adding horizontal reference lines.
-#' @param activate_on_brushing (`logical(1)`) Whether to activate the plot only when brushing occurs in another plot.
 #'
 #' @examples
 #' data <- teal_data() |>
@@ -68,25 +67,19 @@ tm_p_lineplot <- function(label = "Line Plot",
                           colors = NULL,
                           tooltip_vars = NULL,
                           transformators = list(),
-                          reference_lines = NULL,
-                          activate_on_brushing = FALSE) {
+                          reference_lines = NULL) {
+  args <- as.list(environment())
   module(
     label = label,
     ui = ui_p_lineplot,
     server = srv_p_lineplot,
-    ui_args = list(),
-    server_args = list(
-      plot_dataname = plot_dataname,
-      x_var = x_var,
-      y_var = y_var,
-      color_var = color_var,
-      colors = colors,
-      group_var = group_var,
-      tooltip_vars = tooltip_vars,
-      reference_lines = reference_lines,
-      activate_on_brushing = activate_on_brushing
-    ),
-    transformators = transformators
+    ui_args = args[names(args) %in% names(formals(ui_p_lineplot))],
+    server_args = args[names(args) %in% names(formals(srv_p_lineplot))],
+    transformators = transformators,
+    datanames = {
+      datanames <- datanames(list(x_var = x_var, y_var = y_var, color_var = color_var, group_var))
+      if (length(datanames)) datanames else "all"
+    }
   )
 }
 
@@ -109,15 +102,20 @@ srv_p_lineplot <- function(id,
                            group_var,
                            colors,
                            tooltip_vars = NULL,
-                           reference_lines,
-                           activate_on_brushing) {
+                           reference_lines) {
   moduleServer(id, function(input, output, session) {
     plotly_q <- reactive({
-      if (activate_on_brushing) {
-        req(attr(data(), "has_brushing"))
-      }
+      req(data())
       data() %>%
         within(
+          df = str2lang(plot_dataname),
+          x_var = x_var(),
+          y_var = y_var(),
+          color_var = color_var(),
+          group_var = group_var(),
+          colors = colors(),
+          tooltip_vars = tooltip_vars(),
+          reference_lines = reference_lines,
           {
             validate(need(nrow(df) > 0, "No data after applying filters."))
 
@@ -271,15 +269,7 @@ srv_p_lineplot <- function(id,
                   annotations = ref_lines$annotations
                 )
             }
-          },
-          df = str2lang(plot_dataname),
-          x_var = x_var,
-          y_var = y_var,
-          color_var = color_var,
-          group_var = group_var,
-          colors = colors,
-          tooltip_vars = tooltip_vars,
-          reference_lines = reference_lines
+          }
         )
     })
 
