@@ -53,6 +53,7 @@
 #'       color_var = "treatment",
 #'       count_var = "subject_id",
 #'       secondary_y_var = "adverse_event",
+#'       tooltip_vars = c("system_organ_class", "adverse_event", "treatment"),
 #'       bar_colors = c("Active" = "#E74C3C", "Placebo" = "#3498DB")
 #'     )
 #'   )
@@ -69,6 +70,7 @@ tm_p_drilldown_bargraph <- function(label = "Bar Plot",
                                     color_var,
                                     count_var,
                                     secondary_y_var,
+                                    tooltip_vars = NULL,
                                     bar_colors = NULL) {
   module(
     label = label,
@@ -81,6 +83,7 @@ tm_p_drilldown_bargraph <- function(label = "Bar Plot",
       color_var = color_var,
       count_var = count_var,
       secondary_y_var = secondary_y_var,
+      tooltip_vars = tooltip_vars,
       bar_colors = bar_colors
     )
   )
@@ -101,6 +104,7 @@ srv_p_drilldown_bargraph <- function(id,
                                      color_var,
                                      count_var,
                                      secondary_y_var,
+                                     tooltip_vars,
                                      bar_colors) {
   moduleServer(id, function(input, output, session) {
     plot_q <- srv_p_bargraph(
@@ -110,6 +114,7 @@ srv_p_drilldown_bargraph <- function(id,
       y_var = y_var,
       color_var = color_var,
       count_var = count_var,
+      tooltip_vars = tooltip_vars,
       bar_colors = bar_colors
     )
 
@@ -125,6 +130,7 @@ srv_p_drilldown_bargraph <- function(id,
       y_var = secondary_y_var,
       color_var = color_var,
       count_var = count_var,
+      tooltip_vars = tooltip_vars,
       bar_colors = bar_colors
     )
   })

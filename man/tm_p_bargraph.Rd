@@ -10,6 +10,7 @@ tm_p_bargraph(
   y_var,
   color_var,
   count_var,
+  tooltip_vars = NULL,
   bar_colors = NULL
 )
 }
@@ -23,6 +24,9 @@ tm_p_bargraph(
 \item{color_var}{(\code{character(1)}) Name of the categorical variable used for color coding and stacking segments.}
 
 \item{count_var}{(\code{character(1)}) Name of the variable whose distinct values will be counted for bar heights.}
+
+\item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
+If \code{NULL}, default tooltip is created.}
 
 \item{bar_colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of color_var column.}
 }
@@ -65,7 +69,8 @@ app <- init(
       y_var = "adverse_event",
       color_var = "treatment",
       count_var = "subject_id",
-      bar_colors = c("Active" = "#FF6B6B", "Placebo" = "#4ECDC4")
+      bar_colors = c("Active" = "#FF6B6B", "Placebo" = "#4ECDC4"),
+      tooltip_vars = c("adverse_event", "treatment")
     )
   )
 )

@@ -11,6 +11,7 @@ tm_p_drilldown_bargraph(
   color_var,
   count_var,
   secondary_y_var,
+  tooltip_vars = NULL,
   bar_colors = NULL
 )
 }
@@ -75,6 +76,7 @@ app <- init(
       color_var = "treatment",
       count_var = "subject_id",
       secondary_y_var = "adverse_event",
+      tooltip_vars = c("system_organ_class", "adverse_event", "treatment"),
       bar_colors = c("Active" = "#E74C3C", "Placebo" = "#3498DB")
     )
   )
