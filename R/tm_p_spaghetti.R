@@ -58,46 +58,121 @@
 #'
 #' @export
 tm_p_spaghetti <- function(label = "Scatter Plot",
-                           plot_dataname,
                            group_var,
                            x_var,
                            y_var,
                            color_var,
                            point_colors = character(0),
                            tooltip_vars = NULL,
-                           transformators = list(),
-                           show_widgets = TRUE) {
+                           transformators = list()) {
+  checkmate::assert_string(label)
+  checkmate::assert_class(group_var, "picks")
+  checkmate::assert_class(x_var, "picks")
+  checkmate::assert_class(y_var, "picks")
+  checkmate::assert_class(color_var, "picks")
+  checkmate::assert_class(tooltip_vars, "picks", null.ok = TRUE)
+
+  args <- as.list(environment())
   module(
     label = label,
-    ui = ui_p_spaghetti,
-    server = srv_p_spaghetti,
-    ui_args = list(),
-    server_args = list(
-      plot_dataname = plot_dataname,
-      group_var = group_var,
-      x_var = x_var,
-      y_var = y_var,
-      color_var = color_var,
-      point_colors = point_colors,
-      tooltip_vars = tooltip_vars,
-      show_widgets = show_widgets
-    ),
-    transformators = transformators
+    ui = ui_p_spaghetti_module,
+    server = srv_p_spaghetti_module,
+    ui_args = args[names(args) %in% names(formals(ui_p_spaghetti_module))],
+    server_args = args[names(args) %in% names(formals(srv_p_spaghetti_module))],
+    transformators = transformators,
+    datanames = {
+      datanames <- datanames(
+        list(
+          group_var = group_var, x_var = x_var, y_var = y_var,
+          color_var = color_var, tooltip_vars = tooltip_vars
+        )
+      )
+      if (length(datanames)) datanames else "all"
+    }
   )
+}
+
+ui_p_spaghetti_module <- function(id, group_var, x_var, y_var, color_var, tooltip_vars) {
+  ns <- NS(id)
+  bslib::page_sidebar(
+    sidebar = div(
+      class = "standard-layout encoding-panel",
+      teal::teal_nav_item(
+        label = tags$strong("Group Variable:"),
+        teal.transform::module_input_ui(id = ns("group_var"), spec = group_var)
+      ),
+      teal::teal_nav_item(
+        label = tags$strong("X-axis Variable:"),
+        teal.transform::module_input_ui(id = ns("x_var"), spec = x_var)
+      ),
+      teal::teal_nav_item(
+        label = tags$strong("Y-axis Variable:"),
+        teal.transform::module_input_ui(id = ns("y_var"), spec = y_var)
+      ),
+      teal::teal_nav_item(
+        label = tags$strong("Color by:"),
+        teal.transform::module_input_ui(id = ns("color_var"), spec = color_var),
+        colour_picker_ui(ns("colors"))
+      )
+    ),
+    ui_p_spaghetti(ns("output"))
+  )
+}
+
+srv_p_spaghetti_module <- function(id,
+                                  data,
+                                  group_var,
+                                  x_var,
+                                  y_var,
+                                  color_var,
+                                  point_colors,
+                                  tooltip_vars = NULL) {
+  moduleServer(id, function(input, output, session) {
+    selectors <- teal.transform::module_input_srv(
+      data = data,
+      spec = list(group_var = group_var, x_var = x_var, y_var = y_var, color_var = color_var, tooltip_vars = tooltip_vars)
+    )
+    merged_dataname <- "anl"
+    merged_q <- reactive({
+      req(data(), map_merged(selectors))
+      obj <- data()
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Spaghetti plot data preparation")
+      qenv_merge_selectors(x = obj, selectors = selectors, output_name = merged_dataname)
+    })
+
+    color_inputs <- colour_picker_srv(
+      "colors",
+      x = reactive({
+        selected_color <- req(map_merged(selectors)$color_var)
+        merged_q()[[merged_dataname]][[selected_color$variables]]
+      }),
+      default_colors = point_colors
+    )
+
+    srv_p_spaghetti(
+      "output",
+      data = merged_q,
+      dataname = merged_dataname,
+      x_var = reactive(map_merged(selectors)$x_var$variables),
+      y_var = reactive(map_merged(selectors)$y_var$variables),
+      color_var = reactive(map_merged(selectors)$color_var$variables),
+      color_inputs = color_inputs,
+      group_var = reactive(map_merged(selectors)$group_var$variables),
+      tooltip_vars = reactive(map_merged(selectors)$tooltip_vars$variables)
+    )
+  })
 }
 
 ui_p_spaghetti <- function(id) {
   ns <- NS(id)
-  bslib::page_fluid(
+  tags$div(
+    class = "standard-layout output-panel",
     shinyjs::useShinyjs(),
-    tags$div(
-      tags$span(id = ns("colors_span"), colour_picker_ui(ns("colors"))),
-      bslib::card(
-        full_screen = TRUE,
-        tags$div(
-          trigger_tooltips_deps(),
-          plotly::plotlyOutput(ns("plot"), height = "100%")
-        )
+    bslib::card(
+      full_screen = TRUE,
+      tags$div(
+        trigger_tooltips_deps(),
+        plotly::plotlyOutput(ns("plot"), height = "100%")
       )
     )
   )
@@ -105,38 +180,26 @@ ui_p_spaghetti <- function(id) {
 
 srv_p_spaghetti <- function(id,
                             data,
-                            plot_dataname,
+                            dataname,
                             group_var,
                             x_var,
                             y_var,
                             color_var,
-                            point_colors,
-                            tooltip_vars = NULL,
-                            show_widgets) {
+                            color_inputs,
+                            tooltip_vars = NULL) {
   moduleServer(id, function(input, output, session) {
-    color_inputs <- colour_picker_srv(
-      "colors",
-      x = reactive({
-        data()[[plot_dataname]][[color_var]]
-      }),
-      default_colors = point_colors
-    )
-
-    if (!show_widgets) {
-      shinyjs::hide("colors_span")
-    }
-
     plotly_q <- reactive({
-      req(color_inputs())
+      req(data(), color_inputs(), group_var(), x_var(), y_var(), color_var())
       within(
         data(),
-        group_var = group_var,
-        x_var = x_var,
-        y_var = y_var,
-        color_var = color_var,
+        df = str2lang(dataname),
+        group_var = group_var(),
+        x_var = x_var(),
+        y_var = y_var(),
+        color_var = color_var(),
         colors = color_inputs(),
         source = session$ns("spaghetti"),
-        tooltip_vars = tooltip_vars,
+        tooltip_vars = tooltip_vars(),
         expr = {
           # Get label attributes for variables, fallback to column names
           group_var_label <- attr(df[[group_var]], "label")
@@ -240,24 +303,24 @@ srv_p_spaghetti <- function(id,
             plotly::layout(dragmode = "select")
 
           p
-        },
-        df = str2lang(plot_dataname)
+        }
       )
     })
 
 
-    output$plot <- plotly::renderPlotly(
+    output$plot <- plotly::renderPlotly({
+      req(plotly_q())
       plotly_q()$p |>
         setup_trigger_tooltips(session$ns) |>
         set_plot_data(session$ns("plot_data")) |>
         plotly::event_register("plotly_selected")
-    )
+    })
 
     plotly_selected <- reactive(
       plotly::event_data("plotly_selected", source = session$ns("spaghetti"))
     )
     reactive({
-      if (is.null(plotly_selected()) || is.null(group_var)) {
+      if (is.null(plotly_selected()) || is.null(group_var())) {
         plotly_q()
       } else {
         q <- plotly_q() |>
@@ -268,8 +331,8 @@ srv_p_spaghetti <- function(id,
               df <- df |>
                 dplyr::filter(!!as.name(group_var_string) %in% selected_plot_data[[group_var_string]])
             },
-            df = str2lang(plot_dataname),
-            group_var_string = group_var,
+            df = str2lang(dataname),
+            group_var_string = group_var(),
             plotly_selected_customdata = plotly_selected()$customdata
           )
         attr(q, "has_brushing") <- TRUE

@@ -67,6 +67,8 @@ tm_p_scatterplot <- function(label = "Scatter Plot",
   checkmate::assert_class(x_var, "picks")
   checkmate::assert_class(y_var, "picks")
   checkmate::assert_class(color_var, "picks")
+  checkmate::assert_class(tooltip_vars, "picks", null.ok = TRUE)
+  
   args <- as.list(environment())
   module(
     label = label,
@@ -157,6 +159,7 @@ ui_p_scatterplot <- function(id) {
   ns <- NS(id)
   tags$div(
     class = "standard-layout output-panel",
+    shinyjs::useShinyjs(),
     bslib::card(
       full_screen = TRUE,
       tags$div(
