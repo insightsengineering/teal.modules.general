@@ -18,8 +18,6 @@
 #' @param value_arbitrary_hlines (`numeric`) values in the same scale as `value_var` to horizontal
 #'  lines on the plot.
 #' @param plot_title (`character`) Title of the plot.
-#' @param table_datanames (`character`) Names of the datasets to be displayed in the tables below the plot.
-#' @param reactable_args (`list`) Additional arguments passed to the `reactable` function for table customization.
 #'
 #' @examples
 #' data <- teal_data() |>
@@ -45,7 +43,6 @@
 #'   modules = modules(
 #'     tm_p_waterfall(
 #'       plot_dataname = "waterfall_ds",
-#'       table_datanames = "subjects",
 #'       subject_var = "subject_var",
 #'       value_var = "value_var",
 #'       sort_var = "value_var",
@@ -74,9 +71,7 @@ tm_p_waterfall <- function(label = "Waterfall",
                            bar_colors = character(0),
                            value_arbitrary_hlines = c(0.2, -0.3),
                            plot_title = "Waterfall plot",
-                           plot_height = c(600, 400, 1200),
-                           table_datanames = character(0),
-                           reactable_args = list()) {
+                           plot_height = c(600, 400, 1200)) {
   if (is.character(subject_var)) {
     subject_var <- choices_selected(choices = subject_var, selected = subject_var)
   }
@@ -94,11 +89,10 @@ tm_p_waterfall <- function(label = "Waterfall",
     label = label,
     ui = ui_p_waterfall,
     server = srv_p_waterfall,
-    datanames = union(plot_dataname, table_datanames),
+    datanames = plot_dataname,
     ui_args = list(height = plot_height),
     server_args = list(
       plot_dataname = plot_dataname,
-      table_datanames = table_datanames,
       subject_var = subject_var,
       value_var = value_var,
       sort_var = sort_var,
@@ -106,7 +100,6 @@ tm_p_waterfall <- function(label = "Waterfall",
       bar_colors = bar_colors,
       value_arbitrary_hlines = value_arbitrary_hlines,
       plot_title = plot_title,
-      reactable_args = reactable_args,
       tooltip_vars = tooltip_vars
     )
   )
@@ -115,8 +108,9 @@ tm_p_waterfall <- function(label = "Waterfall",
 ui_p_waterfall <- function(id, height) {
   ns <- NS(id)
 
-  bslib::page_sidebar(
-    sidebar = div(
+  bslib::page_fluid(
+    div(
+      style = "display: flex;",
       selectInput(
         ns("subject_var"),
         label = "Subject variable (x-axis):",
@@ -138,8 +132,7 @@ ui_p_waterfall <- function(id, height) {
         tags$div(
           plotly::plotlyOutput(ns("plot"), height = "100%")
         )
-      ),
-      ui_t_reactables(ns("subtables"))
+      )
     )
   )
 }
@@ -154,9 +147,7 @@ srv_p_waterfall <- function(id,
                             value_arbitrary_hlines,
                             plot_title,
                             plot_height = c(600, 400, 1200),
-                            table_datanames = character(0),
-                            reactable_args = list(),
-                            tooltip_vars = NULL,
+                            tooltip_vars,
                             filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     .update_cs_input(inputId = "subject_var", data = reactive(data()[[dataname]]), cs = subject_var)
@@ -198,7 +189,7 @@ srv_p_waterfall <- function(id,
           if (!length(color_var_label)) color_var_label <- color_var
 
 
-          p <- dplyr::mutate(
+          plot_data <- dplyr::mutate(
             if (identical(sort_var, value_var) || is.null(sort_var)) {
               dplyr::arrange(dataname, desc(!!as.name(value_var)))
             } else {
@@ -233,10 +224,13 @@ srv_p_waterfall <- function(id,
             }
           ) %>%
             dplyr::filter(!duplicated(!!as.name(subject_var))) %>%
-            plotly::plot_ly(
-              source = source,
-              height = height
-            ) %>%
+            dplyr::mutate(customdata = dplyr::row_number())
+          p <- plotly::plot_ly(
+            data = plot_data,
+            source = source,
+            customdata = ~customdata,
+            height = height
+          ) %>%
             plotly::add_bars(
               x = stats::as.formula(sprintf("~%s", subject_var)),
               y = stats::as.formula(sprintf("~%s", value_var)),
@@ -274,20 +268,20 @@ srv_p_waterfall <- function(id,
 
     plotly_selected <- reactive(plotly::event_data("plotly_selected", source = session$ns("waterfall")))
 
-    tables_selected_q <- .plotly_selected_filter_children(
-      data = plotly_q,
-      plot_dataname = plot_dataname,
-      xvar = reactive(input$subject_var),
-      yvar = reactive(input$value_var),
-      plotly_selected = plotly_selected,
-      children_datanames = table_datanames
-    )
-
-    srv_t_reactables(
-      "subtables",
-      data = tables_selected_q,
-      datanames = table_datanames,
-      reactable_args = reactable_args
-    )
+    reactive({
+      req(plotly_selected())
+      plotly_q() |>
+        within(
+          {
+            selected_plot_data <- plot_data |>
+              dplyr::filter(customdata %in% plotly_selected_customdata)
+            dataname <- dataname |>
+              dplyr::filter(!!sym(subject_var) %in% selected_plot_data[[subject_var]])
+          },
+          dataname = str2lang(plot_dataname),
+          subject_var = input$subject_var,
+          plotly_selected_customdata = plotly_selected()$customdata
+        )
+    })
   })
 }
