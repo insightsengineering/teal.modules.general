@@ -6,8 +6,11 @@
 \usage{
 tm_g_association(
   label = "Association",
-  ref,
-  vars,
+  ref = picks(datasets(), variables(choices = tidyselect::where(is.numeric) |
+    teal.transform::is_categorical(min.len = 2, max.len = 10), selected = 1)),
+  vars = picks(datasets(), variables(choices = tidyselect::where(is.numeric) |
+    teal.transform::is_categorical(min.len = 2, max.len = 10), selected = 2, multiple =
+    TRUE)),
   show_association = TRUE,
   plot_height = c(600, 400, 5000),
   plot_width = NULL,

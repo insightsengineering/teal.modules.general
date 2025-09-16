@@ -6,8 +6,10 @@
 \usage{
 tm_g_bivariate(
   label = "Bivariate Plots",
-  x,
-  y,
+  x = picks(datasets(), variables(choices = tidyselect::where(is.numeric) |
+    teal.transform::is_categorical(min.len = 2, max.len = 10), selected = 1)),
+  y = picks(datasets(), variables(choices = tidyselect::where(is.numeric) |
+    teal.transform::is_categorical(min.len = 2, max.len = 10), selected = 2)),
   row_facet = NULL,
   col_facet = NULL,
   facet = !is.null(row_facet) || !is.null(col_facet),

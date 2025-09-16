@@ -108,6 +108,7 @@ tm_p_spiderplot <- function(label = "Spiderplot",
   checkmate::assert_class(subject_var, "picks")
   checkmate::assert_class(color_var, "picks")
   checkmate::assert_class(size_var, "picks", null.ok = TRUE)
+  checkmate::assert_class(tooltip_vars, "picks", null.ok = TRUE)
 
   args <- as.list(environment())
   module(
@@ -129,7 +130,15 @@ tm_p_spiderplot <- function(label = "Spiderplot",
   )
 }
 
-ui_p_spiderplot <- function(id, time_var, value_var, subject_var, color_var, size_var, plot_height, decorators) {
+ui_p_spiderplot <- function(id,
+                            time_var,
+                            value_var,
+                            subject_var,
+                            color_var,
+                            size_var,
+                            tooltip_vars,
+                            plot_height,
+                            decorators) {
   ns <- NS(id)
   bslib::page_sidebar(
     sidebar = div(
@@ -148,10 +157,20 @@ ui_p_spiderplot <- function(id, time_var, value_var, subject_var, color_var, siz
       ),
       teal::teal_nav_item(
         label = tags$strong("Color by:"),
-        teal.transform::module_input_ui(id = ns("color_var"), spec = color_var)
-      ),
-      if (!is.null(size_var)) {
+        teal.transform::module_input_ui(id = ns("color_var"), spec = color_var),
         colour_picker_ui(ns("colors"))
+      ),
+      if (!is.null(tooltip_vars)) { # todo: don't show at all
+        teal::teal_nav_item(
+          label = tags$strong("Tooltip variables:"),
+          teal.transform::module_input_ui(id = ns("tooltip_vars"), spec = tooltip_vars)
+        )
+      },
+      if (!is.null(size_var)) {
+        teal::teal_nav_item(
+          label = tags$strong("Size by:"),
+          teal.transform::module_input_ui(id = ns("size_var"), spec = size_var)
+        )
       },
       ui_decorate_teal_data(ns("decorator"), decorators = decorators),
       sliderInput(ns("plot_height"), "Plot Height (px)", plot_height[2], plot_height[3], plot_height[1])
@@ -184,11 +203,12 @@ srv_p_spiderplot <- function(id,
                              decorators = list(),
                              filter_panel_api) {
   moduleServer(id, function(input, output, session) {
+    logger::log_trace("srv_p_spiderplot initializing")
     selectors <- teal.transform::module_input_srv(
       data = data,
       spec = list(
         time_var = time_var, value_var = value_var, subject_var = subject_var,
-        color_var = color_var, size_var = size_var
+        color_var = color_var, size_var = size_var, tooltip_vars = tooltip_vars
       )
     )
 
@@ -224,6 +244,7 @@ srv_p_spiderplot <- function(id,
 
     output_q <- reactive({
       obj <- req(plot_data_q())
+      logger::log_debug("Plotting spiderplot")
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Spiderplot Visualization")
       adjusted_symbols <- .shape_palette_discrete(
         levels = unique(obj$anl[[map_merged(selectors)$color_var$variables]]),
@@ -244,9 +265,9 @@ srv_p_spiderplot <- function(id,
         colors = color_inputs(),
         symbols = adjusted_symbols,
         size_var = if (!is.null(size_var)) map_merged(selectors)$size_var$variables,
+        tooltip_vars = if (!is.null(tooltip_vars)) map_merged(selectors)$tooltip_vars$variables,
         height = input$plot_height,
         point_size = 10,
-        tooltip_vars = tooltip_vars,
         source = session$ns("spiderplot"),
         expr = {
           subject_var_label <- attr(anl[[subject_var]], "label")
@@ -336,7 +357,7 @@ srv_p_spiderplot <- function(id,
               y = stats::as.formula(sprintf("~%s", value_var)),
               symbol = stats::as.formula(sprintf("~%s", color_var)),
               size = size,
-              text = ~tooltip,
+              # text = ~tooltip,
               hoverinfo = "text",
               customdata = ~customdata
             ) %>%
@@ -358,14 +379,18 @@ srv_p_spiderplot <- function(id,
       expr = quote(plot)
     )
 
-    output$plot <- plotly::renderPlotly(plotly::event_register(
-      {
-        rev(teal.code::get_outputs(decorated_output_plot_q()))[[1]] |>
-          set_plot_data(session$ns("plot_data")) |>
-          setup_trigger_tooltips(session$ns)
-      },
-      "plotly_selected"
-    ))
+    output$plot <- plotly::renderPlotly({
+      req(decorated_output_plot_q())
+      logger::log_debug("srv_p_spiderplot rendering plot")
+      plotly::event_register(
+        {
+          rev(teal.code::get_outputs(decorated_output_plot_q()))[[1]] |>
+            set_plot_data(session$ns("plot_data")) |>
+            setup_trigger_tooltips(session$ns)
+        },
+        "plotly_selected"
+      )
+    })
 
     plotly_data <- reactive({
       data.frame(

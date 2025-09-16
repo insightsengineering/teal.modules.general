@@ -192,8 +192,22 @@
 #' @export
 #'
 tm_g_bivariate <- function(label = "Bivariate Plots",
-                           x,
-                           y,
+                           x = picks(
+                             datasets(),
+                             variables(
+                               choices = tidyselect::where(is.numeric) |
+                                 teal.transform::is_categorical(min.len = 2, max.len = 10),
+                               selected = 1
+                             )
+                           ),
+                           y = picks(
+                             datasets(),
+                             variables(
+                               choices = tidyselect::where(is.numeric) |
+                                 teal.transform::is_categorical(min.len = 2, max.len = 10),
+                               selected = 2
+                             )
+                           ),
                            row_facet = NULL,
                            col_facet = NULL,
                            facet = !is.null(row_facet) || !is.null(col_facet),
@@ -216,41 +230,36 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            decorators = list()) {
   message("Initializing tm_g_bivariate")
 
-  # Normalize the parameters
-  if (inherits(x, "data_extract_spec")) x <- list(x)
-  if (inherits(y, "data_extract_spec")) y <- list(y)
-  if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
-  if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
-  if (inherits(color, "data_extract_spec")) color <- list(color)
-  if (inherits(fill, "data_extract_spec")) fill <- list(fill)
-  if (inherits(size, "data_extract_spec")) size <- list(size)
+
+  extracted_filters <- extract_filters(list(x, y, row_facet, col_facet, color, fill, size))
+  transformators <- c(
+    transformators,
+    lapply(extracted_filters, teal.transform:::teal_transform_filter)
+  )
+  x <- des_to_picks(x)
+  y <- des_to_picks(y)
+  row_facet <- des_to_picks(row_facet)
+  col_facet <- des_to_picks(col_facet)
+  color <- des_to_picks(color)
+  fill <- des_to_picks(fill)
+  size <- des_to_picks(size)
 
   # Start of assertions
+  checkmate::assert_class(x, "picks")
+  checkmate::assert_class(y, "picks")
+  if (attr(x$variables, "multiple")) {
+    warning("`x`-axis doesn't accept multiple variables. Changing automatically.")
+    attr(x$variables, "multiple") <- FALSE
+  }
+  if (attr(y$variables, "multiple")) {
+    warning("`y`-axis doesn't accept multiple variables. Changing automatically.")
+    attr(x$variables, "multiple") <- FALSE
+  }
+  checkmate::assert_class(col_facet, "picks", null.ok = TRUE)
+  checkmate::assert_class(row_facet, "picks", null.ok = TRUE)
+  checkmate::assert_class(color, "picks", null.ok = TRUE)
+  checkmate::assert_class(size, "picks", null.ok = TRUE)
   checkmate::assert_string(label)
-
-  checkmate::assert_list(x, types = "data_extract_spec")
-  assert_single_selection(x)
-
-  checkmate::assert_list(y, types = "data_extract_spec")
-  assert_single_selection(y)
-
-  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
-  assert_single_selection(row_facet)
-
-  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
-  assert_single_selection(col_facet)
-
-  checkmate::assert_flag(facet)
-
-  checkmate::assert_list(color, types = "data_extract_spec", null.ok = TRUE)
-  assert_single_selection(color)
-
-  checkmate::assert_list(fill, types = "data_extract_spec", null.ok = TRUE)
-  assert_single_selection(fill)
-
-  checkmate::assert_list(size, types = "data_extract_spec", null.ok = TRUE)
-  assert_single_selection(size)
-
   checkmate::assert_flag(use_density)
 
   # Determines color, fill & size if they are not explicitly set
@@ -258,15 +267,15 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   if (color_settings) {
     if (is.null(color)) {
       color <- x
-      color[[1]]$select <- teal.transform::select_spec(choices = color[[1]]$select$choices, selected = NULL)
+      color$selected <- NULL
     }
     if (is.null(fill)) {
       fill <- x
-      fill[[1]]$select <- teal.transform::select_spec(choices = fill[[1]]$select$choices, selected = NULL)
+      fill$selected <- NULL
     }
     if (is.null(size)) {
       size <- x
-      size[[1]]$select <- teal.transform::select_spec(choices = size[[1]]$select$choices, selected = NULL)
+      size$selected <- NULL
     }
   } else {
     if (!is.null(c(color, fill, size))) {
@@ -300,177 +309,152 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   # Make UI args
   args <- as.list(environment())
 
-  data_extract_list <- list(
-    x = x,
-    y = y,
-    row_facet = row_facet,
-    col_facet = col_facet,
-    color_settings = color_settings,
-    color = color,
-    fill = fill,
-    size = size
-  )
-
   ans <- module(
     label = label,
     server = srv_g_bivariate,
     ui = ui_g_bivariate,
-    ui_args = args,
-    server_args = c(
-      data_extract_list,
-      list(plot_height = plot_height, plot_width = plot_width, ggplot2_args = ggplot2_args, decorators = decorators)
-    ),
+    ui_args = args[names(args) %in% names(formals(ui_g_bivariate))],
+    server_args = args[names(args) %in% names(formals(srv_g_bivariate))],
     transformators = transformators,
-    datanames = teal.transform::get_extract_datanames(data_extract_list)
+    datanames = {
+      datanames <- datanames(
+        list(x = x, y = y, row_facet = row_facet, col_facet = col_facet, color = color, fill = fill, size = size)
+      )
+      if (length(datanames)) datanames else "all"
+    }
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
 
 # UI function for the bivariate module
-ui_g_bivariate <- function(id, ...) {
-  args <- list(...)
-  is_single_dataset_value <- teal.transform::is_single_dataset(
-    args$x, args$y, args$row_facet, args$col_facet, args$color, args$fill, args$size
-  )
-
+ui_g_bivariate <- function(id,
+                           x,
+                           y,
+                           row_facet = NULL,
+                           col_facet = NULL,
+                           facet = !is.null(row_facet) || !is.null(col_facet),
+                           color = NULL,
+                           fill = NULL,
+                           size = NULL,
+                           use_density = FALSE,
+                           color_settings = FALSE,
+                           free_x_scales = FALSE,
+                           free_y_scales = FALSE,
+                           rotate_xaxis_labels = FALSE,
+                           swap_axes = FALSE,
+                           ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                           ggplot2_args = teal.widgets::ggplot2_args(),
+                           pre_output = NULL,
+                           post_output = NULL,
+                           decorators = list()) {
   ns <- NS(id)
-  teal.widgets::standard_layout(
-    output = teal.widgets::white_small_well(
-      tags$div(teal.widgets::plot_with_settings_ui(id = ns("myplot")))
+  teal::standard_layout2(
+    output = bslib::card(
+      teal.widgets::plot_with_settings_ui(id = ns("myplot")),
+      full_screen = TRUE
     ),
-    encoding = tags$div(
-      tags$label("Encodings", class = "text-primary"),
-      teal.transform::datanames_input(args[c("x", "y", "row_facet", "col_facet", "color", "fill", "size")]),
-      teal.transform::data_extract_ui(
-        id = ns("x"),
-        label = "X variable",
-        data_extract_spec = args$x,
-        is_single_dataset = is_single_dataset_value
+    encoding = shiny::tagList(
+      teal::teal_nav_item(
+        label = tags$strong("X variable"),
+        teal.transform::module_input_ui(id = ns("x"), spec = x)
       ),
-      teal.transform::data_extract_ui(
-        id = ns("y"),
-        label = "Y variable",
-        data_extract_spec = args$y,
-        is_single_dataset = is_single_dataset_value
+      teal::teal_nav_item(
+        label = tags$strong("Y variable"),
+        teal.transform::module_input_ui(id = ns("y"), spec = y)
       ),
       conditionalPanel(
         condition =
           "$(\"button[data-id*='-x-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ||
-          $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
-        shinyWidgets::radioGroupButtons(
-          inputId = ns("use_density"),
+            $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
+        teal::teal_nav_item(
           label = NULL,
-          choices = c("frequency", "density"),
-          selected = ifelse(args$use_density, "density", "frequency"),
-          justified = TRUE
+          shinyWidgets::radioGroupButtons(
+            inputId = ns("use_density"),
+            label = NULL,
+            choices = c("frequency", "density"),
+            selected = ifelse(use_density, "density", "frequency"),
+            justified = TRUE
+          )
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
-      if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
-        tags$div(
-          class = "data-extract-box",
-          tags$br(),
-          bslib::input_switch(
-            id = ns("facetting"),
-            label = "Facetting",
-            value = args$facet
-          ),
-          conditionalPanel(
-            condition = paste0("input['", ns("facetting"), "']"),
-            tags$div(
-              if (!is.null(args$row_facet)) {
-                teal.transform::data_extract_ui(
-                  id = ns("row_facet"),
-                  label = "Row facetting variable",
-                  data_extract_spec = args$row_facet,
-                  is_single_dataset = is_single_dataset_value
-                )
-              },
-              if (!is.null(args$col_facet)) {
-                teal.transform::data_extract_ui(
-                  id = ns("col_facet"),
-                  label = "Column facetting variable",
-                  data_extract_spec = args$col_facet,
-                  is_single_dataset = is_single_dataset_value
-                )
-              },
-              checkboxInput(ns("free_x_scales"), "free x scales", value = args$free_x_scales),
-              checkboxInput(ns("free_y_scales"), "free y scales", value = args$free_y_scales)
-            )
+      if (!is.null(row_facet)) {
+        teal::teal_nav_item(
+          tags$div(
+            tags$strong("Row facetting variable"),
+            teal.transform::module_input_ui(id = ns("row_facet"), spec = row_facet),
+            checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales)
           )
         )
       },
-      if (args$color_settings) {
+      if (!is.null(col_facet)) {
+        teal::teal_nav_item(
+          tags$div(
+            tags$strong("Column facetting variable"),
+            teal.transform::module_input_ui(id = ns("col_facet"), spec = col_facet),
+            checkboxInput(ns("free_y_scales"), "free y scales", value = free_y_scales)
+          )
+        )
+      },
+      if (color_settings) {
         # Put a grey border around the coloring settings
-        tags$div(
-          class = "data-extract-box",
-          tags$label("Color settings"),
-          bslib::input_switch(
-            id = ns("coloring"),
-            label = "Color settings",
-            value = TRUE
-          ),
-          conditionalPanel(
-            condition = paste0("input['", ns("coloring"), "']"),
-            tags$div(
-              teal.transform::data_extract_ui(
-                id = ns("color"),
-                label = "Outline color by variable",
-                data_extract_spec = args$color,
-                is_single_dataset = is_single_dataset_value
-              ),
-              teal.transform::data_extract_ui(
-                id = ns("fill"),
-                label = "Fill color by variable",
-                data_extract_spec = args$fill,
-                is_single_dataset = is_single_dataset_value
-              ),
+        teal::teal_nav_item(
+          label = tags$strong("Color settings"),
+          tags$div(
+            bslib::input_switch(id = ns("coloring"), label = "Color settings", value = TRUE),
+            conditionalPanel(
+              condition = paste0("input['", ns("coloring"), "']"),
               tags$div(
-                id = ns("size_settings"),
-                teal.transform::data_extract_ui(
-                  id = ns("size"),
-                  label = "Size of points by variable (only if x and y are numeric)",
-                  data_extract_spec = args$size,
-                  is_single_dataset = is_single_dataset_value
+                teal.transform::module_input_ui(id = ns("color"), spec = color), # label = "Outline color by variable"
+                teal.transform::module_input_ui(id = ns("fill"), spec = fill), # label = "Outline color by variable"
+                tags$div(
+                  id = ns("size_settings"),
+                  teal.transform::module_input_ui(id = ns("size"), spec = size) # label = "Size of points by variable (only if x and y are numeric)"
                 )
               )
             )
           )
         )
       },
-      bslib::accordion(
-        open = TRUE,
-        bslib::accordion_panel(
-          title = "Plot settings",
-          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
-          checkboxInput(ns("swap_axes"), "Swap axes", value = args$swap_axes),
-          selectInput(
-            inputId = ns("ggtheme"),
-            label = "Theme (by ggplot):",
-            choices = ggplot_themes,
-            selected = args$ggtheme,
-            multiple = FALSE
-          ),
-          sliderInput(
-            ns("alpha"), "Opacity Scatterplot:",
-            min = 0, max = 1,
-            step = .05, value = .5, ticks = FALSE
-          ),
-          sliderInput(
-            ns("fixed_size"), "Scatterplot point size:",
-            min = 1, max = 8,
-            step = 1, value = 2, ticks = FALSE
-          ),
-          checkboxInput(ns("add_lines"), "Add lines"),
+      teal::teal_nav_item(
+        label = NULL,
+        teal:::.teal_navbar_menu(
+          id = ns("plot_settings"),
+          label = "Plot settings",
+          icon = "gear",
+          tags$div(
+            checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = rotate_xaxis_labels),
+            checkboxInput(ns("swap_axes"), "Swap axes", value = swap_axes),
+            selectInput(
+              inputId = ns("ggtheme"),
+              label = "Theme (by ggplot):",
+              choices = ggplot_themes,
+              selected = ggtheme,
+              multiple = FALSE
+            ),
+            sliderInput(
+              ns("alpha"), "Opacity Scatterplot:",
+              min = 0, max = 1,
+              step = .05, value = .5, ticks = FALSE
+            ),
+            sliderInput(
+              ns("fixed_size"), "Scatterplot point size:",
+              min = 1, max = 8,
+              step = 1, value = 2, ticks = FALSE
+            ),
+            checkboxInput(ns("add_lines"), "Add lines")
+          )
         )
+      ),
+      teal::teal_nav_item(
+        ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot"))
       )
     ),
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
-    pre_output = args$pre_output,
-    post_output = args$post_output
+    pre_output = pre_output,
+    post_output = post_output
   )
 }
 
@@ -495,115 +479,101 @@ srv_g_bivariate <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     ns <- session$ns
-
-    data_extract <- list(
-      x = x, y = y, row_facet = row_facet, col_facet = col_facet,
-      color = color, fill = fill, size = size
+    selectors <- teal.transform::module_input_srv(
+      spec = list(
+        x = x,
+        y = y,
+        row_facet = row_facet,
+        col_facet = col_facet,
+        color = color,
+        fill = fill,
+        size = size
+      ),
+      data = data
     )
 
-    rule_var <- function(other) {
-      function(value) {
-        othervalue <- selector_list()[[other]]()$select
-        if (length(value) == 0L && length(othervalue) == 0L) {
-          "Please select at least one of x-variable or y-variable"
-        }
-      }
-    }
-    rule_diff <- function(other) {
-      function(value) {
-        othervalue <- selector_list()[[other]]()[["select"]]
-        if (!is.null(othervalue)) {
-          if (identical(value, othervalue)) {
-            "Row and column facetting variables must be different."
-          }
-        }
-      }
-    }
-
-    selector_list <- teal.transform::data_extract_multiple_srv(
-      data_extract = data_extract,
-      datasets = data,
-      select_validation_rule = list(
-        x = rule_var("y"),
-        y = rule_var("x"),
-        row_facet = shinyvalidate::compose_rules(
-          shinyvalidate::sv_optional(),
-          rule_diff("col_facet")
-        ),
-        col_facet = shinyvalidate::compose_rules(
-          shinyvalidate::sv_optional(),
-          rule_diff("row_facet")
-        )
-      )
-    )
-
+    iv <- shinyvalidate::InputValidator$new()
     iv_r <- reactive({
-      iv_facet <- shinyvalidate::InputValidator$new()
-      iv_child <- teal.transform::compose_and_enable_validators(iv_facet, selector_list,
-        validator_names = c("row_facet", "col_facet")
-      )
-      iv_child$condition(~ isTRUE(input$facetting))
+      # iv$add_rule(
+      #   "x-variables-selected",
+      #   shinyvalidate::compose_rules(
+      #     ~ if (!length(selectors$x()$variables$selected) && !length(selectors$y()$variables$selected)) {
+      #       "Please select at least one of x-variable or y-variable"
+      #     }
+      #   )
+      # )
+      # iv$add_rule(
+      #   "y-variables-selected",
+      #   shinyvalidate::compose_rules(
+      #     ~ if (!length(selectors$x()$variables$selected) && !length(selectors$y()$variables$selected)) {
+      #       "Please select at least one of x-variable or y-variable"
+      #     }
+      #   )
+      # )
+      # if (!is.null(col_facet)) {
+      #   iv$add_rule(
+      #     "row_facet-variables-selected",
+      #     shinyvalidate::compose_rules(
+      #       shinyvalidate::sv_optional(),
+      #       ~ if (
+      #         !is.null(selectors$row_facet()$variables$selected) &&
+      #           identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected)
+      #       ) {
+      #         "Row and column facetting variables must be different."
+      #       }
+      #     )
+      #   )
+      # }
 
-      iv <- shinyvalidate::InputValidator$new()
-      iv$add_validator(iv_child)
-      teal.transform::compose_and_enable_validators(iv, selector_list, validator_names = c("x", "y"))
+      # if (!is.null(row_facet)) {
+      #   iv$add_rule(
+      #     "col_facet-variables-selected",
+      #     shinyvalidate::compose_rules(
+      #       shinyvalidate::sv_optional(),
+      #       ~ if (
+      #         !is.null(selectors$row_facet()$variables$selected) &&
+      #           identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected)
+      #       ) {
+      #         "Row and column facetting variables must be different."
+      #       }
+      #     )
+      #   )
+      # }
+
+      iv$enable()
     })
 
-    anl_merged_input <- teal.transform::merge_expression_srv(
-      selector_list = selector_list,
-      datasets = data
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint: quotes.
     )
 
     anl_merged_q <- reactive({
+      isolate(teal::validate_inputs(iv_r()))
+      req(data())
       obj <- data()
-      teal.reporter::teal_card(obj) <-
-        c(
-          teal.reporter::teal_card("# Bivariate Plot"),
-          teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
-        )
+      teal.reporter::teal_card(obj) <- c(
+        teal.reporter::teal_card("# Bivariate Plot"),
+        teal.reporter::teal_card(obj),
+        teal.reporter::teal_card("## Module's code")
+      )
       obj %>%
-        teal.code::eval_code(
-          c(
-            'library("ggplot2");library("dplyr")', # nolint: quotes
-            as.expression(anl_merged_input()$expr)
-          )
-        )
+        teal.code::eval_code('library("ggplot2");library("dplyr")') %>%
+        teal.transform::qenv_merge_selectors(selectors = selectors)
     })
 
-    merged <- list(
-      anl_input_r = anl_merged_input,
-      anl_q_r = anl_merged_q
-    )
+    output_q <- reactive(label = "make bivariateplot", {
+      req(anl_merged_q())
+      logger::log_debug("Plotting bivariate")
+      merged <- anl_merged_q()[["merged"]]
+      teal::validate_has_data(merged, 3)
 
-    output_q <- reactive({
-      teal::validate_inputs(iv_r())
-
-      ANL <- merged$anl_q_r()[["ANL"]]
-      teal::validate_has_data(ANL, 3)
-
-      x_col_vec <- as.vector(merged$anl_input_r()$columns_source$x)
-      x_name <- `if`(is.null(x_col_vec), character(0), x_col_vec)
-      y_col_vec <- as.vector(merged$anl_input_r()$columns_source$y)
-      y_name <- `if`(is.null(y_col_vec), character(0), y_col_vec)
-
-      row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)
-      col_facet_name <- as.vector(merged$anl_input_r()$columns_source$col_facet)
-      color_name <- if ("color" %in% names(merged$anl_input_r()$columns_source)) {
-        as.vector(merged$anl_input_r()$columns_source$color)
-      } else {
-        character(0)
-      }
-      fill_name <- if ("fill" %in% names(merged$anl_input_r()$columns_source)) {
-        as.vector(merged$anl_input_r()$columns_source$fill)
-      } else {
-        character(0)
-      }
-      size_name <- if ("size" %in% names(merged$anl_input_r()$columns_source)) {
-        as.vector(merged$anl_input_r()$columns_source$size)
-      } else {
-        character(0)
-      }
+      x_name <- map_merged(selectors)$x$variables
+      y_name <- map_merged(selectors)$y$variables
+      row_facet_name <- map_merged(selectors)$row_facet$variables
+      col_facet_name <- map_merged(selectors)$col_facet$variables
+      color_name <- map_merged(selectors)$color$variables
+      fill_name <- map_merged(selectors)$fill$variables
+      size_name <- map_merged(selectors)$size$variables
 
       use_density <- input$use_density == "density"
       free_x_scales <- input$free_x_scales
@@ -612,7 +582,7 @@ srv_g_bivariate <- function(id,
       rotate_xaxis_labels <- input$rotate_xaxis_labels
       swap_axes <- input$swap_axes
 
-      is_scatterplot <- all(vapply(ANL[c(x_name, y_name)], is.numeric, logical(1))) &&
+      is_scatterplot <- all(vapply(merged[c(x_name, y_name)], is.numeric, logical(1))) &&
         length(x_name) > 0 && length(y_name) > 0
 
       if (is_scatterplot) {
@@ -638,16 +608,16 @@ srv_g_bivariate <- function(id,
         size <- NULL
       }
 
-      teal::validate_has_data(ANL[, c(x_name, y_name), drop = FALSE], 3, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(merged[, c(x_name, y_name), drop = FALSE], 3, complete = TRUE, allow_inf = FALSE)
 
       cl <- bivariate_plot_call(
-        data_name = "ANL",
+        data_name = "merged",
         x = x_name,
         y = y_name,
-        x_class = ifelse(!identical(x_name, character(0)), class(ANL[[x_name]]), "NULL"),
-        y_class = ifelse(!identical(y_name, character(0)), class(ANL[[y_name]]), "NULL"),
-        x_label = varname_w_label(x_name, ANL),
-        y_label = varname_w_label(y_name, ANL),
+        x_class = ifelse(length(x_name), class(merged[[x_name]]), "NULL"),
+        y_class = ifelse(length(y_name), class(merged[[y_name]]), "NULL"),
+        x_label = varname_w_label(x_name, merged),
+        y_label = varname_w_label(y_name, merged),
         freq = !use_density,
         theme = ggtheme,
         rotate_xaxis_labels = rotate_xaxis_labels,
@@ -694,7 +664,7 @@ srv_g_bivariate <- function(id,
         }
       }
 
-      obj <- merged$anl_q_r()
+      obj <- anl_merged_q()
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Plot")
       teal.code::eval_code(obj, substitute(expr = plot <- cl, env = list(cl = cl)))
     })
@@ -704,13 +674,13 @@ srv_g_bivariate <- function(id,
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
       expr = reactive({
-        ANL <- merged$anl_q_r()[["ANL"]]
-        row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)
-        col_facet_name <- as.vector(merged$anl_input_r()$columns_source$col_facet)
+        merged <- anl_merged_q()[["merged"]]
+        row_facet_name <- map_merged(selectors)$row_facet$variables
+        col_facet_name <- map_merged(selectors)$col_facet$variables
 
         # Add labels to facets
-        nulled_row_facet_name <- varname_w_label(row_facet_name, ANL)
-        nulled_col_facet_name <- varname_w_label(col_facet_name, ANL)
+        nulled_row_facet_name <- varname_w_label(row_facet_name, merged)
+        nulled_col_facet_name <- varname_w_label(col_facet_name, merged)
         facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
         without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
 
@@ -758,8 +728,8 @@ srv_g_bivariate <- function(id,
 
 # Get Substituted ggplot call
 bivariate_plot_call <- function(data_name,
-                                x = character(0),
-                                y = character(0),
+                                x = NULL,
+                                y = NULL,
                                 x_class = "NULL",
                                 y_class = "NULL",
                                 x_label = NULL,
@@ -776,12 +746,12 @@ bivariate_plot_call <- function(data_name,
   validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
 
 
-  if (identical(x, character(0))) {
+  if (is.null(x)) {
     x <- x_label <- "-"
   } else {
     x <- if (is.call(x)) x else as.name(x)
   }
-  if (identical(y, character(0))) {
+  if (is.null(y)) {
     y <- y_label <- "-"
   } else {
     y <- if (is.call(y)) y else as.name(y)
