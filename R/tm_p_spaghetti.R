@@ -279,7 +279,7 @@ srv_p_spaghetti <- function(id,
             ) %>%
             dplyr::filter(!is.na(xend))
 
-          p <- plotly::plot_ly(
+          plotly::plot_ly(
             data = segments_df,
             customdata = ~customdata,
             source = source
@@ -301,8 +301,6 @@ srv_p_spaghetti <- function(id,
               hoverinfo = "text"
             ) |>
             plotly::layout(dragmode = "select")
-
-          p
         }
       )
     })
@@ -310,7 +308,7 @@ srv_p_spaghetti <- function(id,
 
     output$plot <- plotly::renderPlotly({
       req(plotly_q())
-      plotly_q()$p |>
+      tail(teal.code::get_outputs(plotly_q()), 1)[[1]] |>
         setup_trigger_tooltips(session$ns) |>
         set_plot_data(session$ns("plot_data")) |>
         plotly::event_register("plotly_selected")
@@ -320,6 +318,7 @@ srv_p_spaghetti <- function(id,
       plotly::event_data("plotly_selected", source = session$ns("spaghetti"))
     )
     reactive({
+      req(plotly_selected(), plotly_q(), group_var())
       if (is.null(plotly_selected()) || is.null(group_var())) {
         plotly_q()
       } else {

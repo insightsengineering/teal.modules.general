@@ -68,7 +68,7 @@ tm_p_scatterplot <- function(label = "Scatter Plot",
   checkmate::assert_class(y_var, "picks")
   checkmate::assert_class(color_var, "picks")
   checkmate::assert_class(tooltip_vars, "picks", null.ok = TRUE)
-  
+
   args <- as.list(environment())
   module(
     label = label,
@@ -112,13 +112,13 @@ ui_p_scatterplot_module <- function(id, subject_var, x_var, y_var, color_var) {
 }
 
 srv_p_scatterplot_module <- function(id,
-                                      data,
-                                      subject_var,
-                                      x_var,
-                                      y_var,
-                                      color_var,
-                                      point_colors,
-                                      tooltip_vars = NULL) {
+                                    data,
+                                    subject_var,
+                                    x_var,
+                                    y_var,
+                                    color_var,
+                                    point_colors,
+                                    tooltip_vars = NULL) {
   moduleServer(id, function(input, output, session) {
     selectors <- teal.transform::module_input_srv(
       data = data,

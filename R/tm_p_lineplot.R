@@ -59,7 +59,6 @@
 #'
 #' @export
 tm_p_lineplot <- function(label = "Line Plot",
-                          plot_dataname,
                           x_var,
                           y_var,
                           color_var,
@@ -68,6 +67,12 @@ tm_p_lineplot <- function(label = "Line Plot",
                           tooltip_vars = NULL,
                           transformators = list(),
                           reference_lines = NULL) {
+  checkmate::assert_string(label)
+  checkmate::assert_class(x_var, "picks")
+  checkmate::assert_class(x_var, "picks")
+  checkmate::assert_class(color_var, "picks")
+  checkmate::assert_class(group_var, "picks")
+  checkmate::assert_class(tooltip_vars, "picks", null.ok = TRUE)
   args <- as.list(environment())
   module(
     label = label,
@@ -83,19 +88,26 @@ tm_p_lineplot <- function(label = "Line Plot",
   )
 }
 
+# todo: ui/srv_p_lineplot_module
+
 ui_p_lineplot <- function(id) {
   ns <- NS(id)
-  bslib::page_fluid(
-    tags$div(
-      trigger_tooltips_deps(),
-      plotly::plotlyOutput(ns("plot"), height = "100%")
+  tags$div(
+    class = "standard-layout output-panel",
+    shinyjs::useShinyjs(),
+    bslib::card(
+      full_screen = TRUE,
+      tags$div(
+        trigger_tooltips_deps(),
+        plotly::plotlyOutput(ns("plot"), height = "100%")
+      )
     )
   )
 }
 
 srv_p_lineplot <- function(id,
                            data,
-                           plot_dataname,
+                           dataname,
                            x_var,
                            y_var,
                            color_var,
@@ -108,7 +120,7 @@ srv_p_lineplot <- function(id,
       req(data())
       data() %>%
         within(
-          df = str2lang(plot_dataname),
+          df = str2lang(dataname),
           x_var = x_var(),
           y_var = y_var(),
           color_var = color_var(),
@@ -269,13 +281,15 @@ srv_p_lineplot <- function(id,
                   annotations = ref_lines$annotations
                 )
             }
+            p
           }
         )
     })
 
 
     output$plot <- plotly::renderPlotly({
-      plotly_q()$p %>%
+      req(plotly_q())
+      tail(teal.code::get_outputs(plotly_q()), 1)[[1]] |>
         plotly::event_register("plotly_selected")
     })
   })

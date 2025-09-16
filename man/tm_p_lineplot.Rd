@@ -6,7 +6,6 @@
 \usage{
 tm_p_lineplot(
   label = "Line Plot",
-  plot_dataname,
   x_var,
   y_var,
   color_var,
@@ -14,14 +13,11 @@ tm_p_lineplot(
   colors = NULL,
   tooltip_vars = NULL,
   transformators = list(),
-  reference_lines = NULL,
-  activate_on_brushing = FALSE
+  reference_lines = NULL
 )
 }
 \arguments{
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
-
-\item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
 \item{x_var}{(\code{character(1)}) Name of the variable to be used for x-axis (typically time).}
 
@@ -40,7 +36,7 @@ If \code{NULL}, default tooltip is created showing group, x, y, and color variab
 
 \item{reference_lines}{(\code{list} or \code{NULL}) Reference lines specification for adding horizontal reference lines.}
 
-\item{activate_on_brushing}{(\code{logical(1)}) Whether to activate the plot only when brushing occurs in another plot.}
+\item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 }
 \description{
 This module creates an interactive line plot visualization that connects data points

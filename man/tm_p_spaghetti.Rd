@@ -6,21 +6,17 @@
 \usage{
 tm_p_spaghetti(
   label = "Scatter Plot",
-  plot_dataname,
   group_var,
   x_var,
   y_var,
   color_var,
   point_colors = character(0),
   tooltip_vars = NULL,
-  transformators = list(),
-  show_widgets = TRUE
+  transformators = list()
 )
 }
 \arguments{
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
-
-\item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
 \item{group_var}{(\code{character(1)}) Name of the grouping variable that defines individual trajectories.}
 
@@ -36,6 +32,8 @@ tm_p_spaghetti(
 If \code{NULL}, default tooltip is created showing group, x, y, and color variables.}
 
 \item{transformators}{(\code{list}) Named list of transformator functions.}
+
+\item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
 \item{show_widgets}{(\code{logical(1)}) Whether to show module widgets.}
 }
