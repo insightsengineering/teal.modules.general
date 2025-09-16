@@ -15,9 +15,7 @@ tm_p_waterfall(
   bar_colors = character(0),
   value_arbitrary_hlines = c(0.2, -0.3),
   plot_title = "Waterfall plot",
-  plot_height = c(600, 400, 1200),
-  table_datanames = character(0),
-  reactable_args = list()
+  plot_height = c(600, 400, 1200)
 )
 }
 \arguments{
@@ -48,10 +46,6 @@ lines on the plot.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
-
-\item{table_datanames}{(\code{character}) Names of the datasets to be displayed in the tables below the plot.}
-
-\item{reactable_args}{(\code{list}) Additional arguments passed to the \code{reactable} function for table customization.}
 }
 \description{
 Module visualizes subjects sorted decreasingly by y-values.
@@ -80,7 +74,6 @@ app <- init(
   modules = modules(
     tm_p_waterfall(
       plot_dataname = "waterfall_ds",
-      table_datanames = "subjects",
       subject_var = "subject_var",
       value_var = "value_var",
       sort_var = "value_var",
