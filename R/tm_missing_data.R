@@ -189,7 +189,6 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
       encoding = tags$div(
         uiOutput(ns("dataset_encodings"))
       ),
-      uiOutput(ns("dataset_reporter")),
       pre_output = pre_output,
       post_output = post_output
     )
@@ -246,12 +245,6 @@ srv_page_missing_data <- function(id, data, datanames, parent_dataname,
           }
         )
       )
-    })
-
-    output$dataset_reporter <- renderUI({
-      lapply(datanames, function(x) {
-        conditionalPanel(is_tab_active_js(ns("dataname_tab"), x))
-      })
     })
 
     result <- sapply(
