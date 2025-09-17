@@ -482,14 +482,6 @@ srv_t_crosstable <- function(id, data, label, x, y, remove_zero_columns, basic_t
       table_r = table_r
     )
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "Show R Code for Cross-Table"
-    )
     decorated_output_q
   })
 }

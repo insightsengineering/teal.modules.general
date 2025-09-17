@@ -1391,14 +1391,6 @@ srv_missing_data <- function(id,
       }
     })
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_final_q())))
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "Show R Code for Missing Data"
-    )
     decorated_final_q
   })
 }
