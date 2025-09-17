@@ -250,14 +250,7 @@ srv_page_missing_data <- function(id, data, datanames, parent_dataname,
 
     output$dataset_reporter <- renderUI({
       lapply(datanames, function(x) {
-        dataname_ns <- NS(ns(x))
-
-        conditionalPanel(
-          is_tab_active_js(ns("dataname_tab"), x),
-          tagList(
-            teal.widgets::verbatim_popup_ui(dataname_ns("rcode"), "Show R code")
-          )
-        )
+        conditionalPanel(is_tab_active_js(ns("dataname_tab"), x))
       })
     })
 
