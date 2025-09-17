@@ -713,7 +713,7 @@ srv_missing_data <- function(id,
     # Prepare qenvs for output objects
 
     summary_plot_q <- reactive({
-      req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
+      req(input$summary_type == "Summary") # needed to trigger update on tab change
       teal::validate_has_data(data_r(), 1)
 
       qenv <- common_code_q()
@@ -1057,7 +1057,7 @@ srv_missing_data <- function(id,
 
     summary_table_q <- reactive({
       req(
-        input$summary_type == "By Variable Levels", # needed to trigger show r code update on tab change
+        input$summary_type == "By Variable Levels", # needed to trigger update on tab change
         common_code_q()
       )
       teal::validate_has_data(data_r(), 1)
@@ -1144,7 +1144,7 @@ srv_missing_data <- function(id,
     })
 
     by_subject_plot_q <- reactive({
-      # needed to trigger show r code update on tab change
+      # needed to trigger update on tab change
       req(input$summary_type == "Grouped by Subject", common_code_q())
 
       teal::validate_has_data(data_r(), 1)
