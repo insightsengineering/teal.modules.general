@@ -264,9 +264,6 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, remove_zero_c
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "table"))
     ),
-    forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-    ),
     pre_output = pre_output,
     post_output = post_output
   )
