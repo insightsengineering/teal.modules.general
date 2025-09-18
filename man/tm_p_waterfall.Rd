@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_p_waterfall.R
 \name{tm_p_waterfall}
 \alias{tm_p_waterfall}
-\title{\code{teal} module: Waterfall plot}
+\title{Waterfall Plot Module}
 \usage{
 tm_p_waterfall(
   label = "Waterfall",
@@ -22,33 +22,41 @@ tm_p_waterfall(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{plot_dataname}{(\code{character(1)}) name of the dataset which visualization is builded on.}
+\item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
-\item{subject_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
-in \code{plot_dataname} to be used as x-axis.}
+\item{subject_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to be used as x-axis (subject identifiers).}
 
-\item{value_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column
-in \code{plot_dataname} to be used as y-axis.}
+\item{value_var}{(\code{character(1)}) Name of the numeric column in \code{plot_dataname}
+to be used as y-axis (values determining bar heights).}
 
-\item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
-to be used to differentiate bar colors.}
+\item{color_var}{(\code{character(1)} or \code{NULL}) Name of the factor or character column in \code{plot_dataname}
+to be used to differentiate bar colors. If \code{NULL}, all bars will have the same color.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created.}
+If \code{NULL}, default tooltip is created showing subject, value, and color variables.}
 
-\item{bar_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named
-by levels of \code{color_var} column.}
+\item{bar_colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of \code{color_var} column.
+If \code{NULL}, default colors will be used.}
 
-\item{value_arbitrary_hlines}{(\code{numeric}) values in the same scale as \code{value_var} to horizontal
-lines on the plot.}
+\item{value_arbitrary_hlines}{(\code{numeric} or \code{NULL}) Values in the same scale as \code{value_var} to add
+horizontal reference lines on the plot.}
 
-\item{plot_title}{(\code{character}) Title of the plot.}
+\item{plot_title}{(\code{character} or \code{NULL}) Title of the plot. If \code{NULL}, no title is displayed.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
-Module visualizes subjects sorted decreasingly by y-values.
+This module creates an interactive waterfall plot visualization that displays subjects
+sorted by their values in a descending waterfall pattern. Each subject is represented
+by a vertical bar, with the height corresponding to the value variable. The plot supports
+color coding by categorical variables, optional horizontal reference lines, and customizable
+tooltips. This visualization is particularly useful for showing ranked responses or changes
+across subjects.
 }
 \examples{
 data <- teal_data() |>

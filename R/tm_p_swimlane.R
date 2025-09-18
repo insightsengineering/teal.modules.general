@@ -1,29 +1,33 @@
-#' `teal` module: Swimlane plot
+#' Swimlane Plot Module
 #'
-#' Module visualizes subjects' events in time.
+#' This module creates an interactive swimlane plot visualization that displays subjects' events
+#' over time. Each subject is represented by a horizontal lane, with events plotted as points
+#' along the timeline. The plot supports color coding and symbol differentiation for different
+#' event types, customizable sorting of subjects, and interactive tooltips. This visualization
+#' is particularly useful for showing temporal sequences of events across multiple subjects.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param plot_dataname (`character(1)` or `choices_selected`) name of the dataset which visualization is builded on.
-#' @param time_var (`character(1)` or `choices_selected`) name of the `numeric` column
-#' in `plot_dataname` to be used as x-axis.
-#' @param subject_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column
-#' in `plot_dataname` to be used as y-axis.
-#' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column
-#' in `plot_dataname` to name and color subject events in time.
-#' @param group_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname`
-#'  to categorize type of event.
-#'  (legend is sorted according to this variable, and used in toolip to display type of the event)
-#'  todo: this can be fixed by ordering factor levels
-#' @param sort_var (`character(1)` or `choices_selected`) name(s) of the column in `plot_dataname` which
-#'  value determines order of the subjects displayed on the y-axis.
+#' @param plot_dataname (`character(1)`) Name of the dataset to be used for plotting.
+#' @param time_var (`character(1)`) Name of the numeric column in `plot_dataname` to be used as x-axis.
+#' @param subject_var (`character(1)`) Name of the factor or character column in `plot_dataname`
+#' to be used as y-axis (subject lanes).
+#' @param color_var (`character(1)`) Name of the factor or character column in `plot_dataname`
+#' to name and color subject events in time.
+#' @param group_var (`character(1)`) Name of the factor or character column in `plot_dataname`
+#' to categorize type of event. Legend is sorted according to this variable.
+#' @param sort_var (`character(1)`) Name of the column in `plot_dataname` whose values determine
+#' the order of subjects displayed on the y-axis.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
-#' If `NULL`, default tooltip is created.
+#' If `NULL`, default tooltip is created showing subject, time, color, and group variables.
 #' @param point_size (`numeric(1)` or `named numeric`) Default point size of the points in the plot.
 #' If `point_size` is a named numeric vector, it should be named by levels of `color_var` column.
-#' @param point_colors (`named character`) valid color names (see [colors()]) or hex-colors named
-#'  by levels of `color_var` column.
-#' @param point_symbols (`named character`) valid plotly symbol name named  by levels of `color_var` column.
+#' @param point_colors (`named character` or `NULL`) Valid color names or hex-colors named by levels of `color_var` column.
+#' If `NULL`, default colors will be used.
+#' @param point_symbols (`named character` or `NULL`) Valid plotly symbol names named by levels of `color_var` column.
+#' If `NULL`, default symbols will be used.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' data <- teal_data() |>

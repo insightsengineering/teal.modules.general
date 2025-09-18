@@ -5,17 +5,20 @@
 #' color coding by categorical variables and displays tooltips on hover that can show
 #' default variables (subject, x, y, color) or custom columns specified via `tooltip_vars`.
 #'
-#' @param label (`character(1)`) Label shown in the navigation item for the module.
+#' @inheritParams teal::module
 #' @param plot_dataname (`character(1)`) Name of the dataset to be used for plotting.
 #' @param subject_var (`character(1)`) Name of the subject variable.
 #' @param x_var (`character(1)`) Name of the variable to be used for x-axis.
 #' @param y_var (`character(1)`) Name of the variable to be used for y-axis.
 #' @param color_var (`character(1)`) Name of the variable to be used for coloring points.
-#' @param point_colors (`named character`) Valid color names or hex-colors named by levels of color_var column.
+#' @param point_colors (`named character` or `NULL`) Valid color names or hex-colors named by levels of `color_var` column.
+#' If `NULL`, default colors will be used.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
-#' If `NULL`, default tooltip is created showing x, y, and color variables.
+#' If `NULL`, default tooltip is created showing subject, x, y, and color variables.
 #' @param transformators (`list`) Named list of transformator functions.
 #' @param show_widgets (`logical(1)`) Whether to show module widgets.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' data <- teal_data() |>

@@ -15,7 +15,8 @@ tm_p_bargraph(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
@@ -26,9 +27,13 @@ tm_p_bargraph(
 \item{count_var}{(\code{character(1)}) Name of the variable whose distinct values will be counted for bar heights.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created.}
+If \code{NULL}, default tooltip is created showing y, color, and count variables.}
 
-\item{bar_colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of color_var column.}
+\item{bar_colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of \code{color_var} column.
+If \code{NULL}, default colors will be used.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 This module creates an interactive horizontal stacked bar chart visualization that

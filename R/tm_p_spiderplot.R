@@ -1,30 +1,33 @@
-#' `teal` module: Spider Plot
+#' Spider Plot Module
 #'
-#' Module visualizes value development in time grouped by subjects.
+#' This module creates an interactive spider plot visualization that shows value development
+#' over time grouped by subjects. The plot displays individual trajectories as connected
+#' lines and points, with support for color coding and symbol differentiation. Optional
+#' filtering by event variables allows dynamic data subsetting. The plot includes customizable
+#' tooltips and point sizing based on data values.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param plot_dataname (`character(1)` or `choices_selected`) name of the dataset which visualization is builded on.
-#' @param time_var (`character(1)` or `choices_selected`) name of the `numeric` column
-#' in `plot_dataname` to be used as x-axis.
-#' @param value_var (`character(1)` or `choices_selected`) name of the `numeric` column
-#' in `plot_dataname` to be used as y-axis.
-#' @param subject_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column
-#' in `plot_dataname` to be used as grouping variable for displayed lines/points.
-#' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname`
-#'  to be used to differentiate colors and symbols.
-#' @param filter_event_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column
-#' in `plot_dataname` to be used to filter the data.
-#' The plot will be updated with just the filtereed data when the user selects an event from the dropdown menu.
+#' @param plot_dataname (`character(1)`) Name of the dataset to be used for plotting.
+#' @param time_var (`character(1)`) Name of the numeric column in `plot_dataname` to be used as x-axis.
+#' @param value_var (`character(1)`) Name of the numeric column in `plot_dataname` to be used as y-axis.
+#' @param subject_var (`character(1)`) Name of the factor or character column in `plot_dataname`
+#' to be used as grouping variable for displayed lines/points.
+#' @param color_var (`character(1)`) Name of the factor or character column in `plot_dataname`
+#' to be used to differentiate colors and symbols.
+#' @param filter_event_var (`character(1)`) Name of the factor or character column in `plot_dataname`
+#' to be used to filter the data. The plot will be updated with just the filtered data when the user
+#' selects an event from the dropdown menu.
 #' @param size_var (`character(1)` or `NULL`) If provided, this numeric column from the `plot_dataname`
-#' will be used to determine the size of the points. If `NULL`, a fixed size based on the `point_size` is used.
+#' will be used to determine the size of the points. If `NULL`, a fixed size is used.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
-#' If `NULL`, default tooltip is created.
-#' @param point_colors (`named character`) valid color names (see [colors()]) or hex-colors named
-#'  by levels of `color_var` column.
-#' @param point_symbols (`named character`) valid plotly symbol name named  by levels of `color_var`column.
-#' @param table_datanames (`character`) Names of the datasets to be displayed in the tables below the plot.
-#' @param reactable_args (`list`) Additional arguments passed to the `reactable` function for table customization.
+#' If `NULL`, default tooltip is created showing time, value, subject, and color variables.
+#' @param point_colors (`named character` or `NULL`) Valid color names or hex-colors named by levels of `color_var` column.
+#' If `NULL`, default colors will be used.
+#' @param point_symbols (`named character` or `NULL`) Valid plotly symbol names named by levels of `color_var` column.
+#' If `NULL`, default symbols will be used.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' data <- teal_data() |>
@@ -64,7 +67,6 @@
 #'   modules = modules(
 #'     tm_p_spiderplot(
 #'       plot_dataname = "spiderplot_ds",
-#'       table_datanames = "subjects",
 #'       time_var = "time_var",
 #'       value_var = "value_var",
 #'       subject_var = "subject_var",
@@ -97,9 +99,7 @@ tm_p_spiderplot <- function(label = "Spiderplot",
                             tooltip_vars = NULL,
                             point_colors = character(0),
                             point_symbols = character(0),
-                            plot_height = c(600, 400, 1200),
-                            table_datanames = character(0),
-                            reactable_args = list()) {
+                            plot_height = c(600, 400, 1200)) {
   if (is.character(time_var)) {
     time_var <- choices_selected(choices = time_var, selected = time_var)
   }
@@ -131,11 +131,9 @@ tm_p_spiderplot <- function(label = "Spiderplot",
       size_var = size_var,
       point_colors = point_colors,
       point_symbols = point_symbols,
-      table_datanames = table_datanames,
-      reactable_args = reactable_args,
       tooltip_vars = tooltip_vars
     ),
-    datanames = union(plot_dataname, table_datanames)
+    datanames = plot_dataname
   )
 }
 
@@ -164,8 +162,7 @@ ui_p_spiderplot <- function(id, height) {
           trigger_tooltips_deps(),
           plotly::plotlyOutput(ns("plot"), height = "100%")
         )
-      ),
-      ui_t_reactables(ns("subtables"))
+      )
     )
   )
 }
@@ -182,8 +179,6 @@ srv_p_spiderplot <- function(id,
                              point_symbols,
                              size_var = NULL,
                              plot_height = 600,
-                             table_datanames = character(0),
-                             reactable_args = list(),
                              tooltip_vars = NULL,
                              filter_panel_api) {
   moduleServer(id, function(input, output, session) {
@@ -272,7 +267,7 @@ srv_p_spiderplot <- function(id,
           }
 
           p <- plot_data %>%
-          dplyr::ungroup() %>%
+            dplyr::ungroup() %>%
             dplyr::mutate(
               x = dplyr::lag(!!as.name(time_var), default = 0),
               y = dplyr:::lag(!!as.name(value_var), default = 0),
@@ -392,20 +387,25 @@ srv_p_spiderplot <- function(id,
       plotly::event_data("plotly_selected", source = session$ns("spiderplot"))
     )
 
-    tables_selected_q <- .plotly_selected_filter_children(
-      data = plotly_q,
-      plot_dataname = plot_dataname,
-      xvar = reactive(input$time_var),
-      yvar = reactive(input$value_var),
-      plotly_selected = plotly_selected,
-      children_datanames = table_datanames
-    )
-
-    srv_t_reactables(
-      "subtables",
-      data = tables_selected_q,
-      datanames = table_datanames,
-      reactable_args = reactable_args
-    )
+    reactive({
+      if (is.null(plotly_selected())) {
+        plotly_q()
+      } else {
+        q <- plotly_q() |>
+          within(
+            {
+              selected_plot_data <- plot_data |>
+                dplyr::filter(customdata %in% plotly_selected_customdata)
+              df <- df |>
+                dplyr::filter(!!as.name(subject_var_string) %in% selected_plot_data[[subject_var_string]])
+            },
+            df = str2lang(plot_dataname),
+            subject_var_string = subject_var$selected,
+            plotly_selected_customdata = plotly_selected()$customdata
+          )
+        attr(q, "has_brushing") <- TRUE
+        q
+      }
+    })
   })
 }

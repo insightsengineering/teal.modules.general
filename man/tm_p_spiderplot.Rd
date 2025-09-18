@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_p_spiderplot.R
 \name{tm_p_spiderplot}
 \alias{tm_p_spiderplot}
-\title{\code{teal} module: Spider Plot}
+\title{Spider Plot Module}
 \usage{
 tm_p_spiderplot(
   label = "Spiderplot",
@@ -16,53 +16,53 @@ tm_p_spiderplot(
   tooltip_vars = NULL,
   point_colors = character(0),
   point_symbols = character(0),
-  plot_height = c(600, 400, 1200),
-  table_datanames = character(0),
-  reactable_args = list()
+  plot_height = c(600, 400, 1200)
 )
 }
 \arguments{
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{plot_dataname}{(\code{character(1)} or \code{choices_selected}) name of the dataset which visualization is builded on.}
+\item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
-\item{time_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column
-in \code{plot_dataname} to be used as x-axis.}
+\item{time_var}{(\code{character(1)}) Name of the numeric column in \code{plot_dataname} to be used as x-axis.}
 
-\item{value_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column
-in \code{plot_dataname} to be used as y-axis.}
+\item{value_var}{(\code{character(1)}) Name of the numeric column in \code{plot_dataname} to be used as y-axis.}
 
-\item{subject_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
-in \code{plot_dataname} to be used as grouping variable for displayed lines/points.}
+\item{subject_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to be used as grouping variable for displayed lines/points.}
 
-\item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
+\item{color_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
 to be used to differentiate colors and symbols.}
 
-\item{filter_event_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
-in \code{plot_dataname} to be used to filter the data.
-The plot will be updated with just the filtereed data when the user selects an event from the dropdown menu.}
+\item{filter_event_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to be used to filter the data. The plot will be updated with just the filtered data when the user
+selects an event from the dropdown menu.}
 
 \item{size_var}{(\code{character(1)} or \code{NULL}) If provided, this numeric column from the \code{plot_dataname}
-will be used to determine the size of the points. If \code{NULL}, a fixed size based on the \code{point_size} is used.}
+will be used to determine the size of the points. If \code{NULL}, a fixed size is used.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created.}
+If \code{NULL}, default tooltip is created showing time, value, subject, and color variables.}
 
-\item{point_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named
-by levels of \code{color_var} column.}
+\item{point_colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of \code{color_var} column.
+If \code{NULL}, default colors will be used.}
 
-\item{point_symbols}{(\verb{named character}) valid plotly symbol name named  by levels of \code{color_var}column.}
+\item{point_symbols}{(\verb{named character} or \code{NULL}) Valid plotly symbol names named by levels of \code{color_var} column.
+If \code{NULL}, default symbols will be used.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
-
-\item{table_datanames}{(\code{character}) Names of the datasets to be displayed in the tables below the plot.}
-
-\item{reactable_args}{(\code{list}) Additional arguments passed to the \code{reactable} function for table customization.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-Module visualizes value development in time grouped by subjects.
+This module creates an interactive spider plot visualization that shows value development
+over time grouped by subjects. The plot displays individual trajectories as connected
+lines and points, with support for color coding and symbol differentiation. Optional
+filtering by event variables allows dynamic data subsetting. The plot includes customizable
+tooltips and point sizing based on data values.
 }
 \examples{
 data <- teal_data() |>
@@ -102,7 +102,6 @@ app <- init(
   modules = modules(
     tm_p_spiderplot(
       plot_dataname = "spiderplot_ds",
-      table_datanames = "subjects",
       time_var = "time_var",
       value_var = "value_var",
       subject_var = "subject_var",

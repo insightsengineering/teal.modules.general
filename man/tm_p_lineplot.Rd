@@ -19,7 +19,8 @@ tm_p_lineplot(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
@@ -31,7 +32,8 @@ tm_p_lineplot(
 
 \item{group_var}{(\code{character(1)}) Name of the grouping variable that defines which points to connect with lines.}
 
-\item{colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of color_var column.}
+\item{colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of \code{color_var} column.
+If \code{NULL}, default colors will be used.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
 If \code{NULL}, default tooltip is created showing group, x, y, and color variables.}
@@ -41,6 +43,9 @@ If \code{NULL}, default tooltip is created showing group, x, y, and color variab
 \item{reference_lines}{(\code{list} or \code{NULL}) Reference lines specification for adding horizontal reference lines.}
 
 \item{activate_on_brushing}{(\code{logical(1)}) Whether to activate the plot only when brushing occurs in another plot.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 This module creates an interactive line plot visualization that connects data points

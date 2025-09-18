@@ -18,7 +18,8 @@ tm_p_scatterplot(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module.}
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
@@ -30,14 +31,18 @@ tm_p_scatterplot(
 
 \item{color_var}{(\code{character(1)}) Name of the variable to be used for coloring points.}
 
-\item{point_colors}{(\verb{named character}) Valid color names or hex-colors named by levels of color_var column.}
+\item{point_colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of \code{color_var} column.
+If \code{NULL}, default colors will be used.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created showing x, y, and color variables.}
+If \code{NULL}, default tooltip is created showing subject, x, y, and color variables.}
 
 \item{transformators}{(\code{list}) Named list of transformator functions.}
 
 \item{show_widgets}{(\code{logical(1)}) Whether to show module widgets.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
 This module creates an interactive scatter plot visualization with customizable tooltips.

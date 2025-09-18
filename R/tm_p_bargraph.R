@@ -6,14 +6,17 @@
 #' Users can select bar segments by brushing to filter the underlying data. The plot
 #' aggregates data by counting distinct values within each group combination.
 #'
-#' @param label (`character(1)`) Label shown in the navigation item for the module.
+#' @inheritParams teal::module
 #' @param plot_dataname (`character(1)`) Name of the dataset to be used for plotting.
 #' @param y_var (`character(1)`) Name of the categorical variable to be displayed on y-axis (bar categories).
 #' @param color_var (`character(1)`) Name of the categorical variable used for color coding and stacking segments.
 #' @param count_var (`character(1)`) Name of the variable whose distinct values will be counted for bar heights.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
-#' If `NULL`, default tooltip is created.
-#' @param bar_colors (`named character` or `NULL`) Valid color names or hex-colors named by levels of color_var column.
+#' If `NULL`, default tooltip is created showing y, color, and count variables.
+#' @param bar_colors (`named character` or `NULL`) Valid color names or hex-colors named by levels of `color_var` column.
+#' If `NULL`, default colors will be used.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' data <- teal_data() |>
@@ -122,7 +125,7 @@ srv_p_bargraph <- function(id,
                     if (!length(y_var_label)) y_var_label <- y_var
                     color_var_label <- attr(df[[color_var]], "label")
                     if (!length(color_var_label)) color_var_label <- color_var
-                    
+
                     paste(
                       paste(y_var_label, ":", !!as.name(y_var)),
                       paste(color_var_label, ":", !!as.name(color_var)),
@@ -132,7 +135,7 @@ srv_p_bargraph <- function(id,
                   } else {
                     # Custom tooltip: use specified columns
                     cur_data <- dplyr::cur_data()
-                    
+
                     # Map tooltip_vars to actual column names if they are parameter names
                     actual_cols <- character(0)
                     for (col in tooltip_vars) {
@@ -141,23 +144,23 @@ srv_p_bargraph <- function(id,
                       } else if (col == "color_var") {
                         actual_cols <- c(actual_cols, color_var)
                       } else if (col == "count_var") {
-                        actual_cols <- c(actual_cols, "count")  # Use the aggregated count column
+                        actual_cols <- c(actual_cols, "count") # Use the aggregated count column
                       } else {
                         # Assume it's already a column name
                         actual_cols <- c(actual_cols, col)
                       }
                     }
-                    
+
                     # Get columns that actually exist in the data
                     cols <- intersect(actual_cols, names(cur_data))
-                    
+
                     if (!length(cols)) {
                       # Fallback to default
                       y_var_label <- attr(df[[y_var]], "label")
                       if (!length(y_var_label)) y_var_label <- y_var
                       color_var_label <- attr(df[[color_var]], "label")
                       if (!length(color_var_label)) color_var_label <- color_var
-                      
+
                       paste(
                         paste(y_var_label, ":", !!as.name(y_var)),
                         paste(color_var_label, ":", !!as.name(color_var)),

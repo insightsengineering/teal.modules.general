@@ -1,23 +1,30 @@
-#' `teal` module: Waterfall plot
+#' Waterfall Plot Module
 #'
-#' Module visualizes subjects sorted decreasingly by y-values.
+#' This module creates an interactive waterfall plot visualization that displays subjects
+#' sorted by their values in a descending waterfall pattern. Each subject is represented
+#' by a vertical bar, with the height corresponding to the value variable. The plot supports
+#' color coding by categorical variables, optional horizontal reference lines, and customizable
+#' tooltips. This visualization is particularly useful for showing ranked responses or changes
+#' across subjects.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param plot_dataname (`character(1)`) name of the dataset which visualization is builded on.
-#' @param subject_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column
-#' in `plot_dataname` to be used as x-axis.
-#' @param value_var (`character(1)` or `choices_selected`) name of the `numeric` column
-#' in `plot_dataname` to be used as y-axis.
-#' @param color_var (`character(1)` or `choices_selected`) name of the `factor` or `character` column in `plot_dataname`
-#'  to be used to differentiate bar colors.
+#' @param plot_dataname (`character(1)`) Name of the dataset to be used for plotting.
+#' @param subject_var (`character(1)`) Name of the factor or character column in `plot_dataname`
+#' to be used as x-axis (subject identifiers).
+#' @param value_var (`character(1)`) Name of the numeric column in `plot_dataname`
+#' to be used as y-axis (values determining bar heights).
+#' @param color_var (`character(1)` or `NULL`) Name of the factor or character column in `plot_dataname`
+#' to be used to differentiate bar colors. If `NULL`, all bars will have the same color.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
-#' If `NULL`, default tooltip is created.
-#' @param bar_colors (`named character`) valid color names (see [colors()]) or hex-colors named
-#'  by levels of `color_var` column.
-#' @param value_arbitrary_hlines (`numeric`) values in the same scale as `value_var` to horizontal
-#'  lines on the plot.
-#' @param plot_title (`character`) Title of the plot.
+#' If `NULL`, default tooltip is created showing subject, value, and color variables.
+#' @param bar_colors (`named character` or `NULL`) Valid color names or hex-colors named by levels of `color_var` column.
+#' If `NULL`, default colors will be used.
+#' @param value_arbitrary_hlines (`numeric` or `NULL`) Values in the same scale as `value_var` to add
+#' horizontal reference lines on the plot.
+#' @param plot_title (`character` or `NULL`) Title of the plot. If `NULL`, no title is displayed.
+#'
+#' @inherit shared_params return
 #'
 #' @examples
 #' data <- teal_data() |>

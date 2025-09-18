@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_p_swimlane.R
 \name{tm_p_swimlane}
 \alias{tm_p_swimlane}
-\title{\code{teal} module: Swimlane plot}
+\title{Swimlane Plot Module}
 \usage{
 tm_p_swimlane(
   label = "Swimlane",
@@ -24,41 +24,46 @@ tm_p_swimlane(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{plot_dataname}{(\code{character(1)} or \code{choices_selected}) name of the dataset which visualization is builded on.}
+\item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
-\item{time_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column
-in \code{plot_dataname} to be used as x-axis.}
+\item{time_var}{(\code{character(1)}) Name of the numeric column in \code{plot_dataname} to be used as x-axis.}
 
-\item{subject_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
-in \code{plot_dataname} to be used as y-axis.}
+\item{subject_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to be used as y-axis (subject lanes).}
 
-\item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
-in \code{plot_dataname} to name and color subject events in time.}
+\item{color_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to name and color subject events in time.}
 
-\item{group_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
-to categorize type of event.
-(legend is sorted according to this variable, and used in toolip to display type of the event)
-todo: this can be fixed by ordering factor levels}
+\item{group_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to categorize type of event. Legend is sorted according to this variable.}
 
-\item{sort_var}{(\code{character(1)} or \code{choices_selected}) name(s) of the column in \code{plot_dataname} which
-value determines order of the subjects displayed on the y-axis.}
+\item{sort_var}{(\code{character(1)}) Name of the column in \code{plot_dataname} whose values determine
+the order of subjects displayed on the y-axis.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created.}
+If \code{NULL}, default tooltip is created showing subject, time, color, and group variables.}
 
 \item{point_size}{(\code{numeric(1)} or \verb{named numeric}) Default point size of the points in the plot.
 If \code{point_size} is a named numeric vector, it should be named by levels of \code{color_var} column.}
 
-\item{point_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named
-by levels of \code{color_var} column.}
+\item{point_colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of \code{color_var} column.
+If \code{NULL}, default colors will be used.}
 
-\item{point_symbols}{(\verb{named character}) valid plotly symbol name named  by levels of \code{color_var} column.}
+\item{point_symbols}{(\verb{named character} or \code{NULL}) Valid plotly symbol names named by levels of \code{color_var} column.
+If \code{NULL}, default symbols will be used.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 }
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
+}
 \description{
-Module visualizes subjects' events in time.
+This module creates an interactive swimlane plot visualization that displays subjects' events
+over time. Each subject is represented by a horizontal lane, with events plotted as points
+along the timeline. The plot supports color coding and symbol differentiation for different
+event types, customizable sorting of subjects, and interactive tooltips. This visualization
+is particularly useful for showing temporal sequences of events across multiple subjects.
 }
 \examples{
 data <- teal_data() |>
