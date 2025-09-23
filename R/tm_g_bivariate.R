@@ -270,11 +270,6 @@ tm_g_bivariate.picks <- function(label = "Bivariate Plots",
                                  transformators = list(),
                                  decorators = list()) {
   message("Initializing tm_g_bivariate")
-  extracted_filters <- extract_filters(list(x, y, row_facet, col_facet, color, fill, size))
-  transformators <- c(
-    transformators,
-    lapply(extracted_filters, teal.transform:::teal_transform_filter)
-  )
   x <- des_to_picks(x)
   y <- des_to_picks(y)
   row_facet <- des_to_picks(row_facet)

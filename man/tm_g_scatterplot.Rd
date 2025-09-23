@@ -29,6 +29,9 @@ tm_g_scatterplot(
 )
 }
 \arguments{
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
+
 \item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Specifies
 variable names selected to plot along the x-axis by default.}
 
@@ -92,6 +95,9 @@ with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,

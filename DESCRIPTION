@@ -90,8 +90,8 @@ VignetteBuilder:
     knitr,
     rmarkdown
 Remotes:
-    insightsengineering/teal,
-    insightsengineering/teal.reporter
+    insightsengineering/teal@redesign_extraction@main,
+    insightsengineering/teal.transform@redesign_extraction@main
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
