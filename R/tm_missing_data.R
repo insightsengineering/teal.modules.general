@@ -1107,11 +1107,11 @@ srv_missing_data <- function(id,
 
       qenv <- common_code_q()
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Summary Table")
-
       qenv <- if (!is.null(group_var)) {
         common_code_libraries_q <- teal.code::eval_code(
           qenv,
           'library("forcats");library("glue")' # nolint
+
         )
         teal.code::eval_code(
           common_code_libraries_q,
@@ -1150,7 +1150,34 @@ srv_missing_data <- function(id,
           )
         )
       }
+      #convert to ggplot
+      browser()
+      tile <- within(qenv, {
+        keep_columns <- intersect(c(keys, "SUBJID", "SITEID"), colnames(ANL))
+        labels <- vapply(ANL, formatters::obj_label, character(1L))
+        ANL %>%
+          pivot_longer(-keep_columns, values_transform = is.na) |>
+          summarise(.by = c(SUBJID, name), value = value, perc = sum(value)/n()) |>
+          mutate(label = labels[name]) |>
+          ggplot() +
+          geom_tile(aes(SUBJID, label, fill = value)) +
+          geom_text(aes(SUBJID, label, label = scales::label_percent()(perc)), data = . %>% filter(value)) +
+          scale_fill_manual(values = c("TRUE" = "red", "FALSE" = "gray"),
+                            labels = c("TRUE" = "Missing", "FALSE" = "Present"),
+                            name = "Value") +
+          scale_x_discrete(expand = expansion())
+      },
+      keys = join_keys(qenv) |> unlist() |> unique())
 
+      heatmap <- within(qenv, {
+        ANL2 <- ANL[, setdiff(colnames(ANL), c(keys, "SUBJID", "SITEID"))]
+        labels <- vapply(ANL2, formatters::obj_label, character(1L))
+        ANL2 <- is.na(ANL2)
+        rownames(ANL2) <- ANL$SUBJID
+        ANL2[] <- as.numeric(ANL2)
+        heatmap(t(ANL2), Rowv = NA, Colv = NA, scale = "none",
+                labRow = labels)
+      }, keys = join_keys(qenv) |> unlist() |> unique())
       within(qenv, {
         table <- rtables::df_to_tt(summary_data)
         table
