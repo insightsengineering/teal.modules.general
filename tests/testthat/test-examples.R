@@ -36,10 +36,6 @@ with_mocked_app_bindings <- function(code) {
   # workaround of https://github.com/rstudio/shinytest2/issues/381
   # change to `print(shiny__shinyApp(...))` and remove allow warning once fixed
   mocked_shinyApp <- function(ui, server, ...) { # nolint object_linter.
-    functionBody(server) <- bquote({
-      .hint_to_load_package <- add_facet_labels # Hint to shinytest2 when looking for packages in globals
-      .(functionBody(server))
-    })
     mocked_runApp(do.call(shiny__shinyApp, append(x = list(ui = ui, server = server), list(...))))
   }
 
@@ -135,13 +131,6 @@ with_mocked_app_bindings <- function(code) {
   )
 }
 
-strict_exceptions <- c(
-  # https://github.com/r-lib/gtable/pull/94
-  "tm_outliers.Rd",
-  "tm_g_response.Rd",
-  "tm_a_pca.Rd"
-)
-
 discard_validation_regex <- list(
   "tm_file_viewer.Rd" = "Please select a file\\.",
   "tm_g_distribution.Rd" = "Please select a test"
@@ -155,11 +144,6 @@ for (i in rd_files()) {
       testthat::skip("chromium")
       skip_if_too_deep(5)
       testthat::skip_if_not_installed("pkgload")
-      if (basename(i) %in% strict_exceptions) {
-        op <- options()
-        withr::local_options(opts_partial_match_old)
-        withr::defer(options(op))
-      }
       # Allow for specific validation errors for individual examples
       withr::local_options(
         list(
