@@ -337,41 +337,44 @@ srv_g_association.picks <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     selectors <- teal.transform::module_input_srv(spec = list(ref = ref, vars = vars), data = data)
-    iv <- shinyvalidate::InputValidator$new()
-    iv$add_rule(
-      "ref-variables-selected",
-      shinyvalidate::compose_rules(
-        shinyvalidate::sv_required("A reference variable needs to be selected."),
-        ~ if (any(selectors$ref()$variables$selected %in% selectors$vars()$variables$selected)) {
-          "Associated variables and reference variable cannot overlap"
-        }
-      )
-    )
-    iv$add_rule(
-      "vars-variables-selected",
-      shinyvalidate::compose_rules(
-        shinyvalidate::sv_required("An associated variable needs to be selected."),
-        ~ if (any(selectors$vars()$variables$selected %in% selectors$ref()$variables$selected)) {
-          "Associated variables and reference variable cannot overlap"
-        }
-      )
-    )
-    iv$enable()
 
-    qenv <- reactive({
-      obj <- data()
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      iv$add_rule(
+        "ref-variables-selected",
+        shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("A reference variable needs to be selected."),
+          ~ if (any(selectors$ref()$variables$selected %in% selectors$vars()$variables$selected)) {
+            "Associated variables and reference variable cannot overlap"
+          }
+        )
+      )
+      iv$add_rule(
+        "vars-variables-selected",
+        shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("An associated variable needs to be selected."),
+          ~ if (any(selectors$vars()$variables$selected %in% selectors$ref()$variables$selected)) {
+            "Associated variables and reference variable cannot overlap"
+          }
+        )
+      )
+      iv$enable()
+    })
+
+
+
+    anl_merged_q <- reactive({
+      teal::validate_inputs(iv_r())
+      obj <- req(data())
       teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Association Plot"),
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("ggmosaic")') # nolint: quotes
-    })
-    teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")') # nolint quotes
-    anl_merged_q <- reactive({
-      req(qenv())
-      teal.transform::qenv_merge_selectors(x = qenv(), selectors = selectors)
+      obj |>
+        teal.code::eval_code('library("ggplot2");library("dplyr");library("tern");library("ggmosaic")') |> # nolint
+        teal.transform::qenv_merge_selectors(selectors = selectors)
     })
 
     output_q <- reactive({

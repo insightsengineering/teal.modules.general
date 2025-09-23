@@ -530,64 +530,57 @@ srv_g_bivariate.picks <- function(id,
     )
 
     iv <- shinyvalidate::InputValidator$new()
-    iv_r <- reactive({
-      # iv$add_rule(
-      #   "x-variables-selected",
-      #   shinyvalidate::compose_rules(
-      #     ~ if (!length(selectors$x()$variables$selected) && !length(selectors$y()$variables$selected)) {
-      #       "Please select at least one of x-variable or y-variable"
-      #     }
-      #   )
-      # )
-      # iv$add_rule(
-      #   "y-variables-selected",
-      #   shinyvalidate::compose_rules(
-      #     ~ if (!length(selectors$x()$variables$selected) && !length(selectors$y()$variables$selected)) {
-      #       "Please select at least one of x-variable or y-variable"
-      #     }
-      #   )
-      # )
-      # if (!is.null(col_facet)) {
-      #   iv$add_rule(
-      #     "row_facet-variables-selected",
-      #     shinyvalidate::compose_rules(
-      #       shinyvalidate::sv_optional(),
-      #       ~ if (
-      #         !is.null(selectors$row_facet()$variables$selected) &&
-      #           identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected)
-      #       ) {
-      #         "Row and column facetting variables must be different."
-      #       }
-      #     )
-      #   )
-      # }
-
-      # if (!is.null(row_facet)) {
-      #   iv$add_rule(
-      #     "col_facet-variables-selected",
-      #     shinyvalidate::compose_rules(
-      #       shinyvalidate::sv_optional(),
-      #       ~ if (
-      #         !is.null(selectors$row_facet()$variables$selected) &&
-      #           identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected)
-      #       ) {
-      #         "Row and column facetting variables must be different."
-      #       }
-      #     )
-      #   )
-      # }
-
-      iv$enable()
-    })
-
-    qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint: quotes.
+    iv$add_rule(
+      "x-variables-selected",
+      shinyvalidate::compose_rules(
+        ~ if (!length(selectors$x()$variables$selected) && !length(selectors$y()$variables$selected)) {
+          "Please select at least one of x-variable or y-variable"
+        }
+      )
+    )
+    iv$add_rule(
+      "y-variables-selected",
+      shinyvalidate::compose_rules(
+        ~ if (!length(selectors$x()$variables$selected) && !length(selectors$y()$variables$selected)) {
+          "Please select at least one of x-variable or y-variable"
+        }
+      )
+    )
+    iv$add_rule(
+      "row_facet-variables-selected",
+      shinyvalidate::compose_rules(
+        shinyvalidate::sv_optional(),
+        ~ if (
+          length(selectors$row_facet()$variables$selected) &&
+            identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected)
+        ) {
+          "Row and column facetting variables must be different."
+        }
+      )
+    )
+    iv$add_rule(
+      "col_facet-variables-selected",
+      shinyvalidate::compose_rules(
+        shinyvalidate::sv_optional(),
+        ~ if (
+          length(selectors$col_facet()$variables$selected) &&
+            identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected)
+        ) {
+          "Row and column facetting variables must be different."
+        }
+      )
     )
 
+    iv$enable()
+
     anl_merged_q <- reactive({
-      isolate(teal::validate_inputs(iv_r()))
-      req(data())
-      obj <- data()
+      teal::validate_inputs(iv)
+      # todo: validation mechanism is wrong as $add_rule(inputId, rule) triggers on inputId and rule
+      #       it is problematic when using input->to->reactiveVal as reactiveVal is observed in teal
+      #       and shinyvalidate triggers on inputId. It creates a mismatch between module-reactivity
+      #       and how shinyvalidate detects/throws validation errors
+      #       Quickest solution is to have a shinyvalidate and validate(need()) with the same condition.
+      obj <- req(data())
       teal.reporter::teal_card(obj) <- c(
         teal.reporter::teal_card("# Bivariate Plot"),
         teal.reporter::teal_card(obj),
@@ -664,9 +657,7 @@ srv_g_bivariate.picks <- function(id,
         ggplot2_args = ggplot2_args
       )
 
-      facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
-
-      if (facetting) {
+      if (!is.null(row_facet_name) || !is.null(col_facet_name)) {
         facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name, free_x_scales, free_y_scales)
 
         if (!is.null(facet_cl)) {
