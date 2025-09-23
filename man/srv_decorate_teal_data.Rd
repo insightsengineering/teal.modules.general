@@ -10,11 +10,6 @@ srv_decorate_teal_data(id, data, decorators, expr)
 ui_decorate_teal_data(id, decorators, ...)
 }
 \arguments{
-\item{id}{(\code{character(1)}) \code{shiny} module instance id.}
-
-\item{data}{(\code{teal_data}, \code{teal_data_module}, or \code{reactive} returning \code{teal_data})
-The data which application will depend on.}
-
 \item{expr}{(\code{reactive}) with expression to evaluate on the output of the
 decoration. It must be compatible with \code{code} argument of \code{\link[teal.code:eval_code]{teal.code::eval_code()}}.
 Default is \code{NULL} which won't evaluate any appending code.}

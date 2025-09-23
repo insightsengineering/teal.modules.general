@@ -1,179 +1,27 @@
-#' `teal` module: Principal component analysis
-#'
-#' Module conducts principal component analysis (PCA) on a given dataset and offers different
-#' ways of visualizing the outcomes, including elbow plot, circle plot, biplot, and eigenvector plot.
-#' Additionally, it enables dynamic customization of plot aesthetics, such as opacity, size, and
-#' font size, through UI inputs.
-#'
-#' @inheritParams teal::module
-#' @inheritParams shared_params
-#' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' specifying columns used to compute PCA.
-#' @param font_size (`numeric`) optional, specifies font size.
-#' It controls the font size for plot titles, axis labels, and legends.
-#' - If vector of `length == 1` then the font sizes will have a fixed size.
-#' - while vector of `value`, `min`, and `max` allows dynamic adjustment.
-#' @param ggplot2_args `r roxygen_ggplot2_args_param("Elbow plot", "Circle plot", "Biplot", "Eigenvector plot")`
-#'
-#' @inherit shared_params return
-#'
-#' @section Decorating Module:
-#'
-#' This module generates the following objects, which can be modified in place using decorators:
-#' - `elbow_plot` (`ggplot`)
-#' - `circle_plot` (`ggplot`)
-#' - `biplot` (`ggplot`)
-#' - `eigenvector_plot` (`ggplot`)
-#'
-#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
-#' The name of this list corresponds to the name of the output to which the decorator is applied.
-#' See code snippet below:
-#'
-#' ```
-#' tm_a_pca(
-#'    ..., # arguments for module
-#'    decorators = list(
-#'      elbow_plot = teal_transform_module(...), # applied to the `elbow_plot` output
-#'      circle_plot = teal_transform_module(...), # applied to the `circle_plot` output
-#'      biplot = teal_transform_module(...), # applied to the `biplot` output
-#'      eigenvector_plot = teal_transform_module(...) # applied to the `eigenvector_plot` output
-#'    )
-#' )
-#' ```
-#'
-#' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-module-output", package = "teal.modules.general")`.
-#'
-#' To learn more please refer to the vignette
-#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
-#'
-#' @inheritSection teal::example_module Reporting
-#'
-#' @examplesShinylive
-#' library(teal.modules.general)
-#' interactive <- function() TRUE
-#' {{ next_example }}
-#' @examples
-#'
-#' # general data example
-#' data <- teal_data()
-#' data <- within(data, {
-#'   require(nestcolor)
-#'   USArrests <- USArrests
-#' })
-#'
-#' app <- init(
-#'   data = data,
-#'   modules = modules(
-#'     tm_a_pca(
-#'       "PCA",
-#'       dat = data_extract_spec(
-#'         dataname = "USArrests",
-#'         select = select_spec(
-#'           choices = variable_choices(
-#'             data = data[["USArrests"]], c("Murder", "Assault", "UrbanPop", "Rape")
-#'           ),
-#'           selected = c("Murder", "Assault"),
-#'           multiple = TRUE
-#'         ),
-#'         filter = NULL
-#'       )
-#'     )
-#'   )
-#' )
-#' if (interactive()) {
-#'   shinyApp(app$ui, app$server)
-#' }
-#'
-#' @examplesShinylive
-#' library(teal.modules.general)
-#' interactive <- function() TRUE
-#' {{ next_example }}
-#' @examples
-#'
-#' # CDISC data example
-#' data <- teal_data()
-#' data <- within(data, {
-#'   require(nestcolor)
-#'   ADSL <- teal.data::rADSL
-#' })
-#' join_keys(data) <- default_cdisc_join_keys[names(data)]
-#'
-#' app <- init(
-#'   data = data,
-#'   modules = modules(
-#'     tm_a_pca(
-#'       "PCA",
-#'       dat = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = variable_choices(
-#'             data = data[["ADSL"]], c("BMRKR1", "AGE", "EOSDY")
-#'           ),
-#'           selected = c("BMRKR1", "AGE"),
-#'           multiple = TRUE
-#'         ),
-#'         filter = NULL
-#'       )
-#'     )
-#'   )
-#' )
-#' if (interactive()) {
-#'   shinyApp(app$ui, app$server)
-#' }
-#'
 #' @export
-#'
-tm_a_pca <- function(label = "Principal Component Analysis",
-                     dat = picks(
-                       datasets(),
-                       variables(choices = tidyselect::where(is.numeric), selected = 1:5, multiple = TRUE)
-                     ),
-                     plot_height = c(600, 200, 2000),
-                     plot_width = NULL,
-                     ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
-                     ggplot2_args = teal.widgets::ggplot2_args(),
-                     rotate_xaxis_labels = FALSE,
-                     font_size = c(12, 8, 20),
-                     alpha = c(1, 0, 1),
-                     size = c(2, 1, 8),
-                     pre_output = NULL,
-                     post_output = NULL,
-                     transformators = list(),
-                     decorators = list()) {
-  UseMethod("tm_a_pca", dat)
-}
-
-#' @export
-tm_a_pca.picks <- function(label = "Principal Component Analysis",
-                           dat = picks(
-                             datasets(),
-                             variables(
-                               choices = tidyselect::where(~ is.numeric(.x) && all(!is.na(.x))),
-                               selected = tidyselect::everything(),
-                               multiple = TRUE
-                             )
-                           ),
-                           plot_height = c(600, 200, 2000),
-                           plot_width = NULL,
-                           ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
-                           ggplot2_args = teal.widgets::ggplot2_args(),
-                           rotate_xaxis_labels = FALSE,
-                           font_size = c(12, 8, 20),
-                           alpha = c(1, 0, 1),
-                           size = c(2, 1, 8),
-                           pre_output = NULL,
-                           post_output = NULL,
-                           transformators = list(),
-                           decorators = list()) {
+tm_a_pca.default <- function(label = "Principal Component Analysis",
+                             dat,
+                             plot_height = c(600, 200, 2000),
+                             plot_width = NULL,
+                             ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                             ggplot2_args = teal.widgets::ggplot2_args(),
+                             rotate_xaxis_labels = FALSE,
+                             font_size = c(12, 8, 20),
+                             alpha = c(1, 0, 1),
+                             size = c(2, 1, 8),
+                             pre_output = NULL,
+                             post_output = NULL,
+                             transformators = list(),
+                             decorators = list()) {
   message("Initializing tm_a_pca")
 
   # Normalize the parameters
+  if (inherits(dat, "data_extract_spec")) dat <- list(dat)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_class(dat, "picks")
+  checkmate::assert_list(dat, types = "data_extract_spec")
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -221,35 +69,42 @@ tm_a_pca.picks <- function(label = "Principal Component Analysis",
   # Make UI args
   args <- as.list(environment())
 
+  data_extract_list <- list(dat = dat)
+
   ans <- module(
     label = label,
-    ui = ui_a_pca.picks,
-    server = srv_a_pca.picks,
-    ui_args = args[names(args) %in% names(formals(ui_a_pca.picks))],
-    server_args = args[names(args) %in% names(formals(srv_a_pca.picks))],
+    server = srv_a_pca.default,
+    ui = ui_a_pca.default,
+    ui_args = args,
+    server_args = c(
+      data_extract_list,
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        ggplot2_args = ggplot2_args,
+        decorators = decorators
+      )
+    ),
     transformators = transformators,
-    datanames = {
-      datanames <- datanames(list(dat))
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- FALSE
   ans
 }
 
 # UI function for the PCA module
-ui_a_pca.picks <- function(id,
-                           dat,
-                           plot_choices,
-                           ggtheme,
-                           rotate_xaxis_labels,
-                           font_size,
-                           alpha,
-                           size,
-                           pre_output,
-                           post_output,
-                           decorators) {
+ui_a_pca.default <- function(id, ...) {
   ns <- NS(id)
+  args <- list(...)
+  is_single_dataset_value <- teal.transform::is_single_dataset(args$dat)
+
+  color_selector <- args$dat
+  for (i in seq_along(color_selector)) {
+    color_selector[[i]]$select$multiple <- FALSE
+    color_selector[[i]]$select$always_selected <- NULL
+    color_selector[[i]]$select$selected <- NULL
+  }
+
   tagList(
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
@@ -257,9 +112,12 @@ ui_a_pca.picks <- function(id,
       ),
       encoding = tags$div(
         tags$label("Encodings", class = "text-primary"),
-        teal::teal_nav_item(
-          label = tags$strong("Data selection"),
-          teal.transform::module_input_ui(id = ns("dat"), spec = dat)
+        teal.transform::datanames_input(args["dat"]),
+        teal.transform::data_extract_ui(
+          id = ns("dat"),
+          label = "Data selection",
+          data_extract_spec = args$dat,
+          is_single_dataset = is_single_dataset_value
         ),
         bslib::accordion(
           open = TRUE,
@@ -274,35 +132,35 @@ ui_a_pca.picks <- function(id,
             radioButtons(
               ns("plot_type"),
               label = "Plot type",
-              choices = plot_choices,
-              selected = plot_choices[1]
+              choices = args$plot_choices,
+              selected = args$plot_choices[1]
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
               ui_decorate_teal_data(
                 ns("d_elbow_plot"),
-                decorators = select_decorators(decorators, "elbow_plot")
+                decorators = select_decorators(args$decorators, "elbow_plot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Circle plot'", ns("plot_type")),
               ui_decorate_teal_data(
                 ns("d_circle_plot"),
-                decorators = select_decorators(decorators, "circle_plot")
+                decorators = select_decorators(args$decorators, "circle_plot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
               ui_decorate_teal_data(
                 ns("d_biplot"),
-                decorators = select_decorators(decorators, "biplot")
+                decorators = select_decorators(args$decorators, "biplot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Eigenvector plot'", ns("plot_type")),
               ui_decorate_teal_data(
                 ns("d_eigenvector_plot"),
-                decorators = select_decorators(decorators, "eigenvector_plot")
+                decorators = select_decorators(args$decorators, "eigenvector_plot")
               )
             )
           ),
@@ -325,14 +183,14 @@ ui_a_pca.picks <- function(id,
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
               list(
-                shinyWidgets::pickerInput(
-                  inputId = ns("response"),
+                teal.transform::data_extract_ui(
+                  id = ns("response"),
                   label = "Color by",
-                  choices = NULL,
-                  selected = NULL
+                  data_extract_spec = color_selector,
+                  is_single_dataset = is_single_dataset_value
                 ),
-                teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", alpha, ticks = FALSE),
-                teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", size, ticks = FALSE)
+                teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
+                teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE)
               )
             )
           ),
@@ -341,51 +199,70 @@ ui_a_pca.picks <- function(id,
             collapsed = TRUE,
             conditionalPanel(
               condition = sprintf(
-                "input['%1$s'] == 'Elbow plot' || input['%1$s'] == 'Eigenvector plot'", ns("plot_type")
+                "input['%s'] == 'Elbow plot' || input['%s'] == 'Eigenvector plot'",
+                ns("plot_type"),
+                ns("plot_type")
               ),
-              list(checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = rotate_xaxis_labels))
+              list(checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels))
             ),
             selectInput(
               inputId = ns("ggtheme"),
               label = "Theme (by ggplot):",
               choices = ggplot_themes,
-              selected = ggtheme,
+              selected = args$ggtheme,
               multiple = FALSE
             ),
-            teal.widgets::optionalSliderInputValMinMax(ns("font_size"), "Font Size", font_size, ticks = FALSE)
+            teal.widgets::optionalSliderInputValMinMax(ns("font_size"), "Font Size", args$font_size, ticks = FALSE)
           )
         )
       ),
       forms = tagList(
         teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
       ),
-      pre_output = pre_output,
-      post_output = post_output
+      pre_output = args$pre_output,
+      post_output = args$post_output
     )
   )
 }
 
 # Server function for the PCA module
-srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args, decorators) {
+srv_a_pca.default <- function(id, data, dat, plot_height, plot_width, ggplot2_args, decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::module_input_srv(spec = list(dat = dat), data = data)
+    response <- dat
 
+    for (i in seq_along(response)) {
+      response[[i]]$select$multiple <- FALSE
+      response[[i]]$select$always_selected <- NULL
+      response[[i]]$select$selected <- NULL
+      all_cols <- teal.data::col_labels(isolate(data())[[response[[i]]$dataname]])
+      ignore_cols <- unlist(teal.data::join_keys(isolate(data()))[[response[[i]]$dataname]])
+      color_cols <- all_cols[!names(all_cols) %in% ignore_cols]
+      response[[i]]$select$choices <- teal.transform::choices_labeled(names(color_cols), color_cols)
+    }
+
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = list(dat = dat, response = response),
+      datasets = data,
+      select_validation_rule = list(
+        dat = ~ if (length(.) < 2L) "Please select more than 1 variable to perform PCA.",
+        response = shinyvalidate::compose_rules(
+          shinyvalidate::sv_optional(),
+          ~ if (isTRUE(is.element(., selector_list()$dat()$select))) {
+            "Response must not have been used for PCA."
+          }
+        )
+      )
+    )
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
-      iv$add_rule(
-        "dat",
-        ~ if (length(.) < 2L) "Please select more than 1 variable to perform PCA.",
-      )
-      iv$add_rule(
-        "response",
-        ~ if (length(.) < 2L) "Please select more than 1 variable to perform PCA.",
-      )
+      teal.transform::compose_and_enable_validators(iv, selector_list)
     })
+
     iv_extra <- shinyvalidate::InputValidator$new()
     iv_extra$add_rule("x_axis", function(value) {
       if (isTRUE(input$plot_type %in% c("Circle plot", "Biplot"))) {
@@ -426,7 +303,11 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
     })
     iv_extra$enable()
 
-    anl_merged_q <- reactive({
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      selector_list = selector_list,
+      datasets = data
+    )
+    qenv <- reactive({
       obj <- data()
       teal.reporter::teal_card(obj) <-
         c(
@@ -434,40 +315,39 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      obj %>%
-        teal.code::eval_code('library("ggplot2");library("dplyr");library("tidyr")') %>% # nolint: quotes
-        teal.transform::qenv_merge_selectors(selectors = selectors, output_name = "anl")
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tidyr")') # nolint: quotes
+    })
+    anl_merged_q <- reactive({
+      req(anl_merged_input())
+      qenv() %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
-    selected_variables <- reactive(map_merged(selectors)$dat$variables)
-    observeEvent(selected_variables(), {
-      shinyWidgets::updatePickerInput(
-        inputId = "response",
-        choices = selected_variables(),
-        selected = input$response
-      )
-    })
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
+    )
 
     validation <- reactive({
-      req(anl_merged_q())
+      req(merged$anl_q_r())
       # inputs
-      keep_cols <- map_merged(selectors)$dat$variables
+      keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       na_action <- input$na_action
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale")
       scale <- standardization == "center_scale"
-      anl <- anl_merged_q()[["anl"]]
+      ANL <- merged$anl_q_r()[["ANL"]]
 
-      teal::validate_has_data(anl, 10)
+      teal::validate_has_data(ANL, 10)
       validate(need(
-        na_action != "none" | !anyNA(anl[keep_cols]),
+        na_action != "none" | !anyNA(ANL[keep_cols]),
         paste(
           "There are NAs in the dataset. Please deal with them in preprocessing",
           "or select \"Drop\" in the NA actions inside the encodings panel (left)."
         )
       ))
       if (scale) {
-        not_single <- vapply(anl[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1))
+        not_single <- vapply(ANL[keep_cols], function(column) length(unique(column)) != 1, FUN.VALUE = logical(1))
 
         msg <- paste0(
           "You have selected `Center & Scale` under `Standardization` in the `Pre-processing` panel, ",
@@ -477,49 +357,66 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
       }
     })
 
+    # computation ----
     computation <- reactive({
       validation()
+
       # inputs
-      keep_cols <- map_merged(selectors)$dat$variables
+      keep_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       na_action <- input$na_action
       standardization <- input$standardization
       center <- standardization %in% c("center", "center_scale")
       scale <- standardization == "center_scale"
-      anl <- anl_merged_q()[["anl"]]
+      ANL <- merged$anl_q_r()[["ANL"]]
 
-      qenv <- within(
-        anl_merged_q(),
-        keep_columns <- keep_cols,
-        keep_cols = keep_cols
+      qenv <- teal.code::eval_code(
+        merged$anl_q_r(),
+        substitute(
+          expr = keep_columns <- keep_cols,
+          env = list(keep_cols = keep_cols)
+        )
       )
 
       if (na_action == "drop") {
-        qenv <- within(qenv, anl <- tidyr::drop_na(anl, any_of(keep_columns)))
+        qenv <- teal.code::eval_code(
+          qenv,
+          quote(ANL <- tidyr::drop_na(ANL, keep_columns))
+        )
       }
 
-      qenv <- within(
+      qenv <- teal.code::eval_code(
         qenv,
-        pca <- summary(stats::prcomp(anl[keep_columns], center = center, scale. = scale, retx = TRUE)),
-        center = center, scale = scale
+        substitute(
+          expr = pca <- summary(stats::prcomp(ANL[keep_columns], center = center, scale. = scale, retx = TRUE)),
+          env = list(center = center, scale = scale)
+        )
       )
 
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Principal Components Table")
 
-      qenv <- within(qenv, {
-        tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
-        tbl_importance
-      })
+      qenv <- teal.code::eval_code(
+        qenv,
+        quote({
+          tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
+          tbl_importance
+        })
+      )
 
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Eigenvectors Table")
 
-      within(qenv, {
-        tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
-        tbl_eigenvector
-      })
+      teal.code::eval_code(
+        qenv,
+        quote({
+          tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
+          tbl_eigenvector
+        })
+      )
     })
 
+    # plot args ----
     output$plot_settings <- renderUI({
       # reactivity triggers
+      req(iv_r()$is_valid())
       req(computation())
       qenv <- computation()
 
@@ -531,7 +428,10 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
 
       tagList(
         conditionalPanel(
-          condition = sprintf("input['%1$s'] == 'Biplot' || input['%1$s'] == 'Circle plot'", ns("plot_type")),
+          condition = sprintf(
+            "input['%s'] == 'Biplot' || input['%s'] == 'Circle plot'",
+            ns("plot_type"), ns("plot_type")
+          ),
           list(
             teal.widgets::optionalSelectInput(ns("x_axis"), "X axis", choices = chcs_pcs, selected = chcs_pcs[1]),
             teal.widgets::optionalSelectInput(ns("y_axis"), "Y axis", choices = chcs_pcs, selected = chcs_pcs[2]),
@@ -553,8 +453,8 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
       )
     })
 
+    # plot elbow ----
     plot_elbow <- function(base_q) {
-      logger::log_debug("srv_a_pca recalculate plot_elbow")
       ggtheme <- input$ggtheme
       rotate_xaxis_labels <- input$rotate_xaxis_labels
       font_size <- input$font_size
@@ -627,8 +527,8 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
       )
     }
 
+    # plot circle ----
     plot_circle <- function(base_q) {
-      logger::log_debug("srv_a_pca recalculate plot_circle")
       x_axis <- input$x_axis
       y_axis <- input$y_axis
       variables <- input$variables
@@ -700,12 +600,14 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
       )
     }
 
+    # plot biplot ----
     plot_biplot <- function(base_q) {
-      logger::log_debug("srv_a_pca recalculate plot_biplot")
       qenv <- base_q
-      anl <- qenv[["anl"]]
-      dat_cols <- map_merged(selectors)$dat$variables
-      resp_col <- input$response
+
+      ANL <- qenv[["ANL"]]
+
+      resp_col <- as.character(merged$anl_input_r()$columns_source$response)
+      dat_cols <- as.character(merged$anl_input_r()$columns_source$dat)
       x_axis <- input$x_axis
       y_axis <- input$y_axis
       variables <- input$variables
@@ -749,7 +651,7 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
                 expr = {
                   rot_vars <- rot_vars %>%
                     tibble::column_to_rownames("label") %>%
-                    sweep(1, apply(anl[keep_columns], 2, mean, na.rm = TRUE)) %>%
+                    sweep(1, apply(ANL[keep_columns], 2, mean, na.rm = TRUE)) %>%
                     tibble::rownames_to_column("label") %>%
                     dplyr::mutate(
                       xstart = mean(pca$x[, x_axis], na.rm = TRUE),
@@ -784,9 +686,9 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
         )
         dev_labs <- list()
       } else {
-        rp_keys <- setdiff(colnames(anl), dat_cols)
+        rp_keys <- setdiff(colnames(ANL), as.character(unlist(merged$anl_input_r()$columns_source)))
 
-        response <- anl[[resp_col]]
+        response <- ANL[[resp_col]]
 
         aes_biplot <- substitute(
           ggplot2::aes_string(x = x_axis, y = y_axis, color = "response"),
@@ -795,10 +697,10 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
 
         qenv <- teal.code::eval_code(
           qenv,
-          substitute(response <- anl[[resp_col]], env = list(resp_col = resp_col))
+          substitute(response <- ANL[[resp_col]], env = list(resp_col = resp_col))
         )
 
-        dev_labs <- list(color = varname_w_label(resp_col, anl))
+        dev_labs <- list(color = varname_w_label(resp_col, ANL))
 
         scales_biplot <-
           if (
@@ -917,8 +819,8 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
       )
     }
 
+    # plot eigenvector_plot ----
     plot_eigenvector <- function(base_q) {
-      logger::log_debug("srv_a_pca recalculate plot_eigenvector")
       req(input$pc)
       pc <- input$pc
       ggtheme <- input$ggtheme
@@ -1059,7 +961,6 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
     output$tbl_importance <- renderTable(
       expr = {
         req("importance" %in% input$tables_display, computation())
-        logger::log_debug("srv_a_pca rerender tbl_importance")
         computation()[["tbl_importance"]]
       },
       bordered = TRUE,
@@ -1080,7 +981,6 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
     output$tbl_eigenvector <- renderTable(
       expr = {
         req("eigenvector" %in% input$tables_display, req(computation()))
-        logger::log_debug("srv_a_pca rerender tbl_eigenvector")
         computation()[["tbl_eigenvector"]]
       },
       bordered = TRUE,
@@ -1099,6 +999,9 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
     })
 
     output$all_plots <- renderUI({
+      teal::validate_inputs(iv_r())
+      teal::validate_inputs(iv_extra, header = "Plot settings are required")
+
       validation()
       tags$div(
         uiOutput(session$ns("tbl_importance_ui")),

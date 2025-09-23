@@ -228,9 +228,48 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            post_output = NULL,
                            transformators = list(),
                            decorators = list()) {
+  UseMethod("tm_g_bivariate", x)
+}
+
+#' @export
+tm_g_bivariate.picks <- function(label = "Bivariate Plots",
+                                 x = picks(
+                                   datasets(),
+                                   variables(
+                                     choices = tidyselect::where(is.numeric) |
+                                       teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                     selected = 1
+                                   )
+                                 ),
+                                 y = picks(
+                                   datasets(),
+                                   variables(
+                                     choices = tidyselect::where(is.numeric) |
+                                       teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                     selected = 2
+                                   )
+                                 ),
+                                 row_facet = NULL,
+                                 col_facet = NULL,
+                                 facet = !is.null(row_facet) || !is.null(col_facet),
+                                 color = NULL,
+                                 fill = NULL,
+                                 size = NULL,
+                                 use_density = FALSE,
+                                 color_settings = FALSE,
+                                 free_x_scales = FALSE,
+                                 free_y_scales = FALSE,
+                                 plot_height = c(600, 200, 2000),
+                                 plot_width = NULL,
+                                 rotate_xaxis_labels = FALSE,
+                                 swap_axes = FALSE,
+                                 ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                 ggplot2_args = teal.widgets::ggplot2_args(),
+                                 pre_output = NULL,
+                                 post_output = NULL,
+                                 transformators = list(),
+                                 decorators = list()) {
   message("Initializing tm_g_bivariate")
-
-
   extracted_filters <- extract_filters(list(x, y, row_facet, col_facet, color, fill, size))
   transformators <- c(
     transformators,
@@ -247,11 +286,11 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   # Start of assertions
   checkmate::assert_class(x, "picks")
   checkmate::assert_class(y, "picks")
-  if (attr(x$variables, "multiple")) {
+  if (isTRUE(attr(x$variables, "multiple"))) {
     warning("`x`-axis doesn't accept multiple variables. Changing automatically.")
     attr(x$variables, "multiple") <- FALSE
   }
-  if (attr(y$variables, "multiple")) {
+  if (isTRUE(attr(y$variables, "multiple"))) {
     warning("`y`-axis doesn't accept multiple variables. Changing automatically.")
     attr(x$variables, "multiple") <- FALSE
   }
@@ -311,15 +350,13 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   ans <- module(
     label = label,
-    server = srv_g_bivariate,
-    ui = ui_g_bivariate,
-    ui_args = args[names(args) %in% names(formals(ui_g_bivariate))],
-    server_args = args[names(args) %in% names(formals(srv_g_bivariate))],
+    server = srv_g_bivariate.picks,
+    ui = ui_g_bivariate.picks,
+    ui_args = args[names(args) %in% names(formals(ui_g_bivariate.picks))],
+    server_args = args[names(args) %in% names(formals(srv_g_bivariate.picks))],
     transformators = transformators,
     datanames = {
-      datanames <- datanames(
-        list(x = x, y = y, row_facet = row_facet, col_facet = col_facet, color = color, fill = fill, size = size)
-      )
+      datanames <- teal.transform::datanames(list(x, y, row_facet, col_facet, color, fill, size))
       if (length(datanames)) datanames else "all"
     }
   )
@@ -328,26 +365,26 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 }
 
 # UI function for the bivariate module
-ui_g_bivariate <- function(id,
-                           x,
-                           y,
-                           row_facet = NULL,
-                           col_facet = NULL,
-                           facet = !is.null(row_facet) || !is.null(col_facet),
-                           color = NULL,
-                           fill = NULL,
-                           size = NULL,
-                           use_density = FALSE,
-                           color_settings = FALSE,
-                           free_x_scales = FALSE,
-                           free_y_scales = FALSE,
-                           rotate_xaxis_labels = FALSE,
-                           swap_axes = FALSE,
-                           ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
-                           ggplot2_args = teal.widgets::ggplot2_args(),
-                           pre_output = NULL,
-                           post_output = NULL,
-                           decorators = list()) {
+ui_g_bivariate.picks <- function(id,
+                                 x,
+                                 y,
+                                 row_facet = NULL,
+                                 col_facet = NULL,
+                                 facet = !is.null(row_facet) || !is.null(col_facet),
+                                 color = NULL,
+                                 fill = NULL,
+                                 size = NULL,
+                                 use_density = FALSE,
+                                 color_settings = FALSE,
+                                 free_x_scales = FALSE,
+                                 free_y_scales = FALSE,
+                                 rotate_xaxis_labels = FALSE,
+                                 swap_axes = FALSE,
+                                 ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                 ggplot2_args = teal.widgets::ggplot2_args(),
+                                 pre_output = NULL,
+                                 post_output = NULL,
+                                 decorators = list()) {
   ns <- NS(id)
   teal::standard_layout2(
     output = bslib::card(
@@ -459,20 +496,20 @@ ui_g_bivariate <- function(id,
 }
 
 # Server function for the bivariate module
-srv_g_bivariate <- function(id,
-                            data,
-                            x,
-                            y,
-                            row_facet,
-                            col_facet,
-                            color_settings = FALSE,
-                            color,
-                            fill,
-                            size,
-                            plot_height,
-                            plot_width,
-                            ggplot2_args,
-                            decorators) {
+srv_g_bivariate.picks <- function(id,
+                                  data,
+                                  x,
+                                  y,
+                                  row_facet,
+                                  col_facet,
+                                  color_settings = FALSE,
+                                  color,
+                                  fill,
+                                  size,
+                                  plot_height,
+                                  plot_width,
+                                  ggplot2_args,
+                                  decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

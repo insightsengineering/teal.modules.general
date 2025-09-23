@@ -6,8 +6,9 @@
 \usage{
 tm_a_regression(
   label = "Regression Analysis",
-  regressor,
-  response,
+  regressor = picks(datasets(), variables(choices = tidyselect::where(is.numeric),
+    selected = -1, multiple = TRUE)),
+  response = picks(datasets(), variables(choices = tidyselect::where(is.numeric))),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   alpha = c(1, 0, 1),
@@ -24,9 +25,6 @@ tm_a_regression(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
-For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
-
 \item{regressor}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 Regressor variables from an incoming dataset with filtering and selecting.}
 
@@ -96,9 +94,6 @@ It can take the following forms:
 It takes the form of \code{c(value, min, max)} and it is passed to the \code{value_min_max}
 argument in \code{teal.widgets::optionalSliderInputValMinMax}.
 }}
-
-\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
-To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,

@@ -21,23 +21,11 @@ tm_missing_data(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
-For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
-
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
 
 \item{plot_width}{(\code{numeric}) optional, specifies the plot width as a three-element vector of
 \code{value}, \code{min}, and \code{max} for a slider encoding the plot width.}
-
-\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
-There are 2 reserved values that have specific behaviors:
-\itemize{
-\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
-\item \code{NULL} hides the sidebar panel completely.
-\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
-argument.
-}}
 
 \item{parent_dataname}{(\code{character(1)}) Specifies the parent dataset name. Default is \code{ADSL} for \code{CDISC} data.
 If provided and exists, enables additional analysis "by subject". For non-\code{CDISC} data, this parameter can be
@@ -57,9 +45,6 @@ with text placed before the output to put the output into context. For example a
 
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
-
-\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
-To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,

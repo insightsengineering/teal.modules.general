@@ -137,58 +137,40 @@
 #'
 #' @export
 #'
-tm_g_distribution <- function(label = "Distribution Module",
-                              dist_var,
-                              strata_var = NULL,
-                              group_var = NULL,
-                              freq = FALSE,
-                              ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
-                              ggplot2_args = teal.widgets::ggplot2_args(),
-                              bins = c(30L, 1L, 100L),
-                              plot_height = c(600, 200, 2000),
-                              plot_width = NULL,
-                              pre_output = NULL,
-                              post_output = NULL,
-                              transformators = list(),
-                              decorators = list()) {
-  UseMethod("tm_g_distribution", dist_var)
-}
-
-#' @export
-tm_g_distribution.picks <- function(label = "Distribution Module",
-                                    dist_var = picks(datasets(), variables(where(is.numeric))),
-                                    strata_var = NULL,
-                                    group_var = NULL,
-                                    freq = FALSE,
-                                    ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
-                                    ggplot2_args = teal.widgets::ggplot2_args(),
-                                    bins = c(30L, 1L, 100L),
-                                    plot_height = c(600, 200, 2000),
-                                    plot_width = NULL,
-                                    pre_output = NULL,
-                                    post_output = NULL,
-                                    transformators = list(),
-                                    decorators = list()) {
+tm_g_distribution.default <- function(label = "Distribution Module",
+                                      dist_var,
+                                      strata_var = NULL,
+                                      group_var = NULL,
+                                      freq = FALSE,
+                                      ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                      ggplot2_args = teal.widgets::ggplot2_args(),
+                                      bins = c(30L, 1L, 100L),
+                                      plot_height = c(600, 200, 2000),
+                                      plot_width = NULL,
+                                      pre_output = NULL,
+                                      post_output = NULL,
+                                      transformators = list(),
+                                      decorators = list()) {
   message("Initializing tm_g_distribution")
 
+  # Normalize the parameters
+  if (inherits(dist_var, "data_extract_spec")) dist_var <- list(dist_var)
+  if (inherits(strata_var, "data_extract_spec")) strata_var <- list(strata_var)
+  if (inherits(group_var, "data_extract_spec")) group_var <- list(group_var)
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   # Start of assertions
   checkmate::assert_string(label)
 
-  checkmate::assert_class(dist_var, "picks")
-  if (isTRUE(attr(dist_var$variables, "multiple"))) {
-    warning("dist_var accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
-    attr(dist_var$variables, "multiple") <- FALSE
-  }
-  checkmate::assert_class(strata_var, "picks", null.ok = TRUE)
-  checkmate::assert_class(group_var, "picks", null.ok = TRUE)
+  checkmate::assert_list(dist_var, "data_extract_spec")
+  checkmate::assert_false(dist_var[[1L]]$select$multiple)
 
+  checkmate::assert_list(strata_var, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(group_var, types = "data_extract_spec", null.ok = TRUE)
   checkmate::assert_flag(freq)
   ggtheme <- match.arg(ggtheme)
 
   plot_choices <- c("Histogram", "QQplot")
-
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
@@ -217,34 +199,39 @@ tm_g_distribution.picks <- function(label = "Distribution Module",
   # Make UI args
   args <- as.list(environment())
 
+  data_extract_list <- list(
+    dist_var = dist_var,
+    strata_var = strata_var,
+    group_var = group_var
+  )
+
   ans <- module(
     label = label,
-    server = srv_g_distribution.picks,
-    ui = ui_g_distribution.picks,
-    ui_args = args[names(args) %in% names(formals(ui_g_distribution.picks))],
-    server_args = args[names(args) %in% names(formals(srv_g_distribution.picks))], ,
+    ui = ui_g_distribution.default,
+    server = srv_g_distribution.default,
+    ui_args = args,
+    server_args = c(
+      data_extract_list,
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        ggplot2_args = ggplot2_args,
+        decorators = decorators
+      )
+    ),
     transformators = transformators,
-    datanames = {
-      datanames <- datanames(list(dist_var, strata_var, group_var))
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
 
 # UI function for the distribution module
-ui_g_distribution.picks <- function(id,
-                                    strata_var,
-                                    dist_var,
-                                    group_var,
-                                    freq,
-                                    bins,
-                                    ggtheme,
-                                    pre_output,
-                                    post_output,
-                                    decorators) {
+ui_g_distribution.default <- function(id, ...) {
+  args <- list(...)
   ns <- NS(id)
+  is_single_dataset_value <- teal.transform::is_single_dataset(args$dist_var, args$strata_var, args$group_var)
+
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(
       tabsetPanel(
@@ -269,25 +256,30 @@ ui_g_distribution.picks <- function(id,
     ),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
-      teal::teal_nav_item(
-        label = tags$strong("Variable"),
-        teal.transform::module_input_ui(id = ns("dist_var"), spec = dist_var)
+      teal.transform::datanames_input(args[c("dist_var", "strata_var")]),
+      teal.transform::data_extract_ui(
+        id = ns("dist_i"),
+        label = "Variable",
+        data_extract_spec = args$dist_var,
+        is_single_dataset = is_single_dataset_value
       ),
-      if (!is.null(group_var)) {
+      if (!is.null(args$group_var)) {
         tagList(
-          teal::teal_nav_item(
-            label = tags$strong("Group by:"),
-            teal.transform::module_input_ui(id = ns("group_var"), spec = group_var)
+          teal.transform::data_extract_ui(
+            id = ns("group_i"),
+            label = "Group by",
+            data_extract_spec = args$group_var,
+            is_single_dataset = is_single_dataset_value
           ),
           uiOutput(ns("scales_types_ui"))
         )
       },
-      if (!is.null(strata_var)) {
-        tagList(
-          teal::teal_nav_item(
-            label = tags$strong("Stratify by:"),
-            teal.transform::module_input_ui(id = ns("strata_var"), spec = strata_var)
-          )
+      if (!is.null(args$strata_var)) {
+        teal.transform::data_extract_ui(
+          id = ns("strata_i"),
+          label = "Stratify by",
+          data_extract_spec = args$strata_var,
+          is_single_dataset = is_single_dataset_value
         )
       },
       bslib::accordion(
@@ -295,19 +287,19 @@ ui_g_distribution.picks <- function(id,
           condition = paste0("input['", ns("tabs"), "'] == 'Histogram'"),
           bslib::accordion_panel(
             "Histogram",
-            teal.widgets::optionalSliderInputValMinMax(ns("bins"), "Bins", bins, ticks = FALSE, step = 1),
+            teal.widgets::optionalSliderInputValMinMax(ns("bins"), "Bins", args$bins, ticks = FALSE, step = 1),
             shinyWidgets::prettyRadioButtons(
               ns("main_type"),
               label = "Plot Type:",
               choices = c("Density", "Frequency"),
-              selected = if (!freq) "Density" else "Frequency",
+              selected = if (!args$freq) "Density" else "Frequency",
               bigger = FALSE,
               inline = TRUE
             ),
             checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
             ui_decorate_teal_data(
               ns("d_density"),
-              decorators = select_decorators(decorators, "histogram_plot")
+              decorators = select_decorators(args$decorators, "histogram_plot")
             )
           )
         ),
@@ -318,7 +310,7 @@ ui_g_distribution.picks <- function(id,
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
             ui_decorate_teal_data(
               ns("d_qq"),
-              decorators = select_decorators(decorators, "qq_plot")
+              decorators = select_decorators(args$decorators, "qq_plot")
             ),
             collapsed = FALSE
           )
@@ -357,14 +349,14 @@ ui_g_distribution.picks <- function(id,
             "Tests:",
             choices = c(
               "Shapiro-Wilk",
-              if (!is.null(strata_var)) "t-test (two-samples, not paired)",
-              if (!is.null(strata_var)) "one-way ANOVA",
-              if (!is.null(strata_var)) "Fligner-Killeen",
-              if (!is.null(strata_var)) "F-test",
+              if (!is.null(args$strata_var)) "t-test (two-samples, not paired)",
+              if (!is.null(args$strata_var)) "one-way ANOVA",
+              if (!is.null(args$strata_var)) "Fligner-Killeen",
+              if (!is.null(args$strata_var)) "F-test",
               "Kolmogorov-Smirnov (one-sample)",
               "Anderson-Darling (one-sample)",
               "Cramer-von Mises (one-sample)",
-              if (!is.null(strata_var)) "Kolmogorov-Smirnov (two-samples)"
+              if (!is.null(args$strata_var)) "Kolmogorov-Smirnov (two-samples)"
             ),
             selected = NULL
           )
@@ -379,7 +371,7 @@ ui_g_distribution.picks <- function(id,
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
             choices = ggplot_themes,
-            selected = ggtheme,
+            selected = args$ggtheme,
             multiple = FALSE
           )
         )
@@ -388,27 +380,28 @@ ui_g_distribution.picks <- function(id,
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
-    pre_output = pre_output,
-    post_output = post_output
+    pre_output = args$pre_output,
+    post_output = args$post_output
   )
 }
 
 # Server function for the distribution module
-srv_g_distribution.picks <- function(id,
-                                     data,
-                                     dist_var,
-                                     strata_var,
-                                     group_var,
-                                     plot_height,
-                                     plot_width,
-                                     ggplot2_args,
-                                     decorators) {
+srv_g_distribution.default <- function(id,
+                                       data,
+                                       dist_var,
+                                       strata_var,
+                                       group_var,
+                                       plot_height,
+                                       plot_width,
+                                       ggplot2_args,
+                                       decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     setBookmarkExclude("params_reset")
+
     ns <- session$ns
 
     rule_req <- function(value) {
@@ -434,21 +427,28 @@ srv_g_distribution.picks <- function(id,
       }
     }
 
-    selectors <- teal.transform::module_input_srv(
-      spec = list(dist_var = dist_var, strata_var = strata_var, group_var = group_var),
-      data = data
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = list(
+        dist_i = dist_var,
+        strata_i = strata_var,
+        group_i = group_var
+      ),
+      data,
+      select_validation_rule = list(
+        dist_i = shinyvalidate::sv_required("Please select a variable")
+      ),
+      filter_validation_rule = list(
+        strata_i = shinyvalidate::compose_rules(
+          rule_req,
+          rule_dupl
+        ),
+        group_i = rule_dupl
+      )
     )
-
 
     iv_r <- reactive({
       iv <- shinyvalidate::InputValidator$new()
-      # teal.transform::compose_and_enable_validators(iv, selector_list, validator_names = "dist_i")
-      #       dist_i = shinyvalidate::sv_required("Please select a variable")
-      # strata_i = shinyvalidate::compose_rules(
-      #   rule_req,
-      #   rule_dupl
-      # ),
-      # group_i = rule_dupl
+      teal.transform::compose_and_enable_validators(iv, selector_list, validator_names = "dist_i")
     })
 
     iv_r_dist <- reactive({
@@ -518,23 +518,28 @@ srv_g_distribution.picks <- function(id,
     iv_dist$add_rule("dist_param2", rule_dist_2)
     iv_dist$enable()
 
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      selector_list = selector_list,
+      datasets = data
+    )
+
+    qenv <- reactive(
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
+    )
+
     anl_merged_q <- reactive({
-      req(data())
-      qenv <- data()
-      teal.code::eval_code(qenv, 'library("ggplot2");library("dplyr")') %>%
-        teal.transform::qenv_merge_selectors(selectors = selectors, output_name = "anl")
+      req(anl_merged_input())
+      qenv() %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
-    merge_vars <- reactive(
-      list(
-        dist_var = map_merged(selectors)$dist_var$variables,
-        strata_var = map_merged(selectors)$strata_var$variables,
-        group_var = map_merged(selectors)$group_var$variables
-      )
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
     )
 
     output$scales_types_ui <- renderUI({
-      if (length(merge_vars()$group_var) > 0) {
+      if ("group_i" %in% names(selector_list()) && length(selector_list()$group_i()$filters[[1]]$selected) > 0) {
         shinyWidgets::prettyRadioButtons(
           ns("scales_type"),
           label = "Scales:",
@@ -550,7 +555,7 @@ srv_g_distribution.picks <- function(id,
       eventExpr = list(
         input$t_dist,
         input$params_reset,
-        selectors$dist_var()$variables$selected
+        selector_list()$dist_i()$select
       ),
       handlerExpr = {
         params <-
@@ -565,8 +570,8 @@ srv_g_distribution.picks <- function(id,
               )
             }
 
-            anl <- anl_merged_q()[["anl"]]
-            round(get_dist_params(as.numeric(stats::na.omit(anl[[merge_vars()$dist_var]])), input$t_dist), 2)
+            ANL <- merged$anl_q_r()[["ANL"]]
+            round(get_dist_params(as.numeric(stats::na.omit(ANL[[merge_vars()$dist_var]])), input$t_dist), 2)
           } else {
             c("param1" = NA_real_, "param2" = NA_real_)
           }
@@ -603,19 +608,47 @@ srv_g_distribution.picks <- function(id,
       updateActionButton(inputId = "params_reset", label = "Reset params")
     })
 
+    merge_vars <- reactive({
+      teal::validate_inputs(iv_r())
+
+      dist_var <- as.vector(merged$anl_input_r()$columns_source$dist_i)
+      s_var <- as.vector(merged$anl_input_r()$columns_source$strata_i)
+      g_var <- as.vector(merged$anl_input_r()$columns_source$group_i)
+
+      dist_var_name <- if (length(dist_var)) as.name(dist_var) else NULL
+      s_var_name <- if (length(s_var)) as.name(s_var) else NULL
+      g_var_name <- if (length(g_var)) as.name(g_var) else NULL
+
+      list(
+        dist_var = dist_var,
+        s_var = s_var,
+        g_var = g_var,
+        dist_var_name = dist_var_name,
+        s_var_name = s_var_name,
+        g_var_name = g_var_name
+      )
+    })
+
     # common qenv
     common_q <- reactive({
-      req(anl_merged_q())
       # Create a private stack for this function only.
-      qenv <- anl_merged_q()
-      teal.reporter::teal_card(qenv) <-
+
+      obj <- merged$anl_q_r()
+      teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Distribution Plot"),
-          teal.reporter::teal_card(qenv),
+          teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
 
-      anl <- qenv[["anl"]]
+      ANL <- obj[["ANL"]]
+      dist_var <- merge_vars()$dist_var
+      s_var <- merge_vars()$s_var
+      g_var <- merge_vars()$g_var
+
+      dist_var_name <- merge_vars()$dist_var_name
+      s_var_name <- merge_vars()$s_var_name
+      g_var_name <- merge_vars()$g_var_name
 
       roundn <- input$roundn
       dist_param1 <- input$dist_param1
@@ -623,39 +656,45 @@ srv_g_distribution.picks <- function(id,
       # isolated as dist_param1/dist_param2 already triggered the reactivity
       t_dist <- isolate(input$t_dist)
 
-      if (length(merge_vars()$group_var) > 0) {
+      qenv <- obj
+
+      if (length(g_var) > 0) {
         validate(
           need(
-            inherits(anl[[merge_vars()$group_var]], c("integer", "factor", "character")),
+            inherits(ANL[[g_var]], c("integer", "factor", "character")),
             "Group by variable must be `factor`, `character`, or `integer`"
           )
         )
-        qenv <- within(qenv, library("forcats"))
-        qenv <- within(
+        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
+        qenv <- teal.code::eval_code(
           qenv,
-          expr = anl[[group_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[group_var]]), "NA"),
-          group_var = merge_vars()$group_var
+          substitute(
+            expr = ANL[[g_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[g_var]]), "NA"),
+            env = list(g_var = g_var)
+          )
         )
       }
 
-      if (length(merge_vars()$strata_var) > 0) {
+      if (length(s_var) > 0) {
         validate(
           need(
-            inherits(anl[[merge_vars()$strata_var]], c("integer", "factor", "character")),
+            inherits(ANL[[s_var]], c("integer", "factor", "character")),
             "Stratify by variable must be `factor`, `character`, or `integer`"
           )
         )
 
-        qenv <- within(qenv, library("forcats"))
-        qenv <- within(
+        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
+        qenv <- teal.code::eval_code(
           qenv,
-          expr = anl[[strata_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[strata_var]]), "NA"),
-          strata_var = merge_vars()$strata_var
+          substitute(
+            expr = ANL[[s_var]] <- forcats::fct_na_value_to_level(as.factor(ANL[[s_var]]), "NA"),
+            env = list(s_var = s_var)
+          )
         )
       }
 
-      validate(need(is.numeric(anl[[merge_vars()$dist_var]]), "Please select a numeric variable."))
-      teal::validate_has_data(anl, 1, complete = TRUE)
+      validate(need(is.numeric(ANL[[dist_var]]), "Please select a numeric variable."))
+      teal::validate_has_data(ANL, 1, complete = TRUE)
 
       if (length(t_dist) != 0) {
         map_distr_nams <- list(
@@ -666,53 +705,66 @@ srv_g_distribution.picks <- function(id,
         )
         params_names_raw <- map_distr_nams[[t_dist]]
 
-        qenv <- within(
+        qenv <- teal.code::eval_code(
           qenv,
-          expr = {
-            params <- as.list(c(dist_param1, dist_param2))
-            names(params) <- params_names_raw
-          },
-          dist_param1 = dist_param1,
-          dist_param2 = dist_param2,
-          params_names_raw = params_names_raw
+          substitute(
+            expr = {
+              params <- as.list(c(dist_param1, dist_param2))
+              names(params) <- params_names_raw
+            },
+            env = list(
+              dist_param1 = dist_param1,
+              dist_param2 = dist_param2,
+              params_names_raw = params_names_raw
+            )
+          )
         )
       }
 
-      if (length(merge_vars()$strata_var) == 0 && length(merge_vars()$group_var) == 0) {
-        within(
+      if (length(s_var) == 0 && length(g_var) == 0) {
+        teal.code::eval_code(
           qenv,
-          expr = {
-            summary_table_data <- anl %>%
-              dplyr::summarise(
-                min = round(min(d_var_name, na.rm = TRUE), roundn),
-                median = round(stats::median(d_var_name, na.rm = TRUE), roundn),
-                mean = round(mean(d_var_name, na.rm = TRUE), roundn),
-                max = round(max(d_var_name, na.rm = TRUE), roundn),
-                sd = round(stats::sd(d_var_name, na.rm = TRUE), roundn),
-                count = dplyr::n()
-              )
-          },
-          d_var_name = as.name(merge_vars()$dist_var),
-          roundn = roundn
+          substitute(
+            expr = {
+              summary_table_data <- ANL %>%
+                dplyr::summarise(
+                  min = round(min(dist_var_name, na.rm = TRUE), roundn),
+                  median = round(stats::median(dist_var_name, na.rm = TRUE), roundn),
+                  mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
+                  max = round(max(dist_var_name, na.rm = TRUE), roundn),
+                  sd = round(stats::sd(dist_var_name, na.rm = TRUE), roundn),
+                  count = dplyr::n()
+                )
+            },
+            env = list(
+              dist_var_name = as.name(dist_var),
+              roundn = roundn
+            )
+          )
         )
       } else {
-        within(
+        teal.code::eval_code(
           qenv,
-          expr = {
-            summary_table_data <- anl %>%
-              dplyr::group_by_at(dplyr::vars(dplyr::any_of(strata_vars))) %>%
-              dplyr::summarise(
-                min = round(min(d_var_name, na.rm = TRUE), roundn),
-                median = round(stats::median(d_var_name, na.rm = TRUE), roundn),
-                mean = round(mean(d_var_name, na.rm = TRUE), roundn),
-                max = round(max(d_var_name, na.rm = TRUE), roundn),
-                sd = round(stats::sd(d_var_name, na.rm = TRUE), roundn),
-                count = dplyr::n()
-              )
-          },
-          d_var_name = as.name(merge_vars()$dist_var),
-          strata_vars = c(merge_vars()$group_var, merge_vars()$strata_var),
-          roundn = roundn
+          substitute(
+            expr = {
+              strata_vars <- strata_vars_raw
+              summary_table_data <- ANL %>%
+                dplyr::group_by_at(dplyr::vars(dplyr::any_of(strata_vars))) %>%
+                dplyr::summarise(
+                  min = round(min(dist_var_name, na.rm = TRUE), roundn),
+                  median = round(stats::median(dist_var_name, na.rm = TRUE), roundn),
+                  mean = round(mean(dist_var_name, na.rm = TRUE), roundn),
+                  max = round(max(dist_var_name, na.rm = TRUE), roundn),
+                  sd = round(stats::sd(dist_var_name, na.rm = TRUE), roundn),
+                  count = dplyr::n()
+                )
+            },
+            env = list(
+              dist_var_name = dist_var_name,
+              strata_vars_raw = c(g_var, s_var),
+              roundn = roundn
+            )
+          )
         )
       }
     })
@@ -728,13 +780,12 @@ srv_g_distribution.picks <- function(id,
         is.null(input$ggtheme)
       },
       valueExpr = {
-        d_var <- merge_vars()$dist_var
-        s_var <- merge_vars()$strata_var
-        g_var <- merge_vars()$group_var
-        d_var_name <- as.name(d_var)
-        s_var_name <- if (!is.null(s_var)) as.name(s_var)
-        g_var_name <- if (!is.null(g_var)) as.name(g_var)
-
+        dist_var <- merge_vars()$dist_var
+        s_var <- merge_vars()$s_var
+        g_var <- merge_vars()$g_var
+        dist_var_name <- merge_vars()$dist_var_name
+        s_var_name <- merge_vars()$s_var_name
+        g_var_name <- merge_vars()$g_var_name
         t_dist <- input$t_dist
         dist_param1 <- input$dist_param1
         dist_param2 <- input$dist_param2
@@ -747,7 +798,7 @@ srv_g_distribution.picks <- function(id,
         add_dens_var <- input$add_dens
         ggtheme <- input$ggtheme
 
-        # teal::validate_inputs(iv_dist)
+        teal::validate_inputs(iv_dist)
 
         qenv <- common_q()
 
@@ -755,17 +806,17 @@ srv_g_distribution.picks <- function(id,
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot2::ggplot(anl, ggplot2::aes(d_var_name)) +
+            expr = ggplot2::ggplot(ANL, ggplot2::aes(dist_var_name)) +
               ggplot2::geom_histogram(
                 position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type)), bins = bins_var, alpha = 0.3
               ),
             env = list(
-              m_type = as.name(m_type), bins_var = bins_var, d_var_name = d_var_name
+              m_type = as.name(m_type), bins_var = bins_var, dist_var_name = as.name(dist_var)
             )
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot2::ggplot(anl, ggplot2::aes(d_var_name, col = s_var_name)) +
+            expr = ggplot2::ggplot(ANL, ggplot2::aes(dist_var_name, col = s_var_name)) +
               ggplot2::geom_histogram(
                 position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var),
                 bins = bins_var, alpha = 0.3
@@ -773,7 +824,7 @@ srv_g_distribution.picks <- function(id,
             env = list(
               m_type = as.name(m_type),
               bins_var = bins_var,
-              d_var_name = d_var_name,
+              dist_var_name = dist_var_name,
               s_var = as.name(s_var),
               s_var_name = s_var_name
             )
@@ -781,7 +832,7 @@ srv_g_distribution.picks <- function(id,
         } else if (length(s_var) == 0 && length(g_var) != 0) {
           req(scales_type)
           substitute(
-            expr = ggplot2::ggplot(anl[anl[[g_var]] != "NA", ], ggplot2::aes(d_var_name)) +
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes(dist_var_name)) +
               ggplot2::geom_histogram(
                 position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type)), bins = bins_var, alpha = 0.3
               ) +
@@ -789,7 +840,7 @@ srv_g_distribution.picks <- function(id,
             env = list(
               m_type = as.name(m_type),
               bins_var = bins_var,
-              d_var_name = d_var_name,
+              dist_var_name = dist_var_name,
               g_var = g_var,
               g_var_name = g_var_name,
               scales_raw = tolower(scales_type)
@@ -798,7 +849,7 @@ srv_g_distribution.picks <- function(id,
         } else {
           req(scales_type)
           substitute(
-            expr = ggplot2::ggplot(anl[anl[[g_var]] != "NA", ], ggplot2::aes(d_var_name, col = s_var_name)) +
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes(dist_var_name, col = s_var_name)) +
               ggplot2::geom_histogram(
                 position = "identity",
                 ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
@@ -807,7 +858,7 @@ srv_g_distribution.picks <- function(id,
             env = list(
               m_type = as.name(m_type),
               bins_var = bins_var,
-              d_var_name = d_var_name,
+              dist_var_name = dist_var_name,
               g_var = g_var,
               s_var = as.name(s_var),
               g_var_name = g_var_name,
@@ -833,7 +884,7 @@ srv_g_distribution.picks <- function(id,
               const = if (main_type_var == "Density") {
                 1
               } else {
-                diff(range(qenv[["anl"]][[dist_var]], na.rm = TRUE)) / bins_var
+                diff(range(qenv[["ANL"]][[dist_var]], na.rm = TRUE)) / bins_var
               },
               m_type2 = if (main_type_var == "Density") as.name("density") else as.name("count"),
               ndensity = ndensity
@@ -876,7 +927,7 @@ srv_g_distribution.picks <- function(id,
           )
           plot_call <- substitute(
             expr = plot_call + stat_function(
-              data = data.frame(x = range(anl[[dist_var]]), color = mapped_dist),
+              data = data.frame(x = range(ANL[[dist_var]]), color = mapped_dist),
               ggplot2::aes(x, color = color),
               fun = mapped_dist_name,
               n = ndensity,
@@ -925,41 +976,38 @@ srv_g_distribution.picks <- function(id,
         input$tabs
       },
       valueExpr = {
-        browser()
-
-        d_var <- merge_vars()$dist_var
-        s_var <- merge_vars()$strata_var
-        g_var <- merge_vars()$group_var
-        d_var_name <- as.name(s_var)
-        s_var_name <- if (!is.null(s_var)) as.name(s_var)
-        g_var_name <- if (!is.null(g_var)) as.name(g_var)
-
+        dist_var <- merge_vars()$dist_var
+        s_var <- merge_vars()$s_var
+        g_var <- merge_vars()$g_var
+        dist_var_name <- merge_vars()$dist_var_name
+        s_var_name <- merge_vars()$s_var_name
+        g_var_name <- merge_vars()$g_var_name
         dist_param1 <- input$dist_param1
         dist_param2 <- input$dist_param2
 
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
 
-        # teal::validate_inputs(iv_r_dist(), iv_dist)
+        teal::validate_inputs(iv_r_dist(), iv_dist)
         t_dist <- req(input$t_dist) # Not validated when tab is not selected
         qenv <- common_q()
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot2::ggplot(anl, ggplot2::aes_string(sample = d_var)),
-            env = list(d_var = d_var)
+            expr = ggplot2::ggplot(ANL, ggplot2::aes_string(sample = dist_var)),
+            env = list(dist_var = dist_var)
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot2::ggplot(anl, ggplot2::aes_string(sample = d_var, color = s_var)),
-            env = list(d_var = d_var, s_var = s_var)
+            expr = ggplot2::ggplot(ANL, ggplot2::aes_string(sample = dist_var, color = s_var)),
+            env = list(dist_var = dist_var, s_var = s_var)
           )
         } else if (length(s_var) == 0 && length(g_var) != 0) {
           substitute(
-            expr = ggplot2::ggplot(anl[anl[[g_var]] != "NA", ], ggplot2::aes_string(sample = d_var)) +
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes_string(sample = dist_var)) +
               ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
-              d_var = d_var,
+              dist_var = dist_var,
               g_var = g_var,
               g_var_name = g_var_name,
               scales_raw = tolower(scales_type)
@@ -967,10 +1015,10 @@ srv_g_distribution.picks <- function(id,
           )
         } else {
           substitute(
-            expr = ggplot2::ggplot(anl[anl[[g_var]] != "NA", ], ggplot2::aes_string(sample = d_var, color = s_var)) +
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes_string(sample = dist_var, color = s_var)) +
               ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
-              d_var = d_var,
+              dist_var = dist_var,
               g_var = g_var,
               s_var = s_var,
               g_var_name = g_var_name,
@@ -1060,14 +1108,15 @@ srv_g_distribution.picks <- function(id,
       },
       valueExpr = {
         # Create a private stack for this function only.
-        anl <- common_q()[["anl"]]
+        ANL <- common_q()[["ANL"]]
 
-        d_var <- merge_vars()$dist_var
-        s_var <- merge_vars()$strata_var
-        g_var <- merge_vars()$group_var
-        d_var_name <- as.name(s_var)
-        s_var_name <- if (!is.null(s_var)) as.name(s_var)
-        g_var_name <- if (!is.null(g_var)) as.name(g_var)
+        dist_var <- merge_vars()$dist_var
+        s_var <- merge_vars()$s_var
+        g_var <- merge_vars()$g_var
+
+        dist_var_name <- merge_vars()$dist_var_name
+        s_var_name <- merge_vars()$s_var_name
+        g_var_name <- merge_vars()$g_var_name
 
         dist_param1 <- input$dist_param1
         dist_param2 <- input$dist_param2
@@ -1076,10 +1125,10 @@ srv_g_distribution.picks <- function(id,
 
         req(dist_tests)
 
-        # teal::validate_inputs(iv_dist)
+        teal::validate_inputs(iv_dist)
 
         if (length(s_var) > 0 || length(g_var) > 0) {
-          counts <- anl %>%
+          counts <- ANL %>%
             dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
             dplyr::summarise(n = dplyr::n())
 
@@ -1094,14 +1143,14 @@ srv_g_distribution.picks <- function(id,
         )) {
           if (length(g_var) == 0 && length(s_var) > 0) {
             validate(need(
-              length(unique(anl[[s_var]])) == 2,
+              length(unique(ANL[[s_var]])) == 2,
               "Please select stratify variable with 2 levels."
             ))
           }
           if (length(g_var) > 0 && length(s_var) > 0) {
             validate(need(
               all(stats::na.omit(as.vector(
-                tapply(anl[[s_var]], list(anl[[g_var]]), function(x) length(unique(x))) == 2
+                tapply(ANL[[s_var]], list(ANL[[g_var]]), function(x) length(unique(x))) == 2
               ))),
               "Please select stratify variable with 2 levels, per each group."
             ))
@@ -1114,47 +1163,47 @@ srv_g_distribution.picks <- function(id,
         )
         sks_args <- list(
           test = quote(stats::ks.test),
-          args = bquote(append(list(.[[.(d_var)]], .(map_dist[t_dist])), params)),
+          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
           groups = c(g_var, s_var)
         )
         ssw_args <- list(
           test = quote(stats::shapiro.test),
-          args = bquote(list(.[[.(d_var)]])),
+          args = bquote(list(.[[.(dist_var)]])),
           groups = c(g_var, s_var)
         )
         mfil_args <- list(
           test = quote(stats::fligner.test),
-          args = bquote(list(.[[.(d_var)]], .[[.(s_var)]])),
+          args = bquote(list(.[[.(dist_var)]], .[[.(s_var)]])),
           groups = c(g_var)
         )
         sad_args <- list(
           test = quote(goftest::ad.test),
-          args = bquote(append(list(.[[.(d_var)]], .(map_dist[t_dist])), params)),
+          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
           groups = c(g_var, s_var)
         )
         scvm_args <- list(
           test = quote(goftest::cvm.test),
-          args = bquote(append(list(.[[.(d_var)]], .(map_dist[t_dist])), params)),
+          args = bquote(append(list(.[[.(dist_var)]], .(map_dist[t_dist])), params)),
           groups = c(g_var, s_var)
         )
         manov_args <- list(
           test = quote(stats::aov),
-          args = bquote(list(stats::formula(.(d_var_name) ~ .(s_var_name)), .)),
+          args = bquote(list(stats::formula(.(dist_var_name) ~ .(s_var_name)), .)),
           groups = c(g_var)
         )
         mt_args <- list(
           test = quote(stats::t.test),
-          args = bquote(unname(split(.[[.(d_var)]], .[[.(s_var)]], drop = TRUE))),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
           groups = c(g_var)
         )
         mv_args <- list(
           test = quote(stats::var.test),
-          args = bquote(unname(split(.[[.(d_var)]], .[[.(s_var)]], drop = TRUE))),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
           groups = c(g_var)
         )
         mks_args <- list(
           test = quote(stats::ks.test),
-          args = bquote(unname(split(.[[.(d_var)]], .[[.(s_var)]], drop = TRUE))),
+          args = bquote(unname(split(.[[.(dist_var)]], .[[.(s_var)]], drop = TRUE))),
           groups = c(g_var)
         )
 
@@ -1172,13 +1221,13 @@ srv_g_distribution.picks <- function(id,
 
         env <- list(
           t_test = t_dist,
-          d_var = d_var,
+          dist_var = dist_var,
           g_var = g_var,
           s_var = s_var,
           args = tests_base$args,
           groups = tests_base$groups,
           test = tests_base$test,
-          d_var_name = d_var_name,
+          dist_var_name = dist_var_name,
           g_var_name = g_var_name,
           s_var_name = s_var_name
         )
@@ -1191,8 +1240,8 @@ srv_g_distribution.picks <- function(id,
             qenv,
             substitute(
               expr = {
-                test_table_data <- anl %>%
-                  dplyr::select(d_var) %>%
+                test_table_data <- ANL %>%
+                  dplyr::select(dist_var) %>%
                   with(., generics::glance(do.call(test, args))) %>%
                   dplyr::mutate_if(is.numeric, round, 3)
               },
@@ -1205,8 +1254,8 @@ srv_g_distribution.picks <- function(id,
             qenv,
             substitute(
               expr = {
-                test_table_data <- anl %>%
-                  dplyr::select(d_var, s_var, g_var) %>%
+                test_table_data <- ANL %>%
+                  dplyr::select(dist_var, s_var, g_var) %>%
                   dplyr::group_by_at(dplyr::vars(dplyr::any_of(groups))) %>%
                   dplyr::do(tests = generics::glance(do.call(test, args))) %>%
                   tidyr::unnest(tests) %>%
@@ -1220,6 +1269,8 @@ srv_g_distribution.picks <- function(id,
     )
 
     # outputs ----
+    output_dist_q <- reactive(c(common_q(), req(dist_q())))
+    output_qq_q <- reactive(c(common_q(), req(qq_q())))
 
     # Summary table listing has to be created separately to allow for qenv join
     q_common <- common_q()
@@ -1262,14 +1313,14 @@ srv_g_distribution.picks <- function(id,
 
     decorated_output_dist_q <- srv_decorate_teal_data(
       "d_density",
-      data = dist_q,
+      data = output_dist_q,
       decorators = select_decorators(decorators, "histogram_plot"),
       expr = quote(histogram_plot)
     )
 
     decorated_output_qq_q <- srv_decorate_teal_data(
       "d_qq",
-      data = qq_q,
+      data = output_qq_q,
       decorators = select_decorators(decorators, "qq_plot"),
       expr = quote(qq_plot)
     )

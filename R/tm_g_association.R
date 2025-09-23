@@ -144,7 +144,6 @@
 #' }
 #'
 #' @export
-#'
 tm_g_association <- function(label = "Association",
                              ref = picks(
                                datasets(),
@@ -152,7 +151,8 @@ tm_g_association <- function(label = "Association",
                                  choices = tidyselect::where(is.numeric) |
                                    teal.transform::is_categorical(min.len = 2, max.len = 10),
                                  selected = 1
-                               )
+                               ),
+                               values()
                              ),
                              vars = picks(
                                datasets(),
@@ -161,7 +161,8 @@ tm_g_association <- function(label = "Association",
                                    teal.transform::is_categorical(min.len = 2, max.len = 10),
                                  selected = 2,
                                  multiple = TRUE
-                               )
+                               ),
+                               values()
                              ),
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
@@ -173,6 +174,40 @@ tm_g_association <- function(label = "Association",
                              ggplot2_args = teal.widgets::ggplot2_args(),
                              transformators = list(),
                              decorators = list()) {
+  UseMethod("tm_g_association", ref)
+}
+
+#' @export
+tm_g_association.picks <- function(label = "Association",
+                                   ref = picks(
+                                     datasets(),
+                                     variables(
+                                       choices = tidyselect::where(is.numeric) |
+                                         teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                       selected = 1
+                                     ),
+                                     values()
+                                   ),
+                                   vars = picks(
+                                     datasets(),
+                                     variables(
+                                       choices = tidyselect::where(is.numeric) |
+                                         teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                       selected = 2,
+                                       multiple = TRUE
+                                     ),
+                                     values()
+                                   ),
+                                   show_association = TRUE,
+                                   plot_height = c(600, 400, 5000),
+                                   plot_width = NULL,
+                                   distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length.
+                                   association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length.
+                                   pre_output = NULL,
+                                   post_output = NULL,
+                                   ggplot2_args = teal.widgets::ggplot2_args(),
+                                   transformators = list(),
+                                   decorators = list()) {
   message("Initializing tm_g_association")
 
   # Normalize the parameters
@@ -204,28 +239,13 @@ tm_g_association <- function(label = "Association",
   assert_decorators(decorators, "plot")
   # End of assertions
 
+  args <- as.list(environment())
   ans <- module(
     label = label,
-    server = srv_tm_g_association,
-    ui = ui_tm_g_association,
-    ui_args = list(
-      ref = ref,
-      vars = vars,
-      show_association = show_association,
-      distribution_theme = distribution_theme,
-      association_theme = association_theme,
-      pre_output = pre_output,
-      post_output = post_output,
-      decorators = decorators
-    ),
-    server_args = list(
-      ref = ref,
-      vars = vars,
-      plot_height = plot_height,
-      plot_width = plot_width,
-      ggplot2_args = ggplot2_args,
-      decorators = decorators
-    ),
+    ui = ui_g_association.picks,
+    server = srv_g_association.picks,
+    ui_args = args[names(args) %in% names(formals(ui_g_association.picks))],
+    server_args = args[names(args) %in% names(formals(srv_g_association.picks))],
     transformators = transformators,
     datanames = {
       datanames <- datanames(list(ref = ref, vars = vars))
@@ -237,15 +257,15 @@ tm_g_association <- function(label = "Association",
 }
 
 # UI function for the association module
-ui_tm_g_association <- function(id,
-                                ref,
-                                vars,
-                                show_association,
-                                distribution_theme,
-                                association_theme,
-                                pre_output,
-                                post_output,
-                                decorators) {
+ui_g_association.picks <- function(id,
+                                   ref,
+                                   vars,
+                                   show_association,
+                                   distribution_theme,
+                                   association_theme,
+                                   pre_output,
+                                   post_output,
+                                   decorators) {
   ns <- NS(id)
 
   teal.widgets::standard_layout(
@@ -262,7 +282,7 @@ ui_tm_g_association <- function(id,
       ),
       teal::teal_nav_item(
         label = tags$strong("Associated variables"),
-        teal.transform::module_input_ui(id = ns("vars"), spec = vars),
+        teal.transform::module_input_ui(id = ns("vars"), spec = vars)
       ),
       checkboxInput(ns("association"), "Association with reference variable", value = show_association),
       checkboxInput(ns("show_dist"), "Scaled frequencies", value = FALSE),
@@ -302,14 +322,14 @@ ui_tm_g_association <- function(id,
 }
 
 # Server function for the association module
-srv_tm_g_association <- function(id,
-                                 data,
-                                 ref,
-                                 vars,
-                                 plot_height,
-                                 plot_width,
-                                 ggplot2_args,
-                                 decorators) {
+srv_g_association.picks <- function(id,
+                                    data,
+                                    ref,
+                                    vars,
+                                    plot_height,
+                                    plot_width,
+                                    ggplot2_args,
+                                    decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
 
@@ -351,12 +371,12 @@ srv_tm_g_association <- function(id,
     teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")') # nolint quotes
     anl_merged_q <- reactive({
       req(qenv())
-      teal::validate_inputs(iv)
       teal.transform::qenv_merge_selectors(x = qenv(), selectors = selectors)
     })
 
     output_q <- reactive({
       req(anl_merged_q())
+      logger::log_debug("srv_g_association@1 recalculating a plot")
       merged <- anl_merged_q()[["merged"]]
       ref_name <- map_merged(selectors)$ref$variables
       vars_names <- map_merged(selectors)$vars$variables

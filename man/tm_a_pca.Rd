@@ -6,7 +6,8 @@
 \usage{
 tm_a_pca(
   label = "Principal Component Analysis",
-  dat,
+  dat = picks(datasets(), variables(choices = tidyselect::where(is.numeric), selected =
+    1:5, multiple = TRUE)),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
@@ -22,9 +23,6 @@ tm_a_pca(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
-For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
-
 \item{dat}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
 specifying columns used to compute PCA.}
 
@@ -72,9 +70,6 @@ with text placed before the output to put the output into context. For example a
 
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
-
-\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
-To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,

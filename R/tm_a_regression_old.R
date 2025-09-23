@@ -1,229 +1,33 @@
-#' `teal` module: Scatterplot and regression analysis
-#'
-#' Module for visualizing regression analysis, including scatterplots and
-#' various regression diagnostics plots.
-#' It allows users to explore the relationship between a set of regressors and a response variable,
-#' visualize residuals, and identify outliers.
-#'
-#' @note For more examples, please see the vignette "Using regression plots" via
-#' `vignette("using-regression-plots", package = "teal.modules.general")`.
-#'
-#' @inheritParams teal::module
-#' @inheritParams shared_params
-#' @param regressor (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Regressor variables from an incoming dataset with filtering and selecting.
-#' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Response variables from an incoming dataset with filtering and selecting.
-#' @param default_outlier_label (`character`) optional, default column selected to label outliers.
-#' @param default_plot_type (`numeric`) optional, defaults to "Response vs Regressor".
-#' 1. Response vs Regressor
-#' 2. Residuals vs Fitted
-#' 3. Normal Q-Q
-#' 4. Scale-Location
-#' 5. Cook's distance
-#' 6. Residuals vs Leverage
-#' 7. Cook's dist vs Leverage
-#' @param label_segment_threshold (`numeric(1)` or `numeric(3)`)
-#' Minimum distance between label and point on the plot that triggers the creation of
-#' a line segment between the two.
-#' This may happen when the label cannot be placed next to the point as it overlaps another
-#' label or point.
-#' The value is used as the `min.segment.length` parameter to the [ggrepel::geom_text_repel()] function.
-#'
-#' It can take the following forms:
-#' - `numeric(1)`: Fixed value used for the minimum distance and the slider is not presented in the UI.
-#' - `numeric(3)`: A slider is presented in the UI (under "Plot settings") to adjust the minimum distance dynamically.
-#'
-#'     It takes the form of `c(value, min, max)` and it is passed to the `value_min_max`
-#'     argument in `teal.widgets::optionalSliderInputValMinMax`.
-#'
-# nolint start: line_length.
-#' @param ggplot2_args `r roxygen_ggplot2_args_param("Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage")`
-# nolint end: line_length.
-#'
-#' @inherit shared_params return
-#'
-#' @section Decorating Module:
-#'
-#' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot` (`ggplot`)
-#'
-#' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
-#' The name of this list corresponds to the name of the output to which the decorator is applied.
-#' See code snippet below:
-#'
-#' ```
-#' tm_a_regression(
-#'    ..., # arguments for module
-#'    decorators = list(
-#'      plot = teal_transform_module(...) # applied to the `plot` output
-#'    )
-#' )
-#' ```
-#'
-#' For additional details and examples of decorators, refer to the vignette
-#' `vignette("decorate-module-output", package = "teal.modules.general")`.
-#'
-#' To learn more please refer to the vignette
-#' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
-#'
-#' @inheritSection teal::example_module Reporting
-#'
-#' @examplesShinylive
-#' library(teal.modules.general)
-#' interactive <- function() TRUE
-#' {{ next_example }}
-#' @examples
-#'
-#' # general data example
-#' data <- teal_data()
-#' data <- within(data, {
-#'   require(nestcolor)
-#'   CO2 <- CO2
-#' })
-#'
-#' app <- init(
-#'   data = data,
-#'   modules = modules(
-#'     tm_a_regression(
-#'       label = "Regression",
-#'       response = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = "uptake",
-#'           selected = "uptake",
-#'           multiple = FALSE,
-#'           fixed = TRUE
-#'         )
-#'       ),
-#'       regressor = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
-#'           selected = "conc",
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' if (interactive()) {
-#'   shinyApp(app$ui, app$server)
-#' }
-#'
-#' @examplesShinylive
-#' library(teal.modules.general)
-#' interactive <- function() TRUE
-#' {{ next_example }}
-#' @examples
-#' # CDISC data example
-#' data <- teal_data()
-#' data <- within(data, {
-#'   require(nestcolor)
-#'   ADSL <- teal.data::rADSL
-#' })
-#' join_keys(data) <- default_cdisc_join_keys[names(data)]
-#'
-#' app <- init(
-#'   data = data,
-#'   modules = modules(
-#'     tm_a_regression(
-#'       label = "Regression",
-#'       response = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = "BMRKR1",
-#'           selected = "BMRKR1",
-#'           multiple = FALSE,
-#'           fixed = TRUE
-#'         )
-#'       ),
-#'       regressor = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
-#'           selected = "AGE",
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
-#'       )
-#'     )
-#'   )
-#' )
-#' if (interactive()) {
-#'   shinyApp(app$ui, app$server)
-#' }
-#'
 #' @export
-#'
-tm_a_regression <- function(label = "Regression Analysis",
-                            regressor = picks(
-                              datasets(),
-                              variables(choices = tidyselect::where(is.numeric), selected = -1, multiple = TRUE)
-                            ),
-                            response = picks(
-                              datasets(),
-                              variables(choices = tidyselect::where(is.numeric))
-                            ),
-                            plot_height = c(600, 200, 2000),
-                            plot_width = NULL,
-                            alpha = c(1, 0, 1),
-                            size = c(2, 1, 8),
-                            ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
-                            ggplot2_args = teal.widgets::ggplot2_args(),
-                            pre_output = NULL,
-                            post_output = NULL,
-                            default_plot_type = 1,
-                            default_outlier_label = "USUBJID",
-                            label_segment_threshold = c(0.5, 0, 10),
-                            transformators = list(),
-                            decorators = list()) {
-  UseMethod("tm_a_regression", regressor)
-}
-
-#' @export
-tm_a_regression.picks <- function(label = "Regression Analysis",
-                                  regressor = picks(
-                                    datasets(),
-                                    variables(
-                                      choices = tidyselect::where(is.numeric),
-                                      selected = tidyselect::last_col(),
-                                      multiple = TRUE
-                                    )
-                                  ),
-                                  response = picks(
-                                    datasets(),
-                                    variables(choices = tidyselect::where(is.numeric))
-                                  ),
-                                  plot_height = c(600, 200, 2000),
-                                  plot_width = NULL,
-                                  alpha = c(1, 0, 1),
-                                  size = c(2, 1, 8),
-                                  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
-                                  ggplot2_args = teal.widgets::ggplot2_args(),
-                                  pre_output = NULL,
-                                  post_output = NULL,
-                                  default_plot_type = 1,
-                                  default_outlier_label = "USUBJID",
-                                  label_segment_threshold = c(0.5, 0, 10),
-                                  transformators = list(),
-                                  decorators = list()) {
+tm_a_regression.default <- function(label = "Regression Analysis",
+                                    regressor,
+                                    response,
+                                    plot_height = c(600, 200, 2000),
+                                    plot_width = NULL,
+                                    alpha = c(1, 0, 1),
+                                    size = c(2, 1, 8),
+                                    ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                    ggplot2_args = teal.widgets::ggplot2_args(),
+                                    pre_output = NULL,
+                                    post_output = NULL,
+                                    default_plot_type = 1,
+                                    default_outlier_label = "USUBJID",
+                                    label_segment_threshold = c(0.5, 0, 10),
+                                    transformators = list(),
+                                    decorators = list()) {
   message("Initializing tm_a_regression")
+
+  # Normalize the parameters
+  if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
+  if (inherits(response, "data_extract_spec")) response <- list(response)
+  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
 
   # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_class(regressor, "picks")
+  checkmate::assert_list(regressor, types = "data_extract_spec")
 
-  checkmate::assert_class(response, "picks")
-  if (isTRUE(attr(response$variables, "multiple"))) {
-    warning("response accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
-    attr(response$variables, "multiple") <- FALSE
-  }
+  checkmate::assert_list(response, types = "data_extract_spec")
+  assert_single_selection(response)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -253,7 +57,6 @@ tm_a_regression.picks <- function(label = "Regression Analysis",
 
   ggtheme <- match.arg(ggtheme)
 
-  if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
   plot_choices <- c(
     "Response vs Regressor", "Residuals vs Fitted", "Normal Q-Q", "Scale-Location",
     "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage"
@@ -283,37 +86,39 @@ tm_a_regression.picks <- function(label = "Regression Analysis",
 
   # Make UI args
   args <- as.list(environment())
+  args[["plot_choices"]] <- plot_choices
+  data_extract_list <- list(
+    regressor = regressor,
+    response = response
+  )
 
   ans <- module(
     label = label,
-    server = srv_a_regression.picks,
-    ui = ui_a_regression.picks,
-    ui_args = args[names(args) %in% names(formals(ui_a_regression.picks))],
-    server_args = args[names(args) %in% names(formals(srv_a_regression.picks))], ,
+    server = srv_a_regression,
+    ui = ui_a_regression,
+    ui_args = args,
+    server_args = c(
+      data_extract_list,
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        default_outlier_label = default_outlier_label,
+        ggplot2_args = ggplot2_args,
+        decorators = decorators
+      )
+    ),
     transformators = transformators,
-    datanames = {
-      datanames <- datanames(list(regressor, response))
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- FALSE
   ans
 }
 
 # UI function for the regression module
-ui_a_regression.picks <- function(id,
-                                  response,
-                                  regressor,
-                                  plot_choices,
-                                  default_plot_type,
-                                  alpha,
-                                  size,
-                                  label_segment_threshold,
-                                  ggtheme,
-                                  pre_output,
-                                  post_output,
-                                  decorators) {
+ui_a_regression <- function(id, ...) {
   ns <- NS(id)
+  args <- list(...)
+  is_single_dataset_value <- teal.transform::is_single_dataset(args$regressor, args$response)
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(tags$div(
       teal.widgets::plot_with_settings_ui(id = ns("myplot")),
@@ -321,19 +126,24 @@ ui_a_regression.picks <- function(id,
     )),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"), tags$br(),
-      teal::teal_nav_item(
-        label = tags$strong("Response variable"),
-        teal.transform::module_input_ui(id = ns("response"), spec = response)
+      teal.transform::datanames_input(args[c("response", "regressor")]),
+      teal.transform::data_extract_ui(
+        id = ns("response"),
+        label = "Response variable",
+        data_extract_spec = args$response,
+        is_single_dataset = is_single_dataset_value
       ),
-      teal::teal_nav_item(
-        label = tags$strong("Regressor variables"),
-        teal.transform::module_input_ui(id = ns("regressor"), spec = regressor)
+      teal.transform::data_extract_ui(
+        id = ns("regressor"),
+        label = "Regressor variables",
+        data_extract_spec = args$regressor,
+        is_single_dataset = is_single_dataset_value
       ),
       radioButtons(
         ns("plot_type"),
         label = "Plot type:",
-        choices = plot_choices,
-        selected = plot_choices[default_plot_type]
+        choices = args$plot_choices,
+        selected = args$plot_choices[args$default_plot_type]
       ),
       checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
       conditionalPanel(
@@ -362,13 +172,13 @@ ui_a_regression.picks <- function(id,
           label = "Outlier label"
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
           title = "Plot settings",
-          teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", alpha, ticks = FALSE),
-          teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", size, ticks = FALSE),
+          teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
+          teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE),
           teal.widgets::optionalSliderInputValMinMax(
             inputId = ns("label_min_segment"),
             label = tags$div(
@@ -386,7 +196,7 @@ ui_a_regression.picks <- function(id,
                 )
               )
             ),
-            value_min_max = label_segment_threshold,
+            value_min_max = args$label_segment_threshold,
             # Extra parameters to sliderInput
             ticks = FALSE,
             step = .1,
@@ -396,7 +206,7 @@ ui_a_regression.picks <- function(id,
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
             choices = ggplot_themes,
-            selected = ggtheme,
+            selected = args$ggtheme,
             multiple = FALSE
           )
         )
@@ -405,71 +215,112 @@ ui_a_regression.picks <- function(id,
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
-    pre_output = pre_output,
-    post_output = post_output
+    pre_output = args$pre_output,
+    post_output = args$post_output
   )
 }
 
 # Server function for the regression module
-srv_a_regression.picks <- function(id,
-                                   data,
-                                   response,
-                                   regressor,
-                                   plot_height,
-                                   plot_width,
-                                   ggplot2_args,
-                                   default_outlier_label,
-                                   decorators) {
+srv_a_regression <- function(id,
+                             data,
+                             response,
+                             regressor,
+                             plot_height,
+                             plot_width,
+                             ggplot2_args,
+                             default_outlier_label,
+                             decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
+
     ns <- session$ns
 
-    selectors <- teal.transform::module_input_srv(
-      spec = list(response = response, regressor = regressor),
-      data = data
+    rule_rvr1 <- function(value) {
+      if (isTRUE(input$plot_type == "Response vs Regressor")) {
+        if (length(value) > 1L) {
+          "This plot can only have one regressor."
+        }
+      }
+    }
+    rule_rvr2 <- function(other) {
+      function(value) {
+        if (isTRUE(input$plot_type == "Response vs Regressor")) {
+          otherval <- selector_list()[[other]]()$select
+          if (isTRUE(value == otherval)) {
+            "Response and Regressor must be different."
+          }
+        }
+      }
+    }
+
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = list(response = response, regressor = regressor),
+      datasets = data,
+      select_validation_rule = list(
+        regressor = shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("At least one regressor should be selected."),
+          rule_rvr1,
+          rule_rvr2("response")
+        ),
+        response = shinyvalidate::compose_rules(
+          shinyvalidate::sv_required("At least one response should be selected."),
+          rule_rvr2("regressor")
+        )
+      )
     )
 
+    iv_r <- reactive({
+      iv <- shinyvalidate::InputValidator$new()
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
 
-    rule_selectors <- function(value) {
-      condition <- setequal(selectors$response()$variables$selected, selectors$regressor()$variables$selected)
-      if (condition) "Response and Regressor must be different."
-    }
-    iv_selector <- shinyvalidate::InputValidator$new()
-    iv_selector$add_rule("response", rule_selectors)
-    iv_selector$add_rule("regressor", rule_selectors)
+    iv_out <- shinyvalidate::InputValidator$new()
+    iv_out$condition(~ isTRUE(input$show_outlier))
+    iv_out$add_rule("label_var", shinyvalidate::sv_required("Please provide an `Outlier label` variable"))
+    iv_out$enable()
 
-    anl_merged_q <- reactive({
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      selector_list = selector_list,
+      datasets = data
+    )
+
+    regression_var <- reactive({
+      teal::validate_inputs(iv_r())
+
+      list(
+        response = as.vector(anl_merged_input()$columns_source$response),
+        regressor = as.vector(anl_merged_input()$columns_source$regressor)
+      )
+    })
+
+    qenv <- reactive({
       obj <- data()
-      teal::validate_inputs(iv_selector)
       teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Linear Regression Plot"),
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') %>% # nolint: quotes
-        teal.transform::qenv_merge_selectors(selectors = selectors, output_name = "anl")
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint: quotes
     })
 
-    regression_var <- reactive({
-      list(
-        response = map_merged(selectors)$response$variables,
-        regressor = map_merged(selectors)$regressor$variables
-      )
+    anl_merged_q <- reactive({
+      req(anl_merged_input())
+      qenv() %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
     # sets qenv object and populates it with data merge call and fit expression
     fit_r <- reactive({
-      req(anl_merged_q())
-      anl <- anl_merged_q()[["anl"]]
-      teal::validate_has_data(anl, 10)
+      ANL <- anl_merged_q()[["ANL"]]
+      teal::validate_has_data(ANL, 10)
 
-      validate(need(is.numeric(anl[regression_var()$response][[1]]), "Response variable should be numeric."))
+      validate(need(is.numeric(ANL[regression_var()$response][[1]]), "Response variable should be numeric."))
 
       teal::validate_has_data(
-        anl[, c(regression_var()$response, regression_var()$regressor)], 10,
+        ANL[, c(regression_var()$response, regression_var()$regressor)], 10,
         complete = TRUE, allow_inf = FALSE
       )
 
@@ -485,7 +336,7 @@ srv_a_regression.picks <- function(id,
       )
 
       if (input$show_outlier) {
-        opts <- teal.transform::variable_choices(anl)
+        opts <- teal.transform::variable_choices(ANL)
         selected <- if (!is.null(isolate(input$label_var)) && isolate(input$label_var) %in% as.character(opts)) {
           isolate(input$label_var)
         } else {
@@ -502,7 +353,7 @@ srv_a_regression.picks <- function(id,
           selected = restoreInput(ns("label_var"), selected)
         )
 
-        data <- ggplot2::fortify(stats::lm(form, data = anl))
+        data <- ggplot2::fortify(stats::lm(form, data = ANL))
         cooksd <- data$.cooksd[!is.nan(data$.cooksd)]
         max_outlier <- max(ceiling(max(cooksd) / mean(cooksd)), 2)
         cur_outlier <- isolate(input$outlier)
@@ -516,10 +367,10 @@ srv_a_regression.picks <- function(id,
       }
 
       anl_fit <- anl_merged_q() %>%
-        teal.code::eval_code(substitute(fit <- stats::lm(form, data = anl), env = list(form = form))) %>%
+        teal.code::eval_code(substitute(fit <- stats::lm(form, data = ANL), env = list(form = form))) %>%
         teal.code::eval_code(quote({
           for (regressor in names(fit$contrasts)) {
-            alts <- paste0(levels(anl[[regressor]]), collapse = "|")
+            alts <- paste0(levels(ANL[[regressor]]), collapse = "|")
             names(fit$coefficients) <- gsub(
               paste0("^(", regressor, ")(", alts, ")$"), paste0("\\1", ": ", "\\2"), names(fit$coefficients)
             )
@@ -533,17 +384,13 @@ srv_a_regression.picks <- function(id,
       anl_fit
     })
 
-
-    iv_label <- shinyvalidate::InputValidator$new()
-    iv_label$condition(~ isTRUE(input$show_outlier))
-    iv_label$add_rule("label_var", shinyvalidate::sv_required("Please provide an `Outlier label` variable"))
-    iv_label$enable()
     label_col <- reactive({
-      teal::validate_inputs(iv_label)
+      teal::validate_inputs(iv_out)
+
       substitute(
         expr = dplyr::if_else(
           data$.cooksd > outliers * mean(data$.cooksd, na.rm = TRUE),
-          as.character(stats::na.omit(anl)[[label_var]]),
+          as.character(stats::na.omit(ANL)[[label_var]]),
           ""
         ) %>%
           dplyr::if_else(is.na(.), "cooksd == NaN", .),
@@ -591,21 +438,13 @@ srv_a_regression.picks <- function(id,
       )
     })
 
-
-    output_0_rule <- function(value) {
-      if (isTRUE(input$plot_type == "Response vs Regressor") && length(selectors$regressor()$variables$selected) > 1) {
-        "This plot can only have one regressor."
-      }
-    }
-    iv_output_0 <- shinyvalidate::InputValidator$new()
-    iv_output_0$add_rule("plot_type", output_0_rule)
-    iv_output_0$enable()
     output_plot_0 <- reactive({
       fit <- fit_r()[["fit"]]
-      anl <- anl_merged_q()[["anl"]]
-      validate(need(ncol(fit$model) == 2, "This plot can only have one regressor."))
+      ANL <- anl_merged_q()[["ANL"]]
 
-      if (!is.factor(anl[[regression_var()$regressor]])) {
+      stopifnot(ncol(fit$model) == 2)
+
+      if (!is.factor(ANL[[regression_var()$regressor]])) {
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
@@ -645,8 +484,8 @@ srv_a_regression.picks <- function(id,
           module_plot = teal.widgets::ggplot2_args(
             labs = list(
               title = "Response vs Regressor",
-              x = varname_w_label(regression_var()$regressor, anl),
-              y = varname_w_label(regression_var()$response, anl)
+              x = varname_w_label(regression_var()$regressor, ANL),
+              y = varname_w_label(regression_var()$response, ANL)
             ),
             theme = list()
           )
@@ -984,16 +823,15 @@ srv_a_regression.picks <- function(id,
     })
 
     output_q <- reactive({
-      # teal::validate_inputs(iv_r())
-
+      teal::validate_inputs(iv_r())
       switch(input$plot_type,
-        "Response vs Regressor" = req(output_plot_0()),
-        "Residuals vs Fitted" = req(output_plot_1()),
-        "Normal Q-Q" = req(output_plot_2()),
-        "Scale-Location" = req(output_plot_3()),
-        "Cook's distance" = req(output_plot_4()),
-        "Residuals vs Leverage" = req(output_plot_5()),
-        "Cook's dist vs Leverage" = req(output_plot_6())
+        "Response vs Regressor" = output_plot_0(),
+        "Residuals vs Fitted" = output_plot_1(),
+        "Normal Q-Q" = output_plot_2(),
+        "Scale-Location" = output_plot_3(),
+        "Cook's distance" = output_plot_4(),
+        "Residuals vs Leverage" = output_plot_5(),
+        "Cook's dist vs Leverage" = output_plot_6()
       )
     })
 
@@ -1024,8 +862,8 @@ srv_a_regression.picks <- function(id,
     decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_q)
 
     output$text <- renderText({
-      # req(iv_r()$is_valid())
-      # req(iv_out$is_valid())
+      req(iv_r()$is_valid())
+      req(iv_out$is_valid())
       paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
     })
 
