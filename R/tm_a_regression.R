@@ -602,15 +602,6 @@ srv_a_regression.picks <- function(id,
     output_plot_0 <- reactive({
       fit <- fit_r()[["fit"]]
       anl <- anl_merged_q()[["anl"]]
-      validate_input(
-        inputId = c("plot_type", "regressor-variables-selected"),
-        condition = !(
-          identical(input$plot_type, "Response vs Regressor") && length(selectors$regressor()$variables$selected) > 1
-        ),
-        message = "This plot works only with single Regressor variable"
-      )
-
-      validate(need(ncol(fit$model) == 2, "This plot can only have one regressor."))
 
       if (!is.factor(anl[[regression_var()$regressor]])) {
         shinyjs::show("size")
@@ -991,6 +982,15 @@ srv_a_regression.picks <- function(id,
     })
 
     output_q <- reactive({
+      req(input$plot_type)
+      validate_input(
+        inputId = c("plot_type", "regressor-variables-selected"),
+        condition = !(
+          identical(input$plot_type, "Response vs Regressor") && length(selectors$regressor()$variables$selected) > 1
+        ),
+        message = "This plot works only with single Regressor variable"
+      )
+
       switch(input$plot_type,
         "Response vs Regressor" = req(output_plot_0()),
         "Residuals vs Fitted" = req(output_plot_1()),
