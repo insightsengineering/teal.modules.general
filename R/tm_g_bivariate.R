@@ -239,7 +239,8 @@ tm_g_bivariate.picks <- function(label = "Bivariate Plots",
                                      choices = tidyselect::where(is.numeric) |
                                        teal.transform::is_categorical(min.len = 2, max.len = 10),
                                      selected = 1
-                                   )
+                                   ),
+                                   values(selected = tidyselect::everything(), multiple = TRUE)
                                  ),
                                  y = picks(
                                    datasets(),
@@ -247,7 +248,8 @@ tm_g_bivariate.picks <- function(label = "Bivariate Plots",
                                      choices = tidyselect::where(is.numeric) |
                                        teal.transform::is_categorical(min.len = 2, max.len = 10),
                                      selected = 2
-                                   )
+                                   ),
+                                   values(selected = tidyselect::everything(), multiple = TRUE)
                                  ),
                                  row_facet = NULL,
                                  col_facet = NULL,
@@ -523,14 +525,15 @@ srv_g_bivariate.picks <- function(id,
         condition = length(selectors$x()$variables$selected) && length(selectors$y()$variables$selected),
         message = "Please select at least one of x-variable or y-variable"
       )
-
-      validate_input(
-        inputId = c("row_facet-variables-selected", "col_facet-variables-selected"),
-        condition = length(selectors$row_facet()$variables$selected) &&
-          length(selectors$col_facet()$variables$selected) &&
-          !identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected),
-        message = "Row and column facetting variables must be different."
-      )
+      if (!is.null(col_facet) && !is.null(row_facet)) {
+        validate_input(
+          inputId = c("row_facet-variables-selected", "col_facet-variables-selected"),
+          condition = length(selectors$row_facet()$variables$selected) &&
+            length(selectors$col_facet()$variables$selected) &&
+            !identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected),
+          message = "Row and column facetting variables must be different."
+        )
+      }
       obj <- req(data())
       teal.reporter::teal_card(obj) <- c(
         teal.reporter::teal_card("# Bivariate Plot"),

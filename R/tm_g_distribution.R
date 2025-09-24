@@ -156,7 +156,11 @@ tm_g_distribution <- function(label = "Distribution Module",
 
 #' @export
 tm_g_distribution.picks <- function(label = "Distribution Module",
-                                    dist_var = picks(datasets(), variables(where(is.numeric))),
+                                    dist_var = picks(
+                                      datasets(),
+                                      variables(where(is.numeric)),
+                                      values(selected = tidyselect::everything(), multiple = TRUE)
+                                    ),
                                     strata_var = NULL,
                                     group_var = NULL,
                                     freq = FALSE,

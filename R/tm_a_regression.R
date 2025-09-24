@@ -168,7 +168,8 @@ tm_a_regression <- function(label = "Regression Analysis",
                             ),
                             response = picks(
                               datasets(),
-                              variables(choices = tidyselect::where(is.numeric))
+                              variables(choices = tidyselect::where(is.numeric)),
+                              values(selected = tidyselect::everything(), multiple = TRUE)
                             ),
                             plot_height = c(600, 200, 2000),
                             plot_width = NULL,

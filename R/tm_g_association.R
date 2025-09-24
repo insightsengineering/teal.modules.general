@@ -152,7 +152,7 @@ tm_g_association <- function(label = "Association",
                                    teal.transform::is_categorical(min.len = 2, max.len = 10),
                                  selected = 1
                                ),
-                               values()
+                               values(selected = tidyselect::everything(), multiple = TRUE)
                              ),
                              vars = picks(
                                datasets(),
