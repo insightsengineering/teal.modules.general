@@ -195,8 +195,7 @@ tm_g_association.picks <- function(label = "Association",
                                          teal.transform::is_categorical(min.len = 2, max.len = 10),
                                        selected = 2,
                                        multiple = TRUE
-                                     ),
-                                     values()
+                                     )
                                    ),
                                    show_association = TRUE,
                                    plot_height = c(600, 400, 5000),
@@ -338,34 +337,23 @@ srv_g_association.picks <- function(id,
 
     selectors <- teal.transform::module_input_srv(spec = list(ref = ref, vars = vars), data = data)
 
-    iv_r <- reactive({
-      iv <- shinyvalidate::InputValidator$new()
-      iv$add_rule(
-        "ref-variables-selected",
-        shinyvalidate::compose_rules(
-          shinyvalidate::sv_required("A reference variable needs to be selected."),
-          ~ if (any(selectors$ref()$variables$selected %in% selectors$vars()$variables$selected)) {
-            "Associated variables and reference variable cannot overlap"
-          }
-        )
-      )
-      iv$add_rule(
-        "vars-variables-selected",
-        shinyvalidate::compose_rules(
-          shinyvalidate::sv_required("An associated variable needs to be selected."),
-          ~ if (any(selectors$vars()$variables$selected %in% selectors$ref()$variables$selected)) {
-            "Associated variables and reference variable cannot overlap"
-          }
-        )
-      )
-      iv$enable()
-    })
-
-
-
     anl_merged_q <- reactive({
-      teal::validate_inputs(iv_r())
       obj <- req(data())
+      validate_input(
+        inputId = "ref-variables-selected",
+        condition = !is.null(selectors$ref()$variables$selected),
+        message = "A reference variable needs to be selected."
+      )
+      validate_input(
+        inputId = "vars-variables-selected",
+        condition = !is.null(selectors$vars()$variables$selected),
+        message = "A associated variables need to be selected."
+      )
+      validate_input(
+        inputId = c("ref-variables-selected", "vars-variables-selected"),
+        condition = !any(selectors$ref()$variables$selected %in% selectors$vars()$variables$selected),
+        message = "Associated variables and reference variable cannot overlap"
+      )
       teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Association Plot"),

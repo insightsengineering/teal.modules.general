@@ -431,18 +431,24 @@ srv_a_regression.picks <- function(id,
       data = data
     )
 
-
-    rule_selectors <- function(value) {
-      condition <- setequal(selectors$response()$variables$selected, selectors$regressor()$variables$selected)
-      if (condition) "Response and Regressor must be different."
-    }
-    iv_selector <- shinyvalidate::InputValidator$new()
-    iv_selector$add_rule("response", rule_selectors)
-    iv_selector$add_rule("regressor", rule_selectors)
-
     anl_merged_q <- reactive({
       obj <- data()
-      teal::validate_inputs(iv_selector)
+      validate_input(
+        inputId = "response-variables-selected",
+        condition = !is.null(selectors$response()$variables$selected),
+        message = "A regressor variable needs to be selected."
+      )
+      validate_input(
+        inputId = "regressor-variables-selected",
+        condition = !is.null(selectors$regressor()$variables$selected),
+        message = "A response variables need to be selected."
+      )
+      validate_input(
+        inputId = c("ref-variables-selected", "vars-variables-selected"),
+        condition = !any(selectors$regressor()$variables$selected %in% selectors$response()$variables$selected),
+        message = "Response and Regressor must be different."
+      )
+
       teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Linear Regression Plot"),
@@ -534,12 +540,14 @@ srv_a_regression.picks <- function(id,
     })
 
 
-    iv_label <- shinyvalidate::InputValidator$new()
-    iv_label$condition(~ isTRUE(input$show_outlier))
-    iv_label$add_rule("label_var", shinyvalidate::sv_required("Please provide an `Outlier label` variable"))
-    iv_label$enable()
+
     label_col <- reactive({
-      teal::validate_inputs(iv_label)
+      validate_input(
+        inputId = c("show_outlier", "label_var"),
+        condition = isTRUE(input$show_outlier) && length(input$label_var),
+        message = "Please provide an `Outlier label` variable"
+      )
+
       substitute(
         expr = dplyr::if_else(
           data$.cooksd > outliers * mean(data$.cooksd, na.rm = TRUE),
@@ -591,18 +599,17 @@ srv_a_regression.picks <- function(id,
       )
     })
 
-
-    output_0_rule <- function(value) {
-      if (isTRUE(input$plot_type == "Response vs Regressor") && length(selectors$regressor()$variables$selected) > 1) {
-        "This plot can only have one regressor."
-      }
-    }
-    iv_output_0 <- shinyvalidate::InputValidator$new()
-    iv_output_0$add_rule("plot_type", output_0_rule)
-    iv_output_0$enable()
     output_plot_0 <- reactive({
       fit <- fit_r()[["fit"]]
       anl <- anl_merged_q()[["anl"]]
+      validate_input(
+        inputId = c("plot_type", "regressor-variables-selected"),
+        condition = !(
+          identical(input$plot_type, "Response vs Regressor") && length(selectors$regressor()$variables$selected) > 1
+        ),
+        message = "This plot works only with single Regressor variable"
+      )
+
       validate(need(ncol(fit$model) == 2, "This plot can only have one regressor."))
 
       if (!is.factor(anl[[regression_var()$regressor]])) {
@@ -984,8 +991,6 @@ srv_a_regression.picks <- function(id,
     })
 
     output_q <- reactive({
-      # teal::validate_inputs(iv_r())
-
       switch(input$plot_type,
         "Response vs Regressor" = req(output_plot_0()),
         "Residuals vs Fitted" = req(output_plot_1()),
@@ -1024,8 +1029,6 @@ srv_a_regression.picks <- function(id,
     decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_q)
 
     output$text <- renderText({
-      # req(iv_r()$is_valid())
-      # req(iv_out$is_valid())
       paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
     })
 

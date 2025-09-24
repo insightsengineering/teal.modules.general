@@ -270,13 +270,6 @@ tm_g_bivariate.picks <- function(label = "Bivariate Plots",
                                  transformators = list(),
                                  decorators = list()) {
   message("Initializing tm_g_bivariate")
-  x <- des_to_picks(x)
-  y <- des_to_picks(y)
-  row_facet <- des_to_picks(row_facet)
-  col_facet <- des_to_picks(col_facet)
-  color <- des_to_picks(color)
-  fill <- des_to_picks(fill)
-  size <- des_to_picks(size)
 
   # Start of assertions
   checkmate::assert_class(x, "picks")
@@ -524,57 +517,20 @@ srv_g_bivariate.picks <- function(id,
       data = data
     )
 
-    iv <- shinyvalidate::InputValidator$new()
-    iv$add_rule(
-      "x-variables-selected",
-      shinyvalidate::compose_rules(
-        ~ if (!length(selectors$x()$variables$selected) && !length(selectors$y()$variables$selected)) {
-          "Please select at least one of x-variable or y-variable"
-        }
-      )
-    )
-    iv$add_rule(
-      "y-variables-selected",
-      shinyvalidate::compose_rules(
-        ~ if (!length(selectors$x()$variables$selected) && !length(selectors$y()$variables$selected)) {
-          "Please select at least one of x-variable or y-variable"
-        }
-      )
-    )
-    iv$add_rule(
-      "row_facet-variables-selected",
-      shinyvalidate::compose_rules(
-        shinyvalidate::sv_optional(),
-        ~ if (
-          length(selectors$row_facet()$variables$selected) &&
-            identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected)
-        ) {
-          "Row and column facetting variables must be different."
-        }
-      )
-    )
-    iv$add_rule(
-      "col_facet-variables-selected",
-      shinyvalidate::compose_rules(
-        shinyvalidate::sv_optional(),
-        ~ if (
-          length(selectors$col_facet()$variables$selected) &&
-            identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected)
-        ) {
-          "Row and column facetting variables must be different."
-        }
-      )
-    )
-
-    iv$enable()
-
     anl_merged_q <- reactive({
-      teal::validate_inputs(iv)
-      # todo: validation mechanism is wrong as $add_rule(inputId, rule) triggers on inputId and rule
-      #       it is problematic when using input->to->reactiveVal as reactiveVal is observed in teal
-      #       and shinyvalidate triggers on inputId. It creates a mismatch between module-reactivity
-      #       and how shinyvalidate detects/throws validation errors
-      #       Quickest solution is to have a shinyvalidate and validate(need()) with the same condition.
+      validate_input(
+        inputId = c("x-variables-selected", "y-variables-selected"),
+        condition = length(selectors$x()$variables$selected) && length(selectors$y()$variables$selected),
+        message = "Please select at least one of x-variable or y-variable"
+      )
+
+      validate_input(
+        inputId = c("row_facet-variables-selected", "col_facet-variables-selected"),
+        condition = length(selectors$row_facet()$variables$selected) &&
+          length(selectors$col_facet()$variables$selected) &&
+          !identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected),
+        message = "Row and column facetting variables must be different."
+      )
       obj <- req(data())
       teal.reporter::teal_card(obj) <- c(
         teal.reporter::teal_card("# Bivariate Plot"),

@@ -4,7 +4,12 @@
 \alias{validate_input}
 \title{Validates the variable browser inputs}
 \usage{
-validate_input(input, plot_var, data)
+validate_input(
+  inputId,
+  condition = function(x) TRUE,
+  message = "",
+  session = shiny::getDefaultReactiveDomain()
+)
 }
 \arguments{
 \item{input}{(\code{session$input}) the \code{shiny} session input}
