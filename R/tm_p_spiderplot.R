@@ -174,7 +174,7 @@ ui_p_spiderplot <- function(id, height) {
         label = "Value variable (y-axis):",
         choices = NULL, selected = NULL, multiple = FALSE
       ),
-      selectInput(ns("id_var"), label = "ID variable:", choices = NULL, selected = NULL, multiple = FALSE),
+      selectInput(ns("id_var_input"), label = "ID variable:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("color_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("filter_var"), label = "Filter by:", choices = NULL, selected = NULL, multiple = FALSE),
       selectInput(ns("filter_var_level"), label = "Select value:", choices = NULL, selected = NULL, multiple = FALSE),
@@ -210,7 +210,7 @@ srv_p_spiderplot <- function(id,
   moduleServer(id, function(input, output, session) {
     .update_cs_input(inputId = "value_var", data = reactive(data()[[dataname]]), cs = value_var)
     .update_cs_input(inputId = "time_var", data = reactive(data()[[dataname]]), cs = time_var)
-    .update_cs_input(inputId = "id_var", data = reactive(data()[[dataname]]), cs = id_var)
+    .update_cs_input(inputId = "id_var_input", data = reactive(data()[[dataname]]), cs = id_var)
     .update_cs_input(inputId = "color_var", data = reactive(data()[[dataname]]), cs = color_var)
     .update_cs_input(inputId = "filter_var", data = reactive(data()[[dataname]]), cs = filter_var)
 
@@ -244,7 +244,7 @@ srv_p_spiderplot <- function(id,
     plotly_q <- reactive({
       req(
         input$filter_var_level, input$time_var, input$value_var,
-        input$id_var, input$filter_var, input$color_var, color_inputs()
+        input$id_var_input, input$filter_var, input$color_var, color_inputs()
       )
 
       adjusted_symbols <- .shape_palette_discrete(
@@ -259,7 +259,7 @@ srv_p_spiderplot <- function(id,
             df = plot_dataname,
             time_var = input$time_var,
             value_var = input$value_var,
-            id_var = input$id_var,
+            id_var = input$id_var_input,
             filter_var = input$filter_var,
             selected_value = input$filter_var_level,
             color_var = input$color_var,
@@ -308,7 +308,7 @@ srv_p_spiderplot <- function(id,
 #' @param df (`character(1)`) Name of the data frame to plot
 #' @param time_var (`character(1)`) Name of the numeric column to be used as x-axis
 #' @param value_var (`character(1)`) Name of the numeric column to be used as y-axis
-#' @param subject_var (`character(1)`) Name of the factor or character column to be used as grouping variable
+#' @param id_var (`character(1)`) Name of the factor or character column to be used as grouping variable
 #' @param filter_var (`character(1)`) Name of the factor or character column to be used to filter the data
 #' @param selected_value (`character(1)`) Selected value for filtering
 #' @param color_var (`character(1)`) Name of the factor or character column to be used to differentiate colors and symbols
