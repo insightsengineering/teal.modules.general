@@ -16,9 +16,7 @@
 #' If `NULL`, default colors will be used.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
 #' If `NULL`, default tooltip is created showing group, x, y, and color variables.
-#' @param transformators (`list`) Named list of transformator functions.
 #' @param reference_lines (`list` or `NULL`) Reference lines specification for adding horizontal reference lines.
-#' @param activate_on_brushing (`logical(1)`) Whether to activate the plot only when brushing occurs in another plot.
 #'
 #' @inherit shared_params return
 #'
@@ -30,7 +28,8 @@
 #'       time_week = rep(c(0, 2, 4, 6, 8), 8),
 #'       measurement = rnorm(40, 20, 4) + rep(c(0, 1, 2, 3, 4), 8),
 #'       treatment = rep(c("Active", "Placebo"), each = 20),
-#'       baseline = rep(rnorm(8, 18, 2), each = 5)
+#'       baseline = rep(rnorm(8, 18, 2), each = 5),
+#'       center = rep(c("Site A", "Site B", "Site A", "Site B"), each = 10)
 #'     )
 #'
 #'     # Add labels
@@ -39,20 +38,43 @@
 #'     attr(df$measurement, "label") <- "Measurement Value"
 #'     attr(df$treatment, "label") <- "Treatment Group"
 #'     attr(df$baseline, "label") <- "Baseline Value"
+#'     attr(df$center, "label") <- "Study Center"
 #'   })
 #'
-#' # Basic line plot example
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_p_lineplot(
-#'       label = "Line Plot",
+#'       label = "Basic Line Plot",
+#'       plot_dataname = "df",
+#'       x_var = "time_week",
+#'       y_var = "measurement",
+#'       color_var = "treatment",
+#'       group_var = "subject_id"
+#'     )
+#'   )
+#' )
+#'
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_p_lineplot(
+#'       label = "Advanced Line Plot with All Features",
 #'       plot_dataname = "df",
 #'       x_var = "time_week",
 #'       y_var = "measurement",
 #'       color_var = "treatment",
 #'       group_var = "subject_id",
-#'       tooltip_vars = c("subject_id", "time_week")
+#'       colors = c("Active" = "#1f77b4", "Placebo" = "#ff7f0e"),
+#'       tooltip_vars = c("subject_id", "time_week", "measurement", "treatment", "center", "baseline"),
+#'       reference_lines = list(
+#'         baseline = list(label = "Baseline Mean", line_mode = "dash"),
+#'         measurement = list(label = "Measurement Value", line_mode = "solid")
+#'       )
 #'     )
 #'   )
 #' )
@@ -71,8 +93,7 @@ tm_p_lineplot <- function(label = "Line Plot",
                           colors = NULL,
                           tooltip_vars = NULL,
                           transformators = list(),
-                          reference_lines = NULL,
-                          activate_on_brushing = FALSE) {
+                          reference_lines = NULL) {
   module(
     label = label,
     ui = ui_p_lineplot,
@@ -86,8 +107,7 @@ tm_p_lineplot <- function(label = "Line Plot",
       colors = colors,
       group_var = group_var,
       tooltip_vars = tooltip_vars,
-      reference_lines = reference_lines,
-      activate_on_brushing = activate_on_brushing
+      reference_lines = reference_lines
     ),
     transformators = transformators
   )
@@ -112,13 +132,9 @@ srv_p_lineplot <- function(id,
                            group_var,
                            colors,
                            tooltip_vars = NULL,
-                           reference_lines,
-                           activate_on_brushing) {
+                           reference_lines) {
   moduleServer(id, function(input, output, session) {
     plotly_q <- reactive({
-      if (activate_on_brushing) {
-        req(attr(data(), "has_brushing"))
-      }
       data() |>
         within(
           code,
@@ -192,10 +208,10 @@ lineplotly <- function(df,
           tooltip = {
             if (is.null(tooltip_vars_sym)) {
               paste(
-                paste(group_var_label, ":", !!as.name(group_var_str)),
-                paste(x_var_label, ":", !!as.name(x_var_str)),
-                paste(y_var_label, ":", !!as.name(y_var_str)),
-                paste(color_var_label, ":", !!as.name(color_var_str)),
+                paste(group_var_label, ":", group_var_sym),
+                paste(x_var_label, ":", x_var_sym),
+                paste(y_var_label, ":", y_var_sym),
+                paste(color_var_label, ":", color_var_sym),
                 sep = "<br>"
               )
             } else {
@@ -203,10 +219,10 @@ lineplotly <- function(df,
               cols <- intersect(tooltip_vars_sym, names(cur_data))
               if (!length(cols)) {
                 paste(
-                  paste(group_var_label, ":", !!as.name(group_var_str)),
-                  paste(x_var_label, ":", !!as.name(x_var_str)),
-                  paste(y_var_label, ":", !!as.name(y_var_str)),
-                  paste(color_var_label, ":", !!as.name(color_var_str)),
+                  paste(group_var_label, ":", group_var_sym),
+                  paste(x_var_label, ":", x_var_sym),
+                  paste(y_var_label, ":", y_var_sym),
+                  paste(color_var_label, ":", color_var_sym),
                   sep = "<br>"
                 )
               } else {
@@ -278,18 +294,18 @@ lineplotly <- function(df,
       }
 
       segments_df <- df_sym %>%
-        dplyr::arrange(!!as.name(group_var_str), !!as.name(x_var_str)) %>%
-        dplyr::group_by(!!as.name(group_var_str)) %>%
+        dplyr::arrange(group_var_sym, x_var_sym) %>%
+        dplyr::group_by(group_var_sym) %>%
         dplyr::mutate(
-          xend = dplyr::lead(!!as.name(x_var_str)),
-          yend = dplyr::lead(!!as.name(y_var_str)),
-          color_var_seg = dplyr::lead(!!as.name(color_var_str))
+          xend = dplyr::lead(x_var_sym),
+          yend = dplyr::lead(y_var_sym),
+          color_var_seg = dplyr::lead(color_var_sym)
         ) %>%
         dplyr::filter(!is.na(xend))
 
       p <- plotly::plot_ly(
         data = segments_df,
-        source = source_sym,
+        source = source,
         height = 600L
       ) %>%
         plotly::add_segments(
@@ -298,7 +314,7 @@ lineplotly <- function(df,
           xend = ~xend,
           yend = ~yend,
           color = ~color_var_seg,
-          colors = colors_sym,
+          colors = colors,
           showlegend = FALSE
         ) %>%
         plotly::add_markers(
@@ -306,13 +322,13 @@ lineplotly <- function(df,
           x = ~x_var_sym,
           y = ~y_var_sym,
           color = ~color_var_sym,
-          colors = colors_sym,
+          colors = colors,
           text = ~tooltip,
           hoverinfo = "text"
         )
 
-      if (!is.null(reference_lines_sym)) {
-        ref_lines <- add_reference_lines(df_sym, reference_lines_sym)
+      if (!is.null(reference_lines)) {
+        ref_lines <- add_reference_lines(df_sym, reference_lines)
         p <- p %>%
           plotly::layout(
             shapes = ref_lines$shapes,
@@ -330,10 +346,10 @@ lineplotly <- function(df,
       y_var_str = y_var,
       color_var_str = color_var,
       group_var_str = group_var,
-      colors_sym = colors,
+      colors = colors,
       tooltip_vars_sym = tooltip_vars,
-      reference_lines_sym = reference_lines,
-      source_sym = source
+      reference_lines = reference_lines,
+      source = source
     )
   )
 }

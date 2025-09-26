@@ -37,7 +37,8 @@ If \code{NULL}, default colors will be used.}
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
 If \code{NULL}, default tooltip is created showing group, x, y, and color variables.}
 
-\item{transformators}{(\code{list}) Named list of transformator functions.}
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{show_widgets}{(\code{logical(1)}) Whether to show module widgets.}
 }
@@ -59,7 +60,9 @@ data <- teal_data() |>
       time_point = rep(c(0, 30, 60, 90), 10),
       response = rnorm(40, 15, 3) + rep(c(0, 2, 4, 6), 10),
       treatment = rep(c("Active", "Placebo"), each = 20),
-      age_group = rep(c("Young", "Old"), 20)
+      age_group = rep(c("Young", "Old"), 20),
+      baseline = rep(rnorm(10, 12, 2), each = 4),
+      center = rep(c("Site A", "Site B", "Site A", "Site B", "Site A"), each = 8)
     )
 
     # Add labels
@@ -67,20 +70,42 @@ data <- teal_data() |>
     attr(df$time_point, "label") <- "Time Point (days)"
     attr(df$response, "label") <- "Response Score"
     attr(df$treatment, "label") <- "Treatment Group"
+    attr(df$age_group, "label") <- "Age Group"
+    attr(df$baseline, "label") <- "Baseline Score"
+    attr(df$center, "label") <- "Study Center"
   })
 
-# Default tooltip example
 app <- init(
   data = data,
   modules = modules(
     tm_p_spaghetti(
-      label = "Spaghetti Plot",
+      label = "Basic Spaghetti Plot",
+      plot_dataname = "df",
+      group_var = "subject_id",
+      x_var = "time_point",
+      y_var = "response",
+      color_var = "treatment"
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_p_spaghetti(
+      label = "Advanced Spaghetti Plot with All Features",
       plot_dataname = "df",
       group_var = "subject_id",
       x_var = "time_point",
       y_var = "response",
       color_var = "treatment",
-      tooltip_vars = c("subject_id", "treatment")
+      point_colors = c("Active" = "#1f77b4", "Placebo" = "#ff7f0e"),
+      tooltip_vars = c("subject_id", "time_point", "response", "treatment", "age_group", "baseline", "center"),
+      show_widgets = TRUE
     )
   )
 )

@@ -7,14 +7,13 @@
 tm_p_scatterplot(
   label = "Scatter Plot",
   plot_dataname,
-  subject_var,
+  id_var,
   x_var,
   y_var,
   color_var,
   point_colors = character(0),
   tooltip_vars = NULL,
-  transformators = list(),
-  show_widgets = TRUE
+  transformators = list()
 )
 }
 \arguments{
@@ -23,7 +22,7 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
-\item{subject_var}{(\code{character(1)}) Name of the subject variable.}
+\item{id_var}{(\code{character(1)}) Name of the identifier variable for observations (used in tooltips).}
 
 \item{x_var}{(\code{character(1)}) Name of the variable to be used for x-axis.}
 
@@ -35,11 +34,10 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 If \code{NULL}, default colors will be used.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created showing subject, x, y, and color variables.}
+If \code{NULL}, default tooltip is created showing id, x, y, and color variables.}
 
-\item{transformators}{(\code{list}) Named list of transformator functions.}
-
-\item{show_widgets}{(\code{logical(1)}) Whether to show module widgets.}
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -48,7 +46,7 @@ Object of class \code{teal_module} to be used in \code{teal} applications.
 This module creates an interactive scatter plot visualization with customizable tooltips.
 Users can select points by brushing to filter the underlying data. The plot supports
 color coding by categorical variables and displays tooltips on hover that can show
-default variables (subject, x, y, color) or custom columns specified via \code{tooltip_vars}.
+default variables (id, x, y, color) or custom columns specified via \code{tooltip_vars}.
 }
 \examples{
 data <- teal_data() |>
@@ -58,26 +56,51 @@ data <- teal_data() |>
       age = sample(20:80, 50, replace = TRUE),
       response = rnorm(50, 15, 3),
       treatment = sample(c("Active", "Placebo"), 50, replace = TRUE),
-      gender = sample(c("M", "F"), 50, replace = TRUE)
+      gender = sample(c("M", "F"), 50, replace = TRUE),
+      baseline_score = rnorm(50, 12, 2),
+      center = sample(c("Site A", "Site B", "Site C"), 50, replace = TRUE)
     )
 
     # Add labels for better tooltips
+    attr(df$subject_id, "label") <- "Subject ID"
     attr(df$age, "label") <- "Age (years)"
     attr(df$response, "label") <- "Response Score"
     attr(df$treatment, "label") <- "Treatment Group"
+    attr(df$gender, "label") <- "Gender"
+    attr(df$baseline_score, "label") <- "Baseline Score"
+    attr(df$center, "label") <- "Study Center"
   })
 
 app <- init(
   data = data,
   modules = modules(
     tm_p_scatterplot(
-      label = "Scatter Plot with Custom Tooltip",
+      label = "Basic Scatter Plot",
       plot_dataname = "df",
-      subject_var = "subject_id",
+      id_var = "subject_id",
+      x_var = "age",
+      y_var = "response",
+      color_var = "treatment"
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_p_scatterplot(
+      label = "Advanced Scatter Plot with All Features",
+      plot_dataname = "df",
+      id_var = "subject_id",
       x_var = "age",
       y_var = "response",
       color_var = "treatment",
-      tooltip_vars = c("age", "gender")
+      point_colors = c("Active" = "#1f77b4", "Placebo" = "#ff7f0e"),
+      tooltip_vars = c("subject_id", "age", "response", "treatment", "gender", "baseline_score", "center")
     )
   )
 )

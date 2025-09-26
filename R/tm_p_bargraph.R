@@ -22,36 +22,70 @@
 #' data <- teal_data() |>
 #'   within({
 #'     df <- data.frame(
-#'       adverse_event = sample(c("Headache", "Nausea", "Fatigue", "Dizziness", "Rash"),
-#'         100,
-#'         replace = TRUE, prob = c(0.3, 0.25, 0.2, 0.15, 0.1)
+#'       adverse_event = sample(
+#'         c("Headache", "Nausea", "Fatigue", "Dizziness", "Rash", "Insomnia"),
+#'         150,
+#'         replace = TRUE,
+#'         prob = c(0.25, 0.2, 0.18, 0.15, 0.12, 0.1)
 #'       ),
-#'       severity = sample(c("Mild", "Moderate", "Severe"), 100,
+#'       severity = sample(
+#'         c("Mild", "Moderate", "Severe"),
+#'         150,
 #'         replace = TRUE,
 #'         prob = c(0.6, 0.3, 0.1)
 #'       ),
-#'       subject_id = sample(paste0("S", 1:30), 100, replace = TRUE),
-#'       treatment = sample(c("Active", "Placebo"), 100, replace = TRUE)
+#'       subject_id = sample(paste0("S", 1:40), 150, replace = TRUE),
+#'       treatment = sample(c("Active", "Placebo"), 150, replace = TRUE),
+#'       age_group = sample(c("Young", "Middle", "Old"), 150, replace = TRUE),
+#'       center = sample(c("Site A", "Site B", "Site C", "Site D"), 150, replace = TRUE),
+#'       system_organ_class = sample(
+#'         c("Nervous System", "Gastrointestinal", "General", "Skin"),
+#'         150,
+#'         replace = TRUE
+#'       )
 #'     )
 #'
-#'     # Add labels
 #'     attr(df$adverse_event, "label") <- "Adverse Event Type"
 #'     attr(df$severity, "label") <- "Severity Grade"
 #'     attr(df$subject_id, "label") <- "Subject ID"
 #'     attr(df$treatment, "label") <- "Treatment Group"
+#'     attr(df$age_group, "label") <- "Age Group"
+#'     attr(df$center, "label") <- "Study Center"
+#'     attr(df$system_organ_class, "label") <- "System Organ Class"
 #'   })
 #'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_p_bargraph(
-#'       label = "AE by Treatment",
+#'       label = "Basic Bar Graph",
 #'       plot_dataname = "df",
 #'       y_var = "adverse_event",
 #'       color_var = "treatment",
+#'       count_var = "subject_id"
+#'     )
+#'   )
+#' )
+#'
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_p_bargraph(
+#'       label = "Advanced Bar Graph with All Features",
+#'       plot_dataname = "df",
+#'       y_var = "adverse_event",
+#'       color_var = "severity",
 #'       count_var = "subject_id",
-#'       bar_colors = c("Active" = "#FF6B6B", "Placebo" = "#4ECDC4"),
-#'       tooltip_vars = c("adverse_event", "treatment")
+#'       bar_colors = c(
+#'         "Mild" = "#90EE90",
+#'         "Moderate" = "#FFD700",
+#'         "Severe" = "#FF6347"
+#'       ),
+#'       tooltip_vars = c("adverse_event", "severity", "treatment", "age_group", "center", "system_organ_class")
 #'     )
 #'   )
 #' )
@@ -66,8 +100,9 @@ tm_p_bargraph <- function(label = "Bar Plot",
                           y_var,
                           color_var,
                           count_var,
+                          bar_colors = NULL,
                           tooltip_vars = NULL,
-                          bar_colors = NULL) {
+                          transformators = list()) {
   module(
     label = label,
     ui = ui_p_bargraph,
@@ -80,7 +115,8 @@ tm_p_bargraph <- function(label = "Bar Plot",
       count_var = count_var,
       tooltip_vars = tooltip_vars,
       bar_colors = bar_colors
-    )
+    ),
+    transformators = transformators
   )
 }
 
@@ -129,34 +165,6 @@ srv_p_bargraph <- function(id,
         setup_trigger_tooltips(session$ns) |>
         plotly::event_register("plotly_selected")
     })
-    plotly_selected <- reactive(
-      plotly::event_data("plotly_selected", source = session$ns("bargraph"))
-    )
-
-    reactive({
-      if (is.null(plotly_selected())) {
-        plotly_q()
-      } else {
-        q <- plotly_q() |>
-          within(
-            {
-              selected_plot_data <- plot_data |>
-                dplyr::filter(customdata %in% plotly_selected_customdata)
-              df <- df |>
-                dplyr::filter(
-                  !!as.name(y_var_string) %in% selected_plot_data[[y_var_string]],
-                  !!as.name(color_var_string) %in% selected_plot_data[[color_var_string]]
-                )
-            },
-            df = str2lang(plot_dataname),
-            y_var_string = y_var,
-            color_var_string = color_var,
-            plotly_selected_customdata = plotly_selected()$customdata
-          )
-        attr(q, "has_brushing") <- TRUE
-        q
-      }
-    })
   })
 }
 
@@ -187,8 +195,8 @@ bargraphplotly <- function(df,
       df_sym[[color_var_str]] <- as.character(df_sym[[color_var_str]])
 
       plot_data <- df_sym %>%
-        dplyr::group_by(!!as.name(y_var_str), !!as.name(color_var_str)) %>%
-        dplyr::summarize(count = dplyr::n_distinct(!!as.name(count_var_str)), .groups = "drop") %>%
+        dplyr::group_by(y_var_sym, color_var_sym) %>%
+        dplyr::summarize(count = dplyr::n_distinct(count_var_sym), .groups = "drop") %>%
         dplyr::ungroup() %>%
         dplyr::mutate(customdata = dplyr::row_number()) %>%
         dplyr::mutate(
@@ -200,8 +208,8 @@ bargraphplotly <- function(df,
               if (!length(color_var_label)) color_var_label <- color_var_str
 
               paste(
-                paste(y_var_label, ":", !!as.name(y_var_str)),
-                paste(color_var_label, ":", !!as.name(color_var_str)),
+                paste(y_var_label, ":", y_var_sym),
+                paste(color_var_label, ":", color_var_sym),
                 paste("Count:", count),
                 sep = "<br>"
               )
@@ -230,8 +238,8 @@ bargraphplotly <- function(df,
                 if (!length(color_var_label)) color_var_label <- color_var_str
 
                 paste(
-                  paste(y_var_label, ":", !!as.name(y_var_str)),
-                  paste(color_var_label, ":", !!as.name(color_var_str)),
+                  paste(y_var_label, ":", y_var_sym),
+                  paste(color_var_label, ":", color_var_sym),
                   paste("Count:", count),
                   sep = "<br>"
                 )
@@ -246,10 +254,10 @@ bargraphplotly <- function(df,
         )
 
       event_type_order <- plot_data %>%
-        dplyr::group_by(!!as.name(y_var_str)) %>%
+        dplyr::group_by(y_var_sym) %>%
         dplyr::summarize(total = sum(count), .groups = "drop") %>%
         dplyr::arrange(total) %>%
-        dplyr::pull(!!as.name(y_var_str))
+        dplyr::pull(y_var_sym)
 
       plot_data[[y_var_str]] <- factor(plot_data[[y_var_str]], levels = event_type_order)
 
@@ -258,13 +266,13 @@ bargraphplotly <- function(df,
         y = ~y_var_sym,
         x = ~count,
         color = ~color_var_sym,
-        colors = bar_colors_sym,
+        colors = bar_colors,
         type = "bar",
         orientation = "h",
         hovertext = ~tooltip,
         hoverinfo = "text",
         customdata = ~customdata,
-        source = source_sym
+        source = source
       ) %>%
         plotly::layout(
           barmode = "stack",
@@ -283,8 +291,8 @@ bargraphplotly <- function(df,
       color_var_str = color_var,
       count_var_str = count_var,
       tooltip_vars_sym = tooltip_vars,
-      bar_colors_sym = bar_colors,
-      source_sym = source
+      bar_colors = bar_colors,
+      source = source
     )
   )
 }

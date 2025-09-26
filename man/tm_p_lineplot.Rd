@@ -14,8 +14,7 @@ tm_p_lineplot(
   colors = NULL,
   tooltip_vars = NULL,
   transformators = list(),
-  reference_lines = NULL,
-  activate_on_brushing = FALSE
+  reference_lines = NULL
 )
 }
 \arguments{
@@ -38,11 +37,10 @@ If \code{NULL}, default colors will be used.}
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
 If \code{NULL}, default tooltip is created showing group, x, y, and color variables.}
 
-\item{transformators}{(\code{list}) Named list of transformator functions.}
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{reference_lines}{(\code{list} or \code{NULL}) Reference lines specification for adding horizontal reference lines.}
-
-\item{activate_on_brushing}{(\code{logical(1)}) Whether to activate the plot only when brushing occurs in another plot.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -62,7 +60,8 @@ data <- teal_data() |>
       time_week = rep(c(0, 2, 4, 6, 8), 8),
       measurement = rnorm(40, 20, 4) + rep(c(0, 1, 2, 3, 4), 8),
       treatment = rep(c("Active", "Placebo"), each = 20),
-      baseline = rep(rnorm(8, 18, 2), each = 5)
+      baseline = rep(rnorm(8, 18, 2), each = 5),
+      center = rep(c("Site A", "Site B", "Site A", "Site B"), each = 10)
     )
 
     # Add labels
@@ -71,20 +70,43 @@ data <- teal_data() |>
     attr(df$measurement, "label") <- "Measurement Value"
     attr(df$treatment, "label") <- "Treatment Group"
     attr(df$baseline, "label") <- "Baseline Value"
+    attr(df$center, "label") <- "Study Center"
   })
 
-# Basic line plot example
 app <- init(
   data = data,
   modules = modules(
     tm_p_lineplot(
-      label = "Line Plot",
+      label = "Basic Line Plot",
+      plot_dataname = "df",
+      x_var = "time_week",
+      y_var = "measurement",
+      color_var = "treatment",
+      group_var = "subject_id"
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_p_lineplot(
+      label = "Advanced Line Plot with All Features",
       plot_dataname = "df",
       x_var = "time_week",
       y_var = "measurement",
       color_var = "treatment",
       group_var = "subject_id",
-      tooltip_vars = c("subject_id", "time_week")
+      colors = c("Active" = "#1f77b4", "Placebo" = "#ff7f0e"),
+      tooltip_vars = c("subject_id", "time_week", "measurement", "treatment", "center", "baseline"),
+      reference_lines = list(
+        baseline = list(label = "Baseline Mean", line_mode = "dash"),
+        measurement = list(label = "Measurement Value", line_mode = "solid")
+      )
     )
   )
 )

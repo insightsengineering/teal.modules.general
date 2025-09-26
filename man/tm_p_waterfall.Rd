@@ -7,7 +7,7 @@
 tm_p_waterfall(
   label = "Waterfall",
   plot_dataname,
-  subject_var,
+  x_var,
   value_var,
   sort_var = NULL,
   color_var = NULL,
@@ -15,7 +15,8 @@ tm_p_waterfall(
   bar_colors = character(0),
   value_arbitrary_hlines = c(0.2, -0.3),
   plot_title = "Waterfall plot",
-  plot_height = c(600, 400, 1200)
+  plot_height = c(600, 400, 1200),
+  transformators = list()
 )
 }
 \arguments{
@@ -24,8 +25,8 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
-\item{subject_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
-to be used as x-axis (subject identifiers).}
+\item{x_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to be used as x-axis (typically subject identifiers).}
 
 \item{value_var}{(\code{character(1)}) Name of the numeric column in \code{plot_dataname}
 to be used as y-axis (values determining bar heights).}
@@ -48,6 +49,9 @@ horizontal reference lines on the plot.}
 \item{plot_title}{(\code{character} or \code{NULL}) Title of the plot. If \code{NULL}, no title is displayed.}
 
 \item{plot_height}{(\code{numeric(3)}) Vector of length 3 with c(default, min, max) plot height values.}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -63,36 +67,72 @@ across subjects.
 \examples{
 data <- teal_data() |>
   within({
-    subjects <- data.frame(
-      subject_var = c("A", "B", "C"),
-      AGE = sample(30:100, 3),
-      ARM = c("Combination", "Combination", "Placebo")
+    df <- data.frame(
+      subject_id = paste0("S", 1:20),
+      percent_change = c(
+        rnorm(5, -40, 10), # 5 subjects with good response (~-40\%)
+        rnorm(8, -15, 15), # 8 subjects with moderate response (~-15\%)
+        rnorm(4, 10, 8), # 4 subjects with progression (~10\%)
+        rnorm(3, 35, 12) # 3 subjects with significant progression (~35\%)
+      ),
+      best_response = c(
+        rep("Complete Response", 3),
+        rep("Partial Response", 7),
+        rep("Stable Disease", 6),
+        rep("Progressive Disease", 4)
+      ),
+      treatment_arm = rep(c("Experimental", "Control"), each = 10),
+      age_group = sample(c("Young", "Middle", "Old"), 20, replace = TRUE),
+      baseline_size = abs(rnorm(20, 50, 15)),
+      center = sample(c("Site A", "Site B", "Site C"), 20, replace = TRUE)
     )
 
-    waterfall_ds <- data.frame(
-      subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
-      value_var = sample(-20:90, 10, replace = TRUE),
-      color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
-    )
+    attr(df$subject_id, "label") <- "Subject ID"
+    attr(df$percent_change, "label") <- "Percent Change from Baseline"
+    attr(df$best_response, "label") <- "Best Overall Response"
+    attr(df$treatment_arm, "label") <- "Treatment Arm"
+    attr(df$age_group, "label") <- "Age Group"
+    attr(df$baseline_size, "label") <- "Baseline Tumor Size (mm)"
+    attr(df$center, "label") <- "Study Center"
   })
-join_keys(data) <- join_keys(
-  join_key("subjects", "waterfall_ds", keys = c(subject_var = "subject_var"))
-)
 
 app <- init(
   data = data,
   modules = modules(
     tm_p_waterfall(
-      plot_dataname = "waterfall_ds",
-      subject_var = "subject_var",
-      value_var = "value_var",
-      sort_var = "value_var",
-      color_var = "color_var",
-      tooltip_vars = c("value_var", "subjects"),
-      value_arbitrary_hlines = c(20, -30),
+      label = "Basic Waterfall Plot",
+      plot_dataname = "df",
+      x_var = "subject_id",
+      value_var = "percent_change",
+      color_var = "best_response"
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_p_waterfall(
+      label = "Advanced Waterfall Plot with All Features",
+      plot_dataname = "df",
+      x_var = "subject_id",
+      value_var = "percent_change",
+      sort_var = "percent_change",
+      color_var = "best_response",
+      tooltip_vars = c("subject_id", "percent_change", "best_response", "treatment_arm", "age_group", "baseline_size", "center"),
       bar_colors = c(
-        CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
-      )
+        "Complete Response" = "#00FF00",
+        "Partial Response" = "#FFFF00",
+        "Stable Disease" = "#FFA500",
+        "Progressive Disease" = "#FF0000"
+      ),
+      value_arbitrary_hlines = c(-30, 20),
+      plot_title = "Tumor Response Waterfall Plot",
+      plot_height = c(700, 400, 1000)
     )
   )
 )

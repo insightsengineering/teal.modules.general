@@ -16,7 +16,6 @@
 #' If `NULL`, default colors will be used.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
 #' If `NULL`, default tooltip is created showing group, x, y, and color variables.
-#' @param transformators (`list`) Named list of transformator functions.
 #' @param show_widgets (`logical(1)`) Whether to show module widgets.
 #'
 #' @inherit shared_params return
@@ -29,7 +28,9 @@
 #'       time_point = rep(c(0, 30, 60, 90), 10),
 #'       response = rnorm(40, 15, 3) + rep(c(0, 2, 4, 6), 10),
 #'       treatment = rep(c("Active", "Placebo"), each = 20),
-#'       age_group = rep(c("Young", "Old"), 20)
+#'       age_group = rep(c("Young", "Old"), 20),
+#'       baseline = rep(rnorm(10, 12, 2), each = 4),
+#'       center = rep(c("Site A", "Site B", "Site A", "Site B", "Site A"), each = 8)
 #'     )
 #'
 #'     # Add labels
@@ -37,20 +38,42 @@
 #'     attr(df$time_point, "label") <- "Time Point (days)"
 #'     attr(df$response, "label") <- "Response Score"
 #'     attr(df$treatment, "label") <- "Treatment Group"
+#'     attr(df$age_group, "label") <- "Age Group"
+#'     attr(df$baseline, "label") <- "Baseline Score"
+#'     attr(df$center, "label") <- "Study Center"
 #'   })
 #'
-#' # Default tooltip example
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_p_spaghetti(
-#'       label = "Spaghetti Plot",
+#'       label = "Basic Spaghetti Plot",
+#'       plot_dataname = "df",
+#'       group_var = "subject_id",
+#'       x_var = "time_point",
+#'       y_var = "response",
+#'       color_var = "treatment"
+#'     )
+#'   )
+#' )
+#'
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_p_spaghetti(
+#'       label = "Advanced Spaghetti Plot with All Features",
 #'       plot_dataname = "df",
 #'       group_var = "subject_id",
 #'       x_var = "time_point",
 #'       y_var = "response",
 #'       color_var = "treatment",
-#'       tooltip_vars = c("subject_id", "treatment")
+#'       point_colors = c("Active" = "#1f77b4", "Placebo" = "#ff7f0e"),
+#'       tooltip_vars = c("subject_id", "time_point", "response", "treatment", "age_group", "baseline", "center"),
+#'       show_widgets = TRUE
 #'     )
 #'   )
 #' )
@@ -154,30 +177,6 @@ srv_p_spaghetti <- function(id,
         set_plot_data(session$ns("plot_data")) |>
         plotly::event_register("plotly_selected")
     )
-
-    plotly_selected <- reactive(
-      plotly::event_data("plotly_selected", source = session$ns("spaghetti"))
-    )
-    reactive({
-      if (is.null(plotly_selected()) || is.null(group_var)) {
-        plotly_q()
-      } else {
-        q <- plotly_q() |>
-          within(
-            {
-              selected_plot_data <- plot_data |>
-                dplyr::filter(customdata %in% plotly_selected_customdata)
-              df <- df |>
-                dplyr::filter(!!as.name(group_var_string) %in% selected_plot_data[[group_var_string]])
-            },
-            df = str2lang(plot_dataname),
-            group_var_string = group_var,
-            plotly_selected_customdata = plotly_selected()$customdata
-          )
-        attr(q, "has_brushing") <- TRUE
-        q
-      }
-    })
   })
 }
 
@@ -229,17 +228,23 @@ spaghettiplotly <- function(df, group_var, x_var, y_var, color_var, colors, sour
       if (!length(color_var_label)) color_var_label <- color_var_str
 
       plot_data <- df_sym |>
-        dplyr::select(!!as.name(group_var_str), !!as.name(x_var_str), !!as.name(y_var_str), !!as.name(color_var_str)) |>
-        dplyr::mutate(!!as.name(color_var_str) := factor(!!as.name(color_var_str), levels = names(colors_sym))) %>%
+        dplyr::select(
+          group_var_sym,
+          x_var_sym,
+          y_var_sym,
+          color_var_sym,
+          if (!is.null(tooltip_vars_sym)) dplyr::any_of(tooltip_vars_sym) else NULL
+        ) |>
+        dplyr::mutate(color_var_sym := factor(color_var_sym, levels = names(colors))) %>%
         dplyr::mutate(customdata = dplyr::row_number()) |>
         dplyr::mutate(
           tooltip = {
             if (is.null(tooltip_vars_sym)) {
               paste(
-                paste(group_var_label, ":", !!as.name(group_var_str)),
-                paste(x_var_label, ":", !!as.name(x_var_str)),
-                paste(y_var_label, ":", !!as.name(y_var_str)),
-                paste(color_var_label, ":", !!as.name(color_var_str)),
+                paste(group_var_label, ":", group_var_sym),
+                paste(x_var_label, ":", x_var_sym),
+                paste(y_var_label, ":", y_var_sym),
+                paste(color_var_label, ":", color_var_sym),
                 sep = "<br>"
               )
             } else {
@@ -247,10 +252,10 @@ spaghettiplotly <- function(df, group_var, x_var, y_var, color_var, colors, sour
               cols <- intersect(tooltip_vars_sym, names(cur_data))
               if (!length(cols)) {
                 paste(
-                  paste(group_var_label, ":", !!as.name(group_var_str)),
-                  paste(x_var_label, ":", !!as.name(x_var_str)),
-                  paste(y_var_label, ":", !!as.name(y_var_str)),
-                  paste(color_var_label, ":", !!as.name(color_var_str)),
+                  paste(group_var_label, ":", group_var_sym),
+                  paste(x_var_label, ":", x_var_sym),
+                  paste(y_var_label, ":", y_var_sym),
+                  paste(color_var_label, ":", color_var_sym),
                   sep = "<br>"
                 )
               } else {
@@ -278,27 +283,27 @@ spaghettiplotly <- function(df, group_var, x_var, y_var, color_var, colors, sour
         )
 
       segments_df <- plot_data %>%
-        dplyr::arrange(!!as.name(group_var_str), !!as.name(x_var_str)) %>%
-        dplyr::group_by(!!as.name(group_var_str)) %>%
+        dplyr::arrange(group_var_sym, x_var_sym) %>%
+        dplyr::group_by(group_var_sym) %>%
         dplyr::mutate(
-          x = !!as.name(x_var_str),
-          y = !!as.name(y_var_str),
-          xend = dplyr::lead(!!as.name(x_var_str)),
-          yend = dplyr::lead(!!as.name(y_var_str)),
-          color_var_seg = dplyr::lead(!!as.name(color_var_str))
+          x = x_var_sym,
+          y = y_var_sym,
+          xend = dplyr::lead(x_var_sym),
+          yend = dplyr::lead(y_var_sym),
+          color_var_seg = dplyr::lead(color_var_sym)
         ) %>%
         dplyr::filter(!is.na(xend))
 
       p <- plotly::plot_ly(
         data = segments_df,
         customdata = ~customdata,
-        source = source_sym
+        source = source
       ) %>%
         plotly::add_segments(
           x = ~x, y = ~y,
           xend = ~xend, yend = ~yend,
           color = ~color_var_seg,
-          colors = colors_sym,
+          colors = colors,
           showlegend = TRUE
         ) %>%
         plotly::add_markers(
@@ -306,7 +311,7 @@ spaghettiplotly <- function(df, group_var, x_var, y_var, color_var, colors, sour
           x = ~x_var_sym,
           y = ~y_var_sym,
           color = ~color_var_sym,
-          colors = colors_sym,
+          colors = colors,
           text = ~tooltip,
           hoverinfo = "text"
         ) |>
@@ -322,8 +327,8 @@ spaghettiplotly <- function(df, group_var, x_var, y_var, color_var, colors, sour
       x_var_str = x_var,
       y_var_str = y_var,
       color_var_str = color_var,
-      colors_sym = colors,
-      source_sym = source,
+      colors = colors,
+      source = source,
       tooltip_vars_sym = tooltip_vars
     )
   )

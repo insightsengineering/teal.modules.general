@@ -8,9 +8,9 @@ spiderplotly(
   df,
   time_var,
   value_var,
-  subject_var,
-  filter_event_var,
-  selected_event,
+  id_var,
+  filter_var,
+  selected_value,
   color_var,
   colors,
   symbols,
@@ -29,11 +29,9 @@ spiderplotly(
 
 \item{value_var}{(\code{character(1)}) Name of the numeric column to be used as y-axis}
 
-\item{subject_var}{(\code{character(1)}) Name of the factor or character column to be used as grouping variable}
+\item{filter_var}{(\code{character(1)}) Name of the factor or character column to be used to filter the data}
 
-\item{filter_event_var}{(\code{character(1)}) Name of the factor or character column to be used to filter the data}
-
-\item{selected_event}{(\code{character(1)}) Selected event value for filtering}
+\item{selected_value}{(\code{character(1)}) Selected value for filtering}
 
 \item{color_var}{(\code{character(1)}) Name of the factor or character column to be used to differentiate colors and symbols}
 
@@ -52,7 +50,9 @@ spiderplotly(
 \item{source}{(\code{character(1)}) Source identifier for plotly events}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created showing time, value, subject, and color variables.}
+If \code{NULL}, default tooltip is created showing time, value, id, and color variables.}
+
+\item{subject_var}{(\code{character(1)}) Name of the factor or character column to be used as grouping variable}
 }
 \value{
 A code expression that when evaluated creates a plotly plot object
@@ -69,9 +69,9 @@ code <- spiderplotly(
   df = "spider_data",
   time_var = "time_point",
   value_var = "response",
-  subject_var = "subject_id",
-  filter_event_var = "event_type",
-  selected_event = "response",
+  id_var = "subject_id",
+  filter_var = "event_type",
+  selected_value = "response",
   color_var = "treatment",
   colors = c("Active" = "red", "Placebo" = "blue"),
   symbols = c("Active" = "circle", "Placebo" = "square"),

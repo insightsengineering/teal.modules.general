@@ -8,7 +8,7 @@ tm_p_swimlane(
   label = "Swimlane",
   plot_dataname,
   time_var,
-  subject_var,
+  id_var,
   color_var,
   group_var,
   sort_var = time_var,
@@ -17,7 +17,8 @@ tm_p_swimlane(
   point_colors = character(0),
   point_symbols = character(0),
   plot_height = c(700, 400, 1200),
-  show_widgets = TRUE
+  show_widgets = TRUE,
+  transformators = list()
 )
 }
 \arguments{
@@ -28,20 +29,20 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{time_var}{(\code{character(1)}) Name of the numeric column in \code{plot_dataname} to be used as x-axis.}
 
-\item{subject_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
-to be used as y-axis (subject lanes).}
+\item{id_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to be used as y-axis (identifier lanes).}
 
 \item{color_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
-to name and color subject events in time.}
+to name and color data points in time.}
 
 \item{group_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
-to categorize type of event. Legend is sorted according to this variable.}
+to categorize type of data point. Legend is sorted according to this variable.}
 
 \item{sort_var}{(\code{character(1)}) Name of the column in \code{plot_dataname} whose values determine
-the order of subjects displayed on the y-axis.}
+the order of identifiers displayed on the y-axis.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created showing subject, time, color, and group variables.}
+If \code{NULL}, default tooltip is created showing id, time, color, and group variables.}
 
 \item{point_size}{(\code{numeric(1)} or \verb{named numeric}) Default point size of the points in the plot.
 If \code{point_size} is a named numeric vector, it should be named by levels of \code{color_var} column.}
@@ -55,54 +56,97 @@ If \code{NULL}, default symbols will be used.}
 \item{plot_height}{(\code{numeric(3)}) Vector of length 3 with c(default, min, max) plot height values.}
 
 \item{show_widgets}{(\code{logical(1)}) Whether to show module widgets.}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-This module creates an interactive swimlane plot visualization that displays subjects' events
-over time. Each subject is represented by a horizontal lane, with events plotted as points
+This module creates an interactive swimlane plot visualization that displays data points
+over time. Each identifier is represented by a horizontal lane, with data points plotted as points
 along the timeline. The plot supports color coding and symbol differentiation for different
-event types, customizable sorting of subjects, and interactive tooltips. This visualization
-is particularly useful for showing temporal sequences of events across multiple subjects.
+categories, customizable sorting of lanes, and interactive tooltips. This visualization
+is particularly useful for showing temporal sequences of data points across multiple identifiers.
 }
 \examples{
 data <- teal_data() |>
   within({
-    subjects <- data.frame(
-      subject_var = c("A", "B", "C"),
-      AGE = sample(30:100, 3),
-      ARM = c("Combination", "Combination", "Placebo")
+    df <- data.frame(
+      subject_id = rep(paste0("S", 1:12), each = 3),
+      study_day = c(
+        rep(c(15, 45, 90), 4), # First 4 subjects with events at days 15, 45, 90
+        rep(c(30, 60, 120), 4), # Next 4 subjects with events at days 30, 60, 120
+        rep(c(10, 75, 150), 4) # Last 4 subjects with events at days 10, 75, 150
+      ),
+      event_type = rep(c("Screening", "Treatment Start", "Assessment"), 12),
+      response_status = sample(c("Complete Response", "Partial Response", "Stable Disease", "Progressive Disease"), 36, replace = TRUE),
+      treatment_arm = rep(c("Experimental", "Control"), each = 18),
+      age_group = rep(c("Young", "Middle", "Old"), 12),
+      center = rep(c("Site A", "Site B", "Site C", "Site D"), 9)
     )
 
-    swimlane_ds <- data.frame(
-      subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
-      time_var = sample(1:100, 10, replace = TRUE),
-      color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
-    )
+    # Add labels
+    attr(df$subject_id, "label") <- "Subject ID"
+    attr(df$study_day, "label") <- "Study Day"
+    attr(df$event_type, "label") <- "Event Type"
+    attr(df$response_status, "label") <- "Response Status"
+    attr(df$treatment_arm, "label") <- "Treatment Arm"
+    attr(df$age_group, "label") <- "Age Group"
+    attr(df$center, "label") <- "Study Center"
   })
-join_keys(data) <- join_keys(
-  join_key("subjects", "swimlane_ds", keys = c(subject_var = "subject_var"))
-)
 
 app <- init(
   data = data,
   modules = modules(
     tm_p_swimlane(
-      plot_dataname = "swimlane_ds",
-      time_var = "time_var",
-      subject_var = "subject_var",
-      color_var = "color_var",
-      group_var = "color_var",
-      sort_var = "time_var",
-      plot_height = c(700, 400, 1200),
-      tooltip_vars = c("subject_var", "color_var"),
+      label = "Basic Swimlane Plot",
+      plot_dataname = "df",
+      time_var = "study_day",
+      id_var = "subject_id",
+      color_var = "response_status",
+      group_var = "event_type"
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_p_swimlane(
+      label = "Advanced Swimlane Plot with All Features",
+      plot_dataname = "df",
+      time_var = "study_day",
+      id_var = "subject_id",
+      color_var = "response_status",
+      group_var = "event_type",
+      sort_var = "study_day",
+      tooltip_vars = c("subject_id", "study_day", "event_type", "response_status", "treatment_arm", "age_group", "center"),
+      point_size = c(
+        "Complete Response" = 15,
+        "Partial Response" = 12,
+        "Stable Disease" = 10,
+        "Progressive Disease" = 8
+      ),
       point_colors = c(
-        CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
+        "Complete Response" = "#00FF00",
+        "Partial Response" = "#FFFF00",
+        "Stable Disease" = "#FFA500",
+        "Progressive Disease" = "#FF0000"
       ),
       point_symbols = c(
-        CR = "circle", PR = "square", SD = "triangle-up", PD = "diamond"
-      )
+        "Complete Response" = "circle",
+        "Partial Response" = "square",
+        "Stable Disease" = "triangle-up",
+        "Progressive Disease" = "diamond"
+      ),
+      plot_height = c(800, 500, 1200),
+      show_widgets = TRUE
     )
   )
 )

@@ -10,8 +10,8 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param plot_dataname (`character(1)`) Name of the dataset to be used for plotting.
-#' @param subject_var (`character(1)`) Name of the factor or character column in `plot_dataname`
-#' to be used as x-axis (subject identifiers).
+#' @param x_var (`character(1)`) Name of the factor or character column in `plot_dataname`
+#' to be used as x-axis (typically subject identifiers).
 #' @param value_var (`character(1)`) Name of the numeric column in `plot_dataname`
 #' to be used as y-axis (values determining bar heights).
 #' @param sort_var (`character(1)` or `NULL`) Name of the column used for sorting subjects.
@@ -32,36 +32,72 @@
 #' @examples
 #' data <- teal_data() |>
 #'   within({
-#'     subjects <- data.frame(
-#'       subject_var = c("A", "B", "C"),
-#'       AGE = sample(30:100, 3),
-#'       ARM = c("Combination", "Combination", "Placebo")
+#'     df <- data.frame(
+#'       subject_id = paste0("S", 1:20),
+#'       percent_change = c(
+#'         rnorm(5, -40, 10), # 5 subjects with good response (~-40%)
+#'         rnorm(8, -15, 15), # 8 subjects with moderate response (~-15%)
+#'         rnorm(4, 10, 8), # 4 subjects with progression (~10%)
+#'         rnorm(3, 35, 12) # 3 subjects with significant progression (~35%)
+#'       ),
+#'       best_response = c(
+#'         rep("Complete Response", 3),
+#'         rep("Partial Response", 7),
+#'         rep("Stable Disease", 6),
+#'         rep("Progressive Disease", 4)
+#'       ),
+#'       treatment_arm = rep(c("Experimental", "Control"), each = 10),
+#'       age_group = sample(c("Young", "Middle", "Old"), 20, replace = TRUE),
+#'       baseline_size = abs(rnorm(20, 50, 15)),
+#'       center = sample(c("Site A", "Site B", "Site C"), 20, replace = TRUE)
 #'     )
 #'
-#'     waterfall_ds <- data.frame(
-#'       subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
-#'       value_var = sample(-20:90, 10, replace = TRUE),
-#'       color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
-#'     )
+#'     attr(df$subject_id, "label") <- "Subject ID"
+#'     attr(df$percent_change, "label") <- "Percent Change from Baseline"
+#'     attr(df$best_response, "label") <- "Best Overall Response"
+#'     attr(df$treatment_arm, "label") <- "Treatment Arm"
+#'     attr(df$age_group, "label") <- "Age Group"
+#'     attr(df$baseline_size, "label") <- "Baseline Tumor Size (mm)"
+#'     attr(df$center, "label") <- "Study Center"
 #'   })
-#' join_keys(data) <- join_keys(
-#'   join_key("subjects", "waterfall_ds", keys = c(subject_var = "subject_var"))
-#' )
 #'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_p_waterfall(
-#'       plot_dataname = "waterfall_ds",
-#'       subject_var = "subject_var",
-#'       value_var = "value_var",
-#'       sort_var = "value_var",
-#'       color_var = "color_var",
-#'       tooltip_vars = c("value_var", "subjects"),
-#'       value_arbitrary_hlines = c(20, -30),
+#'       label = "Basic Waterfall Plot",
+#'       plot_dataname = "df",
+#'       x_var = "subject_id",
+#'       value_var = "percent_change",
+#'       color_var = "best_response"
+#'     )
+#'   )
+#' )
+#'
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_p_waterfall(
+#'       label = "Advanced Waterfall Plot with All Features",
+#'       plot_dataname = "df",
+#'       x_var = "subject_id",
+#'       value_var = "percent_change",
+#'       sort_var = "percent_change",
+#'       color_var = "best_response",
+#'       tooltip_vars = c("subject_id", "percent_change", "best_response", "treatment_arm", "age_group", "baseline_size", "center"),
 #'       bar_colors = c(
-#'         CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
-#'       )
+#'         "Complete Response" = "#00FF00",
+#'         "Partial Response" = "#FFFF00",
+#'         "Stable Disease" = "#FFA500",
+#'         "Progressive Disease" = "#FF0000"
+#'       ),
+#'       value_arbitrary_hlines = c(-30, 20),
+#'       plot_title = "Tumor Response Waterfall Plot",
+#'       plot_height = c(700, 400, 1000)
 #'     )
 #'   )
 #' )
@@ -73,7 +109,7 @@
 #' @export
 tm_p_waterfall <- function(label = "Waterfall",
                            plot_dataname,
-                           subject_var,
+                           x_var,
                            value_var,
                            sort_var = NULL,
                            color_var = NULL,
@@ -81,9 +117,10 @@ tm_p_waterfall <- function(label = "Waterfall",
                            bar_colors = character(0),
                            value_arbitrary_hlines = c(0.2, -0.3),
                            plot_title = "Waterfall plot",
-                           plot_height = c(600, 400, 1200)) {
-  if (is.character(subject_var)) {
-    subject_var <- choices_selected(choices = subject_var, selected = subject_var)
+                           plot_height = c(600, 400, 1200),
+                           transformators = list()) {
+  if (is.character(x_var)) {
+    x_var <- choices_selected(choices = x_var, selected = x_var)
   }
   if (is.character(value_var)) {
     value_var <- choices_selected(choices = value_var, selected = value_var)
@@ -103,7 +140,7 @@ tm_p_waterfall <- function(label = "Waterfall",
     ui_args = list(height = plot_height),
     server_args = list(
       plot_dataname = plot_dataname,
-      subject_var = subject_var,
+      x_var = x_var,
       value_var = value_var,
       sort_var = sort_var,
       color_var = color_var,
@@ -111,7 +148,8 @@ tm_p_waterfall <- function(label = "Waterfall",
       value_arbitrary_hlines = value_arbitrary_hlines,
       plot_title = plot_title,
       tooltip_vars = tooltip_vars
-    )
+    ),
+    transformators = transformators
   )
 }
 
@@ -122,7 +160,7 @@ ui_p_waterfall <- function(id, height) {
     div(
       style = "display: flex;",
       selectInput(
-        ns("subject_var"),
+        ns("x_var"),
         label = "Subject variable (x-axis):",
         choices = NULL, selected = NULL, multiple = FALSE
       ),
@@ -149,7 +187,7 @@ ui_p_waterfall <- function(id, height) {
 srv_p_waterfall <- function(id,
                             data,
                             plot_dataname,
-                            subject_var,
+                            x_var,
                             value_var,
                             sort_var,
                             color_var,
@@ -160,33 +198,43 @@ srv_p_waterfall <- function(id,
                             tooltip_vars,
                             filter_panel_api) {
   moduleServer(id, function(input, output, session) {
-    .update_cs_input(inputId = "subject_var", data = reactive(data()[[dataname]]), cs = subject_var)
-    .update_cs_input(inputId = "value_var", data = reactive(data()[[dataname]]), cs = value_var)
-    .update_cs_input(inputId = "sort_var", data = reactive(data()[[dataname]]), cs = sort_var)
-    .update_cs_input(inputId = "color_var", data = reactive(data()[[dataname]]), cs = color_var)
+    .update_cs_input(inputId = "x_var", data = reactive(data()[[plot_dataname]]), cs = x_var)
+    .update_cs_input(inputId = "value_var", data = reactive(data()[[plot_dataname]]), cs = value_var)
+    if (!is.null(sort_var)) {
+      .update_cs_input(inputId = "sort_var", data = reactive(data()[[plot_dataname]]), cs = sort_var)
+    }
+    if (!is.null(color_var)) {
+      .update_cs_input(inputId = "color_var", data = reactive(data()[[plot_dataname]]), cs = color_var)
+    }
 
     color_inputs <- colour_picker_srv(
       "colors",
       x = reactive({
-        req(data(), input$color_var)
-        data()[[plot_dataname]][[input$color_var]]
+        if (!is.null(color_var) && !is.null(input$color_var)) {
+          req(data())
+          data()[[plot_dataname]][[input$color_var]]
+        } else {
+          NULL
+        }
       }),
       default_colors = bar_colors
     )
 
     plotly_q <- reactive({
-      req(data(), input$subject_var, input$value_var, input$sort_var, input$color_var, color_inputs())
+      req(data(), input$x_var, input$value_var)
+      if (!is.null(sort_var)) req(input$sort_var)
+      if (!is.null(color_var)) req(input$color_var, color_inputs())
 
       data() |>
         within(
           code,
           code = waterfallplotly(
             df = plot_dataname,
-            subject_var = input$subject_var,
+            x_var = input$x_var,
             value_var = input$value_var,
-            sort_var = input$sort_var,
-            color_var = input$color_var,
-            colors = color_inputs(),
+            sort_var = if (!is.null(sort_var)) input$sort_var else NULL,
+            color_var = if (!is.null(color_var)) input$color_var else NULL,
+            colors = if (!is.null(color_var)) color_inputs() else character(0),
             value_arbitrary_hlines = value_arbitrary_hlines,
             height = input$plot_height,
             title = "Waterfall plot",
@@ -208,7 +256,7 @@ srv_p_waterfall <- function(id,
 #' bar chart creation, and horizontal reference lines.
 #'
 #' @param df (`character(1)`) Name of the data frame to plot
-#' @param subject_var (`character(1)`) Name of the factor or character column to be used as x-axis (subject identifiers)
+#' @param x_var (`character(1)`) Name of the factor or character column to be used as x-axis (typically subject identifiers)
 #' @param value_var (`character(1)`) Name of the numeric column to be used as y-axis (values determining bar heights)
 #' @param sort_var (`character(1)` or `NULL`) Name of the column whose values determine sorting order. If `NULL` or same as `value_var`, sorts by value_var descending
 #' @param color_var (`character(1)` or `NULL`) Name of the factor or character column to differentiate bar colors. If `NULL`, all bars have same color
@@ -226,7 +274,7 @@ srv_p_waterfall <- function(id,
 #' # Generate code for a waterfall plot
 #' code <- waterfallplotly(
 #'   df = "waterfall_data",
-#'   subject_var = "subject_id",
+#'   x_var = "subject_id",
 #'   value_var = "response_value",
 #'   sort_var = "response_value",
 #'   color_var = "response_category",
@@ -238,13 +286,13 @@ srv_p_waterfall <- function(id,
 #'   tooltip_vars = c("subject_id", "response_category")
 #' )
 #'
-waterfallplotly <- function(df, subject_var, value_var, sort_var = NULL, color_var = NULL,
+waterfallplotly <- function(df, x_var, value_var, sort_var = NULL, color_var = NULL,
                             colors, value_arbitrary_hlines = NULL, height = 600,
                             title = "Waterfall plot", source, tooltip_vars = NULL) {
   substitute(
     {
-      subject_var_label <- attr(df_sym[[subject_var_str]], "label")
-      if (!length(subject_var_label)) subject_var_label <- subject_var_str
+      x_var_label <- attr(df_sym[[x_var_str]], "label")
+      if (!length(x_var_label)) x_var_label <- x_var_str
       value_var_label <- attr(df_sym[[value_var_str]], "label")
       if (!length(value_var_label)) value_var_label <- value_var_str
       color_var_label <- attr(df_sym[[color_var_str]], "label")
@@ -256,11 +304,11 @@ waterfallplotly <- function(df, subject_var, value_var, sort_var = NULL, color_v
         } else {
           dplyr::arrange(df_sym, !!as.name(sort_var_str), desc(!!as.name(value_var_str)))
         },
-        !!as.name(subject_var_str) := factor(!!as.name(subject_var_str), levels = unique(!!as.name(subject_var_str))),
+        !!as.name(x_var_str) := factor(!!as.name(x_var_str), levels = unique(!!as.name(x_var_str))),
         tooltip = {
           default_tip <- sprintf(
             "%s: %s <br>%s: %s%% <br>%s: %s",
-            subject_var_label, !!as.name(subject_var_str),
+            x_var_label, !!as.name(x_var_str),
             value_var_label, !!as.name(value_var_str),
             color_var_label, !!as.name(color_var_str)
           )
@@ -274,8 +322,8 @@ waterfallplotly <- function(df, subject_var, value_var, sort_var = NULL, color_v
             } else {
               sub <- cur_data[cols]
               labels <- vapply(cols, function(cn) {
-                if (cn == subject_var_str) {
-                  lb <- subject_var_label
+                if (cn == x_var_str) {
+                  lb <- x_var_label
                 } else if (cn == value_var_str) {
                   lb <- value_var_label
                 } else if (cn == color_var_str) {
@@ -292,7 +340,7 @@ waterfallplotly <- function(df, subject_var, value_var, sort_var = NULL, color_v
           }
         }
       ) %>%
-        dplyr::filter(!duplicated(!!as.name(subject_var_str))) %>%
+        dplyr::filter(!duplicated(!!as.name(x_var_str))) %>%
         dplyr::mutate(customdata = dplyr::row_number())
 
       p <- plotly::plot_ly(
@@ -302,7 +350,7 @@ waterfallplotly <- function(df, subject_var, value_var, sort_var = NULL, color_v
         height = height_sym
       ) %>%
         plotly::add_bars(
-          x = ~subject_var_sym,
+          x = ~x_var_sym,
           y = ~value_var_sym,
           color = ~color_var_sym,
           colors = colors_sym,
@@ -321,7 +369,7 @@ waterfallplotly <- function(df, subject_var, value_var, sort_var = NULL, color_v
               line = list(color = "black", dash = "dot")
             )
           }),
-          xaxis = list(title = subject_var_label, tickangle = -45),
+          xaxis = list(title = x_var_label, tickangle = -45),
           yaxis = list(title = value_var_label),
           legend = list(title = list(text = "<b>Color by:</b>")),
           barmode = "relative"
@@ -332,11 +380,11 @@ waterfallplotly <- function(df, subject_var, value_var, sort_var = NULL, color_v
     },
     list(
       df_sym = str2lang(df),
-      subject_var_sym = str2lang(subject_var),
+      x_var_sym = str2lang(x_var),
       value_var_sym = str2lang(value_var),
       sort_var_sym = if (!is.null(sort_var)) str2lang(sort_var) else NULL,
       color_var_sym = if (!is.null(color_var)) str2lang(color_var) else NULL,
-      subject_var_str = subject_var,
+      x_var_str = x_var,
       value_var_str = value_var,
       sort_var_str = sort_var,
       color_var_str = color_var,

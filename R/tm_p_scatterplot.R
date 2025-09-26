@@ -3,20 +3,18 @@
 #' This module creates an interactive scatter plot visualization with customizable tooltips.
 #' Users can select points by brushing to filter the underlying data. The plot supports
 #' color coding by categorical variables and displays tooltips on hover that can show
-#' default variables (subject, x, y, color) or custom columns specified via `tooltip_vars`.
+#' default variables (id, x, y, color) or custom columns specified via `tooltip_vars`.
 #'
 #' @inheritParams teal::module
 #' @param plot_dataname (`character(1)`) Name of the dataset to be used for plotting.
-#' @param subject_var (`character(1)`) Name of the subject variable.
+#' @param id_var (`character(1)`) Name of the identifier variable for observations (used in tooltips).
 #' @param x_var (`character(1)`) Name of the variable to be used for x-axis.
 #' @param y_var (`character(1)`) Name of the variable to be used for y-axis.
 #' @param color_var (`character(1)`) Name of the variable to be used for coloring points.
 #' @param point_colors (`named character` or `NULL`) Valid color names or hex-colors named by levels of `color_var` column.
 #' If `NULL`, default colors will be used.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
-#' If `NULL`, default tooltip is created showing subject, x, y, and color variables.
-#' @param transformators (`list`) Named list of transformator functions.
-#' @param show_widgets (`logical(1)`) Whether to show module widgets.
+#' If `NULL`, default tooltip is created showing id, x, y, and color variables.
 #'
 #' @inherit shared_params return
 #'
@@ -28,26 +26,51 @@
 #'       age = sample(20:80, 50, replace = TRUE),
 #'       response = rnorm(50, 15, 3),
 #'       treatment = sample(c("Active", "Placebo"), 50, replace = TRUE),
-#'       gender = sample(c("M", "F"), 50, replace = TRUE)
+#'       gender = sample(c("M", "F"), 50, replace = TRUE),
+#'       baseline_score = rnorm(50, 12, 2),
+#'       center = sample(c("Site A", "Site B", "Site C"), 50, replace = TRUE)
 #'     )
 #'
 #'     # Add labels for better tooltips
+#'     attr(df$subject_id, "label") <- "Subject ID"
 #'     attr(df$age, "label") <- "Age (years)"
 #'     attr(df$response, "label") <- "Response Score"
 #'     attr(df$treatment, "label") <- "Treatment Group"
+#'     attr(df$gender, "label") <- "Gender"
+#'     attr(df$baseline_score, "label") <- "Baseline Score"
+#'     attr(df$center, "label") <- "Study Center"
 #'   })
 #'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_p_scatterplot(
-#'       label = "Scatter Plot with Custom Tooltip",
+#'       label = "Basic Scatter Plot",
 #'       plot_dataname = "df",
-#'       subject_var = "subject_id",
+#'       id_var = "subject_id",
+#'       x_var = "age",
+#'       y_var = "response",
+#'       color_var = "treatment"
+#'     )
+#'   )
+#' )
+#'
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_p_scatterplot(
+#'       label = "Advanced Scatter Plot with All Features",
+#'       plot_dataname = "df",
+#'       id_var = "subject_id",
 #'       x_var = "age",
 #'       y_var = "response",
 #'       color_var = "treatment",
-#'       tooltip_vars = c("age", "gender")
+#'       point_colors = c("Active" = "#1f77b4", "Placebo" = "#ff7f0e"),
+#'       tooltip_vars = c("subject_id", "age", "response", "treatment", "gender", "baseline_score", "center")
 #'     )
 #'   )
 #' )
@@ -59,14 +82,13 @@
 #' @export
 tm_p_scatterplot <- function(label = "Scatter Plot",
                              plot_dataname,
-                             subject_var,
+                             id_var,
                              x_var,
                              y_var,
                              color_var,
                              point_colors = character(0),
                              tooltip_vars = NULL,
-                             transformators = list(),
-                             show_widgets = TRUE) {
+                             transformators = list()) {
   module(
     label = label,
     ui = ui_p_scatterplot,
@@ -74,13 +96,12 @@ tm_p_scatterplot <- function(label = "Scatter Plot",
     ui_args = list(),
     server_args = list(
       plot_dataname = plot_dataname,
-      subject_var = subject_var,
+      id_var = id_var,
       x_var = x_var,
       y_var = y_var,
       color_var = color_var,
       point_colors = point_colors,
-      tooltip_vars = tooltip_vars,
-      show_widgets = show_widgets
+      tooltip_vars = tooltip_vars
     ),
     transformators = transformators
   )
@@ -89,7 +110,6 @@ tm_p_scatterplot <- function(label = "Scatter Plot",
 ui_p_scatterplot <- function(id) {
   ns <- NS(id)
   bslib::page_fluid(
-    shinyjs::useShinyjs(),
     tags$div(
       tags$span(id = ns("colors_span"), colour_picker_ui(ns("colors"))),
       bslib::card(
@@ -106,13 +126,12 @@ ui_p_scatterplot <- function(id) {
 srv_p_scatterplot <- function(id,
                               data,
                               plot_dataname,
-                              subject_var,
+                              id_var,
                               x_var,
                               y_var,
                               color_var,
                               point_colors,
-                              tooltip_vars = NULL,
-                              show_widgets) {
+                              tooltip_vars = NULL) {
   moduleServer(id, function(input, output, session) {
     color_inputs <- colour_picker_srv(
       "colors",
@@ -121,10 +140,6 @@ srv_p_scatterplot <- function(id,
       }),
       default_colors = point_colors
     )
-
-    if (!show_widgets) {
-      shinyjs::hide("colors_span")
-    }
 
     plotly_q <- reactive({
       req(color_inputs())
@@ -136,7 +151,7 @@ srv_p_scatterplot <- function(id,
             x_var = x_var,
             y_var = y_var,
             color_var = color_var,
-            subject_var = subject_var,
+            id_var = id_var,
             colors = color_inputs(),
             source = session$ns("scatterplot"),
             tooltip_vars = tooltip_vars
@@ -163,11 +178,11 @@ srv_p_scatterplot <- function(id,
 #' @param x_var (`character(1)`) Name of the variable to be used for x-axis
 #' @param y_var (`character(1)`) Name of the variable to be used for y-axis
 #' @param color_var (`character(1)`) Name of the variable to be used for coloring points
-#' @param subject_var (`character(1)`) Name of the subject variable
+#' @param id_var (`character(1)`) Name of the identifier variable
 #' @param colors (`character`) Named vector of colors for color_var levels
 #' @param source (`character(1)`) Source identifier for plotly events
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
-#' If `NULL`, default tooltip is created showing subject, x, y, and color variables.
+#' If `NULL`, default tooltip is created showing id, x, y, and color variables.
 #'
 #' @return A code expression that when evaluated creates a plotly plot object
 #'
@@ -178,17 +193,17 @@ srv_p_scatterplot <- function(id,
 #'   x_var = "Sepal.Length",
 #'   y_var = "Petal.Length",
 #'   color_var = "Species",
-#'   subject_var = "row_id",
+#'   id_var = "row_id",
 #'   colors = c("setosa" = "red", "versicolor" = "blue", "virginica" = "green"),
 #'   source = "scatterplot",
 #'   tooltip_vars = c("Sepal.Width", "Petal.Width")
 #' )
 #'
-scatterplotly <- function(df, x_var, y_var, color_var, subject_var, colors, source, tooltip_vars = NULL) {
+scatterplotly <- function(df, x_var, y_var, color_var, id_var, colors, source, tooltip_vars = NULL) {
   substitute(
     {
-      subject_var_label <- attr(df_sym[[subject_var_str]], "label")
-      if (!length(subject_var_label)) subject_var_label <- subject_var_str
+      id_var_label <- attr(df_sym[[id_var_str]], "label")
+      if (!length(id_var_label)) id_var_label <- id_var_str
 
       x_var_label <- attr(df_sym[[x_var_str]], "label")
       if (!length(x_var_label)) x_var_label <- x_var_str
@@ -200,16 +215,16 @@ scatterplotly <- function(df, x_var, y_var, color_var, subject_var, colors, sour
       if (!length(color_var_label)) color_var_label <- color_var_str
 
       plot_data <- df_sym |>
-        dplyr::mutate(!!as.name(color_var_str) := factor(!!as.name(color_var_str), levels = names(colors_sym))) |>
+        dplyr::mutate(color_var_sym := factor(color_var_sym, levels = names(colors))) |>
         dplyr::mutate(customdata = dplyr::row_number()) |>
         dplyr::mutate(
           tooltip = {
             if (is.null(tooltip_vars_sym)) {
               paste(
-                paste(subject_var_label, ":", !!as.name(subject_var_str)),
-                paste(x_var_label, ":", !!as.name(x_var_str)),
-                paste(y_var_label, ":", !!as.name(y_var_str)),
-                paste(color_var_label, ":", !!as.name(color_var_str)),
+                paste(id_var_label, ":", id_var_sym),
+                paste(x_var_label, ":", x_var_sym),
+                paste(y_var_label, ":", y_var_sym),
+                paste(color_var_label, ":", color_var_sym),
                 sep = "<br>"
               )
             } else {
@@ -217,17 +232,17 @@ scatterplotly <- function(df, x_var, y_var, color_var, subject_var, colors, sour
               cols <- intersect(tooltip_vars_sym, names(cur_data))
               if (!length(cols)) {
                 paste(
-                  paste(subject_var_label, ":", !!as.name(subject_var_str)),
-                  paste(x_var_label, ":", !!as.name(x_var_str)),
-                  paste(y_var_label, ":", !!as.name(y_var_str)),
-                  paste(color_var_label, ":", !!as.name(color_var_str)),
+                  paste(id_var_label, ":", id_var_sym),
+                  paste(x_var_label, ":", x_var_sym),
+                  paste(y_var_label, ":", y_var_sym),
+                  paste(color_var_label, ":", color_var_sym),
                   sep = "<br>"
                 )
               } else {
                 sub <- cur_data[cols]
                 labels <- vapply(cols, function(cn) {
-                  if (cn == subject_var_str) {
-                    lb <- subject_var_label
+                  if (cn == id_var_str) {
+                    lb <- id_var_label
                   } else if (cn == x_var_str) {
                     lb <- x_var_label
                   } else if (cn == y_var_str) {
@@ -249,8 +264,8 @@ scatterplotly <- function(df, x_var, y_var, color_var, subject_var, colors, sour
 
       p <- plotly::plot_ly(
         data = plot_data,
-        source = source_sym,
-        colors = colors_sym,
+        source = source,
+        colors = colors,
         customdata = ~customdata
       ) |>
         plotly::add_markers(
@@ -268,13 +283,13 @@ scatterplotly <- function(df, x_var, y_var, color_var, subject_var, colors, sour
       x_var_sym = str2lang(x_var),
       y_var_sym = str2lang(y_var),
       color_var_sym = str2lang(color_var),
-      subject_var_sym = str2lang(subject_var),
+      id_var_sym = str2lang(id_var),
       x_var_str = x_var,
       y_var_str = y_var,
       color_var_str = color_var,
-      subject_var_str = subject_var,
-      colors_sym = colors,
-      source_sym = source,
+      id_var_str = id_var,
+      colors = colors,
+      source = source,
       tooltip_vars_sym = tooltip_vars
     )
   )

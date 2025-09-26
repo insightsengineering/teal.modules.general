@@ -1,25 +1,25 @@
 #' Swimlane Plot Module
 #'
-#' This module creates an interactive swimlane plot visualization that displays subjects' events
-#' over time. Each subject is represented by a horizontal lane, with events plotted as points
+#' This module creates an interactive swimlane plot visualization that displays data points
+#' over time. Each identifier is represented by a horizontal lane, with data points plotted as points
 #' along the timeline. The plot supports color coding and symbol differentiation for different
-#' event types, customizable sorting of subjects, and interactive tooltips. This visualization
-#' is particularly useful for showing temporal sequences of events across multiple subjects.
+#' categories, customizable sorting of lanes, and interactive tooltips. This visualization
+#' is particularly useful for showing temporal sequences of data points across multiple identifiers.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param plot_dataname (`character(1)`) Name of the dataset to be used for plotting.
 #' @param time_var (`character(1)`) Name of the numeric column in `plot_dataname` to be used as x-axis.
-#' @param subject_var (`character(1)`) Name of the factor or character column in `plot_dataname`
-#' to be used as y-axis (subject lanes).
+#' @param id_var (`character(1)`) Name of the factor or character column in `plot_dataname`
+#' to be used as y-axis (identifier lanes).
 #' @param color_var (`character(1)`) Name of the factor or character column in `plot_dataname`
-#' to name and color subject events in time.
+#' to name and color data points in time.
 #' @param group_var (`character(1)`) Name of the factor or character column in `plot_dataname`
-#' to categorize type of event. Legend is sorted according to this variable.
+#' to categorize type of data point. Legend is sorted according to this variable.
 #' @param sort_var (`character(1)`) Name of the column in `plot_dataname` whose values determine
-#' the order of subjects displayed on the y-axis.
+#' the order of identifiers displayed on the y-axis.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
-#' If `NULL`, default tooltip is created showing subject, time, color, and group variables.
+#' If `NULL`, default tooltip is created showing id, time, color, and group variables.
 #' @param point_size (`numeric(1)` or `named numeric`) Default point size of the points in the plot.
 #' If `point_size` is a named numeric vector, it should be named by levels of `color_var` column.
 #' @param point_colors (`named character` or `NULL`) Valid color names or hex-colors named by levels of `color_var` column.
@@ -34,40 +34,80 @@
 #' @examples
 #' data <- teal_data() |>
 #'   within({
-#'     subjects <- data.frame(
-#'       subject_var = c("A", "B", "C"),
-#'       AGE = sample(30:100, 3),
-#'       ARM = c("Combination", "Combination", "Placebo")
+#'     df <- data.frame(
+#'       subject_id = rep(paste0("S", 1:12), each = 3),
+#'       study_day = c(
+#'         rep(c(15, 45, 90), 4), # First 4 subjects with events at days 15, 45, 90
+#'         rep(c(30, 60, 120), 4), # Next 4 subjects with events at days 30, 60, 120
+#'         rep(c(10, 75, 150), 4) # Last 4 subjects with events at days 10, 75, 150
+#'       ),
+#'       event_type = rep(c("Screening", "Treatment Start", "Assessment"), 12),
+#'       response_status = sample(c("Complete Response", "Partial Response", "Stable Disease", "Progressive Disease"), 36, replace = TRUE),
+#'       treatment_arm = rep(c("Experimental", "Control"), each = 18),
+#'       age_group = rep(c("Young", "Middle", "Old"), 12),
+#'       center = rep(c("Site A", "Site B", "Site C", "Site D"), 9)
 #'     )
 #'
-#'     swimlane_ds <- data.frame(
-#'       subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
-#'       time_var = sample(1:100, 10, replace = TRUE),
-#'       color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
-#'     )
+#'     # Add labels
+#'     attr(df$subject_id, "label") <- "Subject ID"
+#'     attr(df$study_day, "label") <- "Study Day"
+#'     attr(df$event_type, "label") <- "Event Type"
+#'     attr(df$response_status, "label") <- "Response Status"
+#'     attr(df$treatment_arm, "label") <- "Treatment Arm"
+#'     attr(df$age_group, "label") <- "Age Group"
+#'     attr(df$center, "label") <- "Study Center"
 #'   })
-#' join_keys(data) <- join_keys(
-#'   join_key("subjects", "swimlane_ds", keys = c(subject_var = "subject_var"))
-#' )
 #'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_p_swimlane(
-#'       plot_dataname = "swimlane_ds",
-#'       time_var = "time_var",
-#'       subject_var = "subject_var",
-#'       color_var = "color_var",
-#'       group_var = "color_var",
-#'       sort_var = "time_var",
-#'       plot_height = c(700, 400, 1200),
-#'       tooltip_vars = c("subject_var", "color_var"),
+#'       label = "Basic Swimlane Plot",
+#'       plot_dataname = "df",
+#'       time_var = "study_day",
+#'       id_var = "subject_id",
+#'       color_var = "response_status",
+#'       group_var = "event_type"
+#'     )
+#'   )
+#' )
+#'
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_p_swimlane(
+#'       label = "Advanced Swimlane Plot with All Features",
+#'       plot_dataname = "df",
+#'       time_var = "study_day",
+#'       id_var = "subject_id",
+#'       color_var = "response_status",
+#'       group_var = "event_type",
+#'       sort_var = "study_day",
+#'       tooltip_vars = c("subject_id", "study_day", "event_type", "response_status", "treatment_arm", "age_group", "center"),
+#'       point_size = c(
+#'         "Complete Response" = 15,
+#'         "Partial Response" = 12,
+#'         "Stable Disease" = 10,
+#'         "Progressive Disease" = 8
+#'       ),
 #'       point_colors = c(
-#'         CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
+#'         "Complete Response" = "#00FF00",
+#'         "Partial Response" = "#FFFF00",
+#'         "Stable Disease" = "#FFA500",
+#'         "Progressive Disease" = "#FF0000"
 #'       ),
 #'       point_symbols = c(
-#'         CR = "circle", PR = "square", SD = "triangle-up", PD = "diamond"
-#'       )
+#'         "Complete Response" = "circle",
+#'         "Partial Response" = "square",
+#'         "Stable Disease" = "triangle-up",
+#'         "Progressive Disease" = "diamond"
+#'       ),
+#'       plot_height = c(800, 500, 1200),
+#'       show_widgets = TRUE
 #'     )
 #'   )
 #' )
@@ -80,7 +120,7 @@
 tm_p_swimlane <- function(label = "Swimlane",
                           plot_dataname,
                           time_var,
-                          subject_var,
+                          id_var,
                           color_var,
                           group_var,
                           sort_var = time_var,
@@ -89,14 +129,15 @@ tm_p_swimlane <- function(label = "Swimlane",
                           point_colors = character(0),
                           point_symbols = character(0),
                           plot_height = c(700, 400, 1200),
-                          show_widgets = TRUE) {
+                          show_widgets = TRUE,
+                          transformators = list()) {
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
   if (is.character(time_var)) {
     time_var <- choices_selected(choices = time_var, selected = time_var)
   }
-  if (is.character(subject_var)) {
-    subject_var <- choices_selected(choices = subject_var, selected = subject_var)
+  if (is.character(id_var)) {
+    id_var <- choices_selected(choices = id_var, selected = id_var)
   }
   if (is.character(color_var)) {
     color_var <- choices_selected(choices = color_var, selected = color_var)
@@ -116,7 +157,7 @@ tm_p_swimlane <- function(label = "Swimlane",
     server_args = list(
       plot_dataname = plot_dataname,
       time_var = time_var,
-      subject_var = subject_var,
+      id_var = id_var,
       color_var = color_var,
       group_var = group_var,
       sort_var = sort_var,
@@ -125,7 +166,8 @@ tm_p_swimlane <- function(label = "Swimlane",
       point_symbols = point_symbols,
       tooltip_vars = tooltip_vars,
       show_widgets = show_widgets
-    )
+    ),
+    transformators = transformators
   )
 }
 
@@ -137,7 +179,7 @@ ui_p_swimlane <- function(id, height) {
       tags$div(
         id = ns("top_widgets"),
         style = "display: flex;",
-        selectInput(ns("subject_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
+        selectInput(ns("id_var"), label = "ID variable:", choices = NULL, selected = NULL, multiple = FALSE),
         selectInput(ns("color_var"), label = "Color by:", choices = NULL, selected = NULL, multiple = FALSE),
         selectInput(ns("group_var"), label = "Group by:", choices = NULL, selected = NULL, multiple = FALSE),
         selectInput(ns("sort_var"), label = "Sort by:", choices = NULL, selected = NULL, multiple = FALSE),
@@ -162,7 +204,7 @@ srv_p_swimlane <- function(id,
                            data,
                            plot_dataname,
                            time_var,
-                           subject_var,
+                           id_var,
                            color_var,
                            group_var,
                            sort_var,
@@ -174,7 +216,7 @@ srv_p_swimlane <- function(id,
                            show_widgets) {
   moduleServer(id, function(input, output, session) {
     .update_cs_input(inputId = "time_var", data = reactive(data()[[dataname]]), cs = time_var)
-    .update_cs_input(inputId = "subject_var", data = reactive(data()[[dataname]]), cs = subject_var)
+    .update_cs_input(inputId = "id_var", data = reactive(data()[[dataname]]), cs = id_var)
     .update_cs_input(inputId = "color_var", data = reactive(data()[[dataname]]), cs = color_var)
     .update_cs_input(inputId = "group_var", data = reactive(data()[[dataname]]), cs = group_var)
     .update_cs_input(inputId = "sort_var", data = reactive(data()[[dataname]]), cs = sort_var)
@@ -194,7 +236,7 @@ srv_p_swimlane <- function(id,
     )
 
     plotly_q <- reactive({
-      req(data(), input$time_var, input$subject_var, input$color_var, input$group_var, input$sort_var, color_inputs())
+      req(data(), input$time_var, input$id_var, input$color_var, input$group_var, input$sort_var, color_inputs())
       adjusted_symbols <- .shape_palette_discrete(
         levels = unique(data()[[plot_dataname]][[input$color_var]]),
         symbol = point_symbols
@@ -205,7 +247,7 @@ srv_p_swimlane <- function(id,
           code = swimlaneplotly(
             df = plot_dataname,
             time_var = input$time_var,
-            subject_var = input$subject_var,
+            id_var = input$id_var,
             color_var = input$color_var,
             group_var = input$group_var,
             sort_var = input$sort_var,
@@ -237,7 +279,7 @@ srv_p_swimlane <- function(id,
 #'
 #' @param df (`character(1)`) Name of the data frame to plot
 #' @param time_var (`character(1)`) Name of the numeric column to be used as x-axis
-#' @param subject_var (`character(1)`) Name of the factor or character column to be used as y-axis (subject lanes)
+#' @param id_var (`character(1)`) Name of the factor or character column to be used as y-axis (subject lanes)
 #' @param color_var (`character(1)`) Name of the factor or character column to name and color subject events in time
 #' @param group_var (`character(1)`) Name of the factor or character column to categorize type of event
 #' @param sort_var (`character(1)`) Name of the column whose values determine the order of subjects displayed on the y-axis
@@ -256,7 +298,7 @@ srv_p_swimlane <- function(id,
 #' code <- swimlaneplotly(
 #'   df = "swimlane_data",
 #'   time_var = "time_point",
-#'   subject_var = "subject_id",
+#'   id_var = "subject_id",
 #'   color_var = "event_type",
 #'   group_var = "event_category",
 #'   sort_var = "time_point",
@@ -268,25 +310,25 @@ srv_p_swimlane <- function(id,
 #'   tooltip_vars = c("subject_id", "event_type")
 #' )
 #'
-swimlaneplotly <- function(df, time_var, subject_var, color_var, group_var, sort_var,
+swimlaneplotly <- function(df, time_var, id_var, color_var, group_var, sort_var,
                            point_size = 10, colors, symbols, height = 700, source, tooltip_vars = NULL) {
   substitute(
     {
-      subject_var_label <- attr(df_sym[[subject_var_str]], "label")
-      if (!length(subject_var_label)) subject_var_label <- subject_var_str
+      id_var_label <- attr(df_sym[[id_var_str]], "label")
+      if (!length(id_var_label)) id_var_label <- id_var_str
       time_var_label <- attr(df_sym[[time_var_str]], "label")
       if (!length(time_var_label)) time_var_label <- time_var_str
 
       plot_data <- df_sym |>
         dplyr::mutate(customdata = dplyr::row_number())
 
-      subject_levels <- plot_data %>%
-        dplyr::group_by(!!as.name(subject_var_str)) %>%
+      id_levels <- plot_data %>%
+        dplyr::group_by(!!as.name(id_var_str)) %>%
         dplyr::summarize(v = max(!!as.name(sort_var_str))) %>%
         dplyr::ungroup() %>%
         dplyr::arrange(v) %>%
-        dplyr::pull(!!as.name(subject_var_str))
-      plot_data[[subject_var_str]] <- factor(plot_data[[subject_var_str]], levels = subject_levels)
+        dplyr::pull(!!as.name(id_var_str))
+      plot_data[[id_var_str]] <- factor(plot_data[[id_var_str]], levels = id_levels)
 
       min_size <- min(point_size_sym, na.rm = TRUE)
 
@@ -313,13 +355,13 @@ swimlaneplotly <- function(df, time_var, subject_var, color_var, group_var, sort
             new_factor
           }
         ) %>%
-        dplyr::group_by(!!as.name(subject_var_str), !!as.name(time_var_str)) %>%
+        dplyr::group_by(!!as.name(id_var_str), !!as.name(time_var_str)) %>%
         dplyr::mutate(
           tooltip = {
             default_tip <- paste(
               unique(
                 c(
-                  paste(subject_var_label, !!as.name(subject_var_str)),
+                  paste(id_var_label, !!as.name(id_var_str)),
                   paste(time_var_label, !!as.name(time_var_str)),
                   sprintf(
                     "%s: %s",
@@ -335,7 +377,7 @@ swimlaneplotly <- function(df, time_var, subject_var, color_var, group_var, sort
             } else {
               cur_data <- dplyr::cur_data()
               grouping_vars <- list()
-              grouping_vars[[subject_var_str]] <- dplyr::cur_group()[[subject_var_str]]
+              grouping_vars[[id_var_str]] <- dplyr::cur_group()[[id_var_str]]
               grouping_vars[[time_var_str]] <- dplyr::cur_group()[[time_var_str]]
               cur_data <- c(cur_data, grouping_vars)
 
@@ -345,8 +387,8 @@ swimlaneplotly <- function(df, time_var, subject_var, color_var, group_var, sort
               } else {
                 sub <- cur_data[cols]
                 labels <- vapply(cols, function(cn) {
-                  if (cn == subject_var_str) {
-                    lb <- subject_var_label
+                  if (cn == id_var_str) {
+                    lb <- id_var_label
                   } else if (cn == time_var_str) {
                     lb <- time_var_label
                   } else {
@@ -371,7 +413,7 @@ swimlaneplotly <- function(df, time_var, subject_var, color_var, group_var, sort
         ) %>%
         plotly::add_markers(
           x = ~time_var_sym,
-          y = ~subject_var_sym,
+          y = ~id_var_sym,
           color = ~color_var_sym,
           symbol = ~color_var_sym,
           size = ~size_var,
@@ -381,10 +423,10 @@ swimlaneplotly <- function(df, time_var, subject_var, color_var, group_var, sort
         plotly::add_segments(
           x = ~0,
           xend = ~study_day,
-          y = ~subject_var_sym,
-          yend = ~subject_var_sym,
+          y = ~id_var_sym,
+          yend = ~id_var_sym,
           data = plot_data |>
-            dplyr::group_by(!!as.name(subject_var_str), !!as.name(group_var_str)) |>
+            dplyr::group_by(!!as.name(id_var_str), !!as.name(group_var_str)) |>
             dplyr::summarise(study_day = max(!!as.name(time_var_str))),
           line = list(width = 2, color = "grey"),
           showlegend = FALSE,
@@ -392,7 +434,7 @@ swimlaneplotly <- function(df, time_var, subject_var, color_var, group_var, sort
         ) %>%
         plotly::layout(
           xaxis = list(title = time_var_label),
-          yaxis = list(title = subject_var_label)
+          yaxis = list(title = id_var_label)
         ) %>%
         plotly::layout(dragmode = "select") %>%
         plotly::config(displaylogo = FALSE)
@@ -400,12 +442,12 @@ swimlaneplotly <- function(df, time_var, subject_var, color_var, group_var, sort
     list(
       df_sym = str2lang(df),
       time_var_sym = str2lang(time_var),
-      subject_var_sym = str2lang(subject_var),
+      id_var_sym = str2lang(id_var),
       color_var_sym = str2lang(color_var),
       group_var_sym = str2lang(group_var),
       sort_var_sym = str2lang(sort_var),
       time_var_str = time_var,
-      subject_var_str = subject_var,
+      id_var_str = id_var,
       color_var_str = color_var,
       group_var_str = group_var,
       sort_var_str = sort_var,

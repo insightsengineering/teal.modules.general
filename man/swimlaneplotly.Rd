@@ -7,7 +7,7 @@
 swimlaneplotly(
   df,
   time_var,
-  subject_var,
+  id_var,
   color_var,
   group_var,
   sort_var,
@@ -24,7 +24,7 @@ swimlaneplotly(
 
 \item{time_var}{(\code{character(1)}) Name of the numeric column to be used as x-axis}
 
-\item{subject_var}{(\code{character(1)}) Name of the factor or character column to be used as y-axis (subject lanes)}
+\item{id_var}{(\code{character(1)}) Name of the factor or character column to be used as y-axis (subject lanes)}
 
 \item{color_var}{(\code{character(1)}) Name of the factor or character column to name and color subject events in time}
 
@@ -59,7 +59,7 @@ marker and segment creation, and event registration.
 code <- swimlaneplotly(
   df = "swimlane_data",
   time_var = "time_point",
-  subject_var = "subject_id",
+  id_var = "subject_id",
   color_var = "event_type",
   group_var = "event_category",
   sort_var = "time_point",

@@ -9,7 +9,7 @@ scatterplotly(
   x_var,
   y_var,
   color_var,
-  subject_var,
+  id_var,
   colors,
   source,
   tooltip_vars = NULL
@@ -24,14 +24,14 @@ scatterplotly(
 
 \item{color_var}{(\code{character(1)}) Name of the variable to be used for coloring points}
 
-\item{subject_var}{(\code{character(1)}) Name of the subject variable}
+\item{id_var}{(\code{character(1)}) Name of the identifier variable}
 
 \item{colors}{(\code{character}) Named vector of colors for color_var levels}
 
 \item{source}{(\code{character(1)}) Source identifier for plotly events}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created showing subject, x, y, and color variables.}
+If \code{NULL}, default tooltip is created showing id, x, y, and color variables.}
 }
 \value{
 A code expression that when evaluated creates a plotly plot object
@@ -49,7 +49,7 @@ code <- scatterplotly(
   x_var = "Sepal.Length",
   y_var = "Petal.Length",
   color_var = "Species",
-  subject_var = "row_id",
+  id_var = "row_id",
   colors = c("setosa" = "red", "versicolor" = "blue", "virginica" = "green"),
   source = "scatterplot",
   tooltip_vars = c("Sepal.Width", "Petal.Width")

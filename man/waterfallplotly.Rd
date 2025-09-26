@@ -6,7 +6,7 @@
 \usage{
 waterfallplotly(
   df,
-  subject_var,
+  x_var,
   value_var,
   sort_var = NULL,
   color_var = NULL,
@@ -21,7 +21,7 @@ waterfallplotly(
 \arguments{
 \item{df}{(\code{character(1)}) Name of the data frame to plot}
 
-\item{subject_var}{(\code{character(1)}) Name of the factor or character column to be used as x-axis (subject identifiers)}
+\item{x_var}{(\code{character(1)}) Name of the factor or character column to be used as x-axis (typically subject identifiers)}
 
 \item{value_var}{(\code{character(1)}) Name of the numeric column to be used as y-axis (values determining bar heights)}
 
@@ -55,7 +55,7 @@ bar chart creation, and horizontal reference lines.
 # Generate code for a waterfall plot
 code <- waterfallplotly(
   df = "waterfall_data",
-  subject_var = "subject_id",
+  x_var = "subject_id",
   value_var = "response_value",
   sort_var = "response_value",
   color_var = "response_category",
