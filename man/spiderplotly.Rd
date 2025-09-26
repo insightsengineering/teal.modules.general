@@ -29,6 +29,8 @@ spiderplotly(
 
 \item{value_var}{(\code{character(1)}) Name of the numeric column to be used as y-axis}
 
+\item{id_var}{(\code{character(1)}) Name of the factor or character column to be used as grouping variable}
+
 \item{filter_var}{(\code{character(1)}) Name of the factor or character column to be used to filter the data}
 
 \item{selected_value}{(\code{character(1)}) Selected value for filtering}
@@ -51,8 +53,6 @@ spiderplotly(
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
 If \code{NULL}, default tooltip is created showing time, value, id, and color variables.}
-
-\item{subject_var}{(\code{character(1)}) Name of the factor or character column to be used as grouping variable}
 }
 \value{
 A code expression that when evaluated creates a plotly plot object
