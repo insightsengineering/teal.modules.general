@@ -60,7 +60,7 @@
 #' }
 #'
 #' @export
-tm_p_spaghetti <- function(label = "Scatter Plot",
+tm_p_spaghetti <- function(label = "Spaghetti Plot",
                            plot_dataname,
                            group_var,
                            x_var,
@@ -131,121 +131,20 @@ srv_p_spaghetti <- function(id,
 
     plotly_q <- reactive({
       req(color_inputs())
-      within(
-        data(),
-        group_var = group_var,
-        x_var = x_var,
-        y_var = y_var,
-        color_var = color_var,
-        colors = color_inputs(),
-        source = session$ns("spaghetti"),
-        tooltip_vars = tooltip_vars,
-        expr = {
-          # Get label attributes for variables, fallback to column names
-          group_var_label <- attr(df[[group_var]], "label")
-          if (!length(group_var_label)) group_var_label <- group_var
-
-          x_var_label <- attr(df[[x_var]], "label")
-          if (!length(x_var_label)) x_var_label <- x_var
-
-          y_var_label <- attr(df[[y_var]], "label")
-          if (!length(y_var_label)) y_var_label <- y_var
-
-          color_var_label <- attr(df[[color_var]], "label")
-          if (!length(color_var_label)) color_var_label <- color_var
-
-          plot_data <- df |>
-            dplyr::select(!!as.name(group_var), !!as.name(x_var), !!as.name(y_var), !!as.name(color_var)) |>
-            dplyr::mutate(!!as.name(color_var) := factor(!!as.name(color_var), levels = names(colors))) %>%
-            dplyr::mutate(customdata = dplyr::row_number()) |>
-            dplyr::mutate(
-              tooltip = {
-                if (is.null(tooltip_vars)) {
-                  # Default tooltip: show group, x, y, color variables with labels
-                  paste(
-                    paste(group_var_label, ":", !!as.name(group_var)),
-                    paste(x_var_label, ":", !!as.name(x_var)),
-                    paste(y_var_label, ":", !!as.name(y_var)),
-                    paste(color_var_label, ":", !!as.name(color_var)),
-                    sep = "<br>"
-                  )
-                } else {
-                  # Custom tooltip: show only specified columns
-                  cur_data <- dplyr::cur_data()
-                  cols <- intersect(tooltip_vars, names(cur_data))
-                  if (!length(cols)) {
-                    # Fallback to default if no valid columns found
-                    paste(
-                      paste(group_var_label, ":", !!as.name(group_var)),
-                      paste(x_var_label, ":", !!as.name(x_var)),
-                      paste(y_var_label, ":", !!as.name(y_var)),
-                      paste(color_var_label, ":", !!as.name(color_var)),
-                      sep = "<br>"
-                    )
-                  } else {
-                    # Create tooltip from specified columns
-                    sub <- cur_data[cols]
-                    labels <- vapply(cols, function(cn) {
-                      if (cn == group_var) {
-                        lb <- group_var_label
-                      } else if (cn == x_var) {
-                        lb <- x_var_label
-                      } else if (cn == y_var) {
-                        lb <- y_var_label
-                      } else if (cn == color_var) {
-                        lb <- color_var_label
-                      } else {
-                        lb <- attr(sub[[cn]], "label")
-                      }
-                      if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
-                    }, character(1))
-                    values <- lapply(sub, as.character)
-                    parts <- Map(function(v, l) paste0(l, ": ", v), values, labels)
-                    do.call(paste, c(parts, sep = "<br>"))
-                  }
-                }
-              }
-            )
-
-          segments_df <- plot_data %>%
-            dplyr::arrange(!!as.name(group_var), !!as.name(x_var)) %>%
-            dplyr::group_by(!!as.name(group_var)) %>%
-            dplyr::mutate(
-              x = !!as.name(x_var),
-              y = !!as.name(y_var),
-              xend = dplyr::lead(!!as.name(x_var)),
-              yend = dplyr::lead(!!as.name(y_var)),
-              color_var_seg = dplyr::lead(!!as.name(color_var))
-            ) %>%
-            dplyr::filter(!is.na(xend))
-
-          p <- plotly::plot_ly(
-            data = segments_df,
-            customdata = ~customdata,
-            source = source
-          ) %>%
-            plotly::add_segments(
-              x = ~x, y = ~y,
-              xend = ~xend, yend = ~yend,
-              color = ~color_var_seg,
-              colors = colors,
-              showlegend = TRUE
-            ) %>%
-            plotly::add_markers(
-              data = plot_data,
-              x = stats::as.formula(sprintf("~%s", x_var)),
-              y = stats::as.formula(sprintf("~%s", y_var)),
-              color = stats::as.formula(sprintf("~%s", color_var)),
-              colors = colors,
-              text = ~tooltip,
-              hoverinfo = "text"
-            ) |>
-            plotly::layout(dragmode = "select")
-
-          p
-        },
-        df = str2lang(plot_dataname)
-      )
+      data() |>
+        within(
+          code,
+          code = spaghettiplotly(
+            df = plot_dataname,
+            group_var = group_var,
+            x_var = x_var,
+            y_var = y_var,
+            color_var = color_var,
+            colors = color_inputs(),
+            source = session$ns("spaghetti"),
+            tooltip_vars = tooltip_vars
+          )
+        )
     })
 
 
@@ -280,4 +179,152 @@ srv_p_spaghetti <- function(id,
       }
     })
   })
+}
+
+#' Generate Spaghetti Plotly Code
+#'
+#' Creates code expression that generates a spaghetti plot with tooltips using plotly.
+#' This function includes all the data manipulation and plot creation logic
+#' from tm_p_spaghetti module, including label extraction, tooltip generation,
+#' line segments creation, and event registration.
+#'
+#' @param df (`character(1)`) Name of the data frame to plot
+#' @param group_var (`character(1)`) Name of the grouping variable that defines individual trajectories
+#' @param x_var (`character(1)`) Name of the variable to be used for x-axis (typically time)
+#' @param y_var (`character(1)`) Name of the variable to be used for y-axis (typically a measurement)
+#' @param color_var (`character(1)`) Name of the variable to be used for coloring points and lines
+#' @param colors (`character`) Named vector of colors for color_var levels
+#' @param source (`character(1)`) Source identifier for plotly events
+#' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
+#' If `NULL`, default tooltip is created showing group, x, y, and color variables.
+#'
+#' @return A code expression that when evaluated creates a plotly plot object
+#'
+#' @examples
+#' # Generate code for a spaghetti plot
+#' code <- spaghettiplotly(
+#'   df = "longitudinal_data",
+#'   group_var = "subject_id",
+#'   x_var = "time_point",
+#'   y_var = "response",
+#'   color_var = "treatment",
+#'   colors = c("Active" = "red", "Placebo" = "blue"),
+#'   source = "spaghetti",
+#'   tooltip_vars = c("subject_id", "treatment")
+#' )
+#'
+spaghettiplotly <- function(df, group_var, x_var, y_var, color_var, colors, source, tooltip_vars = NULL) {
+  substitute(
+    {
+      group_var_label <- attr(df_sym[[group_var_str]], "label")
+      if (!length(group_var_label)) group_var_label <- group_var_str
+
+      x_var_label <- attr(df_sym[[x_var_str]], "label")
+      if (!length(x_var_label)) x_var_label <- x_var_str
+
+      y_var_label <- attr(df_sym[[y_var_str]], "label")
+      if (!length(y_var_label)) y_var_label <- y_var_str
+
+      color_var_label <- attr(df_sym[[color_var_str]], "label")
+      if (!length(color_var_label)) color_var_label <- color_var_str
+
+      plot_data <- df_sym |>
+        dplyr::select(!!as.name(group_var_str), !!as.name(x_var_str), !!as.name(y_var_str), !!as.name(color_var_str)) |>
+        dplyr::mutate(!!as.name(color_var_str) := factor(!!as.name(color_var_str), levels = names(colors_sym))) %>%
+        dplyr::mutate(customdata = dplyr::row_number()) |>
+        dplyr::mutate(
+          tooltip = {
+            if (is.null(tooltip_vars_sym)) {
+              paste(
+                paste(group_var_label, ":", !!as.name(group_var_str)),
+                paste(x_var_label, ":", !!as.name(x_var_str)),
+                paste(y_var_label, ":", !!as.name(y_var_str)),
+                paste(color_var_label, ":", !!as.name(color_var_str)),
+                sep = "<br>"
+              )
+            } else {
+              cur_data <- dplyr::cur_data()
+              cols <- intersect(tooltip_vars_sym, names(cur_data))
+              if (!length(cols)) {
+                paste(
+                  paste(group_var_label, ":", !!as.name(group_var_str)),
+                  paste(x_var_label, ":", !!as.name(x_var_str)),
+                  paste(y_var_label, ":", !!as.name(y_var_str)),
+                  paste(color_var_label, ":", !!as.name(color_var_str)),
+                  sep = "<br>"
+                )
+              } else {
+                sub <- cur_data[cols]
+                labels <- vapply(cols, function(cn) {
+                  if (cn == group_var_str) {
+                    lb <- group_var_label
+                  } else if (cn == x_var_str) {
+                    lb <- x_var_label
+                  } else if (cn == y_var_str) {
+                    lb <- y_var_label
+                  } else if (cn == color_var_str) {
+                    lb <- color_var_label
+                  } else {
+                    lb <- attr(sub[[cn]], "label")
+                  }
+                  if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
+                }, character(1))
+                values <- lapply(sub, as.character)
+                parts <- Map(function(v, l) paste0(l, ": ", v), values, labels)
+                do.call(paste, c(parts, sep = "<br>"))
+              }
+            }
+          }
+        )
+
+      segments_df <- plot_data %>%
+        dplyr::arrange(!!as.name(group_var_str), !!as.name(x_var_str)) %>%
+        dplyr::group_by(!!as.name(group_var_str)) %>%
+        dplyr::mutate(
+          x = !!as.name(x_var_str),
+          y = !!as.name(y_var_str),
+          xend = dplyr::lead(!!as.name(x_var_str)),
+          yend = dplyr::lead(!!as.name(y_var_str)),
+          color_var_seg = dplyr::lead(!!as.name(color_var_str))
+        ) %>%
+        dplyr::filter(!is.na(xend))
+
+      p <- plotly::plot_ly(
+        data = segments_df,
+        customdata = ~customdata,
+        source = source_sym
+      ) %>%
+        plotly::add_segments(
+          x = ~x, y = ~y,
+          xend = ~xend, yend = ~yend,
+          color = ~color_var_seg,
+          colors = colors_sym,
+          showlegend = TRUE
+        ) %>%
+        plotly::add_markers(
+          data = plot_data,
+          x = ~x_var_sym,
+          y = ~y_var_sym,
+          color = ~color_var_sym,
+          colors = colors_sym,
+          text = ~tooltip,
+          hoverinfo = "text"
+        ) |>
+        plotly::layout(dragmode = "select")
+    },
+    list(
+      df_sym = str2lang(df),
+      group_var_sym = str2lang(group_var),
+      x_var_sym = str2lang(x_var),
+      y_var_sym = str2lang(y_var),
+      color_var_sym = str2lang(color_var),
+      group_var_str = group_var,
+      x_var_str = x_var,
+      y_var_str = y_var,
+      color_var_str = color_var,
+      colors_sym = colors,
+      source_sym = source,
+      tooltip_vars_sym = tooltip_vars
+    )
+  )
 }

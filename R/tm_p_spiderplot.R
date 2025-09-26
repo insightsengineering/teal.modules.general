@@ -26,6 +26,7 @@
 #' If `NULL`, default colors will be used.
 #' @param point_symbols (`named character` or `NULL`) Valid plotly symbol names named by levels of `color_var` column.
 #' If `NULL`, default symbols will be used.
+#' @param plot_height (`numeric(3)`) Vector of length 3 with c(default, min, max) plot height values.
 #'
 #' @inherit shared_params return
 #'
@@ -226,130 +227,27 @@ srv_p_spiderplot <- function(id,
         symbol = point_symbols
       )
 
-      within(
-        data(),
-        dataname = str2lang(plot_dataname),
-        filter_event_var_lang = str2lang(input$filter_event_var),
-        time_var = input$time_var,
-        value_var = input$value_var,
-        subject_var = input$subject_var,
-        filter_event_var = input$filter_event_var,
-        selected_event = input$filter_event_var_level,
-        color_var = input$color_var,
-        colors = color_inputs(),
-        symbols = adjusted_symbols,
-        size_var = size_var,
-        height = input$plot_height,
-        point_size = 10,
-        title = sprintf("%s over time", input$filter_event_var_level),
-        tooltip_vars = tooltip_vars,
-        source = session$ns("spiderplot"),
-        expr = {
-          plot_data <- dataname %>%
-            dplyr::filter(filter_event_var_lang == selected_event) %>%
-            dplyr::arrange(!!as.name(subject_var), !!as.name(time_var)) %>%
-            dplyr::group_by(!!as.name(subject_var))
-          subject_var_label <- attr(plot_data[[subject_var]], "label")
-          if (!length(subject_var_label)) subject_var_label <- subject_var
-          time_var_label <- attr(plot_data[[time_var]], "label")
-          if (!length(time_var_label)) time_var_label <- time_var
-          value_var_label <- attr(plot_data[[value_var]], "label")
-          if (!length(value_var_label)) value_var_label <- value_var
-          color_var_label <- attr(plot_data[[color_var]], "label")
-          if (!length(color_var_label)) color_var_label <- color_var
-          plot_data <- plot_data |>
-            dplyr::mutate(customdata = dplyr::row_number())
-
-          if (is.null(size_var)) {
-            size <- point_size
-          } else {
-            size <- stats::as.formula(sprintf("~%s", size_var))
-          }
-
-          p <- plot_data %>%
-            dplyr::ungroup() %>%
-            dplyr::mutate(
-              x = dplyr::lag(!!as.name(time_var), default = 0),
-              y = dplyr:::lag(!!as.name(value_var), default = 0),
-              tooltip = {
-                if (is.null(tooltip_vars)) {
-                  # Default tooltip: show subject, x, y, color variables with labels
-                  sprintf(
-                    "%s: %s <br>%s: %s <br>%s: %s%% <br>",
-                    subject_var_label, !!as.name(subject_var),
-                    time_var_label, !!as.name(time_var),
-                    value_var_label, !!as.name(value_var) * 100
-                  )
-                } else {
-                  # Custom tooltip: show only specified columns
-                  cur_data <- dplyr::cur_data()
-                  cols <- intersect(tooltip_vars, names(cur_data))
-                  if (!length(cols)) {
-                    # Fallback to default if no valid columns found
-                    sprintf(
-                      "%s: %s <br>%s: %s <br>%s: %s%% <br>",
-                      subject_var_label, !!as.name(subject_var),
-                      time_var_label, !!as.name(time_var),
-                      value_var_label, !!as.name(value_var) * 100
-                    )
-                  } else {
-                    # Create tooltip from specified columns
-                    sub <- cur_data[cols]
-                    labels <- vapply(cols, function(cn) {
-                      if (cn == subject_var) {
-                        lb <- subject_var_label
-                      } else if (cn == time_var) {
-                        lb <- time_var_label
-                      } else if (cn == value_var) {
-                        lb <- value_var_label
-                      } else if (cn == color_var) {
-                        lb <- color_var_label
-                      } else {
-                        lb <- attr(sub[[cn]], "label")
-                      }
-                      if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
-                    }, character(1))
-                    values <- lapply(sub, as.character)
-                    parts <- Map(function(v, l) paste0(l, ": ", v), values, labels)
-                    do.call(paste, c(parts, sep = "<br>"))
-                  }
-                }
-              }
-            ) %>%
-            dplyr::ungroup() %>%
-            plotly::plot_ly(
-              source = source,
-              height = height,
-              color = stats::as.formula(sprintf("~%s", color_var)),
-              colors = colors,
-              symbols = symbols
-            ) %>%
-            plotly::add_segments(
-              x = ~x,
-              y = ~y,
-              xend = stats::as.formula(sprintf("~%s", time_var)),
-              yend = stats::as.formula(sprintf("~%s", value_var)),
-              customdata = NULL
-            ) %>%
-            plotly::add_markers(
-              x = stats::as.formula(sprintf("~%s", time_var)),
-              y = stats::as.formula(sprintf("~%s", value_var)),
-              symbol = stats::as.formula(sprintf("~%s", color_var)),
-              size = size,
-              text = ~tooltip,
-              hoverinfo = "text",
-              customdata = ~customdata
-            ) %>%
-            plotly::layout(
-              xaxis = list(title = time_var_label),
-              yaxis = list(title = value_var_label),
-              title = title,
-              dragmode = "select"
-            ) %>%
-            plotly::config(displaylogo = FALSE) %>%
-            plotly::layout(title = title)
-        }
-      )
+      data() |>
+        within(
+          code,
+          code = spiderplotly(
+            df = plot_dataname,
+            time_var = input$time_var,
+            value_var = input$value_var,
+            subject_var = input$subject_var,
+            filter_event_var = input$filter_event_var,
+            selected_event = input$filter_event_var_level,
+            color_var = input$color_var,
+            colors = color_inputs(),
+            symbols = adjusted_symbols,
+            size_var = size_var,
+            height = input$plot_height,
+            point_size = 10,
+            title = sprintf("%s over time", input$filter_event_var_level),
+            tooltip_vars = tooltip_vars,
+            source = session$ns("spiderplot")
+          )
+        )
     })
 
     output$plot <- output$plot <- plotly::renderPlotly(plotly::event_register(
@@ -372,40 +270,183 @@ srv_p_spiderplot <- function(id,
         choices = data()[[plot_dataname]][[subject_col]]
       )
     })
-
-    plotly_data <- reactive({
-      data.frame(
-        x = unlist(input$plot_data$x),
-        y = unlist(input$plot_data$y),
-        customdata = unlist(input$plot_data$customdata),
-        curve = unlist(input$plot_data$curveNumber),
-        index = unlist(input$plot_data$pointNumber)
-      )
-    })
-
-    plotly_selected <- reactive(
-      plotly::event_data("plotly_selected", source = session$ns("spiderplot"))
-    )
-
-    reactive({
-      if (is.null(plotly_selected())) {
-        plotly_q()
-      } else {
-        q <- plotly_q() |>
-          within(
-            {
-              selected_plot_data <- plot_data |>
-                dplyr::filter(customdata %in% plotly_selected_customdata)
-              df <- df |>
-                dplyr::filter(!!as.name(subject_var_string) %in% selected_plot_data[[subject_var_string]])
-            },
-            df = str2lang(plot_dataname),
-            subject_var_string = subject_var$selected,
-            plotly_selected_customdata = plotly_selected()$customdata
-          )
-        attr(q, "has_brushing") <- TRUE
-        q
-      }
-    })
   })
+}
+
+#' Generate Spider Plotly Code
+#'
+#' Creates code expression that generates a spider plot with tooltips using plotly.
+#' This function includes all the data manipulation and plot creation logic
+#' from tm_p_spiderplot module, including filtering, label extraction, tooltip generation,
+#' line segments creation, and event registration.
+#'
+#' @param df (`character(1)`) Name of the data frame to plot
+#' @param time_var (`character(1)`) Name of the numeric column to be used as x-axis
+#' @param value_var (`character(1)`) Name of the numeric column to be used as y-axis
+#' @param subject_var (`character(1)`) Name of the factor or character column to be used as grouping variable
+#' @param filter_event_var (`character(1)`) Name of the factor or character column to be used to filter the data
+#' @param selected_event (`character(1)`) Selected event value for filtering
+#' @param color_var (`character(1)`) Name of the factor or character column to be used to differentiate colors and symbols
+#' @param colors (`character`) Named vector of colors for color_var levels
+#' @param symbols (`character`) Named vector of plotly symbols for color_var levels
+#' @param size_var (`character(1)` or `NULL`) If provided, this numeric column will determine point size
+#' @param height (`numeric(1)`) Plot height in pixels
+#' @param point_size (`numeric(1)`) Fixed point size when size_var is NULL
+#' @param title (`character(1)`) Plot title
+#' @param source (`character(1)`) Source identifier for plotly events
+#' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
+#' If `NULL`, default tooltip is created showing time, value, subject, and color variables.
+#'
+#' @return A code expression that when evaluated creates a plotly plot object
+#'
+#' @examples
+#' # Generate code for a spider plot
+#' code <- spiderplotly(
+#'   df = "spider_data",
+#'   time_var = "time_point",
+#'   value_var = "response",
+#'   subject_var = "subject_id",
+#'   filter_event_var = "event_type",
+#'   selected_event = "response",
+#'   color_var = "treatment",
+#'   colors = c("Active" = "red", "Placebo" = "blue"),
+#'   symbols = c("Active" = "circle", "Placebo" = "square"),
+#'   size_var = NULL,
+#'   height = 600,
+#'   point_size = 10,
+#'   title = "Spider Plot",
+#'   source = "spiderplot",
+#'   tooltip_vars = c("subject_id", "treatment")
+#' )
+#'
+spiderplotly <- function(df, time_var, value_var, subject_var, filter_event_var, selected_event,
+                         color_var, colors, symbols, size_var = NULL, height = 600, point_size = 10,
+                         title = "Spider Plot", source, tooltip_vars = NULL) {
+  substitute(
+    {
+      plot_data <- df_sym %>%
+        dplyr::filter(!!as.name(filter_event_var_str) == selected_event_sym) %>%
+        dplyr::arrange(!!as.name(subject_var_str), !!as.name(time_var_str)) %>%
+        dplyr::group_by(!!as.name(subject_var_str))
+
+      subject_var_label <- attr(plot_data[[subject_var_str]], "label")
+      if (!length(subject_var_label)) subject_var_label <- subject_var_str
+      time_var_label <- attr(plot_data[[time_var_str]], "label")
+      if (!length(time_var_label)) time_var_label <- time_var_str
+      value_var_label <- attr(plot_data[[value_var_str]], "label")
+      if (!length(value_var_label)) value_var_label <- value_var_str
+      color_var_label <- attr(plot_data[[color_var_str]], "label")
+      if (!length(color_var_label)) color_var_label <- color_var_str
+
+      plot_data <- plot_data |>
+        dplyr::mutate(customdata = dplyr::row_number())
+
+      if (is.null(size_var_sym)) {
+        size <- point_size_sym
+      } else {
+        size <- ~size_var_lang
+      }
+
+      p <- plot_data %>%
+        dplyr::ungroup() %>%
+        dplyr::mutate(
+          x = dplyr::lag(!!as.name(time_var_str), default = 0),
+          y = dplyr::lag(!!as.name(value_var_str), default = 0),
+          tooltip = {
+            if (is.null(tooltip_vars_sym)) {
+              sprintf(
+                "%s: %s <br>%s: %s <br>%s: %s%% <br>",
+                subject_var_label, !!as.name(subject_var_str),
+                time_var_label, !!as.name(time_var_str),
+                value_var_label, !!as.name(value_var_str) * 100
+              )
+            } else {
+              cur_data <- dplyr::cur_data()
+              cols <- intersect(tooltip_vars_sym, names(cur_data))
+              if (!length(cols)) {
+                sprintf(
+                  "%s: %s <br>%s: %s <br>%s: %s%% <br>",
+                  subject_var_label, !!as.name(subject_var_str),
+                  time_var_label, !!as.name(time_var_str),
+                  value_var_label, !!as.name(value_var_str) * 100
+                )
+              } else {
+                sub <- cur_data[cols]
+                labels <- vapply(cols, function(cn) {
+                  if (cn == subject_var_str) {
+                    lb <- subject_var_label
+                  } else if (cn == time_var_str) {
+                    lb <- time_var_label
+                  } else if (cn == value_var_str) {
+                    lb <- value_var_label
+                  } else if (cn == color_var_str) {
+                    lb <- color_var_label
+                  } else {
+                    lb <- attr(sub[[cn]], "label")
+                  }
+                  if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
+                }, character(1))
+                values <- lapply(sub, as.character)
+                parts <- Map(function(v, l) paste0(l, ": ", v), values, labels)
+                do.call(paste, c(parts, sep = "<br>"))
+              }
+            }
+          }
+        ) %>%
+        dplyr::ungroup() %>%
+        plotly::plot_ly(
+          source = source_sym,
+          height = height_sym,
+          color = ~color_var_sym,
+          colors = colors_sym,
+          symbols = symbols_sym
+        ) %>%
+        plotly::add_segments(
+          x = ~x,
+          y = ~y,
+          xend = ~time_var_sym,
+          yend = ~value_var_sym,
+          customdata = NULL
+        ) %>%
+        plotly::add_markers(
+          x = ~time_var_sym,
+          y = ~value_var_sym,
+          symbol = ~color_var_sym,
+          size = size,
+          text = ~tooltip,
+          hoverinfo = "text",
+          customdata = ~customdata
+        ) %>%
+        plotly::layout(
+          xaxis = list(title = time_var_label),
+          yaxis = list(title = value_var_label),
+          title = title_sym,
+          dragmode = "select"
+        ) %>%
+        plotly::config(displaylogo = FALSE) %>%
+        plotly::layout(title = title_sym)
+    },
+    list(
+      df_sym = str2lang(df),
+      time_var_sym = str2lang(time_var),
+      value_var_sym = str2lang(value_var),
+      subject_var_sym = str2lang(subject_var),
+      color_var_sym = str2lang(color_var),
+      size_var_lang = if (!is.null(size_var)) str2lang(size_var) else NULL,
+      time_var_str = time_var,
+      value_var_str = value_var,
+      subject_var_str = subject_var,
+      filter_event_var_str = filter_event_var,
+      color_var_str = color_var,
+      selected_event_sym = selected_event,
+      colors_sym = colors,
+      symbols_sym = symbols,
+      size_var_sym = size_var,
+      height_sym = height,
+      point_size_sym = point_size,
+      title_sym = title,
+      source_sym = source,
+      tooltip_vars_sym = tooltip_vars
+    )
+  )
 }

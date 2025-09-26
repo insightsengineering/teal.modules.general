@@ -14,6 +14,8 @@
 #' to be used as x-axis (subject identifiers).
 #' @param value_var (`character(1)`) Name of the numeric column in `plot_dataname`
 #' to be used as y-axis (values determining bar heights).
+#' @param sort_var (`character(1)` or `NULL`) Name of the column used for sorting subjects.
+#' If `NULL`, defaults to `value_var`.
 #' @param color_var (`character(1)` or `NULL`) Name of the factor or character column in `plot_dataname`
 #' to be used to differentiate bar colors. If `NULL`, all bars will have the same color.
 #' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
@@ -23,6 +25,7 @@
 #' @param value_arbitrary_hlines (`numeric` or `NULL`) Values in the same scale as `value_var` to add
 #' horizontal reference lines on the plot.
 #' @param plot_title (`character` or `NULL`) Title of the plot. If `NULL`, no title is displayed.
+#' @param plot_height (`numeric(3)`) Vector of length 3 with c(default, min, max) plot height values.
 #'
 #' @inherit shared_params return
 #'
@@ -174,121 +177,175 @@ srv_p_waterfall <- function(id,
     plotly_q <- reactive({
       req(data(), input$subject_var, input$value_var, input$sort_var, input$color_var, color_inputs())
 
-      within(
-        data(),
-        dataname = str2lang(plot_dataname),
-        subject_var = input$subject_var,
-        value_var = input$value_var,
-        sort_var = input$sort_var,
-        color_var = input$color_var,
-        colors = color_inputs(),
-        value_arbitrary_hlines = value_arbitrary_hlines,
-        height = input$plot_height,
-        title = sprintf("Waterfall plot"),
-        tooltip_vars = tooltip_vars,
-        source = session$ns("waterfall"),
-        expr = {
-          subject_var_label <- attr(dataname[[subject_var]], "label")
-          if (!length(subject_var_label)) subject_var_label <- subject_var
-          value_var_label <- attr(dataname[[value_var]], "label")
-          if (!length(value_var_label)) value_var_label <- value_var
-          color_var_label <- attr(dataname[[color_var]], "label")
-          if (!length(color_var_label)) color_var_label <- color_var
-
-
-          plot_data <- dplyr::mutate(
-            if (identical(sort_var, value_var) || is.null(sort_var)) {
-              dplyr::arrange(dataname, desc(!!as.name(value_var)))
-            } else {
-              dplyr::arrange(dataname, !!as.name(sort_var), desc(!!as.name(value_var)))
-            },
-            !!as.name(subject_var) := factor(!!as.name(subject_var), levels = unique(!!as.name(subject_var))),
-            tooltip = {
-              default_tip <- sprintf(
-                "%s: %s <br>%s: %s%% <br>%s: %s",
-                subject_var_label, !!as.name(subject_var),
-                value_var_label, !!as.name(value_var),
-                color_var_label, !!as.name(color_var)
-              )
-              if (is.null(tooltip_vars)) {
-                default_tip
-              } else {
-                cur_data <- dplyr::pick(dplyr::everything())
-                cols <- intersect(tooltip_vars, names(cur_data))
-                if (!length(cols)) {
-                  default_tip
-                } else {
-                  sub <- cur_data[cols]
-                  labels <- vapply(cols, function(cn) {
-                    lb <- attr(sub[[cn]], "label")
-                    if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
-                  }, character(1))
-                  values <- lapply(sub, as.character)
-                  parts <- Map(function(v, l) paste0(l, ": ", v), values, labels)
-                  do.call(paste, c(parts, sep = "<br>"))
-                }
-              }
-            }
-          ) %>%
-            dplyr::filter(!duplicated(!!as.name(subject_var))) %>%
-            dplyr::mutate(customdata = dplyr::row_number())
-          p <- plotly::plot_ly(
-            data = plot_data,
-            source = source,
-            customdata = ~customdata,
-            height = height
-          ) %>%
-            plotly::add_bars(
-              x = stats::as.formula(sprintf("~%s", subject_var)),
-              y = stats::as.formula(sprintf("~%s", value_var)),
-              color = stats::as.formula(sprintf("~%s", color_var)),
-              colors = colors,
-              text = ~tooltip,
-              hoverinfo = "text"
-            ) %>%
-            plotly::layout(
-              shapes = lapply(value_arbitrary_hlines, function(y) {
-                list(
-                  type = "line",
-                  x0 = 0,
-                  x1 = 1,
-                  xref = "paper",
-                  y0 = y,
-                  y1 = y,
-                  line = list(color = "black", dash = "dot")
-                )
-              }),
-              xaxis = list(title = subject_var_label, tickangle = -45),
-              yaxis = list(title = value_var_label),
-              legend = list(title = list(text = "<b>Color by:</b>")),
-              barmode = "relative"
-            ) %>%
-            plotly::layout(dragmode = "select") %>%
-            plotly::config(displaylogo = FALSE) %>%
-            plotly::layout(title = title)
-        },
-        height = input$plot_height
-      )
+      data() |>
+        within(
+          code,
+          code = waterfallplotly(
+            df = plot_dataname,
+            subject_var = input$subject_var,
+            value_var = input$value_var,
+            sort_var = input$sort_var,
+            color_var = input$color_var,
+            colors = color_inputs(),
+            value_arbitrary_hlines = value_arbitrary_hlines,
+            height = input$plot_height,
+            title = "Waterfall plot",
+            tooltip_vars = tooltip_vars,
+            source = session$ns("waterfall")
+          )
+        )
     })
 
     output$plot <- plotly::renderPlotly(plotly::event_register(plotly_q()$p, "plotly_selected"))
-
-    plotly_selected <- reactive(plotly::event_data("plotly_selected", source = session$ns("waterfall")))
-
-    reactive({
-      req(plotly_selected())
-      plotly_q() |>
-        within(
-          {
-            selected_plot_data <- plot_data |>
-              dplyr::filter(customdata %in% plotly_selected_customdata)
-            dataname <- dataname |>
-              dplyr::filter(!!sym(subject_var) %in% selected_plot_data[[subject_var]])
-          },
-          dataname = str2lang(plot_dataname),
-          subject_var = input$subject_var,
-          plotly_selected_customdata = plotly_selected()$customdata
-        )
-    })
   })
+}
+
+#' Generate Waterfall Plotly Code
+#'
+#' Creates code expression that generates a waterfall plot with tooltips using plotly.
+#' This function includes all the data manipulation and plot creation logic
+#' from tm_p_waterfall module, including sorting, label extraction, tooltip generation,
+#' bar chart creation, and horizontal reference lines.
+#'
+#' @param df (`character(1)`) Name of the data frame to plot
+#' @param subject_var (`character(1)`) Name of the factor or character column to be used as x-axis (subject identifiers)
+#' @param value_var (`character(1)`) Name of the numeric column to be used as y-axis (values determining bar heights)
+#' @param sort_var (`character(1)` or `NULL`) Name of the column whose values determine sorting order. If `NULL` or same as `value_var`, sorts by value_var descending
+#' @param color_var (`character(1)` or `NULL`) Name of the factor or character column to differentiate bar colors. If `NULL`, all bars have same color
+#' @param colors (`character`) Named vector of colors for color_var levels
+#' @param value_arbitrary_hlines (`numeric` or `NULL`) Values for horizontal reference lines
+#' @param height (`numeric(1)`) Plot height in pixels
+#' @param title (`character(1)`) Plot title
+#' @param source (`character(1)`) Source identifier for plotly events
+#' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
+#' If `NULL`, default tooltip is created showing subject, value, and color variables.
+#'
+#' @return A code expression that when evaluated creates a plotly plot object
+#'
+#' @examples
+#' # Generate code for a waterfall plot
+#' code <- waterfallplotly(
+#'   df = "waterfall_data",
+#'   subject_var = "subject_id",
+#'   value_var = "response_value",
+#'   sort_var = "response_value",
+#'   color_var = "response_category",
+#'   colors = c("CR" = "green", "PR" = "blue", "SD" = "yellow", "PD" = "red"),
+#'   value_arbitrary_hlines = c(20, -30),
+#'   height = 600,
+#'   title = "Response Waterfall Plot",
+#'   source = "waterfall",
+#'   tooltip_vars = c("subject_id", "response_category")
+#' )
+#'
+waterfallplotly <- function(df, subject_var, value_var, sort_var = NULL, color_var = NULL,
+                            colors, value_arbitrary_hlines = NULL, height = 600,
+                            title = "Waterfall plot", source, tooltip_vars = NULL) {
+  substitute(
+    {
+      subject_var_label <- attr(df_sym[[subject_var_str]], "label")
+      if (!length(subject_var_label)) subject_var_label <- subject_var_str
+      value_var_label <- attr(df_sym[[value_var_str]], "label")
+      if (!length(value_var_label)) value_var_label <- value_var_str
+      color_var_label <- attr(df_sym[[color_var_str]], "label")
+      if (!length(color_var_label)) color_var_label <- color_var_str
+
+      plot_data <- dplyr::mutate(
+        if (identical(sort_var_str, value_var_str) || is.null(sort_var_str)) {
+          dplyr::arrange(df_sym, desc(!!as.name(value_var_str)))
+        } else {
+          dplyr::arrange(df_sym, !!as.name(sort_var_str), desc(!!as.name(value_var_str)))
+        },
+        !!as.name(subject_var_str) := factor(!!as.name(subject_var_str), levels = unique(!!as.name(subject_var_str))),
+        tooltip = {
+          default_tip <- sprintf(
+            "%s: %s <br>%s: %s%% <br>%s: %s",
+            subject_var_label, !!as.name(subject_var_str),
+            value_var_label, !!as.name(value_var_str),
+            color_var_label, !!as.name(color_var_str)
+          )
+          if (is.null(tooltip_vars_sym)) {
+            default_tip
+          } else {
+            cur_data <- dplyr::pick(dplyr::everything())
+            cols <- intersect(tooltip_vars_sym, names(cur_data))
+            if (!length(cols)) {
+              default_tip
+            } else {
+              sub <- cur_data[cols]
+              labels <- vapply(cols, function(cn) {
+                if (cn == subject_var_str) {
+                  lb <- subject_var_label
+                } else if (cn == value_var_str) {
+                  lb <- value_var_label
+                } else if (cn == color_var_str) {
+                  lb <- color_var_label
+                } else {
+                  lb <- attr(sub[[cn]], "label")
+                }
+                if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
+              }, character(1))
+              values <- lapply(sub, as.character)
+              parts <- Map(function(v, l) paste0(l, ": ", v), values, labels)
+              do.call(paste, c(parts, sep = "<br>"))
+            }
+          }
+        }
+      ) %>%
+        dplyr::filter(!duplicated(!!as.name(subject_var_str))) %>%
+        dplyr::mutate(customdata = dplyr::row_number())
+
+      p <- plotly::plot_ly(
+        data = plot_data,
+        source = source_sym,
+        customdata = ~customdata,
+        height = height_sym
+      ) %>%
+        plotly::add_bars(
+          x = ~subject_var_sym,
+          y = ~value_var_sym,
+          color = ~color_var_sym,
+          colors = colors_sym,
+          text = ~tooltip,
+          hoverinfo = "text"
+        ) %>%
+        plotly::layout(
+          shapes = lapply(value_arbitrary_hlines_sym, function(y) {
+            list(
+              type = "line",
+              x0 = 0,
+              x1 = 1,
+              xref = "paper",
+              y0 = y,
+              y1 = y,
+              line = list(color = "black", dash = "dot")
+            )
+          }),
+          xaxis = list(title = subject_var_label, tickangle = -45),
+          yaxis = list(title = value_var_label),
+          legend = list(title = list(text = "<b>Color by:</b>")),
+          barmode = "relative"
+        ) %>%
+        plotly::layout(dragmode = "select") %>%
+        plotly::config(displaylogo = FALSE) %>%
+        plotly::layout(title = title_sym)
+    },
+    list(
+      df_sym = str2lang(df),
+      subject_var_sym = str2lang(subject_var),
+      value_var_sym = str2lang(value_var),
+      sort_var_sym = if (!is.null(sort_var)) str2lang(sort_var) else NULL,
+      color_var_sym = if (!is.null(color_var)) str2lang(color_var) else NULL,
+      subject_var_str = subject_var,
+      value_var_str = value_var,
+      sort_var_str = sort_var,
+      color_var_str = color_var,
+      colors_sym = colors,
+      value_arbitrary_hlines_sym = value_arbitrary_hlines,
+      height_sym = height,
+      title_sym = title,
+      source_sym = source,
+      tooltip_vars_sym = tooltip_vars
+    )
+  )
 }

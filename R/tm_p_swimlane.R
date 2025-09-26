@@ -26,6 +26,8 @@
 #' If `NULL`, default colors will be used.
 #' @param point_symbols (`named character` or `NULL`) Valid plotly symbol names named by levels of `color_var` column.
 #' If `NULL`, default symbols will be used.
+#' @param plot_height (`numeric(3)`) Vector of length 3 with c(default, min, max) plot height values.
+#' @param show_widgets (`logical(1)`) Whether to show module widgets.
 #'
 #' @inherit shared_params return
 #'
@@ -197,151 +199,24 @@ srv_p_swimlane <- function(id,
         levels = unique(data()[[plot_dataname]][[input$color_var]]),
         symbol = point_symbols
       )
-      within(
-        data(),
-        dataname = str2lang(plot_dataname),
-        time_var = input$time_var,
-        subject_var = input$subject_var,
-        color_var = input$color_var,
-        group_var = input$group_var,
-        sort_var = input$sort_var,
-        point_size = point_size,
-        colors = color_inputs(),
-        symbols = adjusted_symbols,
-        height = input$plot_height,
-        tooltip_vars = tooltip_vars,
-        source = session$ns("swimlane"),
-        expr = {
-          subject_var_label <- attr(dataname[[subject_var]], "label")
-          if (!length(subject_var_label)) subject_var_label <- subject_var
-          time_var_label <- attr(dataname[[time_var]], "label")
-          if (!length(time_var_label)) time_var_label <- time_var
-          plot_data <- dataname |>
-            dplyr::mutate(customdata = dplyr::row_number())
-
-          # forcats::fct_reorder doesn't seem to work here
-          subject_levels <- plot_data %>%
-            dplyr::group_by(!!as.name(subject_var)) %>%
-            dplyr::summarize(v = max(!!as.name(sort_var))) %>%
-            dplyr::ungroup() %>%
-            dplyr::arrange(v) %>%
-            dplyr::pull(!!as.name(subject_var))
-          plot_data[[subject_var]] <- factor(plot_data[[subject_var]], levels = subject_levels)
-
-          min_size <- min(point_size, na.rm = TRUE)
-
-          if (length(point_size) > 1) {
-            plot_data <- plot_data %>%
-              dplyr::mutate(
-                size_var = ifelse(
-                  as.character(color_var) %in% names(point_size),
-                  point_size[as.character(color_var)],
-                  min_size
-                )
-              )
-          } else {
-            plot_data <- plot_data %>%
-              dplyr::mutate(size_var = point_size)
-          }
-
-          p <- plot_data %>%
-            dplyr::mutate(
-              !!as.name(color_var) := {
-                # Store the original label
-                original_label <- attr(.data[[color_var]], "label")
-                # Create the factor
-                new_factor <- factor(.data[[color_var]], levels = names(colors))
-                # Restore the label
-                attr(new_factor, "label") <- original_label
-                new_factor
-              }
-            ) %>%
-            dplyr::group_by(!!as.name(subject_var), !!as.name(time_var)) %>%
-            dplyr::mutate(
-              tooltip = {
-                default_tip <- paste(
-                  unique(
-                    c(
-                      paste(subject_var_label, !!as.name(subject_var)),
-                      paste(time_var_label, !!as.name(time_var)),
-                      sprintf(
-                        "%s: %s",
-                        tools::toTitleCase(gsub("[^0-9A-Za-z]+", " ", !!as.name(group_var))),
-                        !!as.name(color_var)
-                      )
-                    )
-                  ),
-                  collapse = "<br>"
-                )
-                if (is.null(tooltip_vars)) {
-                  default_tip
-                } else {
-                  cur_data <- dplyr::cur_data()
-                  grouping_vars <- list()
-                  grouping_vars[[subject_var]] <- dplyr::cur_group()[[subject_var]]
-                  grouping_vars[[time_var]] <- dplyr::cur_group()[[time_var]]
-                  cur_data <- c(cur_data, grouping_vars)
-
-                  cols <- intersect(tooltip_vars, names(cur_data))
-                  if (!length(cols)) {
-                    default_tip
-                  } else {
-                    sub <- cur_data[cols]
-                    labels <- vapply(cols, function(cn) {
-                      if (cn == subject_var) {
-                        lb <- subject_var_label
-                      } else if (cn == time_var) {
-                        lb <- time_var_label
-                      } else {
-                        lb <- attr(sub[[cn]], "label")
-                      }
-                      if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
-                    }, character(1))
-                    values <- lapply(sub, as.character)
-                    parts <- Map(function(v, l) paste0(l, ": ", v), values, labels)
-                    do.call(paste, c(parts, sep = "<br>"))
-                  }
-                }
-              }
-            ) %>%
-            dplyr::ungroup() %>%
-            plotly::plot_ly(
-              source = source,
-              colors = colors,
-              symbols = symbols,
-              height = height,
-              customdata = ~customdata
-            ) %>%
-            plotly::add_markers(
-              x = stats::as.formula(sprintf("~%s", time_var)),
-              y = stats::as.formula(sprintf("~%s", subject_var)),
-              color = stats::as.formula(sprintf("~%s", color_var)),
-              symbol = stats::as.formula(sprintf("~%s", color_var)),
-              size = ~size_var,
-              text = ~tooltip,
-              hoverinfo = "text"
-            ) %>%
-            plotly::add_segments(
-              x = ~0,
-              xend = ~study_day,
-              y = stats::as.formula(sprintf("~%s", subject_var)),
-              yend = stats::as.formula(sprintf("~%s", subject_var)),
-              data = plot_data |>
-                dplyr::group_by(!!as.name(subject_var), !!as.name(group_var)) |>
-                dplyr::summarise(study_day = max(!!as.name(time_var))),
-              line = list(width = 2, color = "grey"),
-              showlegend = FALSE,
-              customdata = NULL
-            ) %>%
-            plotly::layout(
-              xaxis = list(title = time_var_label),
-              yaxis = list(title = subject_var_label)
-            ) %>%
-            plotly::layout(dragmode = "select", title = title) %>%
-            plotly::config(displaylogo = FALSE) %>%
-            plotly::layout(title = title)
-        }
-      )
+      data() |>
+        within(
+          code,
+          code = swimlaneplotly(
+            df = plot_dataname,
+            time_var = input$time_var,
+            subject_var = input$subject_var,
+            color_var = input$color_var,
+            group_var = input$group_var,
+            sort_var = input$sort_var,
+            point_size = point_size,
+            colors = color_inputs(),
+            symbols = adjusted_symbols,
+            height = input$plot_height,
+            tooltip_vars = tooltip_vars,
+            source = session$ns("swimlane")
+          )
+        )
     })
 
     output$plot <- plotly::renderPlotly({
@@ -350,25 +225,196 @@ srv_p_swimlane <- function(id,
         setup_trigger_tooltips(session$ns) |>
         plotly::event_register("plotly_selected")
     })
-
-    plotly_selected <- reactive({
-      plotly::event_data("plotly_selected", source = session$ns("swimlane"))
-    })
-
-    reactive({
-      req(plotly_selected())
-      plotly_q() |>
-        within(
-          {
-            selected_plot_data <- plot_data |>
-              dplyr::filter(customdata %in% plotly_selected_customdata)
-            dataname <- dataname |>
-              dplyr::filter(!!sym(subject_var) %in% selected_plot_data[[subject_var]])
-          },
-          dataname = str2lang(plot_dataname),
-          subject_var = input$subject_var,
-          plotly_selected_customdata = plotly_selected()$customdata
-        )
-    })
   })
+}
+
+#' Generate Swimlane Plotly Code
+#'
+#' Creates code expression that generates a swimlane plot with tooltips using plotly.
+#' This function includes all the data manipulation and plot creation logic
+#' from tm_p_swimlane module, including subject sorting, label extraction, tooltip generation,
+#' marker and segment creation, and event registration.
+#'
+#' @param df (`character(1)`) Name of the data frame to plot
+#' @param time_var (`character(1)`) Name of the numeric column to be used as x-axis
+#' @param subject_var (`character(1)`) Name of the factor or character column to be used as y-axis (subject lanes)
+#' @param color_var (`character(1)`) Name of the factor or character column to name and color subject events in time
+#' @param group_var (`character(1)`) Name of the factor or character column to categorize type of event
+#' @param sort_var (`character(1)`) Name of the column whose values determine the order of subjects displayed on the y-axis
+#' @param point_size (`numeric(1)` or `named numeric`) Default point size or named vector of sizes by color_var levels
+#' @param colors (`character`) Named vector of colors for color_var levels
+#' @param symbols (`character`) Named vector of plotly symbols for color_var levels
+#' @param height (`numeric(1)`) Plot height in pixels
+#' @param source (`character(1)`) Source identifier for plotly events
+#' @param tooltip_vars (`character` or `NULL`) A vector of column names to be displayed in the tooltip.
+#' If `NULL`, default tooltip is created showing subject, time, and group variables.
+#'
+#' @return A code expression that when evaluated creates a plotly plot object
+#'
+#' @examples
+#' # Generate code for a swimlane plot
+#' code <- swimlaneplotly(
+#'   df = "swimlane_data",
+#'   time_var = "time_point",
+#'   subject_var = "subject_id",
+#'   color_var = "event_type",
+#'   group_var = "event_category",
+#'   sort_var = "time_point",
+#'   point_size = 10,
+#'   colors = c("Event1" = "red", "Event2" = "blue"),
+#'   symbols = c("Event1" = "circle", "Event2" = "square"),
+#'   height = 700,
+#'   source = "swimlane",
+#'   tooltip_vars = c("subject_id", "event_type")
+#' )
+#'
+swimlaneplotly <- function(df, time_var, subject_var, color_var, group_var, sort_var,
+                           point_size = 10, colors, symbols, height = 700, source, tooltip_vars = NULL) {
+  substitute(
+    {
+      subject_var_label <- attr(df_sym[[subject_var_str]], "label")
+      if (!length(subject_var_label)) subject_var_label <- subject_var_str
+      time_var_label <- attr(df_sym[[time_var_str]], "label")
+      if (!length(time_var_label)) time_var_label <- time_var_str
+
+      plot_data <- df_sym |>
+        dplyr::mutate(customdata = dplyr::row_number())
+
+      subject_levels <- plot_data %>%
+        dplyr::group_by(!!as.name(subject_var_str)) %>%
+        dplyr::summarize(v = max(!!as.name(sort_var_str))) %>%
+        dplyr::ungroup() %>%
+        dplyr::arrange(v) %>%
+        dplyr::pull(!!as.name(subject_var_str))
+      plot_data[[subject_var_str]] <- factor(plot_data[[subject_var_str]], levels = subject_levels)
+
+      min_size <- min(point_size_sym, na.rm = TRUE)
+
+      if (length(point_size_sym) > 1) {
+        plot_data <- plot_data %>%
+          dplyr::mutate(
+            size_var = ifelse(
+              as.character(!!as.name(color_var_str)) %in% names(point_size_sym),
+              point_size_sym[as.character(!!as.name(color_var_str))],
+              min_size
+            )
+          )
+      } else {
+        plot_data <- plot_data %>%
+          dplyr::mutate(size_var = point_size_sym)
+      }
+
+      p <- plot_data %>%
+        dplyr::mutate(
+          !!as.name(color_var_str) := {
+            original_label <- attr(.data[[color_var_str]], "label")
+            new_factor <- factor(.data[[color_var_str]], levels = names(colors_sym))
+            attr(new_factor, "label") <- original_label
+            new_factor
+          }
+        ) %>%
+        dplyr::group_by(!!as.name(subject_var_str), !!as.name(time_var_str)) %>%
+        dplyr::mutate(
+          tooltip = {
+            default_tip <- paste(
+              unique(
+                c(
+                  paste(subject_var_label, !!as.name(subject_var_str)),
+                  paste(time_var_label, !!as.name(time_var_str)),
+                  sprintf(
+                    "%s: %s",
+                    tools::toTitleCase(gsub("[^0-9A-Za-z]+", " ", !!as.name(group_var_str))),
+                    !!as.name(color_var_str)
+                  )
+                )
+              ),
+              collapse = "<br>"
+            )
+            if (is.null(tooltip_vars_sym)) {
+              default_tip
+            } else {
+              cur_data <- dplyr::cur_data()
+              grouping_vars <- list()
+              grouping_vars[[subject_var_str]] <- dplyr::cur_group()[[subject_var_str]]
+              grouping_vars[[time_var_str]] <- dplyr::cur_group()[[time_var_str]]
+              cur_data <- c(cur_data, grouping_vars)
+
+              cols <- intersect(tooltip_vars_sym, names(cur_data))
+              if (!length(cols)) {
+                default_tip
+              } else {
+                sub <- cur_data[cols]
+                labels <- vapply(cols, function(cn) {
+                  if (cn == subject_var_str) {
+                    lb <- subject_var_label
+                  } else if (cn == time_var_str) {
+                    lb <- time_var_label
+                  } else {
+                    lb <- attr(sub[[cn]], "label")
+                  }
+                  if (length(lb) && !is.null(lb) && !is.na(lb)) as.character(lb) else cn
+                }, character(1))
+                values <- lapply(sub, as.character)
+                parts <- Map(function(v, l) paste0(l, ": ", v), values, labels)
+                do.call(paste, c(parts, sep = "<br>"))
+              }
+            }
+          }
+        ) %>%
+        dplyr::ungroup() %>%
+        plotly::plot_ly(
+          source = source_sym,
+          colors = colors_sym,
+          symbols = symbols_sym,
+          height = height_sym,
+          customdata = ~customdata
+        ) %>%
+        plotly::add_markers(
+          x = ~time_var_sym,
+          y = ~subject_var_sym,
+          color = ~color_var_sym,
+          symbol = ~color_var_sym,
+          size = ~size_var,
+          text = ~tooltip,
+          hoverinfo = "text"
+        ) %>%
+        plotly::add_segments(
+          x = ~0,
+          xend = ~study_day,
+          y = ~subject_var_sym,
+          yend = ~subject_var_sym,
+          data = plot_data |>
+            dplyr::group_by(!!as.name(subject_var_str), !!as.name(group_var_str)) |>
+            dplyr::summarise(study_day = max(!!as.name(time_var_str))),
+          line = list(width = 2, color = "grey"),
+          showlegend = FALSE,
+          customdata = NULL
+        ) %>%
+        plotly::layout(
+          xaxis = list(title = time_var_label),
+          yaxis = list(title = subject_var_label)
+        ) %>%
+        plotly::layout(dragmode = "select") %>%
+        plotly::config(displaylogo = FALSE)
+    },
+    list(
+      df_sym = str2lang(df),
+      time_var_sym = str2lang(time_var),
+      subject_var_sym = str2lang(subject_var),
+      color_var_sym = str2lang(color_var),
+      group_var_sym = str2lang(group_var),
+      sort_var_sym = str2lang(sort_var),
+      time_var_str = time_var,
+      subject_var_str = subject_var,
+      color_var_str = color_var,
+      group_var_str = group_var,
+      sort_var_str = sort_var,
+      point_size_sym = point_size,
+      colors_sym = colors,
+      symbols_sym = symbols,
+      height_sym = height,
+      source_sym = source,
+      tooltip_vars_sym = tooltip_vars
+    )
+  )
 }

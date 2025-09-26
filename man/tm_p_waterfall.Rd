@@ -30,6 +30,9 @@ to be used as x-axis (subject identifiers).}
 \item{value_var}{(\code{character(1)}) Name of the numeric column in \code{plot_dataname}
 to be used as y-axis (values determining bar heights).}
 
+\item{sort_var}{(\code{character(1)} or \code{NULL}) Name of the column used for sorting subjects.
+If \code{NULL}, defaults to \code{value_var}.}
+
 \item{color_var}{(\code{character(1)} or \code{NULL}) Name of the factor or character column in \code{plot_dataname}
 to be used to differentiate bar colors. If \code{NULL}, all bars will have the same color.}
 
@@ -44,8 +47,7 @@ horizontal reference lines on the plot.}
 
 \item{plot_title}{(\code{character} or \code{NULL}) Title of the plot. If \code{NULL}, no title is displayed.}
 
-\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
-\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
+\item{plot_height}{(\code{numeric(3)}) Vector of length 3 with c(default, min, max) plot height values.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.

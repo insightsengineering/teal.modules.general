@@ -109,111 +109,16 @@ srv_p_bargraph <- function(id,
     plotly_q <- reactive({
       data() |>
         within(
-          {
-            df[[color_var]] <- as.character(df[[color_var]])
-
-            plot_data <- df %>%
-              dplyr::group_by(!!as.name(y_var), !!as.name(color_var)) %>%
-              dplyr::summarize(count = dplyr::n_distinct(!!as.name(count_var))) %>%
-              dplyr::ungroup() %>%
-              dplyr::mutate(customdata = dplyr::row_number()) %>%
-              dplyr::mutate(
-                tooltip = {
-                  if (is.null(tooltip_vars)) {
-                    # Default tooltip: show y_var, color_var, and count
-                    y_var_label <- attr(df[[y_var]], "label")
-                    if (!length(y_var_label)) y_var_label <- y_var
-                    color_var_label <- attr(df[[color_var]], "label")
-                    if (!length(color_var_label)) color_var_label <- color_var
-
-                    paste(
-                      paste(y_var_label, ":", !!as.name(y_var)),
-                      paste(color_var_label, ":", !!as.name(color_var)),
-                      paste("Count:", count),
-                      sep = "<br>"
-                    )
-                  } else {
-                    # Custom tooltip: use specified columns
-                    cur_data <- dplyr::cur_data()
-
-                    # Map tooltip_vars to actual column names if they are parameter names
-                    actual_cols <- character(0)
-                    for (col in tooltip_vars) {
-                      if (col == "y_var") {
-                        actual_cols <- c(actual_cols, y_var)
-                      } else if (col == "color_var") {
-                        actual_cols <- c(actual_cols, color_var)
-                      } else if (col == "count_var") {
-                        actual_cols <- c(actual_cols, "count") # Use the aggregated count column
-                      } else {
-                        # Assume it's already a column name
-                        actual_cols <- c(actual_cols, col)
-                      }
-                    }
-
-                    # Get columns that actually exist in the data
-                    cols <- intersect(actual_cols, names(cur_data))
-
-                    if (!length(cols)) {
-                      # Fallback to default
-                      y_var_label <- attr(df[[y_var]], "label")
-                      if (!length(y_var_label)) y_var_label <- y_var
-                      color_var_label <- attr(df[[color_var]], "label")
-                      if (!length(color_var_label)) color_var_label <- color_var
-
-                      paste(
-                        paste(y_var_label, ":", !!as.name(y_var)),
-                        paste(color_var_label, ":", !!as.name(color_var)),
-                        paste("Count:", count),
-                        sep = "<br>"
-                      )
-                    } else {
-                      # Create simple tooltip with column names and values
-                      sub <- cur_data[cols]
-                      values <- lapply(sub, as.character)
-                      parts <- Map(function(v, n) paste0(n, ": ", v), values, names(values))
-                      do.call(paste, c(parts, sep = "<br>"))
-                    }
-                  }
-                }
-              )
-
-            event_type_order <- plot_data %>%
-              dplyr::group_by(!!as.name(y_var)) %>%
-              dplyr::summarize(total = sum(count), .groups = "drop") %>%
-              dplyr::arrange(total) %>%
-              dplyr::pull(!!as.name(y_var))
-
-            plot_data[[y_var]] <- factor(plot_data[[y_var]], levels = event_type_order)
-
-            p <- plotly::plot_ly(
-              data = plot_data,
-              y = as.formula(paste0("~", y_var)),
-              x = ~count,
-              color = as.formula(paste0("~", color_var)),
-              colors = bar_colors,
-              type = "bar",
-              orientation = "h",
-              hovertext = ~tooltip,
-              hoverinfo = "text",
-              customdata = ~customdata,
-              source = source
-            ) %>%
-              plotly::layout(
-                barmode = "stack",
-                xaxis = list(title = "Count"),
-                yaxis = list(title = "Adverse Event Type"),
-                legend = list(title = list(text = "AE Type"))
-              ) %>%
-              plotly::layout(dragmode = "select")
-          },
-          df = str2lang(plot_dataname),
-          color_var = color_var,
-          y_var = y_var,
-          count_var = count_var,
-          tooltip_vars = tooltip_vars,
-          bar_colors = bar_colors,
-          source = session$ns("bargraph")
+          code,
+          code = bargraphplotly(
+            df = plot_dataname,
+            y_var = y_var,
+            color_var = color_var,
+            count_var = count_var,
+            tooltip_vars = tooltip_vars,
+            bar_colors = bar_colors,
+            source = session$ns("bargraph")
+          )
         )
     })
 
@@ -253,4 +158,133 @@ srv_p_bargraph <- function(id,
       }
     })
   })
+}
+
+#' Create Bar Graph with Plotly
+#'
+#' This function generates plotly code for creating interactive horizontal stacked bar charts
+#' that display counts of distinct values grouped by categories.
+#'
+#' @param df (`character(1)`) Name of the data frame containing the plotting data
+#' @param y_var (`character(1)`) Name of the y-axis variable
+#' @param color_var (`character(1)`) Name of the color variable
+#' @param count_var (`character(1)`) Name of the count variable
+#' @param tooltip_vars (`character` or `NULL`) Variables to include in tooltip
+#' @param bar_colors (`named character` or `NULL`) Color mapping for groups
+#' @param source (`character(1)`) Plotly source identifier for events
+#'
+#' @return A substitute expression that creates a plotly object with horizontal stacked bars
+#' @keywords internal
+bargraphplotly <- function(df,
+                           y_var,
+                           color_var,
+                           count_var,
+                           tooltip_vars = NULL,
+                           bar_colors = NULL,
+                           source = "bargraph") {
+  substitute(
+    {
+      df_sym[[color_var_str]] <- as.character(df_sym[[color_var_str]])
+
+      plot_data <- df_sym %>%
+        dplyr::group_by(!!as.name(y_var_str), !!as.name(color_var_str)) %>%
+        dplyr::summarize(count = dplyr::n_distinct(!!as.name(count_var_str)), .groups = "drop") %>%
+        dplyr::ungroup() %>%
+        dplyr::mutate(customdata = dplyr::row_number()) %>%
+        dplyr::mutate(
+          tooltip = {
+            if (is.null(tooltip_vars_sym)) {
+              y_var_label <- attr(df_sym[[y_var_str]], "label")
+              if (!length(y_var_label)) y_var_label <- y_var_str
+              color_var_label <- attr(df_sym[[color_var_str]], "label")
+              if (!length(color_var_label)) color_var_label <- color_var_str
+
+              paste(
+                paste(y_var_label, ":", !!as.name(y_var_str)),
+                paste(color_var_label, ":", !!as.name(color_var_str)),
+                paste("Count:", count),
+                sep = "<br>"
+              )
+            } else {
+              cur_data <- dplyr::cur_data()
+
+              actual_cols <- character(0)
+              for (col in tooltip_vars_sym) {
+                if (col == "y_var") {
+                  actual_cols <- c(actual_cols, y_var_str)
+                } else if (col == "color_var") {
+                  actual_cols <- c(actual_cols, color_var_str)
+                } else if (col == "count_var") {
+                  actual_cols <- c(actual_cols, "count")
+                } else {
+                  actual_cols <- c(actual_cols, col)
+                }
+              }
+
+              cols <- intersect(actual_cols, names(cur_data))
+
+              if (!length(cols)) {
+                y_var_label <- attr(df_sym[[y_var_str]], "label")
+                if (!length(y_var_label)) y_var_label <- y_var_str
+                color_var_label <- attr(df_sym[[color_var_str]], "label")
+                if (!length(color_var_label)) color_var_label <- color_var_str
+
+                paste(
+                  paste(y_var_label, ":", !!as.name(y_var_str)),
+                  paste(color_var_label, ":", !!as.name(color_var_str)),
+                  paste("Count:", count),
+                  sep = "<br>"
+                )
+              } else {
+                sub <- cur_data[cols]
+                values <- lapply(sub, as.character)
+                parts <- Map(function(v, n) paste0(n, ": ", v), values, names(values))
+                do.call(paste, c(parts, sep = "<br>"))
+              }
+            }
+          }
+        )
+
+      event_type_order <- plot_data %>%
+        dplyr::group_by(!!as.name(y_var_str)) %>%
+        dplyr::summarize(total = sum(count), .groups = "drop") %>%
+        dplyr::arrange(total) %>%
+        dplyr::pull(!!as.name(y_var_str))
+
+      plot_data[[y_var_str]] <- factor(plot_data[[y_var_str]], levels = event_type_order)
+
+      p <- plotly::plot_ly(
+        data = plot_data,
+        y = ~y_var_sym,
+        x = ~count,
+        color = ~color_var_sym,
+        colors = bar_colors_sym,
+        type = "bar",
+        orientation = "h",
+        hovertext = ~tooltip,
+        hoverinfo = "text",
+        customdata = ~customdata,
+        source = source_sym
+      ) %>%
+        plotly::layout(
+          barmode = "stack",
+          xaxis = list(title = "Count"),
+          yaxis = list(title = "Category"),
+          legend = list(title = list(text = "Group"))
+        ) %>%
+        plotly::layout(dragmode = "select")
+    },
+    list(
+      df_sym = str2lang(df),
+      y_var_sym = str2lang(y_var),
+      color_var_sym = str2lang(color_var),
+      count_var_sym = str2lang(count_var),
+      y_var_str = y_var,
+      color_var_str = color_var,
+      count_var_str = count_var,
+      tooltip_vars_sym = tooltip_vars,
+      bar_colors_sym = bar_colors,
+      source_sym = source
+    )
+  )
 }

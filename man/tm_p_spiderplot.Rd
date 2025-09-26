@@ -51,8 +51,7 @@ If \code{NULL}, default colors will be used.}
 \item{point_symbols}{(\verb{named character} or \code{NULL}) Valid plotly symbol names named by levels of \code{color_var} column.
 If \code{NULL}, default symbols will be used.}
 
-\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
-\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
+\item{plot_height}{(\code{numeric(3)}) Vector of length 3 with c(default, min, max) plot height values.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.

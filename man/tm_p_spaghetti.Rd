@@ -5,7 +5,7 @@
 \title{Spaghetti Plot Module}
 \usage{
 tm_p_spaghetti(
-  label = "Scatter Plot",
+  label = "Spaghetti Plot",
   plot_dataname,
   group_var,
   x_var,
