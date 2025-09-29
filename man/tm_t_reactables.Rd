@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_t_reactable.R
 \name{tm_t_reactables}
 \alias{tm_t_reactables}
-\title{\code{teal} module: Reactable}
+\title{Interactive Reactable Tables Module}
 \usage{
 tm_t_reactables(
   label = "Table",
@@ -17,14 +17,13 @@ tm_t_reactables(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
-There are 2 reserved values that have specific behaviors:
-\itemize{
-\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
-\item \code{NULL} hides the sidebar panel completely.
-\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
-argument.
-}}
+\item{datanames}{(\code{character} or \code{"all"}) Names of datasets to include in the module.
+Use \code{"all"} to automatically include all datasets from the \code{teal_data} object, or provide
+a character vector of specific dataset names to include only those datasets.}
+
+\item{colnames}{(\verb{named list}) Optional list specifying column names to display for each dataset.
+Names should correspond to dataset names, and values should be character vectors of column
+names. If not specified, all columns are displayed by default.}
 
 \item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
 To learn more check \code{vignette("transform-input-data", package = "teal")}.}
@@ -34,8 +33,112 @@ To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 decorator for tables or plots included in the module output reported.
 The decorators are applied to the respective output objects.}
 
-\item{reactable_args}{(\code{list}) any argument of \code{\link[reactable:reactable]{reactable::reactable()}}.}
+\item{reactable_args}{(\code{list}) Named list of arguments passed to \code{\link[reactable:reactable]{reactable::reactable()}}.
+This allows customization of table appearance and behavior, including pagination settings,
+column definitions, themes, and interactive features. Common options include:
+\itemize{
+\item \code{pagination} - Enable/disable pagination
+\item \code{searchable} - Add global search functionality
+\item \code{filterable} - Enable column-specific filters
+\item \code{sortable} - Enable column sorting
+\item \code{resizable} - Allow column resizing
+\item \code{defaultPageSize} - Number of rows per page
+\item \code{theme} - Custom theme for table styling
+\item \code{columns} - Custom column definitions with formatting
+}}
+}
+\value{
+A teal module object that can be used in teal applications.
 }
 \description{
-Wrapper module on \code{\link[reactable:reactable]{reactable::reactable()}}
+This module creates interactive, filterable, and sortable tables using the \code{reactable} package.
+It provides an accordion-style interface where each dataset is displayed in a separate collapsible
+panel with dynamic column selection and advanced table features. Users can select which columns
+to display, filter data in real-time, and interact with the tables through various built-in
+reactable features.
+}
+\details{
+The module automatically detects datasets in the provided \code{teal_data} object and creates
+interactive tables for each one. Each table supports:
+\itemize{
+\item Dynamic column selection with search and multi-select capabilities
+\item Real-time filtering and sorting
+\item Row selection (single or multiple)
+\item Responsive design that adapts to screen size
+\item Full-screen mode for detailed data exploration
+\item Custom column definitions and formatting
+}
+
+Column labels are automatically extracted from dataset attributes when available, providing
+meaningful headers in the table display. The module integrates seamlessly with teal's
+filtering system, ensuring that table contents update automatically when filters are applied.
+}
+\examples{
+data <- teal_data() |>
+  within({
+    # Demographics
+    adsl <- data.frame(
+      USUBJID = paste0("S", 1:10),
+      AGE = sample(25:75, 10),
+      SEX = sample(c("M", "F"), 10, replace = TRUE),
+      ARM = rep(c("Placebo", "Treatment"), each = 5)
+    )
+
+    # Adverse events
+    adae <- data.frame(
+      USUBJID = sample(paste0("S", 1:10), 20, replace = TRUE),
+      AEDECOD = sample(c("Headache", "Nausea", "Fatigue"), 20, replace = TRUE),
+      AESEV = sample(c("MILD", "MODERATE", "SEVERE"), 20, replace = TRUE)
+    )
+
+    # Add labels
+    attr(adsl$USUBJID, "label") <- "Subject ID"
+    attr(adsl$AGE, "label") <- "Age (years)"
+    attr(adsl$ARM, "label") <- "Treatment Arm"
+    attr(adae$AEDECOD, "label") <- "Adverse Event"
+    attr(adae$AESEV, "label") <- "Severity"
+  })
+
+# Basic usage
+app <- init(
+  data = data,
+  modules = modules(
+    tm_t_reactables(
+      label = "Interactive Tables"
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+# Advanced usage with custom features
+app <- init(
+  data = data,
+  modules = modules(
+    tm_t_reactables(
+      label = "Advanced Tables",
+      datanames = c("adsl", "adae"),
+      colnames = list(
+        adsl = c("USUBJID", "AGE", "SEX", "ARM"),
+        adae = c("USUBJID", "AEDECOD", "AESEV")
+      ),
+      reactable_args = list(
+        pagination = TRUE,
+        searchable = TRUE,
+        filterable = TRUE,
+        sortable = TRUE,
+        defaultPageSize = 10,
+        highlight = TRUE,
+        striped = TRUE
+      )
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
 }

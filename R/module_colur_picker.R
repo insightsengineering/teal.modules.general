@@ -12,8 +12,10 @@ colour_picker_srv <- function(id, x, default_colors) {
   moduleServer(id, function(input, output, session) {
     default_colors_adjusted <- reactive({
       req(x())
+      levels_filtered <- unique(x())
+      levels_filtered <- levels_filtered[!is.na(levels_filtered)]
       .color_palette_discrete(
-        levels = unique(x()),
+        levels = levels_filtered,
         color = default_colors
       )
     })

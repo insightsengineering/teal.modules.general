@@ -2,12 +2,12 @@
 % Please edit documentation in R/tm_p_waterfall.R
 \name{tm_p_waterfall}
 \alias{tm_p_waterfall}
-\title{\code{teal} module: Waterfall plot}
+\title{Waterfall Plot Module}
 \usage{
 tm_p_waterfall(
   label = "Waterfall",
   plot_dataname,
-  subject_var,
+  x_var,
   value_var,
   sort_var = NULL,
   color_var = NULL,
@@ -16,79 +16,123 @@ tm_p_waterfall(
   value_arbitrary_hlines = c(0.2, -0.3),
   plot_title = "Waterfall plot",
   plot_height = c(600, 400, 1200),
-  table_datanames = character(0),
-  reactable_args = list()
+  transformators = list()
 )
 }
 \arguments{
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{plot_dataname}{(\code{character(1)}) name of the dataset which visualization is builded on.}
+\item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
-\item{subject_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
-in \code{plot_dataname} to be used as x-axis.}
+\item{x_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to be used as x-axis (typically subject identifiers).}
 
-\item{value_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column
-in \code{plot_dataname} to be used as y-axis.}
+\item{value_var}{(\code{character(1)}) Name of the numeric column in \code{plot_dataname}
+to be used as y-axis (values determining bar heights).}
 
-\item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
-to be used to differentiate bar colors.}
+\item{sort_var}{(\code{character(1)} or \code{NULL}) Name of the column used for sorting subjects.
+If \code{NULL}, defaults to \code{value_var}.}
+
+\item{color_var}{(\code{character(1)} or \code{NULL}) Name of the factor or character column in \code{plot_dataname}
+to be used to differentiate bar colors. If \code{NULL}, all bars will have the same color.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created.}
+If \code{NULL}, default tooltip is created showing subject, value, and color variables.}
 
-\item{bar_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named
-by levels of \code{color_var} column.}
+\item{bar_colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of \code{color_var} column.
+If \code{NULL}, default colors will be used.}
 
-\item{value_arbitrary_hlines}{(\code{numeric}) values in the same scale as \code{value_var} to horizontal
-lines on the plot.}
+\item{value_arbitrary_hlines}{(\code{numeric} or \code{NULL}) Values in the same scale as \code{value_var} to add
+horizontal reference lines on the plot.}
 
-\item{plot_title}{(\code{character}) Title of the plot.}
+\item{plot_title}{(\code{character} or \code{NULL}) Title of the plot. If \code{NULL}, no title is displayed.}
 
-\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
-\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
+\item{plot_height}{(\code{numeric(3)}) Vector of length 3 with c(default, min, max) plot height values.}
 
-\item{table_datanames}{(\code{character}) Names of the datasets to be displayed in the tables below the plot.}
-
-\item{reactable_args}{(\code{list}) Additional arguments passed to the \code{reactable} function for table customization.}
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-Module visualizes subjects sorted decreasingly by y-values.
+This module creates an interactive waterfall plot visualization that displays subjects
+sorted by their values in a descending waterfall pattern. Each subject is represented
+by a vertical bar, with the height corresponding to the value variable. The plot supports
+color coding by categorical variables, optional horizontal reference lines, and customizable
+tooltips. This visualization is particularly useful for showing ranked responses or changes
+across subjects.
 }
 \examples{
 data <- teal_data() |>
   within({
-    subjects <- data.frame(
-      subject_var = c("A", "B", "C"),
-      AGE = sample(30:100, 3),
-      ARM = c("Combination", "Combination", "Placebo")
+    df <- data.frame(
+      subject_id = paste0("S", 1:20),
+      percent_change = c(
+        rnorm(5, -40, 10), # 5 subjects with good response (~-40\%)
+        rnorm(8, -15, 15), # 8 subjects with moderate response (~-15\%)
+        rnorm(4, 10, 8), # 4 subjects with progression (~10\%)
+        rnorm(3, 35, 12) # 3 subjects with significant progression (~35\%)
+      ),
+      best_response = c(
+        rep("Complete Response", 3),
+        rep("Partial Response", 7),
+        rep("Stable Disease", 6),
+        rep("Progressive Disease", 4)
+      ),
+      treatment_arm = rep(c("Experimental", "Control"), each = 10),
+      age_group = sample(c("Young", "Middle", "Old"), 20, replace = TRUE),
+      baseline_size = abs(rnorm(20, 50, 15)),
+      center = sample(c("Site A", "Site B", "Site C"), 20, replace = TRUE)
     )
 
-    waterfall_ds <- data.frame(
-      subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
-      value_var = sample(-20:90, 10, replace = TRUE),
-      color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
-    )
+    attr(df$subject_id, "label") <- "Subject ID"
+    attr(df$percent_change, "label") <- "Percent Change from Baseline"
+    attr(df$best_response, "label") <- "Best Overall Response"
+    attr(df$treatment_arm, "label") <- "Treatment Arm"
+    attr(df$age_group, "label") <- "Age Group"
+    attr(df$baseline_size, "label") <- "Baseline Tumor Size (mm)"
+    attr(df$center, "label") <- "Study Center"
   })
-join_keys(data) <- join_keys(
-  join_key("subjects", "waterfall_ds", keys = c(subject_var = "subject_var"))
-)
 
 app <- init(
   data = data,
   modules = modules(
     tm_p_waterfall(
-      plot_dataname = "waterfall_ds",
-      table_datanames = "subjects",
-      subject_var = "subject_var",
-      value_var = "value_var",
-      sort_var = "value_var",
-      color_var = "color_var",
-      value_arbitrary_hlines = c(20, -30),
+      label = "Basic Waterfall Plot",
+      plot_dataname = "df",
+      x_var = "subject_id",
+      value_var = "percent_change",
+      color_var = "best_response"
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_p_waterfall(
+      label = "Advanced Waterfall Plot with All Features",
+      plot_dataname = "df",
+      x_var = "subject_id",
+      value_var = "percent_change",
+      sort_var = "percent_change",
+      color_var = "best_response",
+      tooltip_vars = c("subject_id", "percent_change", "best_response", "treatment_arm", "age_group", "baseline_size", "center"),
       bar_colors = c(
-        CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
-      )
+        "Complete Response" = "#00FF00",
+        "Partial Response" = "#FFFF00",
+        "Stable Disease" = "#FFA500",
+        "Progressive Disease" = "#FF0000"
+      ),
+      value_arbitrary_hlines = c(-30, 20),
+      plot_title = "Tumor Response Waterfall Plot",
+      plot_height = c(700, 400, 1000)
     )
   )
 )

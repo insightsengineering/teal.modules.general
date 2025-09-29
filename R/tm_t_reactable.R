@@ -1,10 +1,119 @@
-#' `teal` module: Reactable
+#' Interactive Reactable Tables Module
 #'
-#' Wrapper module on [reactable::reactable()]
+#' This module creates interactive, filterable, and sortable tables using the `reactable` package.
+#' It provides an accordion-style interface where each dataset is displayed in a separate collapsible
+#' panel with dynamic column selection and advanced table features. Users can select which columns
+#' to display, filter data in real-time, and interact with the tables through various built-in
+#' reactable features.
+#'
+#' @details
+#' The module automatically detects datasets in the provided `teal_data` object and creates
+#' interactive tables for each one. Each table supports:
+#' \itemize{
+#'   \item Dynamic column selection with search and multi-select capabilities
+#'   \item Real-time filtering and sorting
+#'   \item Row selection (single or multiple)
+#'   \item Responsive design that adapts to screen size
+#'   \item Full-screen mode for detailed data exploration
+#'   \item Custom column definitions and formatting
+#' }
+#'
+#' Column labels are automatically extracted from dataset attributes when available, providing
+#' meaningful headers in the table display. The module integrates seamlessly with teal's
+#' filtering system, ensuring that table contents update automatically when filters are applied.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param reactable_args (`list`) any argument of [reactable::reactable()].
+#' @param datanames (`character` or `"all"`) Names of datasets to include in the module.
+#'   Use `"all"` to automatically include all datasets from the `teal_data` object, or provide
+#'   a character vector of specific dataset names to include only those datasets.
+#' @param colnames (`named list`) Optional list specifying column names to display for each dataset.
+#'   Names should correspond to dataset names, and values should be character vectors of column
+#'   names. If not specified, all columns are displayed by default.
+#' @param reactable_args (`list`) Named list of arguments passed to [reactable::reactable()].
+#'   This allows customization of table appearance and behavior, including pagination settings,
+#'   column definitions, themes, and interactive features. Common options include:
+#'   \itemize{
+#'     \item `pagination` - Enable/disable pagination
+#'     \item `searchable` - Add global search functionality
+#'     \item `filterable` - Enable column-specific filters
+#'     \item `sortable` - Enable column sorting
+#'     \item `resizable` - Allow column resizing
+#'     \item `defaultPageSize` - Number of rows per page
+#'     \item `theme` - Custom theme for table styling
+#'     \item `columns` - Custom column definitions with formatting
+#'   }
+#'
+#' @return A teal module object that can be used in teal applications.
+#'
+#' @examples
+#' data <- teal_data() |>
+#'   within({
+#'     # Demographics
+#'     adsl <- data.frame(
+#'       USUBJID = paste0("S", 1:10),
+#'       AGE = sample(25:75, 10),
+#'       SEX = sample(c("M", "F"), 10, replace = TRUE),
+#'       ARM = rep(c("Placebo", "Treatment"), each = 5)
+#'     )
+#'
+#'     # Adverse events
+#'     adae <- data.frame(
+#'       USUBJID = sample(paste0("S", 1:10), 20, replace = TRUE),
+#'       AEDECOD = sample(c("Headache", "Nausea", "Fatigue"), 20, replace = TRUE),
+#'       AESEV = sample(c("MILD", "MODERATE", "SEVERE"), 20, replace = TRUE)
+#'     )
+#'
+#'     # Add labels
+#'     attr(adsl$USUBJID, "label") <- "Subject ID"
+#'     attr(adsl$AGE, "label") <- "Age (years)"
+#'     attr(adsl$ARM, "label") <- "Treatment Arm"
+#'     attr(adae$AEDECOD, "label") <- "Adverse Event"
+#'     attr(adae$AESEV, "label") <- "Severity"
+#'   })
+#'
+#' # Basic usage
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_t_reactables(
+#'       label = "Interactive Tables"
+#'     )
+#'   )
+#' )
+#'
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' # Advanced usage with custom features
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_t_reactables(
+#'       label = "Advanced Tables",
+#'       datanames = c("adsl", "adae"),
+#'       colnames = list(
+#'         adsl = c("USUBJID", "AGE", "SEX", "ARM"),
+#'         adae = c("USUBJID", "AEDECOD", "AESEV")
+#'       ),
+#'       reactable_args = list(
+#'         pagination = TRUE,
+#'         searchable = TRUE,
+#'         filterable = TRUE,
+#'         sortable = TRUE,
+#'         defaultPageSize = 10,
+#'         highlight = TRUE,
+#'         striped = TRUE
+#'       )
+#'     )
+#'   )
+#' )
+#'
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
 #' @export
 tm_t_reactables <- function(label = "Table",
                             datanames = "all",
@@ -265,7 +374,7 @@ srv_t_reactable <- function(id, data, filter_panel_api, dataname, colnames, deco
       if (length(col_def_args)) {
         as.call(
           c(
-            list(quote(colDef)),
+            list(quote(reactable::colDef)),
             col_def_args
           )
         )

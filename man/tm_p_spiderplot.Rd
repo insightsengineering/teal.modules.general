@@ -2,118 +2,144 @@
 % Please edit documentation in R/tm_p_spiderplot.R
 \name{tm_p_spiderplot}
 \alias{tm_p_spiderplot}
-\title{\code{teal} module: Spider Plot}
+\title{Spider Plot Module}
 \usage{
 tm_p_spiderplot(
   label = "Spiderplot",
   plot_dataname,
   time_var,
   value_var,
-  subject_var,
+  id_var,
   color_var,
-  filter_event_var,
+  filter_var,
   size_var = NULL,
   tooltip_vars = NULL,
   point_colors = character(0),
   point_symbols = character(0),
   plot_height = c(600, 400, 1200),
-  table_datanames = character(0),
-  reactable_args = list()
+  transformators = list()
 )
 }
 \arguments{
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{plot_dataname}{(\code{character(1)} or \code{choices_selected}) name of the dataset which visualization is builded on.}
+\item{plot_dataname}{(\code{character(1)}) Name of the dataset to be used for plotting.}
 
-\item{time_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column
-in \code{plot_dataname} to be used as x-axis.}
+\item{time_var}{(\code{character(1)}) Name of the numeric column in \code{plot_dataname} to be used as x-axis.}
 
-\item{value_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{numeric} column
-in \code{plot_dataname} to be used as y-axis.}
+\item{value_var}{(\code{character(1)}) Name of the numeric column in \code{plot_dataname} to be used as y-axis.}
 
-\item{subject_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
-in \code{plot_dataname} to be used as grouping variable for displayed lines/points.}
+\item{id_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to be used as grouping variable for displayed lines/points.}
 
-\item{color_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column in \code{plot_dataname}
+\item{color_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
 to be used to differentiate colors and symbols.}
 
-\item{filter_event_var}{(\code{character(1)} or \code{choices_selected}) name of the \code{factor} or \code{character} column
-in \code{plot_dataname} to be used to filter the data.
-The plot will be updated with just the filtereed data when the user selects an event from the dropdown menu.}
+\item{filter_var}{(\code{character(1)}) Name of the factor or character column in \code{plot_dataname}
+to be used to filter the data. The plot will be updated with just the filtered data when the user
+selects a value from the dropdown menu.}
 
 \item{size_var}{(\code{character(1)} or \code{NULL}) If provided, this numeric column from the \code{plot_dataname}
-will be used to determine the size of the points. If \code{NULL}, a fixed size based on the \code{point_size} is used.}
+will be used to determine the size of the points. If \code{NULL}, a fixed size is used.}
 
 \item{tooltip_vars}{(\code{character} or \code{NULL}) A vector of column names to be displayed in the tooltip.
-If \code{NULL}, default tooltip is created.}
+If \code{NULL}, default tooltip is created showing time, value, id, and color variables.}
 
-\item{point_colors}{(\verb{named character}) valid color names (see \code{\link[=colors]{colors()}}) or hex-colors named
-by levels of \code{color_var} column.}
+\item{point_colors}{(\verb{named character} or \code{NULL}) Valid color names or hex-colors named by levels of \code{color_var} column.
+If \code{NULL}, default colors will be used.}
 
-\item{point_symbols}{(\verb{named character}) valid plotly symbol name named  by levels of \code{color_var}column.}
+\item{point_symbols}{(\verb{named character} or \code{NULL}) Valid plotly symbol names named by levels of \code{color_var} column.
+If \code{NULL}, default symbols will be used.}
 
-\item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
-\code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
+\item{plot_height}{(\code{numeric(3)}) Vector of length 3 with c(default, min, max) plot height values.}
 
-\item{table_datanames}{(\code{character}) Names of the datasets to be displayed in the tables below the plot.}
-
-\item{reactable_args}{(\code{list}) Additional arguments passed to the \code{reactable} function for table customization.}
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
+}
+\value{
+Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-Module visualizes value development in time grouped by subjects.
+This module creates an interactive spider plot visualization that shows value development
+over time grouped by subjects. The plot displays individual trajectories as connected
+lines and points, with support for color coding and symbol differentiation. Optional
+filtering by categorical variables allows dynamic data subsetting. The plot includes customizable
+tooltips and point sizing based on data values.
 }
 \examples{
 data <- teal_data() |>
   within({
-    subjects <- data.frame(
-      subject_var = c("A", "B", "C"),
-      AGE = sample(30:100, 3),
-      ARM = c("Combination", "Combination", "Placebo")
+    df <- data.frame(
+      subject_id = rep(paste0("S", 1:8), each = 6),
+      time_week = rep(c(0, 4, 8, 12, 16, 20), 8),
+      percent_change = c(
+        rnorm(24, -10, 15), # First 4 subjects with some improvement
+        rnorm(24, 5, 10) # Last 4 subjects with less improvement
+      ),
+      response_category = rep(c("Complete Response", "Partial Response", "Stable Disease", "Progressive Disease"), 12),
+      treatment = rep(c("Active", "Placebo"), each = 24),
+      age_group = rep(c("Young", "Old", "Young", "Old"), 12),
+      baseline_tumor_size = rep(rnorm(8, 50, 10), each = 6),
+      center = rep(c("Site A", "Site B", "Site C", "Site D"), 12)
     )
 
-    swimlane_ds <- data.frame(
-      subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
-      time_var = sample(1:100, 10, replace = TRUE),
-      color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
-    )
-
-    spiderplot_ds <- data.frame(
-      subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
-      time_var = 1:10,
-      filter_event_var = "response",
-      color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE),
-      value_var = sample(-50:100, 10, replace = TRUE)
-    )
-
-    waterfall_ds <- data.frame(
-      subject_var = sample(c("A", "B", "C"), 10, replace = TRUE),
-      value_var = sample(-20:90, 10, replace = TRUE),
-      color_var = sample(c("CR", "PR", "SD", "PD"), 10, replace = TRUE)
-    )
+    # Add labels
+    attr(df$subject_id, "label") <- "Subject ID"
+    attr(df$time_week, "label") <- "Time (weeks)"
+    attr(df$percent_change, "label") <- "Percent Change from Baseline"
+    attr(df$response_category, "label") <- "Response Category"
+    attr(df$treatment, "label") <- "Treatment Group"
+    attr(df$age_group, "label") <- "Age Group"
+    attr(df$baseline_tumor_size, "label") <- "Baseline Tumor Size (mm)"
+    attr(df$center, "label") <- "Study Center"
   })
-join_keys(data) <- join_keys(
-  join_key("subjects", "spiderplot_ds", keys = c(subject_var = "subject_var"))
-)
 
 app <- init(
   data = data,
   modules = modules(
     tm_p_spiderplot(
-      plot_dataname = "spiderplot_ds",
-      table_datanames = "subjects",
-      time_var = "time_var",
-      value_var = "value_var",
-      subject_var = "subject_var",
-      filter_event_var = "filter_event_var",
-      color_var = "color_var",
+      label = "Basic Spider Plot",
+      plot_dataname = "df",
+      time_var = "time_week",
+      value_var = "percent_change",
+      id_var = "subject_id",
+      color_var = "response_category",
+      filter_var = "treatment"
+    )
+  )
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_p_spiderplot(
+      label = "Advanced Spider Plot with All Features",
+      plot_dataname = "df",
+      time_var = "time_week",
+      value_var = "percent_change",
+      id_var = "subject_id",
+      color_var = "response_category",
+      filter_var = "treatment",
+      size_var = "baseline_tumor_size",
+      tooltip_vars = c("subject_id", "time_week", "percent_change", "response_category", "treatment", "age_group", "center"),
       point_colors = c(
-        CR = "#FF0000", PR = "#00FF00", SD = "#0000FF", PD = "#FFFF00"
+        "Complete Response" = "#00FF00",
+        "Partial Response" = "#FFFF00",
+        "Stable Disease" = "#FFA500",
+        "Progressive Disease" = "#FF0000"
       ),
       point_symbols = c(
-        CR = "circle", PR = "square", SD = "triangle-up", PD = "diamond"
-      )
+        "Complete Response" = "circle",
+        "Partial Response" = "square",
+        "Stable Disease" = "triangle-up",
+        "Progressive Disease" = "diamond"
+      ),
+      plot_height = c(700, 400, 1000)
     )
   )
 )
