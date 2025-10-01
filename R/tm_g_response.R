@@ -160,8 +160,19 @@
 #' @export
 #'
 tm_g_response <- function(label = "Response Plot",
-                          response,
-                          x,
+                          response = picks(
+                            datasets(),
+                            variables(choices = teal.transform::is_categorical(min.len = 2, max.len = 10)),
+                            values()
+                          ),
+                          x = picks(
+                            datasets(),
+                            variables(
+                              choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                              selected = 2
+                            ),
+                            values()
+                          ),
                           row_facet = NULL,
                           col_facet = NULL,
                           coord_flip = FALSE,
@@ -176,31 +187,46 @@ tm_g_response <- function(label = "Response Plot",
                           post_output = NULL,
                           transformators = list(),
                           decorators = list()) {
-  message("Initializing tm_g_response")
+  UseMethod("tm_g_response", response)
+}
 
-  # Normalize the parameters
-  if (inherits(response, "data_extract_spec")) response <- list(response)
-  if (inherits(x, "data_extract_spec")) x <- list(x)
-  if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
-  if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
+#' @export
+tm_g_response.picks <- function(label = "Response Plot",
+                                response,
+                                x,
+                                row_facet = NULL,
+                                col_facet = NULL,
+                                coord_flip = FALSE,
+                                count_labels = TRUE,
+                                rotate_xaxis_labels = FALSE,
+                                freq = FALSE,
+                                plot_height = c(600, 400, 5000),
+                                plot_width = NULL,
+                                ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                ggplot2_args = teal.widgets::ggplot2_args(),
+                                pre_output = NULL,
+                                post_output = NULL,
+                                transformators = list(),
+                                decorators = list()) {
+  message("Initializing tm_g_response")
 
   # Start of assertions
   checkmate::assert_string(label)
 
-  checkmate::assert_list(response, types = "data_extract_spec")
-  if (!all(vapply(response, function(x) !("" %in% x$select$choices), logical(1)))) {
-    stop("'response' should not allow empty values")
+  checkmate::assert_class(response, "picks")
+  if (isTRUE(attr(response$variables, "multiple"))) {
+    warning("`response` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    attr(response$variables, "multiple") <- FALSE
   }
-  assert_single_selection(response)
 
-  checkmate::assert_list(x, types = "data_extract_spec")
-  if (!all(vapply(x, function(x) !("" %in% x$select$choices), logical(1)))) {
-    stop("'x' should not allow empty values")
+  checkmate::assert_class(x, "picks")
+  if (isTRUE(attr(x$variables, "multiple"))) {
+    warning("`x` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    attr(x$variables, "multiple") <- FALSE
   }
-  assert_single_selection(x)
 
-  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
-  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_class(row_facet, "picks", null.ok = TRUE)
+  checkmate::assert_class(col_facet, "picks", null.ok = TRUE)
   checkmate::assert_flag(coord_flip)
   checkmate::assert_flag(count_labels)
   checkmate::assert_flag(rotate_xaxis_labels)
@@ -223,98 +249,85 @@ tm_g_response <- function(label = "Response Plot",
   assert_decorators(decorators, "plot")
   # End of assertions
 
-  # Make UI args
+
   args <- as.list(environment())
-
-  data_extract_list <- list(
-    response = response,
-    x = x,
-    row_facet = row_facet,
-    col_facet = col_facet
-  )
-
   ans <- module(
     label = label,
-    server = srv_g_response,
-    ui = ui_g_response,
-    ui_args = args,
-    server_args = c(
-      data_extract_list,
-      list(
-        plot_height = plot_height,
-        plot_width = plot_width,
-        ggplot2_args = ggplot2_args,
-        decorators = decorators
-      )
-    ),
+    ui = ui_g_response.picks,
+    server = srv_g_response.picks,
+    ui_args = args[names(args) %in% names(formals(ui_g_response.picks))],
+    server_args = args[names(args) %in% names(formals(srv_g_response.picks))],
     transformators = transformators,
-    datanames = teal.transform::get_extract_datanames(data_extract_list)
+    datanames = {
+      datanames <- datanames(list(response, x, row_facet, col_facet))
+      if (length(datanames)) datanames else "all"
+    }
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
 
 # UI function for the response module
-ui_g_response <- function(id, ...) {
+ui_g_response.picks <- function(id,
+                                response,
+                                x,
+                                row_facet,
+                                col_facet,
+                                freq,
+                                count_labels,
+                                rotate_xaxis_labels,
+                                coord_flip,
+                                ggtheme,
+                                pre_output,
+                                post_output,
+                                decorators) {
   ns <- NS(id)
-  args <- list(...)
-  is_single_dataset_value <- teal.transform::is_single_dataset(args$response, args$x, args$row_facet, args$col_facet)
-
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(
       teal.widgets::plot_with_settings_ui(id = ns("myplot"))
     ),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
-      teal.transform::datanames_input(args[c("response", "x", "row_facet", "col_facet")]),
-      teal.transform::data_extract_ui(
-        id = ns("response"),
-        label = "Response variable",
-        data_extract_spec = args$response,
-        is_single_dataset = is_single_dataset_value
+      teal::teal_nav_item(
+        label = tags$strong("Response variable"),
+        teal.transform::module_input_ui(id = ns("response"), spec = response)
       ),
-      teal.transform::data_extract_ui(
-        id = ns("x"),
-        label = "X variable",
-        data_extract_spec = args$x,
-        is_single_dataset = is_single_dataset_value
+      teal::teal_nav_item(
+        label = tags$strong("X variable"),
+        teal.transform::module_input_ui(id = ns("x"), spec = x)
       ),
-      if (!is.null(args$row_facet)) {
-        teal.transform::data_extract_ui(
-          id = ns("row_facet"),
-          label = "Row facetting",
-          data_extract_spec = args$row_facet,
-          is_single_dataset = is_single_dataset_value
+      if (!is.null(row_facet)) {
+        teal::teal_nav_item(
+          label = tags$strong("Row facetting"),
+          teal.transform::module_input_ui(id = ns("row_facet"), spec = row_facet)
         )
       },
-      if (!is.null(args$col_facet)) {
-        teal.transform::data_extract_ui(
-          id = ns("col_facet"),
-          label = "Column facetting",
-          data_extract_spec = args$col_facet,
-          is_single_dataset = is_single_dataset_value
+      if (!is.null(col_facet)) {
+        teal::teal_nav_item(
+          label = tags$strong("Column facetting"),
+          teal.transform::module_input_ui(id = ns("col_facet"), spec = col_facet)
         )
       },
       shinyWidgets::radioGroupButtons(
         inputId = ns("freq"),
         label = NULL,
         choices = c("frequency", "density"),
-        selected = ifelse(args$freq, "frequency", "density"),
+        selected = ifelse(freq, "frequency", "density"),
         justified = TRUE
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
           title = "Plot settings",
-          checkboxInput(ns("count_labels"), "Add count labels", value = args$count_labels),
-          checkboxInput(ns("coord_flip"), "Swap axes", value = args$coord_flip),
-          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
+          checkboxInput(ns("count_labels"), "Add count labels", value = count_labels),
+          checkboxInput(ns("coord_flip"), "Swap axes", value = coord_flip),
+          checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = rotate_xaxis_labels),
           selectInput(
             inputId = ns("ggtheme"),
             label = "Theme (by ggplot):",
             choices = ggplot_themes,
-            selected = args$ggtheme,
+            selected = ggtheme,
             multiple = FALSE
           )
         )
@@ -323,116 +336,102 @@ ui_g_response <- function(id, ...) {
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
-    pre_output = args$pre_output,
-    post_output = args$post_output
+    pre_output = pre_output,
+    post_output = post_output
   )
 }
 
 # Server function for the response module
-srv_g_response <- function(id,
-                           data,
-                           response,
-                           x,
-                           row_facet,
-                           col_facet,
-                           plot_height,
-                           plot_width,
-                           ggplot2_args,
-                           decorators) {
+srv_g_response.picks <- function(id,
+                                 data,
+                                 response,
+                                 x,
+                                 row_facet,
+                                 col_facet,
+                                 plot_height,
+                                 plot_width,
+                                 ggplot2_args,
+                                 decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    data_extract <- list(response = response, x = x, row_facet = row_facet, col_facet = col_facet)
-
-    rule_diff <- function(other) {
-      function(value) {
-        if (other %in% names(selector_list())) {
-          othervalue <- selector_list()[[other]]()[["select"]]
-          if (!is.null(othervalue)) {
-            if (identical(value, othervalue)) {
-              "Row and column facetting variables must be different."
-            }
-          }
-        }
-      }
-    }
-
-    selector_list <- teal.transform::data_extract_multiple_srv(
-      data_extract = data_extract,
-      datasets = data,
-      select_validation_rule = list(
-        response = shinyvalidate::sv_required("Please define a column for the response variable"),
-        x = shinyvalidate::sv_required("Please define a column for X variable"),
-        row_facet = shinyvalidate::compose_rules(
-          shinyvalidate::sv_optional(),
-          ~ if (length(.) > 1) "There must be 1 or no row facetting variable.",
-          rule_diff("col_facet")
-        ),
-        col_facet = shinyvalidate::compose_rules(
-          shinyvalidate::sv_optional(),
-          ~ if (length(.) > 1) "There must be 1 or no column facetting variable.",
-          rule_diff("row_facet")
-        )
-      )
-    )
-
-    iv_r <- reactive({
-      iv <- shinyvalidate::InputValidator$new()
-      iv$add_rule("ggtheme", shinyvalidate::sv_required("Please select a theme"))
-      teal.transform::compose_and_enable_validators(iv, selector_list)
-    })
-
-    anl_merged_input <- teal.transform::merge_expression_srv(
-      selector_list = selector_list,
-      datasets = data
-    )
-
-    qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
+    selectors <- teal.transform::module_input_srv(
+      spec = list(
+        response = response,
+        x = x,
+        row_facet = row_facet,
+        col_facet = col_facet
+      ),
+      data = data
     )
 
     anl_merged_q <- reactive({
-      req(anl_merged_input())
-      qenv() %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr))
-    })
+      obj <- req(data())
+      validate_input(
+        inputId = "response-variables-selected",
+        condition = !is.null(selectors$response()$variables$selected),
+        message = "A `response` variable needs to be selected."
+      )
+      validate_input(
+        inputId = "x-variables-selected",
+        condition = !is.null(selectors$x()$variables$selected),
+        message = "A `x` variable needs to be selected."
+      )
+      validate_input(
+        inputId = c("response-variables-selected", "x-variables-selected"),
+        condition = !any(selectors$response()$variables$selected %in% selectors$x()$variables$selected),
+        message = "Response and X variables must be different."
+      )
+      validate_input(
+        inputId = "row_facet-variables-selected",
+        condition = is.null(row_facet) || length(selectors$row_facet()$variables$selected) < 2,
+        message = "Only single Row Facetting variable is allowed."
+      )
+      validate_input(
+        inputId = "col_facet-variables-selected",
+        condition = is.null(col_facet) || length(selectors$col_facet()$variables$selected) < 2,
+        message = "Only single Column Facetting variable is allowed."
+      )
+      validate_input(
+        inputId = c("row_facet-variables-selected", "col_facet-variables-selected"),
+        condition = is.null(row_facet) || is.null(col_facet) ||
+          !any(selectors$row_facet()$variables$selected %in% selectors$col_facet()$variables$selected),
+        message = "Row and Column Facetting variables must be different."
+      )
 
-    merged <- list(
-      anl_input_r = anl_merged_input,
-      anl_q_r = anl_merged_q
-    )
-
-    output_q <- reactive({
-      teal::validate_inputs(iv_r())
-
-      qenv <- merged$anl_q_r()
-      teal.reporter::teal_card(qenv) <-
+      teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Response Plot"),
-          teal.reporter::teal_card(qenv),
+          teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      ANL <- qenv[["ANL"]]
-      resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
-      x <- as.vector(merged$anl_input_r()$columns_source$x)
+      obj |>
+        teal.code::eval_code('library("ggplot2");library("dplyr");') |> # nolint
+        teal.transform::qenv_merge_selectors(selectors = selectors, output_name = "anl")
+    })
 
-      validate(need(is.factor(ANL[[resp_var]]), "Please select a factor variable as the response."))
-      validate(need(is.factor(ANL[[x]]), "Please select a factor variable as the X-Variable."))
-      teal::validate_has_data(ANL, 10)
-      teal::validate_has_data(ANL[, c(resp_var, x)], 10, complete = TRUE, allow_inf = FALSE)
 
-      row_facet_name <- if (length(merged$anl_input_r()$columns_source$row_facet) == 0) {
-        character(0)
-      } else {
-        as.vector(merged$anl_input_r()$columns_source$row_facet)
-      }
-      col_facet_name <- if (length(merged$anl_input_r()$columns_source$col_facet) == 0) {
-        character(0)
-      } else {
-        as.vector(merged$anl_input_r()$columns_source$col_facet)
-      }
+    output_q <- reactive({
+      validate_input(
+        inputId = "ggtheme",
+        condition = length(input$ggtheme) > 0,
+        message = "Row and Col Facetting variables must be different."
+      )
+
+      qenv <- anl_merged_q()
+      anl <- qenv[["anl"]]
+      response_var <- teal.transform::map_merged(selectors)$response$variables
+      x_var <- teal.transform::map_merged(selectors)$x$variables
+
+      validate(need(is.factor(anl[[response_var]]), "Please select a factor variable as the response."))
+      validate(need(is.factor(anl[[x_var]]), "Please select a factor variable as the X-Variable."))
+      teal::validate_has_data(anl, 10)
+      teal::validate_has_data(anl[, c(response_var, x_var)], 10, complete = TRUE, allow_inf = FALSE)
+
+      row_facet_var <- map_merged(selectors)$row_facet$variables
+      col_facet_var <- map_merged(selectors)$col_facet$variables
 
       freq <- input$freq == "frequency"
       swap_axes <- input$coord_flip
@@ -442,54 +441,43 @@ srv_g_response <- function(id,
 
       arg_position <- if (freq) "stack" else "fill"
 
-      rowf <- if (length(row_facet_name) != 0) as.name(row_facet_name)
-      colf <- if (length(col_facet_name) != 0) as.name(col_facet_name)
-      resp_cl <- as.name(resp_var)
-      x_cl <- as.name(x)
-
       if (swap_axes) {
-        qenv <- teal.code::eval_code(
+        qenv <- within(
           qenv,
-          substitute(
-            expr = ANL[[x]] <- with(ANL, forcats::fct_rev(x_cl)),
-            env = list(x = x, x_cl = x_cl)
-          )
+          expr = anl[[x_var]] <- with(anl, forcats::fct_rev(x_cl)),
+          x_var = x_var,
+          x_cl = as.name(x_var)
         )
       }
 
-      qenv <- teal.code::eval_code(
+      qenv <- within(
         qenv,
-        substitute(
-          expr = ANL[[resp_var]] <- factor(ANL[[resp_var]]),
-          env = list(resp_var = resp_var)
-        )
-      ) %>%
-        # rowf and colf will be a NULL if not set by a user
-        teal.code::eval_code(
-          substitute(
-            expr = ANL2 <- ANL %>%
-              dplyr::group_by_at(dplyr::vars(x_cl, resp_cl, rowf, colf)) %>%
-              dplyr::summarise(ns = dplyr::n()) %>%
-              dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
-              dplyr::mutate(sums = sum(ns), percent = round(ns / sums * 100, 1)),
-            env = list(x_cl = x_cl, resp_cl = resp_cl, rowf = rowf, colf = colf)
-          )
-        ) %>%
-        teal.code::eval_code(
-          substitute(
-            expr = ANL3 <- ANL %>%
-              dplyr::group_by_at(dplyr::vars(x_cl, rowf, colf)) %>%
-              dplyr::summarise(ns = dplyr::n()),
-            env = list(x_cl = x_cl, rowf = rowf, colf = colf)
-          )
-        )
+        expr = {
+          anl[[response_var]] <- factor(anl[[response_var]])
+
+          anl2 <- anl %>%
+            dplyr::group_by_at(dplyr::vars(x_cl, response_cl, row_facet_cl, col_facet_cl)) %>%
+            dplyr::summarise(ns = dplyr::n()) %>%
+            dplyr::group_by_at(dplyr::vars(x_cl, row_facet_cl, col_facet_cl)) %>%
+            dplyr::mutate(sums = sum(ns), percent = round(ns / sums * 100, 1))
+
+          anl3 <- anl %>%
+            dplyr::group_by_at(dplyr::vars(x_cl, row_facet_cl, col_facet_cl)) %>%
+            dplyr::summarise(ns = dplyr::n())
+        },
+        response_var = response_var,
+        response_cl = as.name(response_var),
+        x_cl = as.name(x_var),
+        row_facet_cl = if (length(row_facet)) as.name(row_facet_var),
+        col_facet_cl = if (length(col_facet)) as.name(col_facet_var)
+      )
 
       plot_call <- substitute(
-        expr = ggplot2::ggplot(ANL2, ggplot2::aes(x = x_cl, y = ns)) +
-          ggplot2::geom_bar(ggplot2::aes(fill = resp_cl), stat = "identity", position = arg_position),
+        expr = ggplot2::ggplot(anl2, ggplot2::aes(x = x_cl, y = ns)) +
+          ggplot2::geom_bar(ggplot2::aes(fill = response_cl), stat = "identity", position = arg_position),
         env = list(
-          x_cl = x_cl,
-          resp_cl = resp_cl,
+          x_cl = as.name(x_var),
+          response_cl = as.name(response_var),
           arg_position = arg_position
         )
       )
@@ -505,23 +493,23 @@ srv_g_response <- function(id,
         plot_call <- substitute(
           expr = plot_call +
             ggplot2::geom_text(
-              data = ANL2,
-              ggplot2::aes(label = ns, x = x_cl, y = ns, group = resp_cl),
+              data = anl2,
+              ggplot2::aes(label = ns, x = x_cl, y = ns, group = response_cl),
               col = "white",
               vjust = "middle",
               hjust = "middle",
               position = position_anl2_value
             ) +
             ggplot2::geom_text(
-              data = ANL3, ggplot2::aes(label = ns, x = x_cl, y = anl3_y),
+              data = anl3, ggplot2::aes(label = ns, x = x_cl, y = anl3_y),
               hjust = hjust_value,
               vjust = vjust_value,
               position = position_anl3_value
             ),
           env = list(
             plot_call = plot_call,
-            x_cl = x_cl,
-            resp_cl = resp_cl,
+            x_cl = as.name(x_var),
+            response_cl = as.name(response_var),
             hjust_value = if (swap_axes) "left" else "middle",
             vjust_value = if (swap_axes) "middle" else -1,
             position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)), # nolint: line_length.
@@ -535,7 +523,7 @@ srv_g_response <- function(id,
         plot_call <- substitute(plot_call + coord_flip(), env = list(plot_call = plot_call))
       }
 
-      facet_cl <- facet_ggplot_call(row_facet_name, col_facet_name)
+      facet_cl <- facet_ggplot_call(row_facet_var, col_facet_var)
 
       if (!is.null(facet_cl)) {
         plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
@@ -543,9 +531,9 @@ srv_g_response <- function(id,
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(
-          x = varname_w_label(x, ANL),
-          y = varname_w_label(resp_var, ANL, prefix = "Proportion of "),
-          fill = varname_w_label(resp_var, ANL)
+          x = varname_w_label(x_var, anl),
+          y = varname_w_label(response_var, anl, prefix = "Proportion of "),
+          fill = varname_w_label(response_var, anl)
         ),
         theme = list(legend.position = "bottom")
       )

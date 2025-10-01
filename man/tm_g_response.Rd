@@ -6,8 +6,10 @@
 \usage{
 tm_g_response(
   label = "Response Plot",
-  response,
-  x,
+  response = picks(datasets(), variables(choices = teal.transform::is_categorical(min.len
+    = 2, max.len = 10)), values()),
+  x = picks(datasets(), variables(choices = teal.transform::is_categorical(min.len = 2,
+    max.len = 10), selected = 2), values()),
   row_facet = NULL,
   col_facet = NULL,
   coord_flip = FALSE,

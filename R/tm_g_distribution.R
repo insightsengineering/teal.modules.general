@@ -159,7 +159,7 @@ tm_g_distribution.picks <- function(label = "Distribution Module",
                                     dist_var = picks(
                                       datasets(),
                                       variables(where(is.numeric)),
-                                      values(selected = tidyselect::everything(), multiple = TRUE)
+                                      values(selected = tidyselect::everything())
                                     ),
                                     strata_var = NULL,
                                     group_var = NULL,
@@ -174,7 +174,6 @@ tm_g_distribution.picks <- function(label = "Distribution Module",
                                     transformators = list(),
                                     decorators = list()) {
   message("Initializing tm_g_distribution")
-
 
   # Start of assertions
   checkmate::assert_string(label)
@@ -237,6 +236,7 @@ tm_g_distribution.picks <- function(label = "Distribution Module",
   ans
 }
 
+
 # UI function for the distribution module
 ui_g_distribution.picks <- function(id,
                                     strata_var,
@@ -249,27 +249,29 @@ ui_g_distribution.picks <- function(id,
                                     post_output,
                                     decorators) {
   ns <- NS(id)
+
+  hist_elem <- .ui_hist(
+    ns("histogram_plot"),
+    bins = bins,
+    freq = freq,
+    decorators = select_decorators(decorators, "histogram_plot")
+  )
+  qq_elem <- .ui_qq(ns("qq_plot"), decorators = select_decorators(decorators, "qq_plot"))
+  summary_table_elem <- .ui_summary_table(ns("summary_table"), select_decorators(decorators, "Statistics Table"))
+  test_table_elem <- .ui_test_table(ns("test_table"),
+    is_stratified = !is.null(strata_var),
+    decorators = select_decorators(decorators, "Test Table")
+  )
+
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(
       tabsetPanel(
         id = ns("tabs"),
-        tabPanel("Histogram", teal.widgets::plot_with_settings_ui(id = ns("hist_plot"))),
-        tabPanel("QQplot", teal.widgets::plot_with_settings_ui(id = ns("qq_plot")))
+        tabPanel("Histogram", hist_elem$output),
+        tabPanel("QQplot", qq_elem$output)
       ),
-      tags$h3("Statistics Table"),
-      DT::dataTableOutput(ns("summary_table")),
-      tags$h3("Tests"),
-      conditionalPanel(
-        sprintf("input['%s'].length === 0", ns("dist_tests")),
-        div(
-          id = ns("please_select_a_test"),
-          "Please select a test"
-        )
-      ),
-      conditionalPanel(
-        sprintf("input['%s'].length > 0", ns("dist_tests")),
-        DT::dataTableOutput(ns("t_stats"))
-      )
+      bslib::card(summary_table_elem$output),
+      bslib::card(test_table_elem$output)
     ),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
@@ -297,86 +299,39 @@ ui_g_distribution.picks <- function(id,
       bslib::accordion(
         conditionalPanel(
           condition = paste0("input['", ns("tabs"), "'] == 'Histogram'"),
-          bslib::accordion_panel(
-            "Histogram",
-            teal.widgets::optionalSliderInputValMinMax(ns("bins"), "Bins", bins, ticks = FALSE, step = 1),
-            shinyWidgets::prettyRadioButtons(
-              ns("main_type"),
-              label = "Plot Type:",
-              choices = c("Density", "Frequency"),
-              selected = if (!freq) "Density" else "Frequency",
-              bigger = FALSE,
-              inline = TRUE
-            ),
-            checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
-            ui_decorate_teal_data(
-              ns("d_density"),
-              decorators = select_decorators(decorators, "histogram_plot")
-            )
-          )
+          bslib::accordion_panel(title = "Histogram", hist_elem$encodings, collapsed = FALSE)
         ),
         conditionalPanel(
           condition = paste0("input['", ns("tabs"), "'] == 'QQplot'"),
-          bslib::accordion_panel(
-            "QQ Plot",
-            checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
-            ui_decorate_teal_data(
-              ns("d_qq"),
-              decorators = select_decorators(decorators, "qq_plot")
-            ),
-            collapsed = FALSE
-          )
+          bslib::accordion_panel(title = "QQ Plot", qq_elem$encodings, collapsed = FALSE)
         ),
-        conditionalPanel(
-          condition = paste0("input['", ns("main_type"), "'] == 'Density'"),
-          bslib::accordion_panel(
-            "Theoretical Distribution",
-            teal.widgets::optionalSelectInput(
-              ns("t_dist"),
-              tags$div(
-                tagList(
-                  "Distribution:",
-                  bslib::tooltip(
-                    icon("circle-info"),
-                    tags$span(
-                      "Default parameters are optimized with MASS::fitdistr function."
-                    )
-                  )
+        bslib::accordion_panel( # todo: hide ONLY when frequency is selected for histogram
+          "Theoretical Distribution",
+          teal.widgets::optionalSelectInput(
+            ns("t_dist"),
+            tags$div(
+              tagList(
+                "Distribution:",
+                bslib::tooltip(
+                  icon("circle-info"),
+                  tags$span("Default parameters are optimized with MASS::fitdistr function.")
                 )
-              ),
-              choices = c("normal", "lognormal", "gamma", "unif"),
-              selected = NULL,
-              multiple = FALSE
+              )
             ),
+            choices = c("normal", "lognormal", "gamma", "unif"),
+            selected = NULL,
+            multiple = FALSE
+          ),
+          conditionalPanel(
+            condition = paste0("input['", ns("t_dist"), "'] != null && input['", ns("t_dist"), "'] != ''"),
             numericInput(ns("dist_param1"), label = "param1", value = NULL),
             numericInput(ns("dist_param2"), label = "param2", value = NULL),
-            tags$span(actionButton(ns("params_reset"), "Default params")),
-            collapsed = FALSE
-          )
+            tags$span(actionButton(ns("params_reset"), "Default params"))
+          ),
+          collapsed = FALSE
         ),
-        bslib::accordion_panel(
-          title = "Tests",
-          teal.widgets::optionalSelectInput(
-            ns("dist_tests"),
-            "Tests:",
-            choices = c(
-              "Shapiro-Wilk",
-              if (!is.null(strata_var)) "t-test (two-samples, not paired)",
-              if (!is.null(strata_var)) "one-way ANOVA",
-              if (!is.null(strata_var)) "Fligner-Killeen",
-              if (!is.null(strata_var)) "F-test",
-              "Kolmogorov-Smirnov (one-sample)",
-              "Anderson-Darling (one-sample)",
-              "Cramer-von Mises (one-sample)",
-              if (!is.null(strata_var)) "Kolmogorov-Smirnov (two-samples)"
-            ),
-            selected = NULL
-          )
-        ),
-        bslib::accordion_panel(
-          title = "Statistics Table",
-          sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2)
-        ),
+        bslib::accordion_panel(title = "Tests", test_table_elem$encodings),
+        bslib::accordion_panel(title = "Statistics Table", summary_table_elem$encodings),
         bslib::accordion_panel(
           title = "Plot settings",
           selectInput(
@@ -415,97 +370,15 @@ srv_g_distribution.picks <- function(id,
     setBookmarkExclude("params_reset")
     ns <- session$ns
 
-    rule_req <- function(value) {
-      if (isTRUE(input$dist_tests %in% c(
-        "Fligner-Killeen",
-        "t-test (two-samples, not paired)",
-        "F-test",
-        "Kolmogorov-Smirnov (two-samples)",
-        "one-way ANOVA"
-      ))) {
-        if (!shinyvalidate::input_provided(value)) {
-          "Please select stratify variable."
-        }
-      }
-    }
-    rule_dupl <- function(...) {
-      if (identical(input$dist_tests, "Fligner-Killeen")) {
-        strata <- selector_list()$strata_i()$select
-        group <- selector_list()$group_i()$select
-        if (isTRUE(strata == group)) {
-          "Please select different variables for strata and group."
-        }
-      }
-    }
 
     selectors <- teal.transform::module_input_srv(
       spec = list(dist_var = dist_var, strata_var = strata_var, group_var = group_var),
       data = data
     )
 
-
-    iv_r <- reactive({
-      iv <- shinyvalidate::InputValidator$new()
-      # teal.transform::compose_and_enable_validators(iv, selector_list, validator_names = "dist_i")
-      #       dist_i = shinyvalidate::sv_required("Please select a variable")
-      # strata_i = shinyvalidate::compose_rules(
-      #   rule_req,
-      #   rule_dupl
-      # ),
-      # group_i = rule_dupl
-    })
-
-    iv_r_dist <- reactive({
-      iv <- shinyvalidate::InputValidator$new()
-      teal.transform::compose_and_enable_validators(
-        iv, selector_list,
-        validator_names = c("strata_i", "group_i")
-      )
-    })
-    rule_dist_1 <- function(value) {
-      if (!is.null(input$t_dist)) {
-        switch(input$t_dist,
-          "normal" = if (!shinyvalidate::input_provided(value)) "mean is required",
-          "lognormal" = if (!shinyvalidate::input_provided(value)) "meanlog is required",
-          "gamma" = {
-            if (!shinyvalidate::input_provided(value)) "shape is required" else if (value <= 0) "shape must be positive"
-          },
-          "unif" = NULL
-        )
-      }
-    }
-    rule_dist_2 <- function(value) {
-      if (!is.null(input$t_dist)) {
-        switch(input$t_dist,
-          "normal" = {
-            if (!shinyvalidate::input_provided(value)) {
-              "sd is required"
-            } else if (value < 0) {
-              "sd must be non-negative"
-            }
-          },
-          "lognormal" = {
-            if (!shinyvalidate::input_provided(value)) {
-              "sdlog is required"
-            } else if (value < 0) {
-              "sdlog must be non-negative"
-            }
-          },
-          "gamma" = {
-            if (!shinyvalidate::input_provided(value)) {
-              "rate is required"
-            } else if (value <= 0) {
-              "rate must be positive"
-            }
-          },
-          "unif" = NULL
-        )
-      }
-    }
-
     rule_dist <- function(value) {
       if (isTRUE(input$tabs == "QQplot") ||
-        isTRUE(input$dist_tests %in% c(
+        isTRUE(input$dist_test %in% c(
           "Kolmogorov-Smirnov (one-sample)",
           "Anderson-Darling (one-sample)",
           "Cramer-von Mises (one-sample)"
@@ -516,17 +389,62 @@ srv_g_distribution.picks <- function(id,
       }
     }
 
-    iv_dist <- shinyvalidate::InputValidator$new()
-    iv_dist$add_rule("t_dist", rule_dist)
-    iv_dist$add_rule("dist_param1", rule_dist_1)
-    iv_dist$add_rule("dist_param2", rule_dist_2)
-    iv_dist$enable()
-
     anl_merged_q <- reactive({
-      req(data())
-      qenv <- data()
-      teal.code::eval_code(qenv, 'library("ggplot2");library("dplyr")') %>%
-        teal.transform::qenv_merge_selectors(selectors = selectors, output_name = "anl")
+      validate_input(
+        inputId = "dist_var-variables-selected",
+        condition = length(selectors$dist_var()$variables$selected) == 1,
+        message = "Distribution variable must be selected."
+      )
+
+      obj <- req(data())
+      teal.reporter::teal_card(obj) <- c(
+        teal.reporter::teal_card("# Distribution Plot"),
+        teal.reporter::teal_card(obj),
+        teal.reporter::teal_card("## Module's code")
+      )
+      obj <- teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")')
+      obj <- teal.transform::qenv_merge_selectors(obj, selectors = selectors, output_name = "anl")
+
+      anl <- obj[["anl"]]
+
+      validate_input(
+        inputId = "dist_var-variables-selected",
+        condition = is.numeric(anl[[merge_vars()$dist_var]]),
+        message = "Distribution variable must be numeric."
+      )
+
+      if (length(merge_vars()$group_var) > 0) {
+        validate_input(
+          "group_var-variables-selected",
+          condition = inherits(anl[[merge_vars()$group_var]], c("integer", "factor", "character")),
+          message = "Group by variable must be `factor`, `character`, or `integer`"
+        )
+        obj <- within(obj, library("forcats"))
+        obj <- within(
+          obj,
+          expr = anl[[group_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[group_var]]), "NA"),
+          group_var = merge_vars()$group_var
+        )
+      }
+
+      if (length(merge_vars()$strata_var) > 0) {
+        validate_input(
+          "strata_var-variables-selected",
+          condition = inherits(anl[[merge_vars()$strata_var]], c("integer", "factor", "character")),
+          message = "Stratify by variable must be `factor`, `character`, or `integer`"
+        )
+
+        obj <- within(obj, library("forcats"))
+        obj <- within(
+          obj,
+          expr = anl[[strata_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[strata_var]]), "NA"),
+          strata_var = merge_vars()$strata_var
+        )
+      }
+
+      teal::validate_has_data(anl, 1, complete = TRUE)
+
+      obj
     })
 
     merge_vars <- reactive(
@@ -551,53 +469,35 @@ srv_g_distribution.picks <- function(id,
     })
 
     observeEvent(
-      eventExpr = list(
-        input$t_dist,
-        input$params_reset,
-        selectors$dist_var()$variables$selected
-      ),
+      eventExpr = {
+        input$t_dist
+        input$params_reset
+        merge_vars()$dist_var
+      },
       handlerExpr = {
-        params <-
-          if (length(input$t_dist) != 0) {
-            get_dist_params <- function(x, dist) {
-              if (dist == "unif") {
-                return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
-              }
-              tryCatch(
-                MASS::fitdistr(x, densfun = dist)$estimate,
-                error = function(e) c(param1 = NA_real_, param2 = NA_real_)
-              )
-            }
-
-            anl <- anl_merged_q()[["anl"]]
-            round(get_dist_params(as.numeric(stats::na.omit(anl[[merge_vars()$dist_var]])), input$t_dist), 2)
-          } else {
-            c("param1" = NA_real_, "param2" = NA_real_)
-          }
-
-        params_vals <- unname(params)
-        map_distr_nams <- list(
-          normal = c("mean", "sd"),
-          lognormal = c("meanlog", "sdlog"),
-          gamma = c("shape", "rate"),
-          unif = c("min", "max")
-        )
-
-        if (!is.null(input$t_dist) && input$t_dist %in% names(map_distr_nams)) {
-          params_names <- map_distr_nams[[input$t_dist]]
+        params <- if (length(input$t_dist)) {
+          req(anl_merged_q())
+          anl <- anl_merged_q()[["anl"]]
+          round(
+            .calc_dist_params(
+              x = as.numeric(stats::na.omit(anl[[merge_vars()$dist_var]])),
+              dist = input$t_dist
+            ),
+            2
+          )
         } else {
-          params_names <- names(params)
+          c("param1" = NA_real_, "param2" = NA_real_)
         }
 
         updateNumericInput(
           inputId = "dist_param1",
-          label = params_names[1],
-          value = restoreInput(ns("dist_param1"), params_vals[1])
+          label = names(params)[1],
+          value = restoreInput(ns("dist_param1"), params[[1]])
         )
         updateNumericInput(
           inputId = "dist_param2",
-          label = params_names[2],
-          value = restoreInput(ns("dist_param1"), params_vals[2])
+          label = names(params)[2],
+          value = restoreInput(ns("dist_param1"), params[[2]])
         )
       },
       ignoreInit = TRUE
@@ -607,84 +507,544 @@ srv_g_distribution.picks <- function(id,
       updateActionButton(inputId = "params_reset", label = "Reset params")
     })
 
-    # common qenv
-    common_q <- reactive({
-      req(anl_merged_q())
-      # Create a private stack for this function only.
-      qenv <- anl_merged_q()
-      teal.reporter::teal_card(qenv) <-
-        c(
-          teal.reporter::teal_card("# Distribution Plot"),
-          teal.reporter::teal_card(qenv),
-          teal.reporter::teal_card("## Module's code")
+    validate_dist <- reactive({
+      # Validate dist_param1
+      if (!is.null(input$t_dist) && input$t_dist == "normal") {
+        validate_input(
+          "dist_param1",
+          condition = !is.null(input$dist_param1) && !is.na(input$dist_param1),
+          message = "mean is required"
+        )
+        validate_input(
+          "dist_param2",
+          condition = !is.null(input$dist_param2) && !is.na(input$dist_param2),
+          message = "sd is required"
+        )
+        validate_input(
+          "dist_param2",
+          condition = is.null(input$dist_param2) || is.na(input$dist_param2) || input$dist_param2 >= 0,
+          message = "sd must be non-negative"
+        )
+      }
+      if (!is.null(input$t_dist) && input$t_dist == "lognormal") {
+        validate_input(
+          "dist_param1",
+          condition = !is.null(input$dist_param1) && !is.na(input$dist_param1),
+          message = "meanlog is required"
+        )
+        validate_input(
+          "dist_param2",
+          condition = !is.null(input$dist_param2) && !is.na(input$dist_param2),
+          message = "sdlog is required"
+        )
+        validate_input(
+          "dist_param2",
+          condition = is.null(input$dist_param2) || is.na(input$dist_param2) || input$dist_param2 >= 0,
+          message = "sdlog must be non-negative"
+        )
+      }
+      if (!is.null(input$t_dist) && input$t_dist == "gamma") {
+        validate_input(
+          "dist_param1",
+          condition = !is.null(input$dist_param1) && !is.na(input$dist_param1),
+          message = "shape is required"
+        )
+        validate_input(
+          "dist_param1",
+          condition = is.null(input$dist_param1) || is.na(input$dist_param1) || input$dist_param1 > 0,
+          message = "shape must be positive"
+        )
+        validate_input(
+          "dist_param2",
+          condition = !is.null(input$dist_param2) && !is.na(input$dist_param2),
+          message = "rate is required"
+        )
+        validate_input(
+          "dist_param2",
+          condition = is.null(input$dist_param2) || is.na(input$dist_param2) || input$dist_param2 > 0,
+          message = "rate must be positive"
+        )
+      }
+    })
+
+    # outputs ----
+    hist_output <- .srv_hist(
+      "histogram_plot",
+      data = reactive({
+        validate_dist()
+        anl_merged_q()
+      }),
+      merge_vars = merge_vars,
+      t_dist = reactive(input$t_dist),
+      dist_param1 = reactive(input$dist_param1),
+      dist_param2 = reactive(input$dist_param2),
+      scales_type = reactive(input$scales_type),
+      ggtheme = reactive(input$ggtheme),
+      plot_height = plot_height,
+      plot_width = plot_width,
+      ggplot2_args = teal.widgets::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["Histogram"]],
+        user_default = ggplot2_args$default,
+        module_plot = teal.widgets::ggplot2_args(labs = list(x = "theoretical", y = "sample"))
+      ),
+      decorators = select_decorators(decorators, "histogram_plot")
+    )
+
+    qq_output <- .srv_qq(
+      "qq_plot",
+      data = reactive({
+        validate_input(
+          "t_dist",
+          condition = !is.null(input$t_dist),
+          message = "QQ Plot requires Theoretical Distribution to be selected"
+        )
+        validate_dist()
+        anl_merged_q()
+      }),
+      merge_vars = merge_vars,
+      t_dist = reactive(input$t_dist),
+      dist_param1 = reactive(input$dist_param1),
+      dist_param2 = reactive(input$dist_param2),
+      scales_type = reactive(input$scales_type),
+      ggtheme = reactive(input$ggtheme),
+      plot_height = plot_height,
+      plot_width = plot_width,
+      ggplot2_args = teal.widgets::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["QQplot"]],
+        user_default = ggplot2_args$default,
+        module_plot = teal.widgets::ggplot2_args(labs = list(x = "theoretical", y = "sample"))
+      ),
+      decorators = select_decorators(decorators, "qq_plot")
+    )
+
+    summary_table_output <- .srv_summary_table(
+      "summary_table",
+      data = anl_merged_q,
+      merge_vars = merge_vars,
+      decorators = select_decorators(decorators, "Statistics Table")
+    )
+
+    test_q <- reactive({
+      obj <- anl_merged_q()
+      anl <- obj[["anl"]]
+      s_var <- merge_vars()$strata_var
+      g_var <- merge_vars()$group_var
+      dist_test <- input$`test_table-dist_test`
+
+      if (identical(dist_test, "Fligner-Killeen")) {
+        validate_input(
+          "strata_var-variables-selected",
+          condition = !isTRUE(s_var == g_var),
+          message = "Please select different variables for strata and group."
+        )
+      }
+
+      if (!is.null(dist_test) && dist_test %in% c(
+        "Fligner-Killeen",
+        "t-test (two-samples, not paired)",
+        "F-test",
+        "Kolmogorov-Smirnov (two-samples)",
+        "one-way ANOVA"
+      )) {
+        if (length(g_var) == 0 && length(s_var) > 0) {
+          validate_input(
+            "strata_var-variables-selected",
+            condition = length(unique(anl[[s_var]])) == 2,
+            message = "Please select stratify variable with 2 levels."
+          )
+        } else if (length(g_var) > 0 && length(s_var) > 0) {
+          validate_input(
+            "strata_var-variables-selected",
+            condition = all(stats::na.omit(as.vector(
+              tapply(anl[[s_var]], list(anl[[g_var]]), function(x) length(unique(x))) == 2
+            ))),
+            message = "Please select stratify variable with 2 levels, per each group."
+          )
+        }
+      }
+      validate_dist()
+      obj
+    })
+    test_output <- .srv_test_table(
+      "test_table",
+      data = test_q,
+      merge_vars = merge_vars,
+      t_dist = reactive(input$t_dist),
+      decorators = select_decorators(decorators, "Test Table")
+    )
+
+    # decorated_output_q <- reactive({
+    #   req(input$tabs, hist_output(), qq_output(), summary_table_output(), output_test_q())
+    #   test_q_out <- output_test_q()
+
+    #   # return everything except switch
+    #   out_q <- switch(input$tabs,
+    #     Histogram = hist_output(),
+    #     QQplot = qq_output()
+    #   )
+    #   out_q
+    # })
+
+    # Render R code.
+    # source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
+
+    # teal.widgets::verbatim_popup_srv(
+    #   id = "rcode",
+    #   verbatim_content = source_code_r,
+    #   title = "R Code for distribution"
+    # )
+    NULL
+  })
+}
+
+
+.ui_hist <- function(id, bins, freq, decorators) {
+  ns <- NS(id)
+  tagList(
+    encodings = tagList(
+      teal.widgets::optionalSliderInputValMinMax(ns("bins"), "Bins", bins, ticks = FALSE, step = 1),
+      shinyWidgets::prettyRadioButtons(
+        ns("statistic"),
+        label = "Plot Type:",
+        choices = c("Density", "Frequency"),
+        selected = if (!freq) "Density" else "Frequency",
+        bigger = FALSE,
+        inline = TRUE
+      ),
+      checkboxInput(ns("add_density"), label = "Overlay Density", value = TRUE),
+      ui_decorate_teal_data(ns("decorators"), decorators = decorators)
+    ),
+    output = teal.widgets::plot_with_settings_ui(id = ns("plot"))
+  )
+}
+
+.srv_hist <- function(id,
+                      data,
+                      merge_vars,
+                      ggtheme,
+                      scales_type,
+                      t_dist,
+                      dist_param1,
+                      dist_param2,
+                      plot_height,
+                      plot_width,
+                      ggplot2_args,
+                      decorators) {
+  moduleServer(id, function(input, output, session) {
+    output_q <- eventReactive(
+      list(
+        data(),
+        input$bins,
+        input$statistic,
+        input$add_density,
+        dist_param1(), # don't observe t_dist as dist_param1 is changed by t_dist
+        dist_param2(), # don't observe t_dist as dist_param2 is changed by t_dist
+        scales_type()
+      ),
+      {
+        obj <- req(data())
+        bins <- req(input$bins)
+        statistic <- if (req(input$statistic) == "Density") "density" else "count"
+        logger::log_debug(".srv_hist@1 Recalculating Histogram")
+        add_density <- input$add_density
+        d_var <- merge_vars()$dist_var
+        s_var <- merge_vars()$strata_var
+        g_var <- merge_vars()$group_var
+        ndensity <- 512
+
+        teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Histogram Plot")
+
+        plot_call <- substitute(
+          expr = ggplot2::ggplot(anl, mapping = ggplot2::aes(d_var_name)) +
+            ggplot2::geom_histogram(
+              ggplot2::aes(y = ggplot2::after_stat(stat)),
+              position = "identity", bins = bins, alpha = 0.3
+            ),
+          env = list(stat = as.name(statistic), bins = bins, d_var_name = as.name(d_var))
         )
 
-      anl <- qenv[["anl"]]
+        if (length(s_var)) {
+          plot_call[[2]]$mapping$col <- as.name(s_var)
+          plot_call[[2]]$mapping$fill <- as.name(s_var)
+        }
 
+        if (length(g_var)) {
+          req(scales_type())
+          plot_call <- call(
+            "+",
+            plot_call,
+            substitute(
+              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales),
+              list(g_var_name = as.name(g_var), scales = tolower(scales_type()))
+            )
+          )
+        }
+
+        if (add_density) {
+          plot_call <- substitute(
+            expr = plot_call +
+              ggplot2::stat_density(
+                ggplot2::aes(y = ggplot2::after_stat(const * stat)),
+                geom = "line",
+                position = "identity",
+                alpha = 0.5,
+                size = 2,
+                n = ndensity
+              ),
+            env = list(
+              plot_call = plot_call,
+              const = if (statistic == "density") {
+                1
+              } else {
+                diff(range(obj[["anl"]][[d_var]], na.rm = TRUE)) / bins
+              },
+              stat = as.name(statistic),
+              ndensity = ndensity
+            )
+          )
+        }
+
+        if (length(s_var) == 0 && length(g_var) == 0 && statistic == "density" && length(t_dist()) != 0) {
+          req(dist_param1(), dist_param2())
+          obj <- teal.code::eval_code(obj, 'library("ggpp")') # nolint quotes
+          param_list <- .dist_param_list(t_dist(), dist_param1(), dist_param2())
+          map_dist <- c(normal = "dnorm", lognormal = "dlnorm", gamma = "dgamma", unif = "dunif")
+
+          plot_call <- substitute(
+            expr = plot_call +
+              ggpp::geom_table_npc(
+                data = data.frame(x = .7, y = 1, tb = I(list(nested_df))),
+                ggplot2::aes(npcx = x, npcy = y, label = tb),
+                hjust = 0, vjust = 1, size = 4
+              ) +
+              stat_function(
+                data = data.frame(x = range(anl[[d_var]]), color = density_dist),
+                ggplot2::aes(x, color = color),
+                fun = density_dist_name,
+                n = ndensity,
+                size = 2,
+                args = param_list
+              ) +
+              ggplot2::scale_color_manual(values = stats::setNames("blue", density_dist), aesthetics = "color"),
+            env = list(
+              plot_call = plot_call,
+              d_var = d_var,
+              density_dist = unname(map_dist[t_dist()]),
+              density_dist_name = as.name(unname(map_dist[t_dist()])),
+              ndensity = ndensity,
+              nested_df = as.call(
+                c(
+                  as.name("data.frame"),
+                  param_list,
+                  list(distribution = t_dist())
+                )
+              ),
+              param_list = param_list
+            )
+          )
+        }
+
+        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(ggplot2_args, ggtheme = ggtheme())
+
+        teal.code::eval_code(
+          obj,
+          substitute(
+            expr = histogram_plot <- plot_call,
+            env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
+          )
+        )
+      }
+    )
+
+    decorated_output_q <- srv_decorate_teal_data(
+      "decorators",
+      data = output_q,
+      decorators = decorators,
+      expr = quote(histogram_plot)
+    )
+
+    output_r <- reactive(req(decorated_output_q())[["histogram_plot"]])
+
+    pws <- teal.widgets::plot_with_settings_srv(
+      id = "plot",
+      plot_r = output_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = FALSE
+    )
+
+    set_chunk_dims(pws, decorated_output_q)
+  })
+}
+
+.ui_qq <- function(id, decorators) {
+  ns <- NS(id)
+  tagList(
+    encodings = tagList(
+      checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
+      ui_decorate_teal_data(ns("decorators"), decorators = decorators)
+    ),
+    output = teal.widgets::plot_with_settings_ui(id = ns("plot"))
+  )
+}
+
+.srv_qq <- function(id,
+                    data,
+                    merge_vars,
+                    t_dist,
+                    dist_param1,
+                    dist_param2,
+                    scales_type,
+                    ggtheme,
+                    plot_height,
+                    plot_width,
+                    ggplot2_args,
+                    decorators) {
+  moduleServer(id, function(input, output, session) {
+    output_q <- eventReactive(
+      {
+        data()
+        t_dist()
+        dist_param1()
+        dist_param2()
+        input$qq_line
+        ggtheme()
+      },
+      {
+        req(data(), merge_vars(), ggtheme(), t_dist())
+        logger::log_debug(".srv_qq@1 Recalculating QQ Plot...")
+        obj <- data()
+        d_var <- merge_vars()$dist_var
+        s_var <- merge_vars()$strata_var
+        g_var <- merge_vars()$group_var
+
+        teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## QQ Plot")
+
+        plot_call <- substitute(
+          expr = ggplot2::ggplot(dataname, mapping = ggplot2::aes(sample = d_var_name)),
+          env = list(
+            dataname = if (length(g_var)) {
+              bquote(anl[anl[[.(g_var)]] != "NA", ])
+            } else {
+              quote(anl)
+            },
+            d_var_name = as.name(d_var)
+          )
+        )
+        if (length(s_var)) plot_call$mapping$color <- as.name(s_var)
+        if (length(g_var)) {
+          plot_call <- substitute(
+            plot_call + ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
+            list(
+              plot_call = plot_call,
+              g_var_name = as.name(g_var),
+              scales_raw = tolower(scales_type())
+            )
+          )
+        }
+
+        map_quantile_fun <- c(normal = "qnorm", lognormal = "qlnorm", gamma = "qgamma", unif = "qunif")
+
+        plot_call <- substitute(
+          expr = plot_call + ggplot2::stat_qq(distribution = quantile_fun, dparams = dparams),
+          env = list(
+            plot_call = plot_call,
+            quantile_fun = as.name(unname(map_quantile_fun[t_dist()])),
+            dparams = list(dist_param1(), dist_param2())
+          )
+        )
+
+        if (isTRUE(input$qq_line)) {
+          plot_call <- substitute(
+            expr = plot_call + ggplot2::stat_qq_line(distribution = quantile_fun, dparams = dparams),
+            env = list(
+              plot_call = plot_call,
+              quantile_fun = as.name(unname(map_quantile_fun[t_dist()])),
+              dparams = list(dist_param1(), dist_param2())
+            )
+          )
+        }
+
+        if (length(s_var) == 0 && length(g_var) == 0) {
+          req(dist_param1(), dist_param2())
+          obj <- teal.code::eval_code(obj, 'library("ggpp")') # nolint quotes
+          plot_call <- substitute(
+            expr = plot_call +
+              ggpp::geom_table_npc(
+                data = data.frame(x = .7, y = 1, tb = I(list(nested_df))),
+                ggplot2::aes(npcx = x, npcy = y, label = tb),
+                hjust = 0, vjust = 1, size = 4
+              ),
+            env = list(
+              plot_call = plot_call,
+              nested_df = as.call(
+                c(
+                  as.name("data.frame"),
+                  .dist_param_list(t_dist(), dist_param1(), dist_param2()),
+                  list(distribution = t_dist())
+                )
+              )
+            )
+          )
+        }
+
+        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(ggplot2_args, ggtheme = ggtheme())
+        teal.code::eval_code(
+          obj,
+          substitute(
+            expr = qq_plot <- plot_call,
+            env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
+          )
+        )
+      }
+    )
+
+    decorated_output_q <- srv_decorate_teal_data(
+      "decorators",
+      decorators = decorators,
+      data = output_q,
+      expr = quote(qq_plot)
+    )
+
+    output_r <- reactive(req(decorated_output_q())[["qq_plot"]])
+
+
+    pws <- teal.widgets::plot_with_settings_srv(
+      id = "plot",
+      plot_r = output_r,
+      height = plot_height,
+      width = plot_width,
+      brushing = FALSE
+    )
+
+    # set_chunk_dims(pws, decorated_output_q)
+  })
+}
+
+.ui_summary_table <- function(id, decorators) {
+  ns <- NS(id)
+  tagList(
+    encodings = tagList(
+      sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2),
+      ui_decorate_teal_data(ns("decorators"), decorators = decorators)
+    ),
+    output = tags$div(
+      tags$h3("Statistics Table"),
+      DT::dataTableOutput(ns("summary_table"))
+    )
+  )
+}
+
+.srv_summary_table <- function(id, data, merge_vars, decorators) {
+  moduleServer(id, function(input, output, session) {
+    output_q <- reactive({
+      obj <- req(data())
       roundn <- input$roundn
-      dist_param1 <- input$dist_param1
-      dist_param2 <- input$dist_param2
-      # isolated as dist_param1/dist_param2 already triggered the reactivity
-      t_dist <- isolate(input$t_dist)
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Statistics table")
 
-      if (length(merge_vars()$group_var) > 0) {
-        validate(
-          need(
-            inherits(anl[[merge_vars()$group_var]], c("integer", "factor", "character")),
-            "Group by variable must be `factor`, `character`, or `integer`"
-          )
-        )
-        qenv <- within(qenv, library("forcats"))
-        qenv <- within(
-          qenv,
-          expr = anl[[group_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[group_var]]), "NA"),
-          group_var = merge_vars()$group_var
-        )
-      }
-
-      if (length(merge_vars()$strata_var) > 0) {
-        validate(
-          need(
-            inherits(anl[[merge_vars()$strata_var]], c("integer", "factor", "character")),
-            "Stratify by variable must be `factor`, `character`, or `integer`"
-          )
-        )
-
-        qenv <- within(qenv, library("forcats"))
-        qenv <- within(
-          qenv,
-          expr = anl[[strata_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[strata_var]]), "NA"),
-          strata_var = merge_vars()$strata_var
-        )
-      }
-
-      validate(need(is.numeric(anl[[merge_vars()$dist_var]]), "Please select a numeric variable."))
-      teal::validate_has_data(anl, 1, complete = TRUE)
-
-      if (length(t_dist) != 0) {
-        map_distr_nams <- list(
-          normal = c("mean", "sd"),
-          lognormal = c("meanlog", "sdlog"),
-          gamma = c("shape", "rate"),
-          unif = c("min", "max")
-        )
-        params_names_raw <- map_distr_nams[[t_dist]]
-
-        qenv <- within(
-          qenv,
-          expr = {
-            params <- as.list(c(dist_param1, dist_param2))
-            names(params) <- params_names_raw
-          },
-          dist_param1 = dist_param1,
-          dist_param2 = dist_param2,
-          params_names_raw = params_names_raw
-        )
-      }
-
-      if (length(merge_vars()$strata_var) == 0 && length(merge_vars()$group_var) == 0) {
+      obj <- if (length(merge_vars()$strata_var) == 0 && length(merge_vars()$group_var) == 0) {
         within(
-          qenv,
+          obj,
           expr = {
             summary_table_data <- anl %>%
               dplyr::summarise(
@@ -701,7 +1061,7 @@ srv_g_distribution.picks <- function(id,
         )
       } else {
         within(
-          qenv,
+          obj,
           expr = {
             summary_table_data <- anl %>%
               dplyr::group_by_at(dplyr::vars(dplyr::any_of(strata_vars))) %>%
@@ -719,19 +1079,89 @@ srv_g_distribution.picks <- function(id,
           roundn = roundn
         )
       }
+
+      within(obj, summary_table <- rtables::df_to_tt(summary_table_data))
+      # if (iv_r()$is_valid()) {
+
+      # } else {
+      #   within(
+      #     q_common,
+      #     summary_table <- rtables::rtable(header = rtables::rheader(colnames(summary_table_data)))
+      #   )
+      # }
     })
 
-    # distplot qenv ----
-    dist_q <- eventReactive(
+    decorated_output_q <- srv_decorate_teal_data(
+      "decorators",
+      data = output_q,
+      decorators = decorators,
+      expr = quote(summary_table)
+    )
+
+    output_r <- reactive({
+      obj <- req(decorated_output_q())
+
+      # todo: why summary_table_data is returned while summary_table is printed in a code?
+      DT::datatable(
+        obj[["summary_table_data"]],
+        options = list(
+          autoWidth = TRUE,
+          columnDefs = list(list(width = "200px", targets = "_all"))
+        ),
+        rownames = FALSE
+      )
+    })
+
+    output$summary_table <- DT::renderDataTable(output_r())
+
+    decorated_output_q
+  })
+}
+
+.ui_test_table <- function(id, is_stratified, decorators) {
+  ns <- NS(id)
+  tagList(
+    encodings = tagList(
+      shinyWidgets::pickerInput(
+        ns("dist_test"),
+        "Tests:",
+        choices = c(
+          "Shapiro-Wilk",
+          if (is_stratified) "Kolmogorov-Smirnov (two-samples)",
+          if (is_stratified) "one-way ANOVA",
+          if (is_stratified) "Fligner-Killeen",
+          if (is_stratified) "F-test",
+          "Kolmogorov-Smirnov (one-sample)",
+          "Anderson-Darling (one-sample)",
+          "Cramer-von Mises (one-sample)",
+          if (is_stratified) "t-test (two-samples, not paired)"
+        ),
+        selected = NULL,
+        options = list(
+          `allow-clear` = TRUE,
+          "none-selected-text" = "- Nothing selected -"
+        )
+      ),
+      ui_decorate_teal_data(ns("decorators"), decorators = decorators)
+    ),
+    output = tagList(
+      tags$h3("Tests"),
+      DT::dataTableOutput(ns("table"))
+    )
+  )
+}
+
+.srv_test_table <- function(id, data, merge_vars, t_dist, decorators) {
+  moduleServer(id, function(input, output, session) {
+    output_q <- eventReactive(
+      ignoreNULL = FALSE,
       eventExpr = {
-        common_q()
-        input$scales_type
-        input$main_type
-        input$bins
-        input$add_dens
-        is.null(input$ggtheme)
+        data()
+        input$dist_test
       },
       valueExpr = {
+        obj <- data()
+        anl <- obj[["anl"]]
         d_var <- merge_vars()$dist_var
         s_var <- merge_vars()$strata_var
         g_var <- merge_vars()$group_var
@@ -739,386 +1169,20 @@ srv_g_distribution.picks <- function(id,
         s_var_name <- if (!is.null(s_var)) as.name(s_var)
         g_var_name <- if (!is.null(g_var)) as.name(g_var)
 
-        t_dist <- input$t_dist
-        dist_param1 <- input$dist_param1
-        dist_param2 <- input$dist_param2
-
-        scales_type <- input$scales_type
-
-        ndensity <- 512
-        main_type_var <- input$main_type
-        bins_var <- input$bins
-        add_dens_var <- input$add_dens
-        ggtheme <- input$ggtheme
-
-        # teal::validate_inputs(iv_dist)
-
-        qenv <- common_q()
-
-        m_type <- if (main_type_var == "Density") "density" else "count"
-
-        plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
-          substitute(
-            expr = ggplot2::ggplot(anl, ggplot2::aes(d_var_name)) +
-              ggplot2::geom_histogram(
-                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type)), bins = bins_var, alpha = 0.3
-              ),
-            env = list(
-              m_type = as.name(m_type), bins_var = bins_var, d_var_name = d_var_name
-            )
-          )
-        } else if (length(s_var) != 0 && length(g_var) == 0) {
-          substitute(
-            expr = ggplot2::ggplot(anl, ggplot2::aes(d_var_name, col = s_var_name)) +
-              ggplot2::geom_histogram(
-                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var),
-                bins = bins_var, alpha = 0.3
-              ),
-            env = list(
-              m_type = as.name(m_type),
-              bins_var = bins_var,
-              d_var_name = d_var_name,
-              s_var = as.name(s_var),
-              s_var_name = s_var_name
-            )
-          )
-        } else if (length(s_var) == 0 && length(g_var) != 0) {
-          req(scales_type)
-          substitute(
-            expr = ggplot2::ggplot(anl[anl[[g_var]] != "NA", ], ggplot2::aes(d_var_name)) +
-              ggplot2::geom_histogram(
-                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type)), bins = bins_var, alpha = 0.3
-              ) +
-              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-            env = list(
-              m_type = as.name(m_type),
-              bins_var = bins_var,
-              d_var_name = d_var_name,
-              g_var = g_var,
-              g_var_name = g_var_name,
-              scales_raw = tolower(scales_type)
-            )
-          )
-        } else {
-          req(scales_type)
-          substitute(
-            expr = ggplot2::ggplot(anl[anl[[g_var]] != "NA", ], ggplot2::aes(d_var_name, col = s_var_name)) +
-              ggplot2::geom_histogram(
-                position = "identity",
-                ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var), bins = bins_var, alpha = 0.3
-              ) +
-              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-            env = list(
-              m_type = as.name(m_type),
-              bins_var = bins_var,
-              d_var_name = d_var_name,
-              g_var = g_var,
-              s_var = as.name(s_var),
-              g_var_name = g_var_name,
-              s_var_name = s_var_name,
-              scales_raw = tolower(scales_type)
-            )
-          )
-        }
-
-        if (add_dens_var) {
-          plot_call <- substitute(
-            expr = plot_call +
-              ggplot2::stat_density(
-                ggplot2::aes(y = ggplot2::after_stat(const * m_type2)),
-                geom = "line",
-                position = "identity",
-                alpha = 0.5,
-                size = 2,
-                n = ndensity
-              ),
-            env = list(
-              plot_call = plot_call,
-              const = if (main_type_var == "Density") {
-                1
-              } else {
-                diff(range(qenv[["anl"]][[dist_var]], na.rm = TRUE)) / bins_var
-              },
-              m_type2 = if (main_type_var == "Density") as.name("density") else as.name("count"),
-              ndensity = ndensity
-            )
-          )
-        }
-
-        if (length(t_dist) != 0 && main_type_var == "Density" && length(g_var) == 0 && length(s_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, 'library("ggpp")') # nolint quotes
-          qenv <- teal.code::eval_code(
-            qenv,
-            substitute(
-              df_params <- as.data.frame(append(params, list(name = t_dist))),
-              env = list(t_dist = t_dist)
-            )
-          )
-          datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
-          label <- quote(tb)
-
-          plot_call <- substitute(
-            expr = plot_call + ggpp::geom_table_npc(
-              data = data,
-              ggplot2::aes(npcx = x, npcy = y, label = label),
-              hjust = 0, vjust = 1, size = 4
-            ),
-            env = list(plot_call = plot_call, data = datas, label = label)
-          )
-        }
-
-        if (
-          length(s_var) == 0 &&
-            length(g_var) == 0 &&
-            main_type_var == "Density" &&
-            length(t_dist) != 0 &&
-            main_type_var == "Density"
-        ) {
-          map_dist <- stats::setNames(
-            c("dnorm", "dlnorm", "dgamma", "dunif"),
-            c("normal", "lognormal", "gamma", "unif")
-          )
-          plot_call <- substitute(
-            expr = plot_call + stat_function(
-              data = data.frame(x = range(anl[[dist_var]]), color = mapped_dist),
-              ggplot2::aes(x, color = color),
-              fun = mapped_dist_name,
-              n = ndensity,
-              size = 2,
-              args = params
-            ) +
-              ggplot2::scale_color_manual(values = stats::setNames("blue", mapped_dist), aesthetics = "color"),
-            env = list(
-              plot_call = plot_call,
-              dist_var = dist_var,
-              ndensity = ndensity,
-              mapped_dist = unname(map_dist[t_dist]),
-              mapped_dist_name = as.name(unname(map_dist[t_dist]))
-            )
-          )
-        }
-
-        all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
-          user_plot = ggplot2_args[["Histogram"]],
-          user_default = ggplot2_args$default
-        )
-
-        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-          all_ggplot2_args,
-          ggtheme = ggtheme
-        )
-
-        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Histogram Plot")
-        teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = histogram_plot <- plot_call,
-            env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
-          )
-        )
-      }
-    )
-
-    # qqplot qenv ----
-    qq_q <- eventReactive(
-      eventExpr = {
-        common_q()
-        input$scales_type
-        input$qq_line
-        is.null(input$ggtheme)
-        input$tabs
-      },
-      valueExpr = {
-        browser()
-
-        d_var <- merge_vars()$dist_var
-        s_var <- merge_vars()$strata_var
-        g_var <- merge_vars()$group_var
-        d_var_name <- as.name(s_var)
-        s_var_name <- if (!is.null(s_var)) as.name(s_var)
-        g_var_name <- if (!is.null(g_var)) as.name(g_var)
-
-        dist_param1 <- input$dist_param1
-        dist_param2 <- input$dist_param2
-
-        scales_type <- input$scales_type
-        ggtheme <- input$ggtheme
-
-        # teal::validate_inputs(iv_r_dist(), iv_dist)
-        t_dist <- req(input$t_dist) # Not validated when tab is not selected
-        qenv <- common_q()
-
-        plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
-          substitute(
-            expr = ggplot2::ggplot(anl, ggplot2::aes_string(sample = d_var)),
-            env = list(d_var = d_var)
-          )
-        } else if (length(s_var) != 0 && length(g_var) == 0) {
-          substitute(
-            expr = ggplot2::ggplot(anl, ggplot2::aes_string(sample = d_var, color = s_var)),
-            env = list(d_var = d_var, s_var = s_var)
-          )
-        } else if (length(s_var) == 0 && length(g_var) != 0) {
-          substitute(
-            expr = ggplot2::ggplot(anl[anl[[g_var]] != "NA", ], ggplot2::aes_string(sample = d_var)) +
-              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-            env = list(
-              d_var = d_var,
-              g_var = g_var,
-              g_var_name = g_var_name,
-              scales_raw = tolower(scales_type)
-            )
-          )
-        } else {
-          substitute(
-            expr = ggplot2::ggplot(anl[anl[[g_var]] != "NA", ], ggplot2::aes_string(sample = d_var, color = s_var)) +
-              ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
-            env = list(
-              d_var = d_var,
-              g_var = g_var,
-              s_var = s_var,
-              g_var_name = g_var_name,
-              scales_raw = tolower(scales_type)
-            )
-          )
-        }
-
-        map_dist <- stats::setNames(
-          c("qnorm", "qlnorm", "qgamma", "qunif"),
-          c("normal", "lognormal", "gamma", "unif")
-        )
-
-        plot_call <- substitute(
-          expr = plot_call +
-            ggplot2::stat_qq(distribution = mapped_dist, dparams = params),
-          env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
-        )
-
-        if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, 'library("ggpp")') # nolint quotes
-          qenv <- teal.code::eval_code(
-            qenv,
-            substitute(
-              df_params <- as.data.frame(append(params, list(name = t_dist))),
-              env = list(t_dist = t_dist)
-            )
-          )
-          datas <- quote(data.frame(x = 0.7, y = 1, tb = I(list(df_params = df_params))))
-          label <- quote(tb)
-
-          plot_call <- substitute(
-            expr = plot_call +
-              ggpp::geom_table_npc(
-                data = data,
-                ggplot2::aes(npcx = x, npcy = y, label = label),
-                hjust = 0,
-                vjust = 1,
-                size = 4
-              ),
-            env = list(
-              plot_call = plot_call,
-              data = datas,
-              label = label
-            )
-          )
-        }
-
-        if (isTRUE(input$qq_line)) {
-          plot_call <- substitute(
-            expr = plot_call +
-              ggplot2::stat_qq_line(distribution = mapped_dist, dparams = params),
-            env = list(plot_call = plot_call, mapped_dist = as.name(unname(map_dist[t_dist])))
-          )
-        }
-
-        all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
-          user_plot = ggplot2_args[["QQplot"]],
-          user_default = ggplot2_args$default,
-          module_plot = teal.widgets::ggplot2_args(labs = list(x = "theoretical", y = "sample"))
-        )
-
-        parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
-          all_ggplot2_args,
-          ggtheme = ggtheme
-        )
-
-        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## QQ Plot")
-        teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = qq_plot <- plot_call,
-            env = list(plot_call = Reduce(function(x, y) call("+", x, y), c(plot_call, parsed_ggplot2_args)))
-          )
-        )
-      }
-    )
-
-    # test qenv ----
-    test_q <- eventReactive(
-      ignoreNULL = FALSE,
-      eventExpr = {
-        common_q()
-        input$dist_param1
-        input$dist_param2
-        input$dist_tests
-      },
-      valueExpr = {
-        # Create a private stack for this function only.
-        anl <- common_q()[["anl"]]
-
-        d_var <- merge_vars()$dist_var
-        s_var <- merge_vars()$strata_var
-        g_var <- merge_vars()$group_var
-        d_var_name <- as.name(s_var)
-        s_var_name <- if (!is.null(s_var)) as.name(s_var)
-        g_var_name <- if (!is.null(g_var)) as.name(g_var)
-
-        dist_param1 <- input$dist_param1
-        dist_param2 <- input$dist_param2
-        dist_tests <- input$dist_tests
-        t_dist <- input$t_dist
-
-        req(dist_tests)
-
-        # teal::validate_inputs(iv_dist)
+        dist_test <- input$dist_test
+        validate(need(length(dist_test) > 0, "Please select a test"))
 
         if (length(s_var) > 0 || length(g_var) > 0) {
           counts <- anl %>%
             dplyr::group_by_at(dplyr::vars(dplyr::any_of(c(s_var, g_var)))) %>%
             dplyr::summarise(n = dplyr::n())
-
           validate(need(all(counts$n > 5), "Please select strata*group with at least 5 observation each."))
         }
 
-
-        if (dist_tests %in% c(
-          "t-test (two-samples, not paired)",
-          "F-test",
-          "Kolmogorov-Smirnov (two-samples)"
-        )) {
-          if (length(g_var) == 0 && length(s_var) > 0) {
-            validate(need(
-              length(unique(anl[[s_var]])) == 2,
-              "Please select stratify variable with 2 levels."
-            ))
-          }
-          if (length(g_var) > 0 && length(s_var) > 0) {
-            validate(need(
-              all(stats::na.omit(as.vector(
-                tapply(anl[[s_var]], list(anl[[g_var]]), function(x) length(unique(x))) == 2
-              ))),
-              "Please select stratify variable with 2 levels, per each group."
-            ))
-          }
-        }
-
-        map_dist <- stats::setNames(
-          c("pnorm", "plnorm", "pgamma", "punif"),
-          c("normal", "lognormal", "gamma", "unif")
-        )
+        map_dist <- c(normal = "dnorm", lognormal = "dlnorm", gamma = "dgamma", unif = "dunif")
         sks_args <- list(
           test = quote(stats::ks.test),
-          args = bquote(append(list(.[[.(d_var)]], .(map_dist[t_dist])), params)),
+          args = bquote(append(list(.[[.(d_var)]], .(map_dist[t_dist()])), params)),
           groups = c(g_var, s_var)
         )
         ssw_args <- list(
@@ -1133,12 +1197,12 @@ srv_g_distribution.picks <- function(id,
         )
         sad_args <- list(
           test = quote(goftest::ad.test),
-          args = bquote(append(list(.[[.(d_var)]], .(map_dist[t_dist])), params)),
+          args = bquote(append(list(.[[.(d_var)]], .(map_dist[t_dist()])), params)),
           groups = c(g_var, s_var)
         )
         scvm_args <- list(
           test = quote(goftest::cvm.test),
-          args = bquote(append(list(.[[.(d_var)]], .(map_dist[t_dist])), params)),
+          args = bquote(append(list(.[[.(d_var)]], .(map_dist[t_dist()])), params)),
           groups = c(g_var, s_var)
         )
         manov_args <- list(
@@ -1162,7 +1226,7 @@ srv_g_distribution.picks <- function(id,
           groups = c(g_var)
         )
 
-        tests_base <- switch(dist_tests,
+        tests_base <- switch(dist_test,
           "Kolmogorov-Smirnov (one-sample)" = sks_args,
           "Shapiro-Wilk" = ssw_args,
           "Fligner-Killeen" = mfil_args,
@@ -1175,7 +1239,7 @@ srv_g_distribution.picks <- function(id,
         )
 
         env <- list(
-          t_test = t_dist,
+          t_test = t_dist(),
           d_var = d_var,
           g_var = g_var,
           s_var = s_var,
@@ -1187,12 +1251,13 @@ srv_g_distribution.picks <- function(id,
           s_var_name = s_var_name
         )
 
-        qenv <- common_q()
 
-        if (length(s_var) == 0 && length(g_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, 'library("generics")') # nolint quotes
-          qenv <- teal.code::eval_code(
-            qenv,
+        teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Distribution Tests table")
+
+        obj <- if (length(s_var) == 0 && length(g_var) == 0) {
+          obj <- teal.code::eval_code(obj, 'library("generics")') # nolint quotes
+          teal.code::eval_code(
+            obj,
             substitute(
               expr = {
                 test_table_data <- anl %>%
@@ -1204,9 +1269,10 @@ srv_g_distribution.picks <- function(id,
             )
           )
         } else {
-          qenv <- teal.code::eval_code(qenv, 'library("tidyr")') # nolint quotes
-          qenv <- teal.code::eval_code(
-            qenv,
+          # todo: why there is a `library` call when `tidyr::unnest` is prefixed, same for `generics`
+          obj <- teal.code::eval_code(obj, 'library("tidyr")') # nolint quotes
+          teal.code::eval_code(
+            obj,
             substitute(
               expr = {
                 test_table_data <- anl %>%
@@ -1220,149 +1286,50 @@ srv_g_distribution.picks <- function(id,
             )
           )
         }
-      }
-    )
 
-    # outputs ----
-
-    # Summary table listing has to be created separately to allow for qenv join
-    q_common <- common_q()
-    teal.reporter::teal_card(q_common) <- c(
-      teal.reporter::teal_card(q_common),
-      "## Statistics table"
-    )
-    output_summary_q <- reactive({
-      if (iv_r()$is_valid()) {
-        within(q_common, {
-          summary_table <- rtables::df_to_tt(summary_table_data)
-        })
-      } else {
-        within(
-          q_common,
-          summary_table <- rtables::rtable(header = rtables::rheader(colnames(summary_table_data)))
-        )
-      }
-    })
-
-    output_test_q <- reactive({
-      # wrapped in if since could lead into validate error - we do want to continue
-      test_q_out <- try(test_q(), silent = TRUE)
-      q_common <- common_q()
-      teal.reporter::teal_card(q_common) <- c(
-        teal.reporter::teal_card(q_common),
-        "## Distribution Tests table"
-      )
-      if (inherits(test_q_out, c("try-error", "error"))) {
-        within(
-          q_common,
-          test_table <- rtables::rtable(header = rtables::rheader("No data available in table"), rtables::rrow())
-        )
-      } else {
-        within(c(q_common, test_q_out), {
+        within(obj, {
           test_table <- rtables::df_to_tt(test_table_data)
         })
       }
-    })
-
-    decorated_output_dist_q <- srv_decorate_teal_data(
-      "d_density",
-      data = dist_q,
-      decorators = select_decorators(decorators, "histogram_plot"),
-      expr = quote(histogram_plot)
     )
 
-    decorated_output_qq_q <- srv_decorate_teal_data(
-      "d_qq",
-      data = qq_q,
-      decorators = select_decorators(decorators, "qq_plot"),
-      expr = quote(qq_plot)
-    )
-
-    decorated_output_summary_q <- srv_decorate_teal_data(
-      "d_summary",
-      data = output_summary_q,
-      decorators = select_decorators(decorators, "summary_table"),
-      expr = quote(summary_table)
-    )
-
-    decorated_output_test_q <- srv_decorate_teal_data(
-      "d_test",
-      data = output_test_q,
-      decorators = select_decorators(decorators, "test_table"),
+    decorated_output_q <- srv_decorate_teal_data(
+      "decorators",
+      data = output_q,
+      decorators = decorators,
       expr = quote(test_table)
     )
 
-    dist_r <- reactive(req(decorated_output_dist_q())[["histogram_plot"]])
-    qq_r <- reactive(req(decorated_output_qq_q())[["qq_plot"]])
-
-    summary_r <- reactive({
-      q <- req(output_summary_q())
-
-      DT::datatable(
-        q[["summary_table_data"]],
-        options = list(
-          autoWidth = TRUE,
-          columnDefs = list(list(width = "200px", targets = "_all"))
-        ),
-        rownames = FALSE
-      )
+    output_r <- reactive({
+      obj <- req(decorated_output_q())
+      DT::datatable(obj[["test_table_data"]])
     })
 
-    output$summary_table <- DT::renderDataTable(summary_r())
+    output$table <- DT::renderDataTable(output_r())
 
-    tests_r <- reactive({
-      q <- req(output_test_q())
-      DT::datatable(q[["test_table_data"]])
-    })
-
-    pws1 <- teal.widgets::plot_with_settings_srv(
-      id = "hist_plot",
-      plot_r = dist_r,
-      height = plot_height,
-      width = plot_width,
-      brushing = FALSE
-    )
-
-    pws2 <- teal.widgets::plot_with_settings_srv(
-      id = "qq_plot",
-      plot_r = qq_r,
-      height = plot_height,
-      width = plot_width,
-      brushing = FALSE
-    )
-
-    decorated_output_dist_dims_q <- set_chunk_dims(pws1, decorated_output_dist_q)
-
-    decorated_output_qq_dims_q <- set_chunk_dims(pws2, decorated_output_qq_q)
-
-    decorated_output_q <- reactive({
-      tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
-      test_q_out <- output_test_q()
-
-      out_q <- switch(tab,
-        Histogram = decorated_output_dist_dims_q(),
-        QQplot = decorated_output_qq_dims_q()
-      )
-      withCallingHandlers(
-        c(out_q, output_summary_q(), test_q_out),
-        warning = function(w) {
-          if (grepl("Restoring original content and adding only", conditionMessage(w))) {
-            invokeRestart("muffleWarning")
-          }
-        }
-      )
-    })
-
-    output$t_stats <- DT::renderDataTable(tests_r())
-
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "R Code for distribution"
-    )
     decorated_output_q
   })
+}
+
+.calc_dist_params <- function(x, dist) {
+  if (dist == "unif") {
+    return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
+  }
+  tryCatch(
+    MASS::fitdistr(x, densfun = dist)$estimate,
+    error = function(e) c(param1 = NA_real_, param2 = NA_real_)
+  )
+}
+
+.dist_param_list <- function(dist, param1, param2) {
+  dist_param_names <- list(
+    normal = c("mean", "sd"),
+    lognormal = c("meanlog", "sdlog"),
+    gamma = c("shape", "rate"),
+    unif = c("min", "max")
+  )
+
+  params <- list(param1, param2)
+  names(params) <- dist_param_names[[dist]]
+  params
 }

@@ -7,7 +7,8 @@
 tm_g_association(
   label = "Association",
   ref = picks(datasets(), variables(choices = tidyselect::where(is.numeric) |
-    teal.transform::is_categorical(min.len = 2, max.len = 10), selected = 1), values()),
+    teal.transform::is_categorical(min.len = 2, max.len = 10), selected = 1),
+    values(selected = tidyselect::everything(), multiple = TRUE)),
   vars = picks(datasets(), variables(choices = tidyselect::where(is.numeric) |
     teal.transform::is_categorical(min.len = 2, max.len = 10), selected = 2, multiple =
     TRUE), values()),

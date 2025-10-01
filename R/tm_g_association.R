@@ -159,7 +159,7 @@ tm_g_association <- function(label = "Association",
                                variables(
                                  choices = tidyselect::where(is.numeric) |
                                    teal.transform::is_categorical(min.len = 2, max.len = 10),
-                                 selected = 2,
+                                 selected = 2, # todo: make sure that is doesn't fail in teal.transform
                                  multiple = TRUE
                                ),
                                values()
@@ -342,12 +342,12 @@ srv_g_association.picks <- function(id,
       validate_input(
         inputId = "ref-variables-selected",
         condition = !is.null(selectors$ref()$variables$selected),
-        message = "A reference variable needs to be selected."
+        message = "A reference variable must be selected."
       )
       validate_input(
         inputId = "vars-variables-selected",
         condition = !is.null(selectors$vars()$variables$selected),
-        message = "A associated variables need to be selected."
+        message = "A associated variables must be selected."
       )
       validate_input(
         inputId = c("ref-variables-selected", "vars-variables-selected"),

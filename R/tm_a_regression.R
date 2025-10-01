@@ -222,7 +222,7 @@ tm_a_regression.picks <- function(label = "Regression Analysis",
 
   checkmate::assert_class(response, "picks")
   if (isTRUE(attr(response$variables, "multiple"))) {
-    warning("response accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    warning("`response` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
     attr(response$variables, "multiple") <- FALSE
   }
 
@@ -436,8 +436,15 @@ srv_a_regression.picks <- function(id,
       obj <- data()
       validate_input(
         inputId = "response-variables-selected",
-        condition = !is.null(selectors$response()$variables$selected),
-        message = "A regressor variable needs to be selected."
+        condition = length(selectors$response()$variables$selected) == 1,
+        message = "Single regressor variable must be selected."
+      )
+      validate_input(
+        inputId = "response-variables-selected",
+        condition = is.numeric(
+          data[[selectors$response()$datasets$selected]][selectors$response()$variables$selected]
+        ),
+        message = "A regressor variable needs to be numeric."
       )
       validate_input(
         inputId = "regressor-variables-selected",
@@ -472,8 +479,6 @@ srv_a_regression.picks <- function(id,
       req(anl_merged_q())
       anl <- anl_merged_q()[["anl"]]
       teal::validate_has_data(anl, 10)
-
-      validate(need(is.numeric(anl[regression_var()$response][[1]]), "Response variable should be numeric."))
 
       teal::validate_has_data(
         anl[, c(regression_var()$response, regression_var()$regressor)], 10,
