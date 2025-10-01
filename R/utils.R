@@ -533,19 +533,19 @@ trigger_tooltips_deps <- function() {
 
 #' @keywords internal
 #' @noRd
-setup_trigger_tooltips <- function(plot, ns) {
+setup_trigger_tooltips <- function(plot, plot_id) {
   htmlwidgets::onRender(
     plot,
     paste0(
       "function(el) {
-          const targetDiv = document.querySelector('#", ns("plot"), " .modebar-group:nth-child(4)');
+          const targetDiv = document.querySelector('#", plot_id, " .modebar-group:nth-child(4)');
             if (targetDiv) {
               const button = document.createElement('button');
               button.setAttribute('data-count', '0');
               button.className = 'teal-modules-general trigger-tooltips-button';
 
               button.onclick = function () {
-                triggerSelectedTooltips('", ns("plot"), "')
+                triggerSelectedTooltips('", plot_id, "')
               };
 
               const icon = document.createElement('i');

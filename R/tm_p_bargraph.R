@@ -162,7 +162,7 @@ srv_p_bargraph <- function(id,
     output$plot <- plotly::renderPlotly({
       plotly_q()$p %>%
         set_plot_data(session$ns("plot_data")) |>
-        setup_trigger_tooltips(session$ns) |>
+        setup_trigger_tooltips(session$ns("plot")) |>
         plotly::event_register("plotly_selected")
     })
   })

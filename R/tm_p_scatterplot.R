@@ -162,7 +162,7 @@ srv_p_scatterplot <- function(id,
 
     output$plot <- plotly::renderPlotly(
       plotly_q()$p |>
-        setup_trigger_tooltips(session$ns)
+        setup_trigger_tooltips(session$ns("plot"))
     )
   })
 }

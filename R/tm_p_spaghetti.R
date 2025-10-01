@@ -173,7 +173,7 @@ srv_p_spaghetti <- function(id,
 
     output$plot <- plotly::renderPlotly(
       plotly_q()$p |>
-        setup_trigger_tooltips(session$ns) |>
+        setup_trigger_tooltips(session$ns("plot")) |>
         set_plot_data(session$ns("plot_data")) |>
         plotly::event_register("plotly_selected")
     )

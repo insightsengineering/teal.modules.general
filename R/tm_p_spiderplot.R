@@ -279,7 +279,7 @@ srv_p_spiderplot <- function(id,
       {
         plotly_q()$p |>
           set_plot_data(session$ns("plot_data")) |>
-          setup_trigger_tooltips(session$ns)
+          setup_trigger_tooltips(session$ns("plot"))
       },
       "plotly_selected"
     ))
