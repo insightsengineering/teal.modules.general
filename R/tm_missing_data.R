@@ -330,8 +330,6 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
     ),
     tabPanel(
       "By Variable Levels",
-      # teal.widgets::get_dt_rows(ns("levels_table"), ns("levels_table_rows")),
-      # DT::dataTableOutput(ns("levels_table"))
       teal.widgets::plot_with_settings_ui(id = ns("by_variable_plot")),
     )
   )
@@ -1173,7 +1171,7 @@ srv_missing_data <- function(id,
 
       # convert to ggplot
       if (!is.null(group_vals)) {
-        ANL_q <- within(qenv,
+        ANL_q <- within(qenv, #nolint object_name_linter
           {
             keep_columns <- intersect(c(keys, group_var), colnames(ANL))
             labels <- vapply(ANL, formatters::obj_label, character(1L))
@@ -1192,7 +1190,7 @@ srv_missing_data <- function(id,
           group_vals = group_vals
         )
       } else {
-        ANL_q <- within(qenv,
+        ANL_q <- within(qenv, #nolint object_name_linter
           {
             keep_columns <- intersect(c(keys, group_var), colnames(ANL))
             labels <- vapply(ANL, formatters::obj_label, character(1L))
@@ -1231,7 +1229,6 @@ srv_missing_data <- function(id,
         },
         labs = parsed_ggplot2_args$labs,
         labels = if (input$count_type == "counts") quote(ggplot2::waiver()) else quote(scales::label_percent()),
-        # low = if (input$count_type == "counts") "grey90" else "#ff2951ff",
         ggthemes = parsed_ggplot2_args$ggtheme
       )
       tile
