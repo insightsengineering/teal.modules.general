@@ -1171,7 +1171,7 @@ srv_missing_data <- function(id,
 
       # convert to ggplot
       if (!is.null(group_vals)) {
-        ANL_q <- within(qenv, #nolint object_name_linter
+        ANL_q <- within(qenv, # nolint object_name_linter
           {
             keep_columns <- intersect(c(keys, group_var), colnames(ANL))
             labels <- vapply(ANL, formatters::obj_label, character(1L))
@@ -1190,7 +1190,7 @@ srv_missing_data <- function(id,
           group_vals = group_vals
         )
       } else {
-        ANL_q <- within(qenv, #nolint object_name_linter
+        ANL_q <- within(qenv, # nolint object_name_linter
           {
             keep_columns <- intersect(c(keys, group_var), colnames(ANL))
             labels <- vapply(ANL, formatters::obj_label, character(1L))
