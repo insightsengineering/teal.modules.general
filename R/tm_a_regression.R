@@ -37,9 +37,9 @@
 #'     It takes the form of `c(value, min, max)` and it is passed to the `value_min_max`
 #'     argument in `teal.widgets::optionalSliderInputValMinMax`.
 #'
-# nolint start: line_length_lintr.
+# nolint start: line_length
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage")`
-# nolint end: line_length_lintr.
+# nolint end: line_length
 #'
 #' @inherit shared_params return
 #'
