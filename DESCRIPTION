@@ -84,8 +84,8 @@ VignetteBuilder:
     knitr,
     rmarkdown
 Remotes:
-    insightsengineering/teal,
-    insightsengineering/teal.reporter
+    insightsengineering/teal@400-skip_headers_when_no_code,
+    insightsengineering/teal.reporter@400-skip_headers_when_no_code
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,

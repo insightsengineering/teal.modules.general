@@ -560,7 +560,7 @@ srv_g_bivariate <- function(id,
         c(
           teal.reporter::teal_card("# Bivariate Plot"),
           teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
+          teal.reporter::teal_card(teal.reporter::pseudo_code_chunk(teal.reporter::pseudo_code_chunk("## Module's code")))
         )
       obj %>%
         teal.code::eval_code(

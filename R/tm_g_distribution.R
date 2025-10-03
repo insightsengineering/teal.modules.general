@@ -638,7 +638,7 @@ srv_distribution <- function(id,
         c(
           teal.reporter::teal_card("# Distribution Plot"),
           teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
+          teal.reporter::teal_card(teal.reporter::pseudo_code_chunk("## Module's code"))
         )
 
       ANL <- obj[["ANL"]]

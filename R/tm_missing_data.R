@@ -521,7 +521,7 @@ srv_missing_data <- function(id,
       teal.reporter::teal_card(obj) <- c(
         teal.reporter::teal_card("# Missing Data"),
         teal.reporter::teal_card(obj),
-        teal.reporter::teal_card("## Module's code")
+        teal.reporter::teal_card(teal.reporter::pseudo_code_chunk("## Module's code"))
       )
 
       qenv <- teal.code::eval_code(obj, {
