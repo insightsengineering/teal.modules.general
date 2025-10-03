@@ -1150,34 +1150,54 @@ srv_missing_data <- function(id,
           )
         )
       }
-      #convert to ggplot
-      browser()
+      # convert to ggplot
+      # browser()
       tile <- within(qenv, {
-        keep_columns <- intersect(c(keys, "SUBJID", "SITEID"), colnames(ANL))
+        keep_columns <- intersect(c(keys, group_var), colnames(ANL))
         labels <- vapply(ANL, formatters::obj_label, character(1L))
-        ANL %>%
-          pivot_longer(-keep_columns, values_transform = is.na) |>
-          summarise(.by = c(SUBJID, name), value = value, perc = sum(value)/n()) |>
-          mutate(label = labels[name]) |>
-          ggplot() +
-          geom_tile(aes(SUBJID, label, fill = value)) +
-          geom_text(aes(SUBJID, label, label = scales::label_percent()(perc)), data = . %>% filter(value)) +
-          scale_fill_manual(values = c("TRUE" = "red", "FALSE" = "gray"),
-                            labels = c("TRUE" = "Missing", "FALSE" = "Present"),
-                            name = "Value") +
+        plot <- ANL %>%
+          filter(group_vals %in% group_var_name) %>%
+          pivot_longer(-keep_columns, values_transform = is.na) %>%
+          summarise(.by = c(group_var_name, name),
+                    value = sum(value), perc = value/n()) %>%
+          mutate(label = labels[name]) %>%
+          ggplot(aes(group_var_name, label)) +
+          geom_tile(aes(fill = column)) +
+          geom_text(aes(label = scales::percent(perc)),
+                    data = . %>% filter(perc > 0), color = "white") +
+          labs(fill = label_column, ylab = element_blank()) +
           scale_x_discrete(expand = expansion())
+          # scale_fill_manual(values = c("TRUE" = "red", "FALSE" = "gray", "0" = "gray"),
+          #                   labels = c("TRUE" = "Missing", "FALSE" = "Present", "0" = "Present"),
+          #                   name = "Value") +
       },
-      keys = join_keys(qenv) |> unlist() |> unique())
+      keys = join_keys(qenv) |> unlist() |> unique(),
+      group_var_name = as.name(group_var),
+      group_var = group_var,
+      group_vals = group_vals,
+      column = if (input$count_type == "counts") { as.name("value")} else {as.name("perc")},
+      label_column = if (input$count_type == "counts") "Missing counts" else "Missing percentage"
+      )
 
+      # convert to heatmap
+      browser()
+      tile$plot
       heatmap <- within(qenv, {
-        ANL2 <- ANL[, setdiff(colnames(ANL), c(keys, "SUBJID", "SITEID"))]
+        ANL2 <- select(ANL, setdiff(colnames(ANL), c(group_var, keys, "SUBJID", "SITEID")))
         labels <- vapply(ANL2, formatters::obj_label, character(1L))
         ANL2 <- is.na(ANL2)
         rownames(ANL2) <- ANL$SUBJID
         ANL2[] <- as.numeric(ANL2)
         heatmap(t(ANL2), Rowv = NA, Colv = NA, scale = "none",
                 labRow = labels)
-      }, keys = join_keys(qenv) |> unlist() |> unique())
+      },
+      keys = join_keys(qenv) |> unlist() |> unique(),
+      group_var = group_var,
+      group_vals = group_vals,
+      summ_fn = summ_fn)
+
+
+
       within(qenv, {
         table <- rtables::df_to_tt(summary_data)
         table

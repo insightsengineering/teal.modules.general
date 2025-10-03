@@ -151,8 +151,8 @@ tm_g_association <- function(label = "Association",
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
                              plot_width = NULL,
-                             distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length.
-                             association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length.
+                             distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length_lintr.
+                             association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length_lintr.
                              pre_output = NULL,
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args(),
@@ -349,7 +349,7 @@ srv_tm_g_association <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("ggmosaic")') # nolint: quotes
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("ggmosaic")') # nolint: quotes_lintr
     })
     anl_merged_q <- reactive({
       req(anl_merged_input())
