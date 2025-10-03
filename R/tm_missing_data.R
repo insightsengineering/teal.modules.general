@@ -22,6 +22,7 @@
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `summary_plot` (`ggplot`)
 #' - `combination_plot` (`grob` created with [ggplot2::ggplotGrob()])
+#' - `by_variable_plot` (`ggplot`)
 #' - `by_subject_plot` (`ggplot`)
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
@@ -34,6 +35,7 @@
 #'    decorators = list(
 #'      summary_plot = teal_transform_module(...), # applied only to `summary_plot` output
 #'      combination_plot = teal_transform_module(...), # applied only to `combination_plot` output
+#'      by_variable_plot = teal_transform_module(...) # applied only to `by_variable_plot` output
 #'      by_subject_plot = teal_transform_module(...) # applied only to `by_subject_plot` output
 #'    )
 #' )
@@ -328,8 +330,9 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
     ),
     tabPanel(
       "By Variable Levels",
-      teal.widgets::get_dt_rows(ns("levels_table"), ns("levels_table_rows")),
-      DT::dataTableOutput(ns("levels_table"))
+      # teal.widgets::get_dt_rows(ns("levels_table"), ns("levels_table_rows")),
+      # DT::dataTableOutput(ns("levels_table"))
+      teal.widgets::plot_with_settings_ui(id = ns("by_variable_plot")),
     )
   )
   if (isTRUE(by_subject_plot)) {
@@ -1069,7 +1072,7 @@ srv_missing_data <- function(id,
       })
     })
 
-    summary_table_q <- reactive({
+    by_variable_plot_q <- reactive({
       req(
         input$summary_type == "By Variable Levels", # needed to trigger show r code update on tab change
         common_code_q()
@@ -1079,7 +1082,7 @@ srv_missing_data <- function(id,
       # extract the ANL dataset for use in further validation
       anl <- common_code_q()[["ANL"]]
 
-      group_var <- input$group_by_var
+      group_var <- req(input$group_by_var)
       validate(
         need(
           is.null(group_var) ||
@@ -1111,7 +1114,6 @@ srv_missing_data <- function(id,
         common_code_libraries_q <- teal.code::eval_code(
           qenv,
           'library("forcats");library("glue")' # nolint
-
         )
         teal.code::eval_code(
           common_code_libraries_q,
@@ -1150,58 +1152,89 @@ srv_missing_data <- function(id,
           )
         )
       }
-      # convert to ggplot
-      # browser()
-      tile <- within(qenv, {
-        keep_columns <- intersect(c(keys, group_var), colnames(ANL))
-        labels <- vapply(ANL, formatters::obj_label, character(1L))
-        plot <- ANL %>%
-          filter(group_vals %in% group_var_name) %>%
-          pivot_longer(-keep_columns, values_transform = is.na) %>%
-          summarise(.by = c(group_var_name, name),
-                    value = sum(value), perc = value/n()) %>%
-          mutate(label = labels[name]) %>%
-          ggplot(aes(group_var_name, label)) +
-          geom_tile(aes(fill = column)) +
-          geom_text(aes(label = scales::percent(perc)),
-                    data = . %>% filter(perc > 0), color = "white") +
-          labs(fill = label_column, ylab = element_blank()) +
-          scale_x_discrete(expand = expansion())
-          # scale_fill_manual(values = c("TRUE" = "red", "FALSE" = "gray", "0" = "gray"),
-          #                   labels = c("TRUE" = "Missing", "FALSE" = "Present", "0" = "Present"),
-          #                   name = "Value") +
-      },
-      keys = join_keys(qenv) |> unlist() |> unique(),
-      group_var_name = as.name(group_var),
-      group_var = group_var,
-      group_vals = group_vals,
-      column = if (input$count_type == "counts") { as.name("value")} else {as.name("perc")},
-      label_column = if (input$count_type == "counts") "Missing counts" else "Missing percentage"
+
+      dev_ggplot2_args <- teal.widgets::ggplot2_args(
+        labs = list(
+          fill = if (input$count_type == "counts") "Missing counts" else "Missing percentage",
+          y = quote(ggplot2::element_blank())
+        )
       )
 
-      # convert to heatmap
-      browser()
-      tile$plot
-      heatmap <- within(qenv, {
-        ANL2 <- select(ANL, setdiff(colnames(ANL), c(group_var, keys, "SUBJID", "SITEID")))
-        labels <- vapply(ANL2, formatters::obj_label, character(1L))
-        ANL2 <- is.na(ANL2)
-        rownames(ANL2) <- ANL$SUBJID
-        ANL2[] <- as.numeric(ANL2)
-        heatmap(t(ANL2), Rowv = NA, Colv = NA, scale = "none",
-                labRow = labels)
-      },
-      keys = join_keys(qenv) |> unlist() |> unique(),
-      group_var = group_var,
-      group_vals = group_vals,
-      summ_fn = summ_fn)
+      all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["By Variable Levels"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      )
 
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = input$ggtheme
+      )
 
-
-      within(qenv, {
-        table <- rtables::df_to_tt(summary_data)
-        table
-      })
+      # convert to ggplot
+      if (!is.null(group_vals)) {
+        ANL_q <- within(qenv,
+          {
+            keep_columns <- intersect(c(keys, group_var), colnames(ANL))
+            labels <- vapply(ANL, formatters::obj_label, character(1L))
+            ANL <- ANL %>%
+              filter(group_var_name %in% group_vals) %>%
+              pivot_longer(-keep_columns, values_transform = is.na) %>%
+              summarise(
+                .by = c(group_var_name, name),
+                value = sum(value), perc = value / n()
+              ) %>%
+              mutate(label = labels[name])
+          },
+          keys = join_keys(qenv) |> unlist() |> unique(),
+          group_var_name = as.name(group_var),
+          group_var = group_var,
+          group_vals = group_vals
+        )
+      } else {
+        ANL_q <- within(qenv,
+          {
+            keep_columns <- intersect(c(keys, group_var), colnames(ANL))
+            labels <- vapply(ANL, formatters::obj_label, character(1L))
+            ANL <- ANL %>%
+              pivot_longer(-keep_columns, values_transform = is.na) %>%
+              summarise(
+                .by = c(group_var_name, name),
+                value = sum(value), perc = value / n()
+              ) %>%
+              mutate(label = labels[name])
+          },
+          keys = join_keys(qenv) |> unlist() |> unique(),
+          group_var_name = as.name(group_var),
+          group_var = group_var
+        )
+      }
+      req(NROW(ANL_q$ANL) > 0)
+      browser(expr = group_var == "RACE")
+      tile <- within(ANL_q,
+        {
+          by_variable_plot <- ggplot(ANL, aes(group_var_name, label)) +
+            geom_tile(aes(fill = column)) +
+            geom_text(aes(label = scales::percent(perc)),
+              data = . %>% filter(perc > 0), color = "white"
+            ) +
+            scale_x_discrete(expand = expansion()) +
+            scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
+            labs +
+            ggthemes
+        },
+        group_var_name = as.name(group_var),
+        column = if (input$count_type == "counts") {
+          as.name("value")
+        } else {
+          as.name("perc")
+        },
+        labs = parsed_ggplot2_args$labs,
+        labels = if (input$count_type == "counts") quote(ggplot2::waiver()) else quote(scales::label_percent()),
+        # low = if (input$count_type == "counts") "grey90" else "#ff2951ff",
+        ggthemes = parsed_ggplot2_args$ggtheme
+      )
+      tile
     })
 
     by_subject_plot_q <- reactive({
@@ -1347,11 +1380,11 @@ srv_missing_data <- function(id,
       })
     )
 
-    decorated_summary_table_q <- srv_decorate_teal_data(
-      id = "dec_summary_table",
-      data = summary_table_q,
-      decorators = select_decorators(decorators, "table"),
-      expr = quote(table)
+    decorated_by_variable_plot_q <- srv_decorate_teal_data(
+      id = "dec_by_variable_plot",
+      data = by_variable_plot_q,
+      decorators = select_decorators(decorators, "by_variable_plot"),
+      expr = quote(by_variable_plot)
     )
 
     decorated_by_subject_plot_q <- srv_decorate_teal_data(
@@ -1371,22 +1404,8 @@ srv_missing_data <- function(id,
       req(decorated_combination_plot_q())[["combination_plot"]]
     })
 
-    summary_table_r <- reactive({
-      q <- req(decorated_summary_table_q())
-
-      if (length(input$variables_select) == 0) {
-        # so that zeroRecords message gets printed
-        # using tibble as it supports weird column names, such as " "
-        DT::datatable(
-          tibble::tibble(` ` = logical(0)),
-          options = list(
-            language = list(zeroRecords = "No variable selected."),
-            pageLength = input$levels_table_rows
-          )
-        )
-      } else {
-        DT::datatable(q[["summary_data"]])
-      }
+    by_variable_plot_r <- reactive({
+      req(decorated_by_variable_plot_q())[["by_variable_plot"]]
     })
 
     by_subject_plot_r <- reactive({
@@ -1408,9 +1427,14 @@ srv_missing_data <- function(id,
       width = plot_width
     )
 
-    output$levels_table <- DT::renderDataTable(summary_table_r())
-
     pws3 <- teal.widgets::plot_with_settings_srv(
+      id = "by_variable_plot",
+      plot_r = by_variable_plot_r,
+      height = plot_height,
+      width = plot_width
+    )
+
+    pws4 <- teal.widgets::plot_with_settings_srv(
       id = "by_subject_plot",
       plot_r = by_subject_plot_r,
       height = plot_height,
@@ -1422,8 +1446,11 @@ srv_missing_data <- function(id,
     decorated_combination_plot_dims_q <- # nolint: object_length_linter.
       set_chunk_dims(pws2, decorated_combination_plot_q)
 
+    decorated_by_variable_plot_dims_q <- # nolint: object_length_linter.
+      set_chunk_dims(pws3, decorated_by_variable_plot_q)
+
     decorated_by_subject_plot_dims_q <- # nolint: object_length_linter.
-      set_chunk_dims(pws3, decorated_by_subject_plot_q)
+      set_chunk_dims(pws4, decorated_by_subject_plot_q)
 
     decorated_final_q <- reactive({
       sum_type <- req(input$summary_type)
@@ -1432,7 +1459,7 @@ srv_missing_data <- function(id,
       } else if (sum_type == "Combinations") {
         decorated_combination_plot_dims_q()
       } else if (sum_type == "By Variable Levels") {
-        decorated_summary_table_q()
+        decorated_by_variable_plot_dims_q()
       } else if (sum_type == "Grouped by Subject") {
         decorated_by_subject_plot_dims_q()
       }
