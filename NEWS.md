@@ -1,4 +1,8 @@
-# teal.modules.general 0.5.0.9003
+# teal.modules.general 0.5.0.9004
+
+### Enhancements
+
+- Modules now return a `teal_report` object that contains the data, code and reporter. All the reporter buttons were removed from the modules' UI.
 
 # teal.modules.general 0.5.0
 
