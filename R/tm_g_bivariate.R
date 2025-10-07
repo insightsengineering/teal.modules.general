@@ -11,33 +11,30 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Variable names selected to plot along the x-axis by default.
-#' Can be numeric, factor or character.
-#' No empty selections are allowed.
-#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Variable names selected to plot along the y-axis by default.
+#' @param x (`picks`) Variable specification for the x-axis. Created using [teal.transform::picks()].
+#' Can be numeric, factor or character. No empty selections are allowed.
+#' @param y (`picks`) Variable specification for the y-axis. Created using [teal.transform::picks()].
 #' Can be numeric, factor or character.
 #' @param use_density (`logical`) optional, indicates whether to plot density (`TRUE`) or frequency (`FALSE`).
 #' Defaults to frequency (`FALSE`).
-#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) to use for faceting rows.
-#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) to use for faceting columns.
+#' @param row_facet (`picks`) optional, specification of the data variable(s) to use for faceting rows.
+#' Created using [teal.transform::picks()].
+#' @param col_facet (`picks`) optional, specification of the data variable(s) to use for faceting columns.
+#' Created using [teal.transform::picks()].
 #' @param facet (`logical`) optional, specifies whether the facet encodings `ui` elements are toggled
 #' on and shown to the user by default. Defaults to `TRUE` if either `row_facet` or `column_facet`
 #' are supplied.
 #' @param color_settings (`logical`) Whether coloring, filling and size should be applied
 #' and `UI` tool offered to the user.
-#' @param color (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) selected for the outline color inside the coloring settings.
-#' It will be applied when `color_settings` is set to `TRUE`.
-#' @param fill (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) selected for the fill color inside the coloring settings.
-#' It will be applied when `color_settings` is set to `TRUE`.
-#' @param size (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) selected for the size of `geom_point` plots inside the coloring settings.
-#' It will be applied when `color_settings` is set to `TRUE`.
+#' @param color (`picks`) optional, specification of the data variable(s) selected for the outline color
+#' inside the coloring settings. It will be applied when `color_settings` is set to `TRUE`.
+#' Created using [teal.transform::picks()].
+#' @param fill (`picks`) optional, specification of the data variable(s) selected for the fill color
+#' inside the coloring settings. It will be applied when `color_settings` is set to `TRUE`.
+#' Created using [teal.transform::picks()].
+#' @param size (`picks`) optional, specification of the data variable(s) selected for the size of
+#' `geom_point` plots inside the coloring settings. It will be applied when `color_settings` is set to `TRUE`.
+#' Created using [teal.transform::picks()].
 #' @param free_x_scales (`logical`) optional, whether X scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).
 #' @param free_y_scales (`logical`) optional, whether Y scaling shall be changeable.
@@ -87,42 +84,22 @@
 #' app <- init(
 #'   data = data,
 #'   modules = tm_g_bivariate(
-#'     x = data_extract_spec(
-#'       dataname = "CO2",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["CO2"]]),
-#'         selected = "conc",
-#'         fixed = FALSE
-#'       )
+#'     label = "Bivariate Plots",
+#'     x = picks(
+#'       datasets("CO2"),
+#'       variables(selected = "conc")
 #'     ),
-#'     y = data_extract_spec(
-#'       dataname = "CO2",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["CO2"]]),
-#'         selected = "uptake",
-#'         multiple = FALSE,
-#'         fixed = FALSE
-#'       )
+#'     y = picks(
+#'       datasets("CO2"),
+#'       variables(selected = "uptake")
 #'     ),
-#'     row_facet = data_extract_spec(
-#'       dataname = "CO2",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["CO2"]]),
-#'         selected = "Type",
-#'         fixed = FALSE
-#'       )
+#'     row_facet = picks(
+#'       datasets("CO2"),
+#'       variables(selected = "Type")
 #'     ),
-#'     col_facet = data_extract_spec(
-#'       dataname = "CO2",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["CO2"]]),
-#'         selected = "Treatment",
-#'         fixed = FALSE
-#'       )
+#'     col_facet = picks(
+#'       datasets("CO2"),
+#'       variables(selected = "Treatment")
 #'     )
 #'   )
 #' )
@@ -146,42 +123,22 @@
 #' app <- init(
 #'   data = data,
 #'   modules = tm_g_bivariate(
-#'     x = data_extract_spec(
-#'       dataname = "ADSL",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["ADSL"]]),
-#'         selected = "AGE",
-#'         fixed = FALSE
-#'       )
+#'     label = "Bivariate Plots",
+#'     x = picks(
+#'       datasets("ADSL"),
+#'       variables(selected = "AGE")
 #'     ),
-#'     y = data_extract_spec(
-#'       dataname = "ADSL",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["ADSL"]]),
-#'         selected = "SEX",
-#'         multiple = FALSE,
-#'         fixed = FALSE
-#'       )
+#'     y = picks(
+#'       datasets("ADSL"),
+#'       variables(selected = "SEX")
 #'     ),
-#'     row_facet = data_extract_spec(
-#'       dataname = "ADSL",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["ADSL"]]),
-#'         selected = "ARM",
-#'         fixed = FALSE
-#'       )
+#'     row_facet = picks(
+#'       datasets("ADSL"),
+#'       variables(selected = "ARM")
 #'     ),
-#'     col_facet = data_extract_spec(
-#'       dataname = "ADSL",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["ADSL"]]),
-#'         selected = "COUNTRY",
-#'         fixed = FALSE
-#'       )
+#'     col_facet = picks(
+#'       datasets("ADSL"),
+#'       variables(selected = "COUNTRY")
 #'     )
 #'   )
 #' )
@@ -519,7 +476,7 @@ srv_g_bivariate.picks <- function(id,
       data = data
     )
 
-    anl_merged_q <- reactive({
+    validated_q <- reactive({
       validate_input(
         inputId = c("x-variables-selected", "y-variables-selected"),
         condition = length(selectors$x()$variables$selected) && length(selectors$y()$variables$selected),
@@ -528,36 +485,38 @@ srv_g_bivariate.picks <- function(id,
       if (!is.null(col_facet) && !is.null(row_facet)) {
         validate_input(
           inputId = c("row_facet-variables-selected", "col_facet-variables-selected"),
-          condition = length(selectors$row_facet()$variables$selected) &&
-            length(selectors$col_facet()$variables$selected) &&
+          condition = is.null(selectors$row_facet()$variables$selected) ||
+            is.null(selectors$col_facet()$variables$selected) ||
             !identical(selectors$row_facet()$variables$selected, selectors$col_facet()$variables$selected),
           message = "Row and column facetting variables must be different."
         )
       }
+
       obj <- req(data())
       teal.reporter::teal_card(obj) <- c(
         teal.reporter::teal_card("# Bivariate Plot"),
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's code")
       )
-      obj %>%
-        teal.code::eval_code('library("ggplot2");library("dplyr")') %>%
-        teal.transform::qenv_merge_selectors(selectors = selectors)
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")')
     })
 
-    output_q <- reactive(label = "make bivariateplot", {
-      req(anl_merged_q())
-      logger::log_debug("Plotting bivariate")
-      merged <- anl_merged_q()[["merged"]]
-      teal::validate_has_data(merged, 3)
+    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
 
-      x_name <- map_merged(selectors)$x$variables
-      y_name <- map_merged(selectors)$y$variables
-      row_facet_name <- map_merged(selectors)$row_facet$variables
-      col_facet_name <- map_merged(selectors)$col_facet$variables
-      color_name <- map_merged(selectors)$color$variables
-      fill_name <- map_merged(selectors)$fill$variables
-      size_name <- map_merged(selectors)$size$variables
+    output_q <- reactive(label = "make bivariateplot", {
+      req(merged$data())
+      logger::log_debug("Plotting bivariate")
+      anl <- merged$data()[["anl"]]
+      teal::validate_has_data(anl, 3)
+
+
+      x_name <- merged$merge_vars()$x
+      y_name <- merged$merge_vars()$y
+      row_facet_name <- merged$merge_vars()$row_facet
+      col_facet_name <- merged$merge_vars()$col_facet
+      color_name <- merged$merge_vars()$color
+      fill_name <- merged$merge_vars()$fill
+      size_name <- merged$merge_vars()$size
 
       use_density <- input$use_density == "density"
       free_x_scales <- input$free_x_scales
@@ -566,7 +525,22 @@ srv_g_bivariate.picks <- function(id,
       rotate_xaxis_labels <- input$rotate_xaxis_labels
       swap_axes <- input$swap_axes
 
-      is_scatterplot <- all(vapply(merged[c(x_name, y_name)], is.numeric, logical(1))) &&
+
+      supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical", "ordered")
+      x_class <- class(anl[[x_name]])[1]
+      validate_input(
+        "x-variables-selected",
+        condition = x_class %in% supported_types,
+        message = paste0("Data type '", x_class, "' is not supported.")
+      )
+      y_class <- class(anl[[y_name]])[[1]]
+      validate_input(
+        "x-variables-selected",
+        condition = y_class %in% supported_types,
+        message = paste0("Data type '", y_class, "' is not supported.")
+      )
+
+      is_scatterplot <- all(vapply(anl[c(x_name, y_name)], is.numeric, logical(1))) &&
         length(x_name) > 0 && length(y_name) > 0
 
       if (is_scatterplot) {
@@ -592,16 +566,18 @@ srv_g_bivariate.picks <- function(id,
         size <- NULL
       }
 
-      teal::validate_has_data(merged[, c(x_name, y_name), drop = FALSE], 3, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(anl[, c(x_name, y_name), drop = FALSE], 3, complete = TRUE, allow_inf = FALSE)
+
+
 
       cl <- bivariate_plot_call(
-        data_name = "merged",
+        data_name = "anl",
         x = x_name,
         y = y_name,
-        x_class = ifelse(length(x_name), class(merged[[x_name]]), "NULL"),
-        y_class = ifelse(length(y_name), class(merged[[y_name]]), "NULL"),
-        x_label = varname_w_label(x_name, merged),
-        y_label = varname_w_label(y_name, merged),
+        x_class = ifelse(length(x_name), class(anl[[x_name]]), "NULL"),
+        y_class = ifelse(length(y_name), class(anl[[y_name]]), "NULL"),
+        x_label = varname_w_label(x_name, anl),
+        y_label = varname_w_label(y_name, anl),
         freq = !use_density,
         theme = ggtheme,
         rotate_xaxis_labels = rotate_xaxis_labels,
@@ -646,7 +622,7 @@ srv_g_bivariate.picks <- function(id,
         }
       }
 
-      obj <- anl_merged_q()
+      obj <- merged$data()
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Plot")
       teal.code::eval_code(obj, substitute(expr = plot <- cl, env = list(cl = cl)))
     })
@@ -656,13 +632,13 @@ srv_g_bivariate.picks <- function(id,
       data = output_q,
       decorators = select_decorators(decorators, "plot"),
       expr = reactive({
-        merged <- anl_merged_q()[["merged"]]
-        row_facet_name <- map_merged(selectors)$row_facet$variables
-        col_facet_name <- map_merged(selectors)$col_facet$variables
+        anl <- merged$data()[["anl"]]
+        row_facet_name <- merged$merge_vars()$row_facet
+        col_facet_name <- merged$merge_vars()$col_facet
 
         # Add labels to facets
-        nulled_row_facet_name <- varname_w_label(row_facet_name, merged)
-        nulled_col_facet_name <- varname_w_label(col_facet_name, merged)
+        nulled_row_facet_name <- varname_w_label(row_facet_name, anl)
+        nulled_col_facet_name <- varname_w_label(col_facet_name, anl)
         facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
         without_facet <- (is.null(nulled_row_facet_name) && is.null(nulled_col_facet_name)) || !facetting
 
@@ -723,11 +699,6 @@ bivariate_plot_call <- function(data_name,
                                 alpha = double(0),
                                 size = 2,
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
-  supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical", "ordered")
-  validate(need(x_class %in% supported_types, paste0("Data type '", x_class, "' is not supported.")))
-  validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
-
-
   if (is.null(x)) {
     x <- x_label <- "-"
   } else {

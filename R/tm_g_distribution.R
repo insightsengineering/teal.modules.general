@@ -8,11 +8,11 @@
 #' @inheritParams teal.widgets::standard_layout
 #' @inheritParams shared_params
 #'
-#' @param dist_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param dist_var (`picks` or `list` of multiple `picks`)
 #' Variable(s) for which the distribution will be analyzed.
-#' @param strata_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param strata_var (`picks` or `list` of multiple `picks`)
 #' Categorical variable used to split the distribution analysis.
-#' @param group_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param group_var (`picks` or `list` of multiple `picks`)
 #' Variable used for faceting plot into multiple panels.
 #' @param freq (`logical`) optional, whether to display frequency (`TRUE`) or density (`FALSE`).
 #' Defaults to density (`FALSE`).
@@ -71,9 +71,10 @@
 #'   data = data,
 #'   modules = list(
 #'     tm_g_distribution(
-#'       dist_var = data_extract_spec(
-#'         dataname = "iris",
-#'         select = select_spec(variable_choices("iris"), "Petal.Length")
+#'       dist_var = picks(
+#'         datasets("iris"),
+#'         variables(tidyselect::where(is.numeric)),
+#'         values(selected = "Petal.Length")
 #'       )
 #'     )
 #'   )
@@ -96,37 +97,22 @@
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
-#' vars1 <- choices_selected(
-#'   variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")),
-#'   selected = NULL
-#' )
-#'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_g_distribution(
-#'       dist_var = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-#'           selected = "BMRKR1",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       dist_var = picks(
+#'         datasets("ADSL"),
+#'         variables(c("BMRKR1", "AGE")),
+#'         values(multiple = FALSE)
 #'       ),
-#'       strata_var = data_extract_spec(
-#'         dataname = "ADSL",
-#'         filter = filter_spec(
-#'           vars = vars1,
-#'           multiple = TRUE
-#'         )
+#'       strata_var = picks(
+#'         datasets("ADSL"),
+#'         variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
 #'       ),
-#'       group_var = data_extract_spec(
-#'         dataname = "ADSL",
-#'         filter = filter_spec(
-#'           vars = vars1,
-#'           multiple = TRUE
-#'         )
+#'       group_var = picks(
+#'         datasets("ADSL"),
+#'         variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
 #'       )
 #'     )
 #'   )
@@ -376,20 +362,7 @@ srv_g_distribution.picks <- function(id,
       data = data
     )
 
-    rule_dist <- function(value) {
-      if (isTRUE(input$tabs == "QQplot") ||
-        isTRUE(input$dist_test %in% c(
-          "Kolmogorov-Smirnov (one-sample)",
-          "Anderson-Darling (one-sample)",
-          "Cramer-von Mises (one-sample)"
-        ))) {
-        if (!shinyvalidate::input_provided(value)) {
-          "Please select the theoretical distribution."
-        }
-      }
-    }
-
-    anl_merged_q <- reactive({
+    qenv <- reactive({
       validate_input(
         inputId = "dist_var-variables-selected",
         condition = length(selectors$dist_var()$variables$selected) == 1,
@@ -402,35 +375,39 @@ srv_g_distribution.picks <- function(id,
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's code")
       )
-      obj <- teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")')
-      obj <- teal.transform::qenv_merge_selectors(obj, selectors = selectors, output_name = "anl")
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")')
+    })
 
+    merged <- teal.transform::merge_srv("merge", data = qenv, selectors = selectors, output_name = "anl")
+
+    validate_merged <- reactive({
+      obj <- merged$data()
       anl <- obj[["anl"]]
 
       validate_input(
         inputId = "dist_var-variables-selected",
-        condition = is.numeric(anl[[merge_vars()$dist_var]]),
+        condition = is.numeric(anl[[merged$merge_vars()$dist_var]]),
         message = "Distribution variable must be numeric."
       )
 
-      if (length(merge_vars()$group_var) > 0) {
+      if (length(merged$merge_vars()$group_var) > 0) {
         validate_input(
           "group_var-variables-selected",
-          condition = inherits(anl[[merge_vars()$group_var]], c("integer", "factor", "character")),
+          condition = inherits(anl[[merged$merge_vars()$group_var]], c("integer", "factor", "character")),
           message = "Group by variable must be `factor`, `character`, or `integer`"
         )
         obj <- within(obj, library("forcats"))
         obj <- within(
           obj,
           expr = anl[[group_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[group_var]]), "NA"),
-          group_var = merge_vars()$group_var
+          group_var = merged$merge_vars()$group_var
         )
       }
 
-      if (length(merge_vars()$strata_var) > 0) {
+      if (length(merged$merge_vars()$strata_var) > 0) {
         validate_input(
           "strata_var-variables-selected",
-          condition = inherits(anl[[merge_vars()$strata_var]], c("integer", "factor", "character")),
+          condition = inherits(anl[[merged$merge_vars()$strata_var]], c("integer", "factor", "character")),
           message = "Stratify by variable must be `factor`, `character`, or `integer`"
         )
 
@@ -438,7 +415,7 @@ srv_g_distribution.picks <- function(id,
         obj <- within(
           obj,
           expr = anl[[strata_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[strata_var]]), "NA"),
-          strata_var = merge_vars()$strata_var
+          strata_var = merged$merge_vars()$strata_var
         )
       }
 
@@ -447,16 +424,9 @@ srv_g_distribution.picks <- function(id,
       obj
     })
 
-    merge_vars <- reactive(
-      list(
-        dist_var = map_merged(selectors)$dist_var$variables,
-        strata_var = map_merged(selectors)$strata_var$variables,
-        group_var = map_merged(selectors)$group_var$variables
-      )
-    )
-
     output$scales_types_ui <- renderUI({
-      if (length(merge_vars()$group_var) > 0) {
+      validate_merged()
+      if (length(merged$merge_vars()$group_var) > 0) {
         shinyWidgets::prettyRadioButtons(
           ns("scales_type"),
           label = "Scales:",
@@ -472,15 +442,16 @@ srv_g_distribution.picks <- function(id,
       eventExpr = {
         input$t_dist
         input$params_reset
-        merge_vars()$dist_var
+        merged$merge_vars()$dist_var
       },
       handlerExpr = {
         params <- if (length(input$t_dist)) {
-          req(anl_merged_q())
-          anl <- anl_merged_q()[["anl"]]
+          validate_merged()
+          req(merged$data())
+          anl <- merged$data()[["anl"]]
           round(
             .calc_dist_params(
-              x = as.numeric(stats::na.omit(anl[[merge_vars()$dist_var]])),
+              x = as.numeric(stats::na.omit(anl[[merged$merge_vars()$dist_var]])),
               dist = input$t_dist
             ),
             2
@@ -571,10 +542,11 @@ srv_g_distribution.picks <- function(id,
     hist_output <- .srv_hist(
       "histogram_plot",
       data = reactive({
+        validate_merged()
         validate_dist()
-        anl_merged_q()
+        merged$data()
       }),
-      merge_vars = merge_vars,
+      merge_vars = merged$merge_vars,
       t_dist = reactive(input$t_dist),
       dist_param1 = reactive(input$dist_param1),
       dist_param2 = reactive(input$dist_param2),
@@ -593,15 +565,16 @@ srv_g_distribution.picks <- function(id,
     qq_output <- .srv_qq(
       "qq_plot",
       data = reactive({
+        validate_merged()
         validate_input(
           "t_dist",
           condition = !is.null(input$t_dist),
           message = "QQ Plot requires Theoretical Distribution to be selected"
         )
         validate_dist()
-        anl_merged_q()
+        merged$data()
       }),
-      merge_vars = merge_vars,
+      merge_vars = merged$merge_vars,
       t_dist = reactive(input$t_dist),
       dist_param1 = reactive(input$dist_param1),
       dist_param2 = reactive(input$dist_param2),
@@ -619,16 +592,20 @@ srv_g_distribution.picks <- function(id,
 
     summary_table_output <- .srv_summary_table(
       "summary_table",
-      data = anl_merged_q,
-      merge_vars = merge_vars,
+      data = reactive({
+        validate_merged()
+        merged$data()
+      }),
+      merge_vars = merged$merge_vars,
       decorators = select_decorators(decorators, "Statistics Table")
     )
 
     test_q <- reactive({
-      obj <- anl_merged_q()
+      validate_merged()
+      obj <- merged$data()
       anl <- obj[["anl"]]
-      s_var <- merge_vars()$strata_var
-      g_var <- merge_vars()$group_var
+      s_var <- merged$merge_vars()$strata_var
+      g_var <- merged$merge_vars()$group_var
       dist_test <- input$`test_table-dist_test`
 
       if (identical(dist_test, "Fligner-Killeen")) {
@@ -668,7 +645,7 @@ srv_g_distribution.picks <- function(id,
     test_output <- .srv_test_table(
       "test_table",
       data = test_q,
-      merge_vars = merge_vars,
+      merge_vars = merged$merge_vars,
       t_dist = reactive(input$t_dist),
       decorators = select_decorators(decorators, "Test Table")
     )

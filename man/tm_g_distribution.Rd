@@ -22,16 +22,13 @@ tm_g_distribution(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
-For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
-
-\item{dist_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+\item{dist_var}{(\code{picks} or \code{list} of multiple \code{picks})
 Variable(s) for which the distribution will be analyzed.}
 
-\item{strata_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+\item{strata_var}{(\code{picks} or \code{list} of multiple \code{picks})
 Categorical variable used to split the distribution analysis.}
 
-\item{group_var}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+\item{group_var}{(\code{picks} or \code{list} of multiple \code{picks})
 Variable used for faceting plot into multiple panels.}
 
 \item{freq}{(\code{logical}) optional, whether to display frequency (\code{TRUE}) or density (\code{FALSE}).
@@ -64,9 +61,6 @@ with text placed before the output to put the output into context. For example a
 
 \item{post_output}{(\code{shiny.tag}) optional, with text placed after the output to put the output
 into context. For example the \code{\link[shiny:helpText]{shiny::helpText()}} elements are useful.}
-
-\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
-To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,
@@ -121,9 +115,10 @@ app <- init(
   data = data,
   modules = list(
     tm_g_distribution(
-      dist_var = data_extract_spec(
-        dataname = "iris",
-        select = select_spec(variable_choices("iris"), "Petal.Length")
+      dist_var = picks(
+        datasets("iris"),
+        variables(tidyselect::where(is.numeric)),
+        values(selected = "Petal.Length")
       )
     )
   )
@@ -139,37 +134,22 @@ data <- within(data, {
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 
-vars1 <- choices_selected(
-  variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")),
-  selected = NULL
-)
-
 app <- init(
   data = data,
   modules = modules(
     tm_g_distribution(
-      dist_var = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-          selected = "BMRKR1",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      dist_var = picks(
+        datasets("ADSL"),
+        variables(c("BMRKR1", "AGE")),
+        values(multiple = FALSE)
       ),
-      strata_var = data_extract_spec(
-        dataname = "ADSL",
-        filter = filter_spec(
-          vars = vars1,
-          multiple = TRUE
-        )
+      strata_var = picks(
+        datasets("ADSL"),
+        variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
       ),
-      group_var = data_extract_spec(
-        dataname = "ADSL",
-        filter = filter_spec(
-          vars = vars1,
-          multiple = TRUE
-        )
+      group_var = picks(
+        datasets("ADSL"),
+        variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
       )
     )
   )
@@ -182,13 +162,13 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiSgC+ihBKaKj1KnnsFf4ZugC8A0G4-XxCInUjdKKkfRCVlaQwiRLJtaQ19IKa1v3L-luJWizDo1CJYdvqpImiqHAEi0dHKdDwFwpg1bU-4yWb0qojgIg0F1B4Puj2e7DONSg9BEiQI+SItAIYj6v0aPzkpR+AAU4EEeAAZCgSAr4w7LNpHBm6NptWgmXTsFTkZiWHQ2WzlIGiQoQVgAQXQ7E6ABJBLRSjLQYwdIw2s0lGBmgBdIA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiSgC+ihBKaKj1KnnsFf4ZugC8A0G4-XxCInUjdKKkfRCVlaQwiRLJtaQ19IKa1v3L-luJWizDo1CJYdvqpImiqHAEi0dHKdDwFwpg1bU-4yWb0qojgIg0F1B4Puj2e7DONSg9BEiQI+SItAIYj6v0aPzkpR+AAU4EEeAAZCgSAr4w7LNpHBm6NptWgmXTsFTkZiWHQ2WzlIGiQoQVgAQXQ7E6ABJBLRSjLQYwdIw2s0lGBmgBdIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiSgC+ihBKaKj1KnnsFf4ZugC8A0G4-XxCInUjdKKkfRCVlaQwiRLJtaQ19IKa1v3L-luJWizDuqi0BADWootHRymicKT3CmDVtR9y40uPlTONSg9GmnFo-FYLxEGkQiGy+RkcHYtQwEEE8BqBDkv0OjzO1EEYnY0LgGjg-AuHwACq9uBgADIUCQFH54yptI6c3RtNq0Ey6FGqZiWHQ2Wzlf6iQoQVgAQXQ7E6ABJBLRSiqXowdIw2s0lGBmgBdIA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiSgC+ihBKaKj1KnnsFf4ZugC8A0G4-XxCInUjdKKkfRCVlaQwiRLJtaQ19IKa1v3L-luJWizDuqi0BADWootHRymicKT3CmDVtR9y40uPlTONSg9GmnFo-FYLxEGkQiGy+RkcHYtQwEEE8BqBDkv0OjzO1EEYnY0LgGjg-AuHwACq9uBgADIUCQFH54yptI6c3RtNq0Ey6FGqZiWHQ2Wzlf6iQoQVgAQXQ7E6ABJBLRSiqXowdIw2s0lGBmgBdIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTcILRZRAEY2ghLxgjE00TgRDTh+dlqujujFoUHoIk2r1o73OuWAwAUYD6zURl0uVQIAKRWAAsoiqoivAB5RwAOQcAE18bpEQFnAANRFyOS4QFfH7kfi6AC8ulJjmaKIgwyUaFQbRUxQBEDqmR5IVyrJluj4QhEonlquEYmldTqpBgaQkGR2pBB9EEmmsgL1IVNaWB8syaWiZvUG1EqDgmJttoV4VOel5iOR+N9tvZ3tI8sjGk+Xp9yr9epebzE8uBoPBcEhadh4XhIaaKLAaIxWPqAHFXHgaWAAEI4rAAaSwDyZLPDftjnPliMbLbbYaTyZV61ocSDugAYvVmnSlaO9SZaFE-vLZ-PXCPbcNk52d7pRG7wg6WE7ci6om6457vbrR5lA32kcXh0uV9RyIx5Z-v-H7y7W1gQ1XkQIeRclzHL8JxEeUHBcIDdD3P0D2TCRGCIQRUDPH9eWdV1mFvBMH2TJ9YCnIt+jwJC-xkX9aC-GQAMTKCgXuDN7ggpC6hgcdJ3gpxtyXFDd19FDhmGWgTF0dgVG-d1tDgGxbBqZVRDKCBWHqdB2DFAASQRaCqAyvkYHRGGGAYlDAAZLiAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTcILRZRAEY2ghLxgjE00TgRDTh+dlqujujFoUHoIk2r1o73OuWAwAUYD6zURl0uVQIAKRWAAsoiqoivAB5RwAOQcAE18bpEQFnAANRFyOS4QFfH7kfi6AC8ulJjmaKIgwyUaFQbRUxQBEDqmR5IVyrJluj4QhEonlquEYmldTqpBgaQkGR2pBB9EEmmsgL1IVNaWB8syaWiZvUG1EqDgmJttoV4VOel5iOR+N9tvZ3tI8sjGk+Xp9yr9epebzE8uBoPBcEhadh4XhIaaKLAaIxWPqAHFXHgaWAAEI4rAAaSwDyZLPDftjnPliMbLbbYaTyZV61ocSDugAYvVmnSlaO9SZaFE-vLZ-PXCPbcNk52d7pRG7wg6WE7ci6om6457vbrR5lA32kcXh0uV9RyIx5Z-v-H7y7W1gQ1XkQIeRclzHL8JxEeUHBcIDdD3P0D2TCRGCIQRUDPH9eWdV1mFvBMH2TJ9YCnIt+jwJC-xkX9aC-GQAMTKCgXuDN7ggpC6hgcdJ3gpxtyXFDd19FDhmGWgTF0dgVG-d1tDgGxbBqZVRDKCBWHqdB2DFAASQRaCqAyvkYHRGGGAYlDAAZLiAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTdodDaVYvZakNzdAF4X8NxnviERUXeul+wjETwgdTqpBgaQkGR2pEYDEEmmszwhIXhaS0LEBqFoBEmczR6M+UFEcFIRLAfWaCjAcm+4JJdWxiKg9H+7AITzAACEALJYADSWAAjHSqnT6gBxVz0hnE9HY6iCUEwda0OJ6D4AMXqzQCzmGzIVTPRogRuSxOI+eIJRLNJMy5MpPJpdNNzJZLFo7M53KlWH5Et0dK8AHlHAA5BwATRDdMNAA0PVVySINHB+ICo45ms1jSTPSSJIwiIJUNbGLj8YSwV7SS6qe76YyG6zfRzQQHqUGE2AI9G4-3k6ndOm4Jnsx9c-nC+j57pC8NhrQTLp2CpyMxLDobLYakzRGUIKx6uh2GhUAASQS0KpX6-kxg6RjDAZKMADS5AA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTdodDaVYvZakNzdAF4X8NxnviERUXeul+wjETwgdTqpBgaQkGR2pEYDEEmmszwhIXhaS0LEBqFoBEmczR6M+UFEcFIRLAfWaCjAcm+4JJdWxiKg9H+7AITzAACEALJYADSWAAjHSqnT6gBxVz0hnE9HY6iCUEwda0OJ6D4AMXqzQCzmGzIVTPRogRuSxOI+eIJRLNJMy5MpPJpdNNzJZLFo7M53KlWH5Et0dK8AHlHAA5BwATRDdMNAA0PVVySINHB+ICo45ms1jSTPSSJIwiIJUNbGLj8YSwV7SS6qe76YyG6zfRzQQHqUGE2AI9G4-3k6ndOm4Jnsx9c-nC+j57pC8NhrQTLp2CpyMxLDobLYakzRGUIKx6uh2GhUAASQS0KpX6-kxg6RjDAZKMADS5AA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

@@ -10,17 +10,17 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`) Specifies
+#' @param x (`picks` or `list` of multiple `picks`) Specifies
 #' variable names selected to plot along the x-axis by default.
-#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`) Specifies
+#' @param y (`picks` or `list` of multiple `picks`) Specifies
 #' variable names selected to plot along the y-axis by default.
-#' @param color_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' @param color_by (`picks` or `list` of multiple `picks`) optional,
 #' defines the color encoding. If `NULL` then no color encoding option will be displayed.
-#' @param size_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' @param size_by (`picks` or `list` of multiple `picks`) optional,
 #' defines the point size encoding. If `NULL` then no size encoding option will be displayed.
-#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' @param row_facet (`picks` or `list` of multiple `picks`) optional,
 #' specifies the variable(s) for faceting rows.
-#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' @param col_facet (`picks` or `list` of multiple `picks`) optional,
 #' specifies the variable(s) for faceting columns.
 #' @param shape (`character`) optional, character vector with the names of the
 #' shape, e.g. `c("triangle", "square", "circle")`. It defaults to `shape_names`. This is a complete list from
@@ -75,68 +75,47 @@
 #'   modules = modules(
 #'     tm_g_scatterplot(
 #'       label = "Scatterplot Choices",
-#'       x = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-#'           selected = "conc",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       x = picks(
+#'         datasets("CO2"),
+#'         variables(
+#'           choices = c("conc", "uptake"),
+#'           selected = "conc"
+#'         ),
+#'         values()
 #'       ),
-#'       y = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-#'           selected = "uptake",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       y = picks(
+#'         datasets("CO2"),
+#'         variables(
+#'           choices = c("conc", "uptake"),
+#'           selected = "uptake"
+#'         ),
+#'         values()
 #'       ),
-#'       color_by = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["CO2"]],
-#'             c("Plant", "Type", "Treatment", "conc", "uptake")
-#'           ),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       color_by = picks(
+#'         datasets("CO2"),
+#'         variables(
+#'           choices = c("Plant", "Type", "Treatment", "conc", "uptake"),
+#'           selected = NULL
+#'         ),
+#'         values()
 #'       ),
-#'       size_by = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-#'           selected = "uptake",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       size_by = picks(
+#'         datasets("CO2"),
+#'         variables(choices = c("conc", "uptake"), selected = "uptake"),
+#'         values()
 #'       ),
-#'       row_facet = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       row_facet = picks(
+#'         datasets("CO2"),
+#'         variables(
+#'           choices = c("Plant", "Type", "Treatment"),
+#'           selected = NULL
+#'         ),
+#'         values()
 #'       ),
-#'       col_facet = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       col_facet = picks(
+#'         datasets("CO2"),
+#'         variables(choices = c("Plant", "Type", "Treatment"), selected = NULL),
+#'         values()
 #'       )
 #'     )
 #'   )
@@ -165,68 +144,35 @@
 #'   modules = modules(
 #'     tm_g_scatterplot(
 #'       label = "Scatterplot Choices",
-#'       x = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2")),
-#'           selected = "AGE",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       x = picks(
+#'         datasets("ADSL"),
+#'         variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "AGE"),
+#'         values()
 #'       ),
-#'       y = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2")),
-#'           selected = "BMRKR1",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       y = picks(
+#'         datasets("ADSL"),
+#'         variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "BMRKR1"),
+#'         values()
 #'       ),
-#'       color_by = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
-#'           ),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       color_by = picks(
+#'         datasets("ADSL"),
+#'         variables(c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1"), selected = NULL),
+#'         values()
 #'       ),
-#'       size_by = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-#'           selected = "AGE",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       size_by = picks(
+#'         datasets("ADSL"),
+#'         variables(choices = c("AGE", "BMRKR1"), selected = "AGE"),
+#'         values()
 #'       ),
-#'       row_facet = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("BMRKR2", "RACE", "REGION1")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       row_facet = picks(
+#'         datasets("ADSL"),
+#'         variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+#'         values()
 #'       ),
-#'       col_facet = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("BMRKR2", "RACE", "REGION1")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       col_facet = picks(
+#'         datasets("ADSL"),
+#'         variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+#'         values()
 #'       )
 #'     )
 #'   )
@@ -263,8 +209,16 @@ tm_g_scatterplot <- function(label = "Scatterplot",
 
 #' @export
 tm_g_scatterplot.picks <- function(label = "Scatterplot",
-                                   x,
-                                   y,
+                                   x = picks(
+                                     datasets(),
+                                     variables(tidyselect::where(is.numeric)),
+                                     values()
+                                   ),
+                                   y = picks(
+                                     datasets(),
+                                     variables(tidyselect::where(is.numeric), selected = 2),
+                                     values()
+                                   ),
                                    color_by = NULL,
                                    size_by = NULL,
                                    row_facet = NULL,
@@ -382,7 +336,11 @@ ui_g_scatterplot.picks <- function(id,
   tagList(
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
-        teal.widgets::plot_with_settings_ui(id = ns("scatter_plot"))
+        teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
+        tags$br(),
+        tags$h1(tags$strong("Selected points:"), style = "font-size: 150%;"),
+        teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
+        DT::dataTableOutput(ns("data_table"), width = "100%")
       ),
       encoding = tags$div(
         tags$label("Encodings", class = "text-primary"),
@@ -525,63 +483,21 @@ srv_g_scatterplot.picks <- function(id,
 
 
     selectors <- teal.transform::module_input_srv(
-      spec = list(
-        x = x,
-        y = y,
-        color_by = color_by,
-        size_by = size_by,
-        row_facet = row_facet,
-        col_facet = col_facet
-      ),
+      spec = list(x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet),
       data = data
     )
 
-    rule_diff <- function(other) {
-      function(value) {
-        othervalue <- selector_list()[[other]]()[["select"]]
-        if (!is.null(othervalue)) {
-          if (identical(value, othervalue)) {
-            "Row and column facetting variables must be different."
-          }
-        }
-      }
-    }
 
-    validates <- list(
-      x = ~ if (length(.) != 1) "Please select exactly one x var.",
-      y = ~ if (length(.) != 1) "Please select exactly one y var.",
-      color_by = ~ if (length(.) > 1) "There cannot be more than 1 color variable.",
-      size_by = ~ if (length(.) > 1) "There cannot be more than 1 size variable.",
-      row_facet = shinyvalidate::compose_rules(
-        shinyvalidate::sv_optional(),
-        rule_diff("col_facet")
-      ),
-      col_facet = shinyvalidate::compose_rules(
-        shinyvalidate::sv_optional(),
-        rule_diff("row_facet")
-      ),
-      add_density = ~ if (
-        isTRUE(.) &&
-          (
-            length(selector_list()$row_facet()$select) > 0L ||
-              length(selector_list()$col_facet()$select) > 0L
-          )
-      ) {
-        "Cannot add marginal density when Row or Column facetting has been selected"
-      }
-    )
-
-
-    anl_merged_q <- reactive({
+    validated_q <- reactive({
       validate_input(
         inputId = "x-variables-selected",
-        condition = length(selectors$x()$variables$selected) > 0,
-        message = "A `x` variable needs to be selected."
+        condition = length(selectors$x()$variables$selected) == 1,
+        message = "Please select exactly one x var."
       )
       validate_input(
         inputId = "y-variables-selected",
-        condition = length(selectors$y()$variables$selected) > 0,
-        message = "A `y` variable needs to be selected."
+        condition = length(selectors$y()$variables$selected) == 1,
+        message = "Please select exactly one y var."
       )
       validate_input(
         inputId = c("x-variables-selected", "y-variables-selected"),
@@ -604,6 +520,13 @@ srv_g_scatterplot.picks <- function(id,
           !any(selectors$row_facet()$variables$selected %in% selectors$col_facet()$variables$selected),
         message = "Row and Column Facetting variables must be different."
       )
+      validate_input(
+        "add_density",
+        condition = !(is.null(input$add_density) &&
+          (length(selectors$row_facet()$variables$selected) || length(selectors$col_facet()$variables$selected))
+        ),
+        message = "Cannot add marginal density when Row or Column facetting has been selected"
+      )
       obj <- req(data())
       teal.reporter::teal_card(obj) <-
         c(
@@ -611,16 +534,15 @@ srv_g_scatterplot.picks <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      obj |>
-        teal.code::eval_code('library("ggplot2");library("dplyr");') |> # nolint
-        teal.transform::qenv_merge_selectors(selectors = selectors, output_name = "anl")
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");')
     })
 
+    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
 
     trend_line_is_applicable <- reactive({
-      anl <- anl_merged_q()[["anl"]]
-      x_var <- teal.transform::map_merged(selectors)$x$variables
-      y_var <- teal.transform::map_merged(selectors)$y$variables
+      anl <- merged$data()[["anl"]]
+      x_var <- merged$merge_vars()$x
+      y_var <- merged$merge_vars()$y
       length(x_var) > 0 && length(y_var) > 0 && is.numeric(anl[[x_var]]) && is.numeric(anl[[y_var]])
     })
 
@@ -633,7 +555,7 @@ srv_g_scatterplot.picks <- function(id,
       observeEvent(
         eventExpr = selectors$color_by(),
         handlerExpr = {
-          color_by_var <- teal.transform::map_merged(selectors)$color_by$variables
+          color_by_var <- merged$merge_vars()$color_by
           if (length(color_by_var) > 0) {
             shinyjs::hide("color")
           } else {
@@ -645,9 +567,9 @@ srv_g_scatterplot.picks <- function(id,
 
     output$num_na_removed <- renderUI({
       if (add_trend_line()) {
-        anl <- anl_merged_q()[["anl"]]
-        x_var <- teal.transform::map_merged(selectors)$x$variables
-        y_var <- teal.transform::map_merged(selectors)$y$variables
+        anl <- merged$data()[["anl"]]
+        x_var <- merged$merge_vars()$x
+        y_var <- merged$merge_vars()$y
         if ((num_total_na <- nrow(anl) - nrow(stats::na.omit(anl[, c(x_var, y_var)]))) > 0) {
           tags$div(paste(num_total_na, "row(s) with missing values were removed"), tags$hr())
         }
@@ -658,8 +580,8 @@ srv_g_scatterplot.picks <- function(id,
       eventExpr = list(selectors$row_facet(), selectors$col_facet()),
       handlerExpr = {
         if (
-          length(teal.transform::map_merged(selectors)$row_facet$variables) == 0 &&
-            length(teal.transform::map_merged(selectors)$col_facet$variables) == 0
+          length(merged$merge_vars()$row_facet) == 0 &&
+            length(merged$merge_vars()$col_facet) == 0
         ) {
           shinyjs::hide("free_scales")
         } else {
@@ -669,14 +591,14 @@ srv_g_scatterplot.picks <- function(id,
     )
 
     output_q <- reactive({
-      req(anl_merged_q())
-      anl <- anl_merged_q()[["anl"]]
-      x_var <- teal.transform::map_merged(selectors)$x$variables
-      y_var <- teal.transform::map_merged(selectors)$y$variables
-      color_by_var <- teal.transform::map_merged(selectors)$color_by$variables
-      size_by_var <- teal.transform::map_merged(selectors)$size_by$variables
-      row_facet_var <- teal.transform::map_merged(selectors)$row_facet$variables
-      col_facet_var <- teal.transform::map_merged(selectors)$col_facet$variables
+      req(merged$data())
+      anl <- merged$data()[["anl"]]
+      x_var <- merged$merge_vars()$x
+      y_var <- merged$merge_vars()$y
+      color_by_var <- merged$merge_vars()$color_by
+      size_by_var <- merged$merge_vars()$size_by
+      row_facet_var <- merged$merge_vars()$row_facet
+      col_facet_var <- merged$merge_vars()$col_facet
       alpha <- input$alpha
       size <- input$size
       rotate_xaxis_labels <- input$rotate_xaxis_labels
@@ -703,6 +625,7 @@ srv_g_scatterplot.picks <- function(id,
           inherits(anl[[col_facet_var]], c("character", "factor", "Date", "integer")),
         message = "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
       )
+
 
       if (add_density && length(color_by_var) > 0) {
         validate_input(
@@ -761,7 +684,7 @@ srv_g_scatterplot.picks <- function(id,
         size
       }
 
-      plot_q <- anl_merged_q()
+      plot_q <- merged$data()
 
       if (log_x) {
         log_x_fn <- input$log_x_base

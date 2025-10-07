@@ -354,29 +354,5 @@ srv_dataset_table <- function(id,
       teal::validate_inputs(iv)
       req(data_table_data())[["table"]]
     })
-
-    observeEvent(input$data_table_rows_selected, ignoreNULL = FALSE, {
-      if (is.null(input$data_table_rows_selected)) {
-        shinyjs::hide("apply_brush_filter")
-      } else {
-        shinyjs::show("apply_brush_filter")
-      }
-    })
-
-    observeEvent(input$apply_brush_filter, {
-      if (is.null(input$data_table_rows_selected)) {
-        return(NULL)
-      }
-      dataset <- data()[[dataname]][input$data_table_rows_selected, ]
-      # todo: when added another time then it is duplicated
-      slice <- teal_slices(teal_slice(
-        dataname = "ADSL",
-        varname = "USUBJID",
-        selected = unique(dataset$USUBJID), # todo: this needs to be parametrised or based on join_keys
-        id = "brush_filter"
-      ))
-      shinyjs::hide("apply_brush_filter")
-      teal.slice::set_filter_state(filter_panel_api, slice)
-    })
   })
 }

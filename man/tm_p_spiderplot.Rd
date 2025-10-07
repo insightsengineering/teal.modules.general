@@ -20,9 +20,6 @@ tm_p_spiderplot(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
-For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
-
 \item{time_var}{(\code{character(1)} or \code{variables}) name of the \code{numeric} column
 in \code{plot_dataname} to be used as x-axis.}
 
@@ -48,9 +45,6 @@ by levels of \code{color_var} column.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
-
-\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
-To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,

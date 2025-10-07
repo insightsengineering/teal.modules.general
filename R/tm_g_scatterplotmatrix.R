@@ -11,9 +11,9 @@
 #' @inheritParams tm_g_scatterplot
 #' @inheritParams shared_params
 #'
-#' @param variables (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param variables (`picks` or `list` of `picks`)
 #' Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
-#' `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
+#' `picks` use `variables(..., ordered = TRUE)` if plot elements should be
 #' rendered according to selection order.
 #'
 #' @inherit shared_params return
@@ -94,33 +94,32 @@
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       variables = list(
-#'         data_extract_spec(
-#'           dataname = "countries",
-#'           select = select_spec(
-#'             label = "Select variables:",
-#'             choices = variable_choices(data[["countries"]]),
+#'         picks(
+#'           datasets("countries"),
+#'           variables(
+#'             choices = tidyselect::everything(),
 #'             selected = c("area", "gdp", "debt"),
 #'             multiple = TRUE,
-#'             ordered = TRUE,
-#'             fixed = FALSE
-#'           )
-#'         ),
-#'         data_extract_spec(
-#'           dataname = "sales",
-#'           filter = filter_spec(
-#'             label = "Select variable:",
-#'             vars = "country_id",
-#'             choices = value_choices(data[["sales"]], "country_id"),
-#'             selected = c("DE", "FR", "IT", "PT", "GR", "NL", "BE", "LU", "AT"),
-#'             multiple = TRUE
+#'             ordered = TRUE
 #'           ),
-#'           select = select_spec(
-#'             label = "Select variables:",
-#'             choices = variable_choices(data[["sales"]], c("quantity", "costs", "profit")),
+#'           values()
+#'         ),
+#'         picks(
+#'           datasets("sales"),
+#'           variables(
+#'             choices = c("quantity", "costs", "profit"),
 #'             selected = c("quantity", "costs", "profit"),
 #'             multiple = TRUE,
-#'             ordered = TRUE,
-#'             fixed = FALSE
+#'             ordered = TRUE
+#'           )
+#'         )
+#'       ),
+#'       transformators = list(
+#'         teal_transform_filter(
+#'           picks(
+#'             datasets("sales"),
+#'             variables("country_id"),
+#'             values()
 #'           )
 #'         )
 #'       )
@@ -150,35 +149,30 @@
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       variables = list(
-#'         data_extract_spec(
-#'           dataname = "ADSL",
-#'           select = select_spec(
-#'             label = "Select variables:",
-#'             choices = variable_choices(data[["ADSL"]]),
+#'         picks(
+#'           datasets("ADSL"),
+#'           variables(
+#'             choices = tidyselect::everything(),
 #'             selected = c("AGE", "RACE", "SEX"),
 #'             multiple = TRUE,
 #'             ordered = TRUE,
 #'             fixed = FALSE
-#'           )
-#'         ),
-#'         data_extract_spec(
-#'           dataname = "ADRS",
-#'           filter = filter_spec(
-#'             label = "Select endpoints:",
-#'             vars = c("PARAMCD", "AVISIT"),
-#'             choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
-#'             selected = "INVET - END OF INDUCTION",
-#'             multiple = TRUE
 #'           ),
-#'           select = select_spec(
-#'             label = "Select variables:",
-#'             choices = variable_choices(data[["ADRS"]]),
+#'           values()
+#'         ),
+#'         picks(
+#'           datasets("ADRS"),
+#'           variables(
+#'             choices = tidyselect::everything(),
 #'             selected = c("AGE", "AVAL", "ADY"),
 #'             multiple = TRUE,
 #'             ordered = TRUE,
 #'             fixed = FALSE
 #'           )
 #'         )
+#'       ),
+#'       transformators = list(
+#'         teal_transform_filter(picks(datasets("ADRS"), variables("PARAMCD"), values(selected = "BESRSPI")))
 #'       )
 #'     )
 #'   )
@@ -188,7 +182,6 @@
 #' }
 #'
 #' @export
-#'
 tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    variables,
                                    plot_height = c(600, 200, 2000),
@@ -331,7 +324,7 @@ srv_g_scatterplotmatrix.picks <- function(id,
       data = data
     )
 
-    anl_merged_q <- reactive({
+    validated_q <- reactive({
       obj <- req(data())
 
       input_ids <- sprintf("%s-variables-selected", names(variables))
@@ -342,25 +335,20 @@ srv_g_scatterplotmatrix.picks <- function(id,
         message = "Please select at least 2 columns"
       )
 
-
       teal.reporter::teal_card(obj) <- c(
         teal.reporter::teal_card("# Scatter Plot Matrix"),
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's code")
       )
-      obj |>
-        teal.code::eval_code('library("ggplot2");library("dplyr");') |> # nolint
-        teal.transform::qenv_merge_selectors(selectors = selectors, output_name = "anl")
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");')
     })
 
-    merge_vars <- reactive(
-      unname(unlist(lapply(map_merged(selectors), `[[`, "variables")))
-    )
-
+    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+    merge_vars <- reactive(unname(unlist(merged$merge_vars())))
 
     # plot
     output_q <- reactive({
-      qenv <- req(anl_merged_q())
+      qenv <- req(merged$data())
       anl <- qenv[["anl"]]
       cols_names <- merge_vars()
       alpha <- input$alpha
@@ -496,7 +484,7 @@ srv_g_scatterplotmatrix.picks <- function(id,
     # show a message if conversion to factors took place
     output$message <- renderText({
       cols_names <- req(merge_vars())
-      anl <- anl_merged_q()[["anl"]]
+      anl <- merged$data()[["anl"]]
       check_char <- vapply(anl[, cols_names], is.character, logical(1))
       if (any(check_char)) {
         is_single <- sum(check_char) == 1

@@ -29,25 +29,22 @@ tm_g_scatterplot(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
-For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
-
-\item{x}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Specifies
+\item{x}{(\code{picks} or \code{list} of multiple \code{picks}) Specifies
 variable names selected to plot along the x-axis by default.}
 
-\item{y}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) Specifies
+\item{y}{(\code{picks} or \code{list} of multiple \code{picks}) Specifies
 variable names selected to plot along the y-axis by default.}
 
-\item{color_by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+\item{color_by}{(\code{picks} or \code{list} of multiple \code{picks}) optional,
 defines the color encoding. If \code{NULL} then no color encoding option will be displayed.}
 
-\item{size_by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+\item{size_by}{(\code{picks} or \code{list} of multiple \code{picks}) optional,
 defines the point size encoding. If \code{NULL} then no size encoding option will be displayed.}
 
-\item{row_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+\item{row_facet}{(\code{picks} or \code{list} of multiple \code{picks}) optional,
 specifies the variable(s) for faceting rows.}
 
-\item{col_facet}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec}) optional,
+\item{col_facet}{(\code{picks} or \code{list} of multiple \code{picks}) optional,
 specifies the variable(s) for faceting columns.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
@@ -95,9 +92,6 @@ with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
-
-\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
-To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,
@@ -157,68 +151,47 @@ app <- init(
   modules = modules(
     tm_g_scatterplot(
       label = "Scatterplot Choices",
-      x = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-          selected = "conc",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      x = picks(
+        datasets("CO2"),
+        variables(
+          choices = c("conc", "uptake"),
+          selected = "conc"
+        ),
+        values()
       ),
-      y = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-          selected = "uptake",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      y = picks(
+        datasets("CO2"),
+        variables(
+          choices = c("conc", "uptake"),
+          selected = "uptake"
+        ),
+        values()
       ),
-      color_by = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(
-            data[["CO2"]],
-            c("Plant", "Type", "Treatment", "conc", "uptake")
-          ),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      color_by = picks(
+        datasets("CO2"),
+        variables(
+          choices = c("Plant", "Type", "Treatment", "conc", "uptake"),
+          selected = NULL
+        ),
+        values()
       ),
-      size_by = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-          selected = "uptake",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      size_by = picks(
+        datasets("CO2"),
+        variables(choices = c("conc", "uptake"), selected = "uptake"),
+        values()
       ),
-      row_facet = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      row_facet = picks(
+        datasets("CO2"),
+        variables(
+          choices = c("Plant", "Type", "Treatment"),
+          selected = NULL
+        ),
+        values()
       ),
-      col_facet = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      col_facet = picks(
+        datasets("CO2"),
+        variables(choices = c("Plant", "Type", "Treatment"), selected = NULL),
+        values()
       )
     )
   )
@@ -240,68 +213,35 @@ app <- init(
   modules = modules(
     tm_g_scatterplot(
       label = "Scatterplot Choices",
-      x = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2")),
-          selected = "AGE",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      x = picks(
+        datasets("ADSL"),
+        variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "AGE"),
+        values()
       ),
-      y = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2")),
-          selected = "BMRKR1",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      y = picks(
+        datasets("ADSL"),
+        variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "BMRKR1"),
+        values()
       ),
-      color_by = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(
-            data[["ADSL"]],
-            c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
-          ),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      color_by = picks(
+        datasets("ADSL"),
+        variables(c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1"), selected = NULL),
+        values()
       ),
-      size_by = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-          selected = "AGE",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      size_by = picks(
+        datasets("ADSL"),
+        variables(choices = c("AGE", "BMRKR1"), selected = "AGE"),
+        values()
       ),
-      row_facet = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["ADSL"]], c("BMRKR2", "RACE", "REGION1")),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      row_facet = picks(
+        datasets("ADSL"),
+        variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+        values()
       ),
-      col_facet = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["ADSL"]], c("BMRKR2", "RACE", "REGION1")),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      col_facet = picks(
+        datasets("ADSL"),
+        variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+        values()
       )
     )
   )
@@ -314,13 +254,13 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QNKAL5dSmiowyp57BX+GboAvMtBuEt8QiKia7o7wmKL3ZW6pDCJEomiBIHkjJFEpKfn59RQ9HB+6wpgAGV7qRHs9SCN8kRaAQxP8tmd3qEDilEmFSMwNLdUHACG93ucUtB4Ad-qM4Ut8bpRD8ceD1tSRJjRNjcRTKbpPt9frp-gCaRpdFoWLQviJEOSEeyCJDoWIDkLGCL6CJEtKoTDRMUMsBgKTBv8ALoG0qswgkAhwnlgQSoIIAazg-zkcnh7PODNpcH4JLNFglbsqMGEmkienWADEAIIAGQBzldAZMtFCXoOUdjrkl7y6lJdbMqrGRGVRoXR6lIWJxeMphNgYatZLw+fd-LpVNbldZWfxnJ+Pr5jPBCqVYv9AbVsv262HorgqplGq1QR1erGYCNJsWvoteCtNvtjrAzoTbo9GlTf2ttqgDrHbqD1BDIjTMbjJ-ZSZT3ojr8zbpz+J5t2bQdIk9CFusKJohiFbMlWzaVLWxKXo277vGebYYZ21bsr23K8q2grCrO4pNt27wThq8rEcqc6UScCH4ikK5gI2G6MRRW4AAqfGQlr-HYrDYvxYB2NUgTwHxu7-MQfrSVeB5OhxuhAQG7aDheugAHKONG0ZofiD5PvW6Zvspn6aaZf7sgB2YGaItAAF5zuBRZBCWZZMiyOHvEh9arne+IYQcWFwV2al4f2hEzrRpEGRRC5ytONEqvRmrMbqrH6uuxq6Kask7qU-z7jeh7HspGGacV163mRalGbQoYvhm8XnBZ366FZjG2ecqn4owRDZIkJjqHAbZQaWMHYYxfk+qhjHBfSHZhT5PZfH2l4DrSRGKiRgWUml1G7bR87qicGUBTlm7-DxUBSUVolCYeD1iXAEkUKQTp9aeraaTpemtYGwaNc+P4teZyaWb+3XNt95xtMNo3jcW0HltN5EbHddZzdlrWLeptLoxF634YC0UpXAcXKYdyXHaliXpdqmVsblpq3fdVqCcJ8mve9UnlRjlSVR1-36cpDVNWDZmC6YkMdV1GM9ZUPUAV0XS0CYujsCojzltocA2LY5RnKIhQQKwkboOwMwACT1KUtvUowOidBMShgOMBpAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QNKAL5dSmiowyp57BX+GboAvMtBuEt8QiKia7o7wmKL3ZW6pDCJEomiBIHkjJFEpKfn59RQ9HB+6wpgAGV7qRHs9SCN8kRaAQxP8tmd3qEDilEmFSMwNLdUHACG93ucUtB4Ad-qM4Ut8bpRD8ceD1tSRJjRNjcRTKbpPt9frp-gCaRpdFoWLQviJEOSEeyCJDoWIDkLGCL6CJEtKoTDRMUMsBgKTBv8ALoG0qswgkAhwnlgQSoIIAazg-zkcnh7PODNpcH4JLNFglbsqMGEmkienWADEAIIAGQBzldAZMtFCXoOUdjrkl7y6lJdbMqrGRGVRoXR6lIWJxeMphNgYatZLw+fd-LpVNbldZWfxnJ+Pr5jPBCqVYv9AbVsv262HorgqplGq1QR1erGYCNJsWvoteCtNvtjrAzoTbo9GlTf2ttqgDrHbqD1BDIjTMbjJ-ZSZT3ojr8zbpz+J5t2bQdIk9CFusKJohiFbMlWzaVLWxKXo277vGebYYZ21bsr23K8q2grCrO4pNt27wThq8rEcqc6UScCH4ikK5gI2G6MRRW4AAqfGQlr-HYrDYvxYB2NUgTwHxu7-MQfrSVeB5OhxuhAQG7aDheugAHKONG0ZofiD5PvW6Zvspn6aaZf7sgB2YGaItAAF5zuBRZBCWZZMiyOHvEh9arne+IYQcWFwV2al4f2hEzrRpEGRRC5ytONEqvRmrMbqrH6uuxq6Kask7qU-z7jeh7HspGGacV163mRalGbQoYvhm8XnBZ366FZjG2ecqn4owRDZIkJjqHAbZQaWMHYYxfk+qhjHBfSHZhT5PZfH2l4DrSRGKiRgWUml1G7bR87qicGUBTlm7-DxUBSUVolCYeD1iXAEkUKQTp9aeraaTpemtYGwaNc+P4teZyaWb+3XNt95xtMNo3jcW0HltN5EbHddZzdlrWLeptLoxF634YC0UpXAcXKYdyXHaliXpdqmVsblpq3fdVqCcJ8mve9UnlRjlSVR1-36cpDVNWDZmC6YkMdV1GM9ZUPUAV0XS0CYujsCojzltocA2LY5RnKIhQQKwkboOwMwACT1KUtvUowOidBMShgOMBpAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QNKAL5dSmiowyp57BX+GboAvMtBuEt8QiKia7o7wmKL3ZW6pDCJEomiBIHkjJFEpKfn59RQ9HB+6wpgAGV7qRHs9SCN8kRaAQxP8tmd3qEDqhoQBrURvd7nFKiOCkDH-Ub-OTwrHnLQsWhfPaYsmVAiQ6FiA4ERaEEgEOG6f6CVBBVFwYmkumVXEiDRwfgHf7ECz-JZkkkKrEU6iCE5dRXC96sZFogkIrE4vEEsBEsBKw3vCmMKn0GnKskMqEw-brVkyjlcnl8qACoWOrFiuASqV-MC8-mCsCByqWkWq9UYzVY+NYtodRL0XXrFEEdG0o0ZXH4tnmtNkm12h1W9OM10stkABU+ZG9YDsrFQ0dK-zs1UC8DbeG57LlI59UYDtfewdDBwAco4ADLL2O6Csq7hJtK1zei2gALzgWZzujzBfXxtLhMG04TlOpJ2dTLdug9Y85E4jvv9FtKc7kGGo6Rn60b7uS24aoGEGMEQ2SJCY6h4nq+YGiK16muW2pbraT7oSK771sy7rNq2pDtp23aUQOlwUBR-7rqKPwhkBi4rmuM4bjh1pQcmME8e+RBJEhMLgrm+qFu8mFlnejFcVW+HsC+Dakf8LZQMOvYdl2Pajv2cCDvRQq6IBkrsauEGVIm0F7sqKZdF0tAmLo7AqI86iaDoNi2OUZyiIUECsAAgug7AzAAJPUpSRbijA6J0ExKGA4wALpAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QNKAL5dSmiowyp57BX+GboAvMtBuEt8QiKia7o7wmKL3ZW6pDCJEomiBIHkjJFEpKfn59RQ9HB+6wpgAGV7qRHs9SCN8kRaAQxP8tmd3qEDqhoQBrURvd7nFKiOCkDH-Ub-OTwrHnLQsWhfPaYsmVAiQ6FiA4ERaEEgEOG6f6CVBBVFwYmkumVXEiDRwfgHf7ECz-JZkkkKrEU6iCE5dRXC96sZFogkIrE4vEEsBEsBKw3vCmMKn0GnKskMqEw-brVkyjlcnl8qACoWOrFiuASqV-MC8-mCsCByqWkWq9UYzVY+NYtodRL0XXrFEEdG0o0ZXH4tnmtNkm12h1W9OM10stkABU+ZG9YDsrFQ0dK-zs1UC8DbeG57LlI59UYDtfewdDBwAco4ADLL2O6Csq7hJtK1zei2gALzgWZzujzBfXxtLhMG04TlOpJ2dTLdug9Y85E4jvv9FtKc7kGGo6Rn60b7uS24aoGEGMEQ2SJCY6h4nq+YGiK16muW2pbraT7oSK771sy7rNq2pDtp23aUQOlwUBR-7rqKPwhkBi4rmuM4bjh1pQcmME8e+RBJEhMLgrm+qFu8mFlnejFcVW+HsC+Dakf8LZQMOvYdl2Pajv2cCDvRQq6IBkrsauEGVIm0F7sqKZdF0tAmLo7AqI86iaDoNi2OUZyiIUECsAAgug7AzAAJPUpSRbijA6J0ExKGA4wALpAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0ncwuRGHEiKR0ZjMdQoPQ4NQkQowAECASZMTSN4ShsCGJ6TCMeSokjMmloqRmBo8ag4AQyeTMZk3npIfSFqMeSDZbpRDSpWzIVqROLRJLpeqNbpKdTaUqGdqNLotCxaFSRIg1XyzQQObQuYjIQ7GE76CIrl6fQdwsBgMqRqqwF8vlUTWBBgBxVx4XT0gBCAFksABpLAARh5mbAuYLWAATPS5HJeWbMfqdXB+HTk2m3Y26jALrQ4ordAAxQajALOBvdky0KKtpEjseud3k-oa+umuqsQW5YVRUXqS5GqUyjXy2CD6OLPAbpu23Wau8S4838kWmntgJ3+2O51wV3X5dZU9TkxCRf1A2DYDvTRTJI0vWN40TYEO3TKpszzQsSwzdDKxrMA60nRtmw0OdrQrTCu27XtqE0Ad51HcdCLNadZzbSEF3HF9dFXWV10A7pejSegt0hIURTFQ9jRPWUz3gdsVUojViPvZSnxNQDXypd9rU-A02XA39-yYjUoJ9MCfyDOAQxA-YuPJWCo2TGN6UQuzMSTVNULLcji1LHDCzwtCwCwQYvC8+ksGcFM-AAeQAOSwnjGz47sHz00jdDixxRlGYzZWo2iRHoxc8vJFiMo4pdkpvFLZVEWgAC8rOE7dwl3fdDSkrjZIvJyr1KtKdSRVSj3U1K3ytMtdKGgzLKMtzTNAv0LMg0MYNyOC+oQhNdA8ztsPLDDfPw2qiLvDLlX2gaez7Oj2IYic3PKtjhweriksxU7MUYIgCjSM4uXvMS9wktTpPs3IFXk5yALOvThsfUbwdlCaPy-WaXUUj01t9b8A1-azoI+DbHIUuMdqTHzArLEKwr84KotihLay+pTzperKcuu5FbqK+6SqemcKrejTuJqvLun+9Q4CBndxIPMHush89of6rjlIRvTFdFupUZ09GVr-LGTJx8z8cswmwwc+CXIp5Cqfp2nwoZ6L4sS1m6vZpFOdytyCv7PnXoFnXTCFl7KvemrTR4-p+loExdHYFRCQPbQ4BsWwagxUQyggVhBnQdg0FQAASFoqmLkutUYHQ+mWJQwCWL4gA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0ncwuRGHEiKR0ZjMdQoPQ4NQkQowAECASZMTSN4ShsCGJ6TCMeSokjMmloqRmBo8ag4AQyeTMZk3npIfSFqMeSDZbpRDSpWzIVqROLRJLpeqNbpKdTaUqGdqNLotCxaFSRIg1XyzQQObQuYjIQ7GE76CIrl6fQdwsBgMqRqqwF8vlUTWBBgBxVx4XT0gBCAFksABpLAARh5mbAuYLWAATPS5HJeWbMfqdXB+HTk2m3Y26jALrQ4ordAAxQajALOBvdky0KKtpEjseud3k-oa+umuqsQW5YVRUXqS5GqUyjXy2CD6OLPAbpu23Wau8S4838kWmntgJ3+2O51wV3X5dZU9TkxCRf1A2DYDvTRTJI0vWN40TYEO3TKpszzQsSwzdDKxrMA60nRtmw0OdrQrTCu27XtqE0Ad51HcdCLNadZzbSEF3HF9dFXWV10A7pejSegt0hIURTFQ9jRPWUz3gdsVUojViPvZSnxNQDXypd9rU-A02XA39-yYjUoJ9MCfyDOAQxA-YuPJWCo2TGN6UQuzMSTVNULLcji1LHDCzwtCwCwQYvC8+ksGcFM-AAeQAOSwnjGz47sHz00jdDixxRlGYzZWo2iRHoxc8vJFiMo4pdkpvFLZVEWgAC8rOE7dwl3fdDSkrjZIvJyr1KtKdSRVSj3U1K3ytMtdKGgzLKMtzTNAv0LMg0MYNyOC+oQhNdA8ztsPLDDfPw2qiLvDLlX2gaez7Oj2IYic3PKtjhweriksxU7MUYIgCjSM4uXvMS9wktTpPs3IFXk5yALOvThsfUbwdlCaPy-WaXUUj01t9b8A1-azoI+DbHIUuMdqTHzArLEKwr84KotihLay+pTzperKcuu5FbqK+6SqemcKrejTuJqvLun+9Q4CBndxIPMHush89of6rjlIRvTFdFupUZ09GVr-LGTJx8z8cswmwwc+CXIp5Cqfp2nwoZ6L4sS1m6vZpFOdytyCv7PnXoFnXTCFl7KvemrTR4-p+loExdHYFRCQPbQ4BsWwagxUQyggVhBnQdg0FQAASFoqmLkutUYHQ+mWJQwCWL4gA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0ncwuRGHEiKR0ZjMdQoPQ4NQkQowAECASZMTSN4ShsCGJ6TCMeSokjULQCFt9iDyXVMqI4KQxWAFqN6XJeRLMVoWLQqQj2AQOcKxEiCMD5QBxVx4XT0gBCAFksABpLAARh5lrAtodWAATEqqtKRBo4Pw6abzcrxRL1dRBGj+qrw3zMaxBcLRWTVVCoNLZcaFb6I+T1YxNfRtbrOQbIUb6YMza7rXbHS6LQ3PT6wMrdP64IHg5DW0384nC9wY-s4xKE6rur00vRk5ChSKxcPMVKZXK8x2VRmiyWy7m6y33Y3nfWT23z1hBl5zVV6VhnCa-AB5AByzc73d7SLfjlGoxTruo6xgWuhAeSoi0AAXnAc4LroS5pmBkq5Nmm4jIq24oboe5ami5b6oiVaHneboeoO25djSPbkH2bq1mGO6qlGY7ZKuEGYowRAFGkZxcmyi6piuGaZuhuaYUOol4aWBF6lyxG6NWF6Ou295gNet5Xk+r4fr61EBnRv7-oBzGRiB45gZxdTdHx6gyimy7pqq645jWknYaudQyWW8mVkpxoUd6V43mRD46e+n5+jRP6Qn+AHWWqFnsfGEYTv0-S0CYujsCohLqJoOg2LYNQYqIZQQKwgzoOwaCoAAJC0VR1fV0qMDofTLEoYBLF8QA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0ncwuRGHEiKR0ZjMdQoPQ4NQkQowAECASZMTSN4ShsCGJ6TCMeSokjULQCFt9iDyXVMqI4KQxWAFqN6XJeRLMVoWLQqQj2AQOcKxEiCMD5QBxVx4XT0gBCAFksABpLAARh5lrAtodWAATEqqtKRBo4Pw6abzcrxRL1dRBGj+qrw3zMaxBcLRWTVVCoNLZcaFb6I+T1YxNfRtbrOQbIUb6YMza7rXbHS6LQ3PT6wMrdP64IHg5DW0384nC9wY-s4xKE6rur00vRk5ChSKxcPMVKZXK8x2VRmiyWy7m6y33Y3nfWT23z1hBl5zVV6VhnCa-AB5AByzc73d7SLfjlGoxTruo6xgWuhAeSoi0AAXnAc4LroS5pmBkq5Nmm4jIq24oboe5ami5b6oiVaHneboeoO25djSPbkH2bq1mGO6qlGY7ZKuEGYowRAFGkZxcmyi6piuGaZuhuaYUOol4aWBF6lyxG6NWF6Ou295gNet5Xk+r4fr61EBnRv7-oBzGRiB45gZxdTdHx6gyimy7pqq645jWknYaudQyWW8mVkpxoUd6V43mRD46e+n5+jRP6Qn+AHWWqFnsfGEYTv0-S0CYujsCohLqJoOg2LYNQYqIZQQKwgzoOwaCoAAJC0VR1fV0qMDofTLEoYBLF8QA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

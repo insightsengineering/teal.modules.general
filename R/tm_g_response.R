@@ -9,19 +9,15 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param response (`picks`)
 #' Which variable to use as the response.
-#' You can define one fixed column by setting `fixed = TRUE` inside the `select_spec`.
-#'
-#' The `data_extract_spec` must not allow multiple selection in this case.
-#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' The `picks` must not allow multiple variable selection in this case.
+#' @param x (`picks` )
 #' Specifies which variable to use on the X-axis of the response plot.
-#' Allow the user to select multiple columns from the `data` allowed in teal.
-#'
-#' The `data_extract_spec` must not allow multiple selection in this case.
-#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' The `picks` must not allow multiple selection in this case.
+#' @param row_facet (`picks`)
 #' optional specification of the data variable(s) to use for faceting rows.
-#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param col_facet (`picks`)
 #' optional specification of the data variable(s) to use for faceting columns.
 #' @param coord_flip (`logical(1)`)
 #' Indicates whether to flip coordinates between `x` and `response`.
@@ -85,25 +81,25 @@
 #'   modules = modules(
 #'     tm_g_response(
 #'       label = "Response Plots",
-#'       response = data_extract_spec(
-#'         dataname = "mtcars",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["mtcars"]], c("cyl", "gear")),
+#'       response = picks(
+#'         datasets("mtcars"),
+#'         variables(
+#'           choices = c("cyl", "gear"),
 #'           selected = "cyl",
 #'           multiple = FALSE,
 #'           fixed = FALSE
-#'         )
+#'         ),
+#'         values()
 #'       ),
-#'       x = data_extract_spec(
-#'         dataname = "mtcars",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["mtcars"]], c("vs", "am")),
+#'       x = picks(
+#'         datasets("mtcars"),
+#'         variables(
+#'           choices = c("vs", "am"),
 #'           selected = "vs",
 #'           multiple = FALSE,
 #'           fixed = FALSE
-#'         )
+#'         ),
+#'         values()
 #'       )
 #'     )
 #'   )
@@ -130,25 +126,21 @@
 #'   modules = modules(
 #'     tm_g_response(
 #'       label = "Response Plots",
-#'       response = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("BMRKR2", "COUNTRY")),
-#'           selected = "BMRKR2",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       response = picks(
+#'         datasets("ADSL"),
+#'         variables(
+#'           choices = c("BMRKR2", "COUNTRY"),
+#'           selected = "BMRKR2"
+#'         ),
+#'         values()
 #'       ),
-#'       x = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("SEX", "RACE")),
-#'           selected = "RACE",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       x = picks(
+#'         datasets("ADSL"),
+#'         variables(
+#'           choices = c("SEX", "RACE"),
+#'           selected = "RACE"
+#'         ),
+#'         values()
 #'       )
 #'     )
 #'   )
@@ -367,8 +359,7 @@ srv_g_response.picks <- function(id,
       data = data
     )
 
-    anl_merged_q <- reactive({
-      obj <- req(data())
+    validated_q <- reactive({
       validate_input(
         inputId = "response-variables-selected",
         condition = !is.null(selectors$response()$variables$selected),
@@ -401,16 +392,17 @@ srv_g_response.picks <- function(id,
         message = "Row and Column Facetting variables must be different."
       )
 
+      obj <- req(data())
       teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card("# Response Plot"),
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      obj |>
-        teal.code::eval_code('library("ggplot2");library("dplyr");') |> # nolint
-        teal.transform::qenv_merge_selectors(selectors = selectors, output_name = "anl")
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");')
     })
+
+    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
 
 
     output_q <- reactive({
@@ -420,18 +412,18 @@ srv_g_response.picks <- function(id,
         message = "Row and Col Facetting variables must be different."
       )
 
-      qenv <- anl_merged_q()
+      qenv <- merged$data()
       anl <- qenv[["anl"]]
-      response_var <- teal.transform::map_merged(selectors)$response$variables
-      x_var <- teal.transform::map_merged(selectors)$x$variables
+      response_var <- merged$merge_vars()$response
+      x_var <- merged$merge_vars()$x
 
       validate(need(is.factor(anl[[response_var]]), "Please select a factor variable as the response."))
       validate(need(is.factor(anl[[x_var]]), "Please select a factor variable as the X-Variable."))
       teal::validate_has_data(anl, 10)
       teal::validate_has_data(anl[, c(response_var, x_var)], 10, complete = TRUE, allow_inf = FALSE)
 
-      row_facet_var <- map_merged(selectors)$row_facet$variables
-      col_facet_var <- map_merged(selectors)$col_facet$variables
+      row_facet_var <- merged$merge_vars()$row_facet
+      col_facet_var <- merged$merge_vars()$col_facet
 
       freq <- input$freq == "frequency"
       swap_axes <- input$coord_flip
@@ -468,8 +460,8 @@ srv_g_response.picks <- function(id,
         response_var = response_var,
         response_cl = as.name(response_var),
         x_cl = as.name(x_var),
-        row_facet_cl = if (length(row_facet)) as.name(row_facet_var),
-        col_facet_cl = if (length(col_facet)) as.name(col_facet_var)
+        row_facet_cl = if (length(row_facet_var)) as.name(row_facet_var),
+        col_facet_cl = if (length(col_facet_var)) as.name(col_facet_var)
       )
 
       plot_call <- substitute(

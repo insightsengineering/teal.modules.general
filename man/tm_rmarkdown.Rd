@@ -12,24 +12,12 @@ tm_rmarkdown(
 )
 }
 \arguments{
-\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
-For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
-
 \item{text}{(\code{character}) arbitrary Rmd code}
 
 \item{params}{A list of named parameters that override custom params
 specified within the YAML front-matter (e.g. specifying a dataset to read or
 a date range to confine output to). Pass \code{"ask"} to start an
 application that helps guide parameter configuration.}
-
-\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
-There are 2 reserved values that have specific behaviors:
-\itemize{
-\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
-\item \code{NULL} hides the sidebar panel completely.
-\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
-argument.
-}}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.

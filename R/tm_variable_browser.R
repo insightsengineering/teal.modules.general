@@ -263,7 +263,18 @@ srv_variable_browser <- function(id,
     establish_updating_selection(datanames, input, plot_var, columns_names)
 
     # validations
-    validation_checks <- validate_input(input, plot_var, data)
+    validation_checks <- reactive({
+      dataset_name <- req(input$tabset_panel)
+      varname <- plot_var$variable[[dataset_name]]
+
+      validate(need(dataset_name, "No data selected"))
+      validate(need(varname, "No variable selected"))
+      df <- data()[[dataset_name]]
+      teal::validate_has_data(df, 1)
+      teal::validate_has_variable(varname = varname, data = df, "Variable not available")
+
+      TRUE
+    })
 
     # data_for_analysis is a list with two elements: a column from a dataset and the column label
     plotted_data <- reactive({
@@ -776,29 +787,6 @@ is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysi
   length(unique(data_for_analysis()$data)) < .unique_records_for_factor && !is.null(input$numeric_as_factor)
 }
 
-#' Validates the variable browser inputs
-#'
-#' @param input (`session$input`) the `shiny` session input
-#' @param plot_var (`list`) list of a data frame and an array of variable names
-#' @param data (`teal_data`) the datasets passed to the module
-#'
-#' @returns `logical` TRUE if validations pass; a `shiny` validation error otherwise
-#' @keywords internal
-validate_input <- function(input, plot_var, data) {
-  reactive({
-    dataset_name <- req(input$tabset_panel)
-    varname <- plot_var$variable[[dataset_name]]
-
-    validate(need(dataset_name, "No data selected"))
-    validate(need(varname, "No variable selected"))
-    df <- data()[[dataset_name]]
-    teal::validate_has_data(df, 1)
-    teal::validate_has_variable(varname = varname, data = df, "Variable not available")
-
-    TRUE
-  })
-}
-
 get_plotted_data <- function(input, plot_var, data) {
   dataset_name <- input$tabset_panel
   varname <- plot_var$variable[[dataset_name]]
@@ -889,7 +877,6 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
 
   output[[table_ui_id]] <- DT::renderDataTable({
     df <- data()[[dataset_name]]
-
     get_vars_df <- function(input, dataset_name, parent_name, data) {
       data_cols <- colnames(df)
       if (isTRUE(input$show_parent_vars)) {
@@ -935,7 +922,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
 
       join_keys <- teal.data::join_keys(data())
       if (!is.null(join_keys)) {
-        icons[intersect(teal.data::join_keys[dataset_name, dataset_name], colnames(df))] <- "primary_key"
+        icons[intersect(join_keys[dataset_name, dataset_name], colnames(df))] <- "primary_key"
       }
       icons <- variable_type_icons(icons)
 

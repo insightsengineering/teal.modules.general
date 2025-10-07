@@ -10,11 +10,10 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param ref (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Reference variable, must accepts a `data_extract_spec` with `select_spec(multiple = FALSE)`
-#' to ensure single selection option.
-#' @param vars (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Variables to be associated with the reference variable.
+#' @param ref (`picks`)
+#' Reference variable specification created using `picks()`.
+#' @param vars (`picks`)
+#' Variables to be associated with the reference variable, specified using `picks()`.
 #' @param show_association (`logical`) optional, whether show association of `vars`
 #' with reference variable. Defaults to `TRUE`.
 #' @param distribution_theme,association_theme (`character`) optional, `ggplot2` themes to be used by default.
@@ -68,23 +67,19 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_g_association(
-#'       ref = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-#'           selected = "Plant",
-#'           fixed = FALSE
+#'       ref = picks(
+#'         datasets("CO2"),
+#'         variables(
+#'           choices = c("Plant", "Type", "Treatment"),
+#'           selected = "Plant"
 #'         )
 #'       ),
-#'       vars = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
+#'       vars = picks(
+#'         datasets("CO2"),
+#'         variables(
+#'           choices = c("Plant", "Type", "Treatment"),
 #'           selected = "Treatment",
-#'           multiple = TRUE,
-#'           fixed = FALSE
+#'           multiple = TRUE
 #'         )
 #'       )
 #'     )
@@ -111,29 +106,19 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_g_association(
-#'       ref = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
-#'           ),
-#'           selected = "RACE",
-#'           fixed = FALSE
+#'       ref = picks(
+#'         datasets("ADSL"),
+#'         variables(
+#'           choices = c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2"),
+#'           selected = "RACE"
 #'         )
 #'       ),
-#'       vars = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
-#'           ),
+#'       vars = picks(
+#'         datasets("ADSL"),
+#'         variables(
+#'           choices = c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2"),
 #'           selected = "BMRKR2",
-#'           multiple = TRUE,
-#'           fixed = FALSE
+#'           multiple = TRUE
 #'         )
 #'       )
 #'     )
@@ -215,6 +200,10 @@ tm_g_association.picks <- function(label = "Association",
   # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_class(ref, "picks")
+  if (isTRUE(attr(ref$variables, "multiple"))) {
+    warning("`ref` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    attr(ref$variables, "multiple") <- FALSE
+  }
   checkmate::assert_class(vars, "picks")
   checkmate::assert_flag(show_association)
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
@@ -337,7 +326,7 @@ srv_g_association.picks <- function(id,
 
     selectors <- teal.transform::module_input_srv(spec = list(ref = ref, vars = vars), data = data)
 
-    anl_merged_q <- reactive({
+    validated_q <- reactive({
       obj <- req(data())
       validate_input(
         inputId = "ref-variables-selected",
@@ -360,19 +349,19 @@ srv_g_association.picks <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      obj |>
-        teal.code::eval_code('library("ggplot2");library("dplyr");library("tern");library("ggmosaic")') |> # nolint
-        teal.transform::qenv_merge_selectors(selectors = selectors)
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")')
     })
 
+    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+
     output_q <- reactive({
-      req(anl_merged_q())
+      req(merged$data())
       logger::log_debug("srv_g_association@1 recalculating a plot")
-      merged <- anl_merged_q()[["merged"]]
-      ref_name <- map_merged(selectors)$ref$variables
-      vars_names <- map_merged(selectors)$vars$variables
-      teal::validate_has_data(merged, 3)
-      teal::validate_has_data(merged[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
+      anl <- merged$data()[["anl"]]
+      ref_name <- merged$merge_vars()$ref
+      vars_names <- merged$merge_vars()$vars
+      teal::validate_has_data(anl, 3)
+      teal::validate_has_data(anl[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
 
       association <- input$association
       show_dist <- input$show_dist
@@ -382,7 +371,7 @@ srv_g_association.picks <- function(id,
       distribution_theme <- input$distribution_theme
       association_theme <- input$association_theme
 
-      is_scatterplot <- is.numeric(merged[[ref_name]]) && any(vapply(merged[vars_names], is.numeric, logical(1)))
+      is_scatterplot <- is.numeric(anl[[ref_name]]) && any(vapply(anl[vars_names], is.numeric, logical(1)))
       if (is_scatterplot) {
         shinyjs::show("alpha")
         shinyjs::show("size")
@@ -396,16 +385,16 @@ srv_g_association.picks <- function(id,
       }
 
       # reference
-      ref_class <- class(merged[[ref_name]])[1]
-      if (is.numeric(merged[[ref_name]]) && log_transformation) {
+      ref_class <- class(anl[[ref_name]])[1]
+      if (is.numeric(anl[[ref_name]]) && log_transformation) {
         # works for both integers and doubles
         ref_cl_name <- call("log", as.name(ref_name))
-        ref_cl_lbl <- varname_w_label(ref_name, merged, prefix = "Log of ")
+        ref_cl_lbl <- varname_w_label(ref_name, anl, prefix = "Log of ")
       } else {
         # silently ignore when non-numeric even if `log` is selected because some
         # variables may be numeric and others not
         ref_cl_name <- as.name(ref_name)
-        ref_cl_lbl <- varname_w_label(ref_name, merged)
+        ref_cl_lbl <- varname_w_label(ref_name, anl)
       }
 
       user_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
@@ -414,7 +403,7 @@ srv_g_association.picks <- function(id,
       )
 
       ref_call <- bivariate_plot_call(
-        data_name = "merged",
+        data_name = "anl",
         x = ref_cl_name,
         x_class = ref_class,
         x_label = ref_cl_lbl,
@@ -431,15 +420,15 @@ srv_g_association.picks <- function(id,
       ref_class_cov <- ifelse(association, ref_class, "NULL")
 
       var_calls <- lapply(vars_names, function(var_i) {
-        if (is.numeric(merged[[var_i]]) && log_transformation) {
+        if (is.numeric(anl[[var_i]]) && log_transformation) {
           # works for both integers and doubles
           var_cl_name <- call("log", as.name(var_i))
-          var_cl_lbl <- varname_w_label(var_i, merged, prefix = "Log of ")
+          var_cl_lbl <- varname_w_label(var_i, anl, prefix = "Log of ")
         } else {
           # silently ignore when non-numeric even if `log` is selected because some
           # variables may be numeric and others not
           var_cl_name <- as.name(var_i)
-          var_cl_lbl <- varname_w_label(var_i, merged)
+          var_cl_lbl <- varname_w_label(var_i, anl)
         }
 
         user_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
@@ -448,11 +437,11 @@ srv_g_association.picks <- function(id,
         )
 
         bivariate_plot_call(
-          data_name = "merged",
+          data_name = "anl",
           x = ref_cl_name,
           y = var_cl_name,
           x_class = ref_class_cov,
-          y_class = class(merged[[var_i]])[1],
+          y_class = class(anl[[var_i]])[1],
           x_label = ref_cl_lbl,
           y_label = var_cl_lbl,
           theme = association_theme,
@@ -467,10 +456,10 @@ srv_g_association.picks <- function(id,
 
       # helper function to format variable name
       format_varnames <- function(x) {
-        if (is.numeric(merged[[x]]) && log_transformation) {
-          varname_w_label(x, merged, prefix = "Log of ")
+        if (is.numeric(anl[[x]]) && log_transformation) {
+          varname_w_label(x, anl, prefix = "Log of ")
         } else {
-          varname_w_label(x, merged)
+          varname_w_label(x, anl)
         }
       }
       new_title <-
@@ -498,30 +487,21 @@ srv_g_association.picks <- function(id,
             )
           )
         }
-      obj <- anl_merged_q()
+      obj <- merged$data()
+
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Plot")
-      teal.code::eval_code(
+      within(
         obj,
-        substitute(
-          expr = title <- new_title,
-          env = list(new_title = new_title)
-        )
-      ) %>%
-        teal.code::eval_code(
-          substitute(
-            expr = {
-              plots <- plot_calls
-              plot <- gridExtra::arrangeGrob(plots[[1]], plots[[2]], ncol = 1)
-            },
-            env = list(
-              plot_calls = do.call(
-                "call",
-                c(list("list", ref_call), var_calls),
-                quote = TRUE
-              )
-            )
-          )
-        )
+        expr = {
+          title <- new_title
+          ref_plot <- plot1
+          var_plot <- plot2
+          plot <- gridExtra::arrangeGrob(ref_plot, var_plot, ncol = 1)
+        },
+        new_title = new_title,
+        plot1 = ref_call,
+        plot2 = var_calls[[1]]
+      )
     })
 
     decorated_output_grob_q <- srv_decorate_teal_data(
