@@ -495,9 +495,6 @@ ui_g_scatterplot <- function(id, ...) {
           )
         )
       ),
-      forms = tagList(
-        teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-      ),
       pre_output = args$pre_output,
       post_output = args$post_output
     )
@@ -1037,8 +1034,6 @@ srv_g_scatterplot <- function(id,
       brushing = TRUE
     )
 
-    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_plot_q)
-
     output$data_table <- DT::renderDataTable({
       plot_brush <- pws$brush()
 
@@ -1067,14 +1062,6 @@ srv_g_scatterplot <- function(id,
       }
     })
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_dims_q())))
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "R Code for scatterplot"
-    )
-    decorated_output_dims_q
+    set_chunk_dims(pws, decorated_output_plot_q)
   })
 }

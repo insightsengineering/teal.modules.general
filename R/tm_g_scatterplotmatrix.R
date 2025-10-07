@@ -288,9 +288,6 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         )
       )
     ),
-    forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-    ),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -479,8 +476,6 @@ srv_g_scatterplotmatrix <- function(id,
       width = plot_width
     )
 
-    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_q)
-
     # show a message if conversion to factors took place
     output$message <- renderText({
       req(iv_r()$is_valid())
@@ -503,15 +498,7 @@ srv_g_scatterplotmatrix <- function(id,
       }
     })
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_dims_q())))
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "Show R Code for Scatterplotmatrix"
-    )
-    decorated_output_dims_q
+    set_chunk_dims(pws, decorated_output_q)
   })
 }
 
