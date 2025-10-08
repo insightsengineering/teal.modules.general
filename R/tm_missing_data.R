@@ -191,7 +191,6 @@ ui_page_missing_data <- function(id, pre_output = NULL, post_output = NULL) {
       encoding = tags$div(
         uiOutput(ns("dataset_encodings"))
       ),
-      uiOutput(ns("dataset_reporter")),
       pre_output = pre_output,
       post_output = post_output
     )
@@ -248,19 +247,6 @@ srv_page_missing_data <- function(id, data, datanames, parent_dataname,
           }
         )
       )
-    })
-
-    output$dataset_reporter <- renderUI({
-      lapply(datanames, function(x) {
-        dataname_ns <- NS(ns(x))
-
-        conditionalPanel(
-          is_tab_active_js(ns("dataname_tab"), x),
-          tagList(
-            teal.widgets::verbatim_popup_ui(dataname_ns("rcode"), "Show R code")
-          )
-        )
-      })
     })
 
     result <- sapply(
@@ -728,7 +714,7 @@ srv_missing_data <- function(id,
     # Prepare qenvs for output objects
 
     summary_plot_q <- reactive({
-      req(input$summary_type == "Summary") # needed to trigger show r code update on tab change
+      req(input$summary_type == "Summary") # needed to trigger update on tab change
       teal::validate_has_data(data_r(), 1)
 
       qenv <- common_code_q()
@@ -1072,7 +1058,7 @@ srv_missing_data <- function(id,
 
     by_variable_plot_q <- reactive({
       req(
-        input$summary_type == "By Variable Levels", # needed to trigger show r code update on tab change
+        input$summary_type == "By Variable Levels", # needed to trigger update on tab change
         common_code_q()
       )
       teal::validate_has_data(data_r(), 1)
@@ -1235,7 +1221,7 @@ srv_missing_data <- function(id,
     })
 
     by_subject_plot_q <- reactive({
-      # needed to trigger show r code update on tab change
+      # needed to trigger update on tab change
       req(input$summary_type == "Grouped by Subject", common_code_q())
 
       teal::validate_has_data(data_r(), 1)
@@ -1462,14 +1448,6 @@ srv_missing_data <- function(id,
       }
     })
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_final_q())))
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "Show R Code for Missing Data"
-    )
     decorated_final_q
   })
 }
