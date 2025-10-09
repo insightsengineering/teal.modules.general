@@ -307,9 +307,6 @@ ui_tm_g_association.default <- function(id, ...) {
         )
       )
     ),
-    forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-    ),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -563,18 +560,8 @@ srv_tm_g_association.default <- function(id,
       width = plot_width
     )
 
-    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_grob_q)
-
     output$title <- renderText(output_q()[["title"]])
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_dims_q())))
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "Association Plot"
-    )
-    decorated_output_dims_q
+    set_chunk_dims(pws, decorated_output_grob_q)
   })
 }

@@ -351,9 +351,6 @@ ui_a_pca.default <- function(id, ...) {
           )
         )
       ),
-      forms = tagList(
-        teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-      ),
       pre_output = args$pre_output,
       post_output = args$post_output
     )
@@ -1090,8 +1087,6 @@ srv_a_pca.default <- function(id, data, dat, plot_height, plot_width, ggplot2_ar
       graph_align = "center"
     )
 
-    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_q)
-
     # tables ----
     output$tbl_importance <- renderTable(
       expr = {
@@ -1145,14 +1140,6 @@ srv_a_pca.default <- function(id, data, dat, plot_height, plot_width, ggplot2_ar
       )
     })
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "R Code for PCA"
-    )
-    decorated_output_dims_q
+    set_chunk_dims(pws, decorated_output_q)
   })
 }

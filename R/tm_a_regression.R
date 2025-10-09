@@ -374,9 +374,6 @@ ui_a_regression.default <- function(id, ...) {
         )
       )
     ),
-    forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-    ),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -1021,22 +1018,12 @@ srv_a_regression.default <- function(id,
       width = plot_width
     )
 
-    decorated_output_dims_q <- set_chunk_dims(pws, decorated_output_q)
-
     output$text <- renderText({
       req(iv_r()$is_valid())
       req(iv_out$is_valid())
       paste(utils::capture.output(summary(fitted()))[-1], collapse = "\n")
     })
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_dims_q())))
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "R code for the regression plot",
-    )
-    decorated_output_dims_q
+    set_chunk_dims(pws, decorated_output_q)
   })
 }

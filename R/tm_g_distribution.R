@@ -381,9 +381,6 @@ ui_g_distribution.default <- function(id, ...) {
         )
       )
     ),
-    forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-    ),
     pre_output = args$pre_output,
     post_output = args$post_output
   )
@@ -1276,13 +1273,13 @@ srv_g_distribution.default <- function(id,
     output_dist_q <- reactive(c(common_q(), req(dist_q())))
     output_qq_q <- reactive(c(common_q(), req(qq_q())))
 
-    # Summary table listing has to be created separately to allow for qenv join
-    q_common <- common_q()
-    teal.reporter::teal_card(q_common) <- c(
-      teal.reporter::teal_card(q_common),
-      "## Statistics table"
-    )
     output_summary_q <- reactive({
+      # Summary table listing has to be created separately to allow for qenv join
+      q_common <- common_q()
+      teal.reporter::teal_card(q_common) <- c(
+        teal.reporter::teal_card(q_common),
+        "## Statistics table"
+      )
       if (iv_r()$is_valid()) {
         within(q_common, {
           summary_table <- rtables::df_to_tt(summary_table_data)
@@ -1362,7 +1359,7 @@ srv_g_distribution.default <- function(id,
     output$summary_table <- DT::renderDataTable(summary_r())
 
     tests_r <- reactive({
-      q <- req(output_test_q())
+      q <- req(decorated_output_test_q())
       DT::datatable(q[["test_table_data"]])
     })
 
@@ -1388,7 +1385,7 @@ srv_g_distribution.default <- function(id,
 
     decorated_output_q <- reactive({
       tab <- req(input$tabs) # tab is NULL upon app launch, hence will crash without this statement
-      test_q_out <- output_test_q()
+      test_q_out <- decorated_output_test_q()
 
       out_q <- switch(tab,
         Histogram = decorated_output_dist_dims_q(),
@@ -1406,14 +1403,6 @@ srv_g_distribution.default <- function(id,
 
     output$t_stats <- DT::renderDataTable(tests_r())
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
-
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "R Code for distribution"
-    )
     decorated_output_q
   })
 }
