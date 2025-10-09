@@ -94,9 +94,6 @@ ui_t_crosstable.picks <- function(id, x, y, show_percentage, show_total, remove_
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "table"))
     ),
-    forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-    ),
     pre_output = pre_output,
     post_output = post_output
   )
@@ -262,19 +259,9 @@ srv_t_crosstable.picks <- function(id, data, label, x, y, remove_zero_columns, b
       tail(teal.code::get_outputs(obj), 1)[[1]]
     })
 
-    teal.widgets::table_with_settings_srv(
-      id = "table",
-      table_r = table_r
-    )
+    teal.widgets::table_with_settings_srv(id = "table", table_r = table_r)
 
-    # Render R code.
-    source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
 
-    teal.widgets::verbatim_popup_srv(
-      id = "rcode",
-      verbatim_content = source_code_r,
-      title = "Show R Code for Cross-Table"
-    )
     decorated_output_q
   })
 }

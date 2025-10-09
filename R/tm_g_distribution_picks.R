@@ -188,9 +188,6 @@ ui_g_distribution.picks <- function(id,
         )
       )
     ),
-    forms = tagList(
-      teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
-    ),
     pre_output = pre_output,
     post_output = post_output
   )
@@ -519,15 +516,6 @@ srv_g_distribution.picks <- function(id,
     #   )
     #   out_q
     # })
-
-    # Render R code.
-    # source_code_r <- reactive(teal.code::get_code(req(decorated_output_q())))
-
-    # teal.widgets::verbatim_popup_srv(
-    #   id = "rcode",
-    #   verbatim_content = source_code_r,
-    #   title = "R Code for distribution"
-    # )
     NULL
   })
 }
