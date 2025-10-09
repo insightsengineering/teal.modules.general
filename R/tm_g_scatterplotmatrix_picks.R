@@ -1,20 +1,26 @@
 #' @export
-tm_g_scatterplotmatrix.default <- function(label = "Scatterplot Matrix",
-                                           variables,
-                                           plot_height = c(600, 200, 2000),
-                                           plot_width = NULL,
-                                           pre_output = NULL,
-                                           post_output = NULL,
-                                           transformators = list(),
-                                           decorators = list()) {
+tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
+                                         variables = list(
+                                           picks(
+                                             datasets(),
+                                             variables(selected = 1:5, multiple = TRUE)
+                                           )
+                                         ),
+                                         plot_height = c(600, 200, 2000),
+                                         plot_width = NULL,
+                                         pre_output = NULL,
+                                         post_output = NULL,
+                                         transformators = list(),
+                                         decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
 
-  # Normalize the parameters
-  if (inherits(variables, "data_extract_spec")) variables <- list(variables)
+  if (is.null(names(variables))) {
+    names(variables) <- sprintf("pick_%s", seq_along(variables))
+  }
 
   # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_list(variables, types = "data_extract_spec")
+  checkmate::assert_list(variables, types = "picks", names = "named")
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -30,31 +36,30 @@ tm_g_scatterplotmatrix.default <- function(label = "Scatterplot Matrix",
   assert_decorators(decorators, "plot")
   # End of assertions
 
-  # Make UI args
   args <- as.list(environment())
-
   ans <- module(
     label = label,
-    server = srv_g_scatterplotmatrix.default,
-    ui = ui_g_scatterplotmatrix.default,
-    ui_args = args,
-    server_args = list(
-      variables = variables,
-      plot_height = plot_height,
-      plot_width = plot_width,
-      decorators = decorators
-    ),
+    ui = ui_g_scatterplotmatrix.picks,
+    server = srv_g_scatterplotmatrix.picks,
+    ui_args = args[names(args) %in% names(formals(ui_g_scatterplotmatrix.picks))],
+    server_args = args[names(args) %in% names(formals(srv_g_scatterplotmatrix.picks))],
     transformators = transformators,
-    datanames = teal.transform::get_extract_datanames(variables)
+    datanames = {
+      datanames <- datanames(variables)
+      if (length(datanames)) datanames else "all"
+    }
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
 
 # UI function for the scatterplot matrix module
-ui_g_scatterplotmatrix.default <- function(id, ...) {
-  args <- list(...)
-  is_single_dataset_value <- teal.transform::is_single_dataset(args$variables)
+ui_g_scatterplotmatrix.picks <- function(id,
+                                         variables,
+                                         pre_output,
+                                         post_output,
+                                         decorators) {
+  checkmate::assert_list(variables, "picks", names = "named")
   ns <- NS(id)
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(
@@ -64,15 +69,15 @@ ui_g_scatterplotmatrix.default <- function(id, ...) {
     ),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
-      teal.transform::datanames_input(args$variables),
-      teal.transform::data_extract_ui(
-        id = ns("variables"),
-        label = "Variables",
-        data_extract_spec = args$variables,
-        is_single_dataset = is_single_dataset_value
+      tagList(
+        lapply(names(variables), function(id) {
+          teal::teal_nav_item(
+            teal.transform::module_input_ui(id = ns(id), spec = variables[[id]])
+          )
+        })
       ),
       tags$hr(),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
+      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
@@ -101,66 +106,55 @@ ui_g_scatterplotmatrix.default <- function(id, ...) {
     forms = tagList(
       teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
     ),
-    pre_output = args$pre_output,
-    post_output = args$post_output
+    pre_output = pre_output,
+    post_output = post_output
   )
 }
 
 # Server function for the scatterplot matrix module
-srv_g_scatterplotmatrix.default <- function(id,
-                                            data,
-                                            variables,
-                                            plot_height,
-                                            plot_width,
-                                            decorators) {
+srv_g_scatterplotmatrix.picks <- function(id,
+                                          data,
+                                          variables,
+                                          plot_height,
+                                          plot_width,
+                                          decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selector_list <- teal.transform::data_extract_multiple_srv(
-      data_extract = list(variables = variables),
-      datasets = data,
-      select_validation_rule = list(
-        variables = ~ if (length(.) <= 1) "Please select at least 2 columns."
+    selectors <- teal.transform::module_input_srv(
+      spec = variables,
+      data = data
+    )
+
+    validated_q <- reactive({
+      obj <- req(data())
+
+      input_ids <- sprintf("%s-variables-selected", names(variables))
+      selected_variables <- unname(unlist(lapply(selectors, function(selector) selector()$variables$selected)))
+      validate_input(
+        inputId = input_ids, # validate all inputs where variable can be selected
+        condition = length(selected_variables) > 1,
+        message = "Please select at least 2 columns"
       )
-    )
 
-    iv_r <- reactive({
-      iv <- shinyvalidate::InputValidator$new()
-      teal.transform::compose_and_enable_validators(iv, selector_list)
-    })
-
-    anl_merged_input <- teal.transform::merge_expression_srv(
-      datasets = data,
-      selector_list = selector_list
-    )
-
-    anl_merged_q <- reactive({
-      req(anl_merged_input())
-      obj <- data()
       teal.reporter::teal_card(obj) <- c(
         teal.reporter::teal_card("# Scatter Plot Matrix"),
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's code")
       )
-      qenv <- teal.code::eval_code(obj, 'library("dplyr");library("lattice")') # nolint quotes
-      teal.code::eval_code(qenv, as.expression(anl_merged_input()$expr))
+      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");')
     })
 
-    merged <- list(
-      anl_input_r = anl_merged_input,
-      anl_q_r = anl_merged_q
-    )
+    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+    merge_vars <- reactive(unname(unlist(merged$merge_vars())))
 
     # plot
     output_q <- reactive({
-      teal::validate_inputs(iv_r())
-
-      qenv <- merged$anl_q_r()
-      ANL <- qenv[["ANL"]]
-
-      cols_names <- merged$anl_input_r()$columns_source$variables
+      qenv <- req(merged$data())
+      anl <- qenv[["anl"]]
+      cols_names <- merge_vars()
       alpha <- input$alpha
       cex <- input$cex
       add_cor <- input$cor
@@ -173,19 +167,19 @@ srv_g_scatterplotmatrix.default <- function(id,
         "na.fail"
       }
 
-      teal::validate_has_data(ANL, 10)
-      teal::validate_has_data(ANL[, cols_names, drop = FALSE], 10, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(anl, 10)
+      teal::validate_has_data(anl[, cols_names, drop = FALSE], 10, complete = TRUE, allow_inf = FALSE)
 
       # get labels and proper variable names
-      varnames <- varname_w_label(cols_names, ANL, wrap_width = 20)
+      varnames <- varname_w_label(cols_names, anl, wrap_width = 20)
 
       # check character columns. If any, then those are converted to factors
-      check_char <- vapply(ANL[, cols_names], is.character, logical(1))
+      check_char <- vapply(anl[, cols_names], is.character, logical(1))
       if (any(check_char)) {
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL <- ANL[, cols_names] %>%
+            expr = anl <- anl[, cols_names] %>%
               dplyr::mutate_if(is.character, as.factor) %>%
               droplevels(),
             env = list(cols_names = cols_names)
@@ -195,7 +189,7 @@ srv_g_scatterplotmatrix.default <- function(id,
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
-            expr = ANL <- ANL[, cols_names] %>%
+            expr = anl <- anl[, cols_names] %>%
               droplevels(),
             env = list(cols_names = cols_names)
           )
@@ -216,7 +210,7 @@ srv_g_scatterplotmatrix.default <- function(id,
           substitute(
             expr = {
               plot <- lattice::splom(
-                ANL,
+                anl,
                 varnames = varnames_value,
                 panel = function(x, y, ...) {
                   lattice::panel.splom(x = x, y = y, ...)
@@ -258,7 +252,7 @@ srv_g_scatterplotmatrix.default <- function(id,
           substitute(
             expr = {
               plot <- lattice::splom(
-                ANL,
+                anl,
                 varnames = varnames_value,
                 pch = 16,
                 alpha = alpha_value,
@@ -293,11 +287,9 @@ srv_g_scatterplotmatrix.default <- function(id,
 
     # show a message if conversion to factors took place
     output$message <- renderText({
-      req(iv_r()$is_valid())
-      req(selector_list()$variables())
-      ANL <- merged$anl_q_r()[["ANL"]]
-      cols_names <- unique(unname(do.call(c, merged$anl_input_r()$columns_source)))
-      check_char <- vapply(ANL[, cols_names], is.character, logical(1))
+      cols_names <- req(merge_vars())
+      anl <- merged$data()[["anl"]]
+      check_char <- vapply(anl[, cols_names], is.character, logical(1))
       if (any(check_char)) {
         is_single <- sum(check_char) == 1
         paste(

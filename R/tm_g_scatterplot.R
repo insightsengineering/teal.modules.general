@@ -208,55 +208,50 @@ tm_g_scatterplot <- function(label = "Scatterplot",
 }
 
 #' @export
-tm_g_scatterplot.picks <- function(label = "Scatterplot",
-                                   x = picks(
-                                     datasets(),
-                                     variables(tidyselect::where(is.numeric)),
-                                     values()
-                                   ),
-                                   y = picks(
-                                     datasets(),
-                                     variables(tidyselect::where(is.numeric), selected = 2),
-                                     values()
-                                   ),
-                                   color_by = NULL,
-                                   size_by = NULL,
-                                   row_facet = NULL,
-                                   col_facet = NULL,
-                                   plot_height = c(600, 200, 2000),
-                                   plot_width = NULL,
-                                   alpha = c(1, 0, 1),
-                                   shape = shape_names,
-                                   size = c(5, 1, 15),
-                                   max_deg = 5L,
-                                   rotate_xaxis_labels = FALSE,
-                                   ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
-                                   pre_output = NULL,
-                                   post_output = NULL,
-                                   table_dec = 4,
-                                   ggplot2_args = teal.widgets::ggplot2_args(),
-                                   transformators = list(),
-                                   decorators = list()) {
+tm_g_scatterplot.default <- function(label = "Scatterplot",
+                                     x,
+                                     y,
+                                     color_by = NULL,
+                                     size_by = NULL,
+                                     row_facet = NULL,
+                                     col_facet = NULL,
+                                     plot_height = c(600, 200, 2000),
+                                     plot_width = NULL,
+                                     alpha = c(1, 0, 1),
+                                     shape = shape_names,
+                                     size = c(5, 1, 15),
+                                     max_deg = 5L,
+                                     rotate_xaxis_labels = FALSE,
+                                     ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                     pre_output = NULL,
+                                     post_output = NULL,
+                                     table_dec = 4,
+                                     ggplot2_args = teal.widgets::ggplot2_args(),
+                                     transformators = list(),
+                                     decorators = list()) {
   message("Initializing tm_g_scatterplot")
+
+  # Normalize the parameters
+  if (inherits(x, "data_extract_spec")) x <- list(x)
+  if (inherits(y, "data_extract_spec")) y <- list(y)
+  if (inherits(color_by, "data_extract_spec")) color_by <- list(color_by)
+  if (inherits(size_by, "data_extract_spec")) size_by <- list(size_by)
+  if (inherits(row_facet, "data_extract_spec")) row_facet <- list(row_facet)
+  if (inherits(col_facet, "data_extract_spec")) col_facet <- list(col_facet)
+  if (is.double(max_deg)) max_deg <- as.integer(max_deg)
 
   # Start of assertions
   checkmate::assert_string(label)
-  checkmate::assert_class(x, "picks")
-  checkmate::assert_class(y, "picks")
-  checkmate::assert_class(color_by, "picks", null.ok = TRUE)
-  checkmate::assert_class(size_by, "picks", null.ok = TRUE)
+  checkmate::assert_list(x, types = "data_extract_spec")
+  checkmate::assert_list(y, types = "data_extract_spec")
+  checkmate::assert_list(color_by, types = "data_extract_spec", null.ok = TRUE)
+  checkmate::assert_list(size_by, types = "data_extract_spec", null.ok = TRUE)
 
-  checkmate::assert_class(row_facet, "picks", null.ok = TRUE)
-  if (isTRUE(attr(row_facet$variables, "multiple"))) {
-    warning("`row_facet` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
-    attr(row_facet$variables, "multiple") <- FALSE
-  }
+  checkmate::assert_list(row_facet, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(row_facet)
 
-  checkmate::assert_class(col_facet, "picks", null.ok = TRUE)
-  if (isTRUE(attr(col_facet$variables, "multiple"))) {
-    warning("`col_facet` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
-    attr(col_facet$variables, "multiple") <- FALSE
-  }
+  checkmate::assert_list(col_facet, types = "data_extract_spec", null.ok = TRUE)
+  assert_single_selection(col_facet)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -298,41 +293,46 @@ tm_g_scatterplot.picks <- function(label = "Scatterplot",
 
   # Make UI args
   args <- as.list(environment())
+
+  data_extract_list <- list(
+    x = x,
+    y = y,
+    color_by = color_by,
+    size_by = size_by,
+    row_facet = row_facet,
+    col_facet = col_facet
+  )
+
   ans <- module(
     label = label,
-    server = srv_g_scatterplot.picks,
-    ui = ui_g_scatterplot.picks,
-    ui_args = args[names(args) %in% names(formals(ui_g_scatterplot.picks))],
-    server_args = args[names(args) %in% names(formals(srv_g_scatterplot.picks))],
+    server = srv_g_scatterplot.default,
+    ui = ui_g_scatterplot.default,
+    ui_args = args,
+    server_args = c(
+      data_extract_list,
+      list(
+        plot_height = plot_height,
+        plot_width = plot_width,
+        table_dec = table_dec,
+        ggplot2_args = ggplot2_args,
+        decorators = decorators
+      )
+    ),
     transformators = transformators,
-    datanames = {
-      datanames <- datanames(list(x, y, color_by, size_by, row_facet, col_facet))
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = teal.transform::get_extract_datanames(data_extract_list)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
 
 # UI function for the scatterplot module
-ui_g_scatterplot.picks <- function(id,
-                                   x,
-                                   y,
-                                   color_by,
-                                   size_by,
-                                   row_facet,
-                                   col_facet,
-                                   alpha,
-                                   shape,
-                                   color,
-                                   size,
-                                   rotate_xaxis_labels,
-                                   max_deg,
-                                   ggtheme,
-                                   pre_output,
-                                   post_output,
-                                   decorators) {
+ui_g_scatterplot.default <- function(id, ...) {
+  args <- list(...)
   ns <- NS(id)
+  is_single_dataset_value <- teal.transform::is_single_dataset(
+    args$x, args$y, args$color_by, args$size_by, args$row_facet, args$col_facet
+  )
+
   tagList(
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
@@ -344,79 +344,92 @@ ui_g_scatterplot.picks <- function(id,
       ),
       encoding = tags$div(
         tags$label("Encodings", class = "text-primary"),
-        teal::teal_nav_item(
-          label = tags$strong("X variable"),
-          teal.transform::module_input_ui(id = ns("x"), spec = x),
-          checkboxInput(ns("log_x"), "Use log transformation", value = FALSE),
-          conditionalPanel(
-            condition = paste0("input['", ns("log_x"), "'] == true"),
-            radioButtons(
-              ns("log_x_base"),
-              label = NULL,
-              inline = TRUE,
-              choices = c("Natural" = "log", "Base 10" = "log10", "Base 2" = "log2")
-            )
+        teal.transform::datanames_input(args[c("x", "y", "color_by", "size_by", "row_facet", "col_facet")]),
+        teal.transform::data_extract_ui(
+          id = ns("x"),
+          label = "X variable",
+          data_extract_spec = args$x,
+          is_single_dataset = is_single_dataset_value
+        ),
+        checkboxInput(ns("log_x"), "Use log transformation", value = FALSE),
+        conditionalPanel(
+          condition = paste0("input['", ns("log_x"), "'] == true"),
+          radioButtons(
+            ns("log_x_base"),
+            label = NULL,
+            inline = TRUE,
+            choices = c("Natural" = "log", "Base 10" = "log10", "Base 2" = "log2")
           )
         ),
-        teal::teal_nav_item(
-          label = tags$strong("Y variable"),
-          teal.transform::module_input_ui(id = ns("y"), spec = y),
-          checkboxInput(ns("log_y"), "Use log transformation", value = FALSE),
-          conditionalPanel(
-            condition = paste0("input['", ns("log_y"), "'] == true"),
-            radioButtons(
-              ns("log_y_base"),
-              label = NULL,
-              inline = TRUE,
-              choices = c("Natural" = "log", "Base 10" = "log10", "Base 2" = "log2")
-            )
+        teal.transform::data_extract_ui(
+          id = ns("y"),
+          label = "Y variable",
+          data_extract_spec = args$y,
+          is_single_dataset = is_single_dataset_value
+        ),
+        checkboxInput(ns("log_y"), "Use log transformation", value = FALSE),
+        conditionalPanel(
+          condition = paste0("input['", ns("log_y"), "'] == true"),
+          radioButtons(
+            ns("log_y_base"),
+            label = NULL,
+            inline = TRUE,
+            choices = c("Natural" = "log", "Base 10" = "log10", "Base 2" = "log2")
           )
         ),
-        if (!is.null(color_by)) {
-          teal::teal_nav_item(
-            label = tags$strong("Color by:"),
-            teal.transform::module_input_ui(id = ns("color_by"), spec = color_by)
+        if (!is.null(args$color_by)) {
+          teal.transform::data_extract_ui(
+            id = ns("color_by"),
+            label = "Color by variable",
+            data_extract_spec = args$color_by,
+            is_single_dataset = is_single_dataset_value
           )
         },
-        if (!is.null(size_by)) {
-          teal::teal_nav_item(
-            label = tags$strong("Size by:"),
-            teal.transform::module_input_ui(id = ns("size_by"), spec = size_by)
+        if (!is.null(args$size_by)) {
+          teal.transform::data_extract_ui(
+            id = ns("size_by"),
+            label = "Size by variable",
+            data_extract_spec = args$size_by,
+            is_single_dataset = is_single_dataset_value
           )
         },
-        if (!is.null(row_facet)) {
-          teal::teal_nav_item(
-            label = tags$strong("Row facetting"),
-            teal.transform::module_input_ui(id = ns("row_facet"), spec = row_facet)
+        if (!is.null(args$row_facet)) {
+          teal.transform::data_extract_ui(
+            id = ns("row_facet"),
+            label = "Row facetting",
+            data_extract_spec = args$row_facet,
+            is_single_dataset = is_single_dataset_value
           )
         },
-        if (!is.null(col_facet)) {
-          teal::teal_nav_item(
-            label = tags$strong("Column facetting"),
-            teal.transform::module_input_ui(id = ns("col_facet"), spec = col_facet)
+        if (!is.null(args$col_facet)) {
+          teal.transform::data_extract_ui(
+            id = ns("col_facet"),
+            label = "Column facetting",
+            data_extract_spec = args$col_facet,
+            is_single_dataset = is_single_dataset_value
           )
         },
-        ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
+        ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
         bslib::accordion(
           open = TRUE,
           bslib::accordion_panel(
             title = "Plot settings",
-            teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", alpha, ticks = FALSE),
+            teal.widgets::optionalSliderInputValMinMax(ns("alpha"), "Opacity:", args$alpha, ticks = FALSE),
             teal.widgets::optionalSelectInput(
               inputId = ns("shape"),
               label = "Points shape:",
-              choices = shape,
-              selected = shape[1],
+              choices = args$shape,
+              selected = args$shape[1],
               multiple = FALSE
             ),
             colourpicker::colourInput(ns("color"), "Points color:", "black"),
-            teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", size, ticks = FALSE, step = .1),
-            checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = rotate_xaxis_labels),
+            teal.widgets::optionalSliderInputValMinMax(ns("size"), "Points size:", args$size, ticks = FALSE, step = .1),
+            checkboxInput(ns("rotate_xaxis_labels"), "Rotate X axis labels", value = args$rotate_xaxis_labels),
             checkboxInput(ns("add_density"), "Add marginal density", value = FALSE),
             checkboxInput(ns("rug_plot"), "Include rug plot", value = FALSE),
             checkboxInput(ns("show_count"), "Show N (number of observations)", value = FALSE),
             shinyjs::hidden(helpText(id = ns("line_msg"), "Trendline needs numeric X and Y variables")),
-            teal.widgets::optionalSelectInput(ns("smoothing_degree"), "Smoothing degree", seq_len(max_deg)),
+            teal.widgets::optionalSelectInput(ns("smoothing_degree"), "Smoothing degree", seq_len(args$max_deg)),
             shinyjs::hidden(teal.widgets::optionalSelectInput(ns("color_sub"), label = "", multiple = TRUE)),
             teal.widgets::optionalSliderInputValMinMax(ns("ci"), "Confidence", c(.95, .8, .99), ticks = FALSE),
             shinyjs::hidden(checkboxInput(ns("show_form"), "Show formula", value = TRUE)),
@@ -440,14 +453,14 @@ ui_g_scatterplot.picks <- function(id,
               ns("label_size"), "Stats font size",
               min = 3, max = 10, value = 5, ticks = FALSE, step = .1
             ),
-            if (!is.null(row_facet) || !is.null(col_facet)) {
+            if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
               checkboxInput(ns("free_scales"), "Free scales", value = FALSE)
             },
             selectInput(
               inputId = ns("ggtheme"),
               label = "Theme (by ggplot):",
               choices = ggplot_themes,
-              selected = ggtheme,
+              selected = args$ggtheme,
               multiple = FALSE
             )
           )
@@ -456,94 +469,118 @@ ui_g_scatterplot.picks <- function(id,
       forms = tagList(
         teal.widgets::verbatim_popup_ui(ns("rcode"), "Show R code")
       ),
-      pre_output = pre_output,
-      post_output = post_output
+      pre_output = args$pre_output,
+      post_output = args$post_output
     )
   )
 }
 
 # Server function for the scatterplot module
-srv_g_scatterplot.picks <- function(id,
-                                    data,
-                                    x,
-                                    y,
-                                    color_by,
-                                    size_by,
-                                    row_facet,
-                                    col_facet,
-                                    plot_height,
-                                    plot_width,
-                                    table_dec,
-                                    ggplot2_args,
-                                    decorators) {
+srv_g_scatterplot.default <- function(id,
+                                      data,
+                                      x,
+                                      y,
+                                      color_by,
+                                      size_by,
+                                      row_facet,
+                                      col_facet,
+                                      plot_height,
+                                      plot_width,
+                                      table_dec,
+                                      ggplot2_args,
+                                      decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-
-    selectors <- teal.transform::module_input_srv(
-      spec = list(x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet),
-      data = data
+    data_extract <- list(
+      x = x,
+      y = y,
+      color_by = color_by,
+      size_by = size_by,
+      row_facet = row_facet,
+      col_facet = col_facet
     )
 
+    rule_diff <- function(other) {
+      function(value) {
+        othervalue <- selector_list()[[other]]()[["select"]]
+        if (!is.null(othervalue)) {
+          if (identical(value, othervalue)) {
+            "Row and column facetting variables must be different."
+          }
+        }
+      }
+    }
 
-    validated_q <- reactive({
-      validate_input(
-        inputId = "x-variables-selected",
-        condition = length(selectors$x()$variables$selected) == 1,
-        message = "Please select exactly one x var."
-      )
-      validate_input(
-        inputId = "y-variables-selected",
-        condition = length(selectors$y()$variables$selected) == 1,
-        message = "Please select exactly one y var."
-      )
-      validate_input(
-        inputId = c("x-variables-selected", "y-variables-selected"),
-        condition = !any(selectors$x()$variables$selected %in% selectors$y()$variables$selected),
-        message = "X and Y variables must be different."
-      )
-      validate_input(
-        inputId = "row_facet-variables-selected",
-        condition = is.null(row_facet) || length(selectors$row_facet()$variables$selected) < 2,
-        message = "Only single Row Facetting variable is allowed."
-      )
-      validate_input(
-        inputId = "col_facet-variables-selected",
-        condition = is.null(col_facet) || length(selectors$col_facet()$variables$selected) < 2,
-        message = "Only single Column Facetting variable is allowed."
-      )
-      validate_input(
-        inputId = c("row_facet-variables-selected", "col_facet-variables-selected"),
-        condition = is.null(row_facet) || !is.null(col_facet) ||
-          !any(selectors$row_facet()$variables$selected %in% selectors$col_facet()$variables$selected),
-        message = "Row and Column Facetting variables must be different."
-      )
-      validate_input(
-        "add_density",
-        condition = !(is.null(input$add_density) &&
-          (length(selectors$row_facet()$variables$selected) || length(selectors$col_facet()$variables$selected))
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = data_extract,
+      datasets = data,
+      select_validation_rule = list(
+        x = ~ if (length(.) != 1) "Please select exactly one x var.",
+        y = ~ if (length(.) != 1) "Please select exactly one y var.",
+        color_by = ~ if (length(.) > 1) "There cannot be more than 1 color variable.",
+        size_by = ~ if (length(.) > 1) "There cannot be more than 1 size variable.",
+        row_facet = shinyvalidate::compose_rules(
+          shinyvalidate::sv_optional(),
+          rule_diff("col_facet")
         ),
-        message = "Cannot add marginal density when Row or Column facetting has been selected"
-      )
-      obj <- req(data())
-      teal.reporter::teal_card(obj) <-
-        c(
-          teal.reporter::teal_card("# Scatter Plot"),
-          teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
+        col_facet = shinyvalidate::compose_rules(
+          shinyvalidate::sv_optional(),
+          rule_diff("row_facet")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");')
+      )
+    )
+
+    iv_r <- reactive({
+      iv_facet <- shinyvalidate::InputValidator$new()
+      iv <- shinyvalidate::InputValidator$new()
+      teal.transform::compose_and_enable_validators(iv, selector_list)
+    })
+    iv_facet <- shinyvalidate::InputValidator$new()
+    iv_facet$add_rule("add_density", ~ if (
+      isTRUE(.) &&
+        (
+          length(selector_list()$row_facet()$select) > 0L ||
+            length(selector_list()$col_facet()$select) > 0L
+        )
+    ) {
+      "Cannot add marginal density when Row or Column facetting has been selected"
+    })
+    iv_facet$enable()
+
+    anl_merged_input <- teal.transform::merge_expression_srv(
+      selector_list = selector_list,
+      datasets = data,
+      merge_function = "dplyr::inner_join"
+    )
+    qenv <- reactive({
+      obj <- data()
+      teal.reporter::teal_card(obj) <- c(
+        teal.reporter::teal_card("# Scatter Plot"),
+        teal.reporter::teal_card(obj),
+        teal.reporter::teal_card("## Module's code")
+      )
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
     })
 
-    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+    anl_merged_q <- reactive({
+      req(anl_merged_input())
+      qenv() %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
+    })
+
+    merged <- list(
+      anl_input_r = anl_merged_input,
+      anl_q_r = anl_merged_q
+    )
 
     trend_line_is_applicable <- reactive({
-      anl <- merged$data()[["anl"]]
-      x_var <- merged$merge_vars()$x
-      y_var <- merged$merge_vars()$y
-      length(x_var) > 0 && length(y_var) > 0 && is.numeric(anl[[x_var]]) && is.numeric(anl[[y_var]])
+      ANL <- merged$anl_q_r()[["ANL"]]
+      x_var <- as.vector(merged$anl_input_r()$columns_source$x)
+      y_var <- as.vector(merged$anl_input_r()$columns_source$y)
+      length(x_var) > 0 && length(y_var) > 0 && is.numeric(ANL[[x_var]]) && is.numeric(ANL[[y_var]])
     })
 
     add_trend_line <- reactive({
@@ -553,9 +590,9 @@ srv_g_scatterplot.picks <- function(id,
 
     if (!is.null(color_by)) {
       observeEvent(
-        eventExpr = selectors$color_by(),
+        eventExpr = merged$anl_input_r()$columns_source$color_by,
         handlerExpr = {
-          color_by_var <- merged$merge_vars()$color_by
+          color_by_var <- as.vector(merged$anl_input_r()$columns_source$color_by)
           if (length(color_by_var) > 0) {
             shinyjs::hide("color")
           } else {
@@ -567,21 +604,21 @@ srv_g_scatterplot.picks <- function(id,
 
     output$num_na_removed <- renderUI({
       if (add_trend_line()) {
-        anl <- merged$data()[["anl"]]
-        x_var <- merged$merge_vars()$x
-        y_var <- merged$merge_vars()$y
-        if ((num_total_na <- nrow(anl) - nrow(stats::na.omit(anl[, c(x_var, y_var)]))) > 0) {
+        ANL <- merged$anl_q_r()[["ANL"]]
+        x_var <- as.vector(merged$anl_input_r()$columns_source$x)
+        y_var <- as.vector(merged$anl_input_r()$columns_source$y)
+        if ((num_total_na <- nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)]))) > 0) {
           tags$div(paste(num_total_na, "row(s) with missing values were removed"), tags$hr())
         }
       }
     })
 
     observeEvent(
-      eventExpr = list(selectors$row_facet(), selectors$col_facet()),
+      eventExpr = merged$anl_input_r()$columns_source[c("col_facet", "row_facet")],
       handlerExpr = {
         if (
-          length(merged$merge_vars()$row_facet) == 0 &&
-            length(merged$merge_vars()$col_facet) == 0
+          length(merged$anl_input_r()$columns_source$col_facet) == 0 &&
+            length(merged$anl_input_r()$columns_source$row_facet) == 0
         ) {
           shinyjs::hide("free_scales")
         } else {
@@ -591,14 +628,24 @@ srv_g_scatterplot.picks <- function(id,
     )
 
     output_q <- reactive({
-      req(merged$data())
-      anl <- merged$data()[["anl"]]
-      x_var <- merged$merge_vars()$x
-      y_var <- merged$merge_vars()$y
-      color_by_var <- merged$merge_vars()$color_by
-      size_by_var <- merged$merge_vars()$size_by
-      row_facet_var <- merged$merge_vars()$row_facet
-      col_facet_var <- merged$merge_vars()$col_facet
+      teal::validate_inputs(iv_r(), iv_facet)
+
+      ANL <- merged$anl_q_r()[["ANL"]]
+
+      x_var <- as.vector(merged$anl_input_r()$columns_source$x)
+      y_var <- as.vector(merged$anl_input_r()$columns_source$y)
+      color_by_var <- as.vector(merged$anl_input_r()$columns_source$color_by)
+      size_by_var <- as.vector(merged$anl_input_r()$columns_source$size_by)
+      row_facet_name <- if (length(merged$anl_input_r()$columns_source$row_facet) == 0) {
+        character(0)
+      } else {
+        as.vector(merged$anl_input_r()$columns_source$row_facet)
+      }
+      col_facet_name <- if (length(merged$anl_input_r()$columns_source$col_facet) == 0) {
+        character(0)
+      } else {
+        as.vector(merged$anl_input_r()$columns_source$col_facet)
+      }
       alpha <- input$alpha
       size <- input$size
       rotate_xaxis_labels <- input$rotate_xaxis_labels
@@ -613,85 +660,80 @@ srv_g_scatterplot.picks <- function(id,
       log_x <- input$log_x
       log_y <- input$log_y
 
-      validate_input(
-        inputId = "row_facet-variables-selected",
-        condition = length(col_facet_var) == 0 ||
-          inherits(anl[[row_facet_var]], c("character", "factor", "Date", "integer")),
-        message = "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
-      )
-      validate_input(
-        inputId = "col_facet-variables-selected",
-        condition = length(col_facet_var) == 0 ||
-          inherits(anl[[col_facet_var]], c("character", "factor", "Date", "integer")),
-        message = "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
-      )
-
+      validate(need(
+        length(row_facet_name) == 0 || inherits(ANL[[row_facet_name]], c("character", "factor", "Date", "integer")),
+        "`Row facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
+      ))
+      validate(need(
+        length(col_facet_name) == 0 || inherits(ANL[[col_facet_name]], c("character", "factor", "Date", "integer")),
+        "`Column facetting` variable must be of class `character`, `factor`, `Date`, or `integer`"
+      ))
 
       if (add_density && length(color_by_var) > 0) {
-        validate_input(
-          inputId = "col_facet-variables-selected",
-          condition = !is.numeric(anl[[color_by_var]]),
-          message = paste0(
-            "Marginal plots cannot be produced when the points are colored by numeric variables.",
-            "\nUncheck the 'Add marginal density' checkbox to display the plot."
-          )
-        )
-        validate_input(
-          "color_by-variables-selected",
-          condition = !(
-            inherits(anl[[color_by_var]], "Date") ||
-              inherits(anl[[color_by_var]], "POSIXct") ||
-              inherits(anl[[color_by_var]], "POSIXlt")
+        validate(need(
+          !is.numeric(ANL[[color_by_var]]),
+          "Marginal plots cannot be produced when the points are colored by numeric variables.
+        \n Uncheck the 'Add marginal density' checkbox to display the plot."
+        ))
+        validate(need(
+          !(
+            inherits(ANL[[color_by_var]], "Date") ||
+              inherits(ANL[[color_by_var]], "POSIXct") ||
+              inherits(ANL[[color_by_var]], "POSIXlt")
           ),
-          message = paste0(
-            "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.",
-            "\n Uncheck the 'Add marginal density' checkbox to display the plot."
-          )
-        )
+          "Marginal plots cannot be produced when the points are colored by Date or POSIX variables.
+        \n Uncheck the 'Add marginal density' checkbox to display the plot."
+        ))
       }
 
-      teal::validate_has_data(anl[, c(x_var, y_var)], 1, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(ANL[, c(x_var, y_var)], 1, complete = TRUE, allow_inf = FALSE)
 
       if (log_x) {
-        validate_input(
-          "x-variables-selected",
-          condition = is.numeric(anl[[x_var]]) && all(anl[[x_var]] > 0 | is.na(anl[[x_var]])),
-          nessage = "X variable can only be log transformed if variable is numeric and all values are positive."
+        validate(
+          need(
+            is.numeric(ANL[[x_var]]) && all(
+              ANL[[x_var]] > 0 | is.na(ANL[[x_var]])
+            ),
+            "X variable can only be log transformed if variable is numeric and all values are positive."
+          )
         )
       }
       if (log_y) {
-        validate_input(
-          "y-variables-selected",
-          condition = is.numeric(anl[[y_var]]) && all(anl[[y_var]] > 0 | is.na(anl[[y_var]])),
-          message = "Y variable can only be log transformed if variable is numeric and all values are positive."
+        validate(
+          need(
+            is.numeric(ANL[[y_var]]) && all(
+              ANL[[y_var]] > 0 | is.na(ANL[[y_var]])
+            ),
+            "Y variable can only be log transformed if variable is numeric and all values are positive."
+          )
         )
       }
 
       facet_cl <- facet_ggplot_call(
-        row_facet_var,
-        col_facet_var,
+        row_facet_name,
+        col_facet_name,
         free_x_scales = isTRUE(input$free_scales),
         free_y_scales = isTRUE(input$free_scales)
       )
 
       point_sizes <- if (length(size_by_var) > 0) {
-        validate(need(is.numeric(anl[[size_by_var]]), "Variable to size by must be numeric"))
+        validate(need(is.numeric(ANL[[size_by_var]]), "Variable to size by must be numeric"))
         substitute(
-          expr = size * anl[[size_by_var]] / max(anl[[size_by_var]], na.rm = TRUE),
+          expr = size * ANL[[size_by_var]] / max(ANL[[size_by_var]], na.rm = TRUE),
           env = list(size = size, size_by_var = size_by_var)
         )
       } else {
         size
       }
 
-      plot_q <- merged$data()
+      plot_q <- merged$anl_q_r()
 
       if (log_x) {
         log_x_fn <- input$log_x_base
         plot_q <- teal.code::eval_code(
           object = plot_q,
           code = substitute(
-            expr = anl[, log_x_var] <- log_x_fn(anl[, x_var]),
+            expr = ANL[, log_x_var] <- log_x_fn(ANL[, x_var]),
             env = list(
               x_var = x_var,
               log_x_fn = as.name(log_x_fn),
@@ -706,7 +748,7 @@ srv_g_scatterplot.picks <- function(id,
         plot_q <- teal.code::eval_code(
           object = plot_q,
           code = substitute(
-            expr = anl[, log_y_var] <- log_y_fn(anl[, y_var]),
+            expr = ANL[, log_y_var] <- log_y_fn(ANL[, y_var]),
             env = list(
               y_var = y_var,
               log_y_fn = as.name(log_y_fn),
@@ -718,19 +760,19 @@ srv_g_scatterplot.picks <- function(id,
 
       pre_pro_anl <- if (input$show_count) {
         paste0(
-          "anl %>% dplyr::group_by(",
+          "ANL %>% dplyr::group_by(",
           paste(
             c(
-              if (length(color_by_var) > 0 && inherits(anl[[color_by_var]], c("factor", "character"))) color_by_var,
-              row_facet_var,
-              col_facet_var
+              if (length(color_by_var) > 0 && inherits(ANL[[color_by_var]], c("factor", "character"))) color_by_var,
+              row_facet_name,
+              col_facet_name
             ),
             collapse = ", "
           ),
           ") %>% dplyr::mutate(n = dplyr::n()) %>% dplyr::ungroup()"
         )
       } else {
-        "anl"
+        "ANL"
       }
 
       plot_call <- substitute(expr = pre_pro_anl %>% ggplot2::ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
@@ -835,11 +877,11 @@ srv_g_scatterplot.picks <- function(id,
           shinyjs::show("ci")
           shinyjs::show("show_form")
           shinyjs::show("show_r2")
-          if (nrow(anl) - nrow(stats::na.omit(anl[, c(x_var, y_var)])) > 0) {
+          if (nrow(ANL) - nrow(stats::na.omit(ANL[, c(x_var, y_var)])) > 0) {
             plot_q <- teal.code::eval_code(
               plot_q,
               substitute(
-                expr = anl <- dplyr::filter(anl, !is.na(x_var) & !is.na(y_var)),
+                expr = ANL <- dplyr::filter(ANL, !is.na(x_var) & !is.na(y_var)),
                 env = list(x_var = as.name(x_var), y_var = as.name(y_var))
               )
             )
@@ -884,13 +926,13 @@ srv_g_scatterplot.picks <- function(id,
 
       y_label <- varname_w_label(
         y_var,
-        anl,
+        ANL,
         prefix = if (log_y) paste(log_y_fn, "(") else NULL,
         suffix = if (log_y) ")" else NULL
       )
       x_label <- varname_w_label(
         x_var,
-        anl,
+        ANL,
         prefix = if (log_x) paste(log_x_fn, "(") else NULL,
         suffix = if (log_x) ")" else NULL
       )
@@ -976,7 +1018,7 @@ srv_g_scatterplot.picks <- function(id,
         validate(need(!input$add_density, "Brushing feature is currently not supported when plot has marginal density"))
       }
 
-      merged_data <- isolate(output_q()[["anl"]])
+      merged_data <- isolate(output_q()[["ANL"]])
 
       brushed_df <- teal.widgets::clean_brushedPoints(merged_data, plot_brush)
       numeric_cols <- names(brushed_df)[
