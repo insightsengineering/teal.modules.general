@@ -453,7 +453,7 @@ srv_outliers <- function(id, data, outlier_var,
       req(anl_merged_input())
       teal.code::eval_code(
         data_obj(),
-        'library("dplyr");library("tidyr");library("tibble");library("ggplot2")' # nolint quotes
+        "library(dplyr);library(tidyr);library(tibble);library(ggplot2)"
       ) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })

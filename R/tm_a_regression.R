@@ -37,9 +37,9 @@
 #'     It takes the form of `c(value, min, max)` and it is passed to the `value_min_max`
 #'     argument in `teal.widgets::optionalSliderInputValMinMax`.
 #'
-# nolint start: line_length.
+# nolint start: line_length
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Response vs Regressor", "Residuals vs Fitted", "Scale-Location", "Cook's distance", "Residuals vs Leverage", "Cook's dist vs Leverage")`
-# nolint end: line_length.
+# nolint end: line_length
 #'
 #' @inherit shared_params return
 #'
@@ -462,7 +462,7 @@ srv_a_regression <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint: quotes
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr)")
     })
 
     anl_merged_q <- reactive({
