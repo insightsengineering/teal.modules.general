@@ -25,11 +25,11 @@ tm_a_regression(
 }
 \arguments{
 \item{regressor}{(\code{picks}) Specification for regressor variables selection.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}, which allows selecting variables
+Created using \code{\link[teal.transform:types]{teal.transform::picks()}}, which allows selecting variables
 to use as regressors in the regression model. \code{variables(multiple = TRUE)} allowed.}
 
 \item{response}{(\code{picks}) Specification for response variable selection.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}, which allows selecting a single numeric variable
+Created using \code{\link[teal.transform:types]{teal.transform::picks()}}, which allows selecting a single numeric variable
 to use as the response in the regression model. \code{variables(multiple = TRUE)} not allowed.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
@@ -100,7 +100,7 @@ decorator for tables or plots included in the module output reported.
 The decorators are applied to the respective output objects.}
 
 \item{outlier}{(\code{picks}) Optional specification for outlier label variable selection.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}, which allows selecting a factor or character variable
+Created using \code{\link[teal.transform:types]{teal.transform::picks()}}, which allows selecting a factor or character variable
 to label outlier points on the plots.}
 }
 \value{

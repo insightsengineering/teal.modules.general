@@ -33,17 +33,17 @@ tm_g_bivariate(
 )
 }
 \arguments{
-\item{x}{(\code{picks}) Variable specification for the x-axis. Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.
+\item{x}{(\code{picks}) Variable specification for the x-axis. Created using \code{\link[teal.transform:types]{teal.transform::picks()}}.
 Can be numeric, factor or character. No empty selections are allowed.}
 
-\item{y}{(\code{picks}) Variable specification for the y-axis. Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.
+\item{y}{(\code{picks}) Variable specification for the y-axis. Created using \code{\link[teal.transform:types]{teal.transform::picks()}}.
 Can be numeric, factor or character.}
 
 \item{row_facet}{(\code{picks}) optional, specification of the data variable(s) to use for faceting rows.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.}
+Created using \code{\link[teal.transform:types]{teal.transform::picks()}}.}
 
 \item{col_facet}{(\code{picks}) optional, specification of the data variable(s) to use for faceting columns.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.}
+Created using \code{\link[teal.transform:types]{teal.transform::picks()}}.}
 
 \item{facet}{(\code{logical}) optional, specifies whether the facet encodings \code{ui} elements are toggled
 on and shown to the user by default. Defaults to \code{TRUE} if either \code{row_facet} or \code{column_facet}
@@ -51,15 +51,15 @@ are supplied.}
 
 \item{color}{(\code{picks}) optional, specification of the data variable(s) selected for the outline color
 inside the coloring settings. It will be applied when \code{color_settings} is set to \code{TRUE}.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.}
+Created using \code{\link[teal.transform:types]{teal.transform::picks()}}.}
 
 \item{fill}{(\code{picks}) optional, specification of the data variable(s) selected for the fill color
 inside the coloring settings. It will be applied when \code{color_settings} is set to \code{TRUE}.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.}
+Created using \code{\link[teal.transform:types]{teal.transform::picks()}}.}
 
 \item{size}{(\code{picks}) optional, specification of the data variable(s) selected for the size of
 \code{geom_point} plots inside the coloring settings. It will be applied when \code{color_settings} is set to \code{TRUE}.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.}
+Created using \code{\link[teal.transform:types]{teal.transform::picks()}}.}
 
 \item{use_density}{(\code{logical}) optional, indicates whether to plot density (\code{TRUE}) or frequency (\code{FALSE}).
 Defaults to frequency (\code{FALSE}).}
