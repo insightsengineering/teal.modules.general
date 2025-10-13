@@ -1157,26 +1157,26 @@ srv_missing_data <- function(id,
 
       # convert to ggplot
       ANL_q <- within(qenv, # nolint object_name_linter
-                      {
-                        keep_columns <- intersect(c(keys, group_var), colnames(ANL))
-                        labels <- vapply(ANL, formatters::obj_label, character(1L))
-                        ANL <- ANL %>%
-                          filter(group_var_name %in% group_vals) %>%
-                          pivot_longer(-keep_columns, values_transform = is.na) %>%
-                          summarise(
-                            .by = c(group_var_name, name),
-                            value = sum(value), perc = value / n()
-                          ) %>%
-                          mutate(label = labels[name])
-                      },
-                      keys = join_keys(qenv) |> unlist() |> unique(),
-                      group_var_name = as.name(group_var),
-                      group_var = group_var,
-                      group_vals = group_vals
+        {
+          keep_columns <- intersect(c(keys, group_var), colnames(ANL))
+          labels <- vapply(ANL, formatters::obj_label, character(1L))
+          ANL <- ANL %>%
+            filter(group_var_name %in% group_vals) %>%
+            pivot_longer(-keep_columns, values_transform = is.na) %>%
+            summarise(
+              .by = c(group_var_name, name),
+              value = sum(value), perc = value / n()
+            ) %>%
+            mutate(label = labels[name])
+        },
+        keys = join_keys(qenv) |> unlist() |> unique(),
+        group_var_name = as.name(group_var),
+        group_var = group_var,
+        group_vals = group_vals
       )
 
       tile <- within(ANL_q,
-                     {
+        {
           by_variable_plot <- ggplot(ANL, aes(group_var_name, label)) +
             geom_tile(aes(fill = column)) +
             geom_text(aes(label = scales::percent(perc)),
