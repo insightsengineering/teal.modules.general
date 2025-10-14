@@ -1274,7 +1274,7 @@ srv_distribution <- function(id,
       q_common <- common_q()
       teal.reporter::teal_card(q_common) <- c(
         teal.reporter::teal_card(q_common),
-        "## Statistics table"
+        "### Statistics table"
       )
       if (iv_r()$is_valid()) {
         within(q_common, {
@@ -1294,7 +1294,7 @@ srv_distribution <- function(id,
       q_common <- common_q()
       teal.reporter::teal_card(q_common) <- c(
         teal.reporter::teal_card(q_common),
-        "## Distribution Tests table"
+        "### Distribution Tests table"
       )
       if (inherits(test_q_out, c("try-error", "error"))) {
         within(
