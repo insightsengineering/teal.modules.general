@@ -460,7 +460,7 @@ srv_a_regression <- function(id,
         c(
           teal.reporter::teal_card("# Linear Regression Plot"),
           teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
+          teal.reporter::teal_card("## Module's output(s)")
         )
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint: quotes
     })
@@ -539,7 +539,7 @@ srv_a_regression <- function(id,
           fit_summary <- summary(fit)
           fit_summary
         }))
-      teal.reporter::teal_card(anl_fit) <- c(teal.reporter::teal_card(anl_fit), "## Plot")
+      teal.reporter::teal_card(anl_fit) <- c(teal.reporter::teal_card(anl_fit), "### Plot")
       anl_fit
     })
 
