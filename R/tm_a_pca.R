@@ -435,7 +435,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         c(
           teal.reporter::teal_card("# Principal Component Analysis"),
           teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
+          teal.reporter::teal_card("## Module's output(s)")
         )
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tidyr")') # nolint: quotes
     })
@@ -514,7 +514,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         )
       )
 
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Principal Components Table")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Principal Components Table")
 
       qenv <- teal.code::eval_code(
         qenv,
@@ -524,7 +524,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         })
       )
 
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Eigenvectors Table")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Eigenvectors Table")
 
       teal.code::eval_code(
         qenv,
@@ -606,7 +606,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         ),
         ggtheme = ggtheme
       )
-      teal.reporter::teal_card(base_q) <- c(teal.reporter::teal_card(base_q), "## Elbow plot")
+      teal.reporter::teal_card(base_q) <- c(teal.reporter::teal_card(base_q), "### Elbow plot")
       teal.code::eval_code(
         base_q,
         substitute(
@@ -683,7 +683,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         ggtheme = ggtheme
       )
 
-      teal.reporter::teal_card(base_q) <- c(teal.reporter::teal_card(base_q), "## Circle plot")
+      teal.reporter::teal_card(base_q) <- c(teal.reporter::teal_card(base_q), "### Circle plot")
       teal.code::eval_code(
         base_q,
         substitute(
@@ -742,7 +742,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
       size <- input$size
       font_size <- input$font_size
 
-      teal.reporter::teal_card(base_q) <- c(teal.reporter::teal_card(base_q), "## Biplot")
+      teal.reporter::teal_card(base_q) <- c(teal.reporter::teal_card(base_q), "### Biplot")
       qenv <- teal.code::eval_code(
         qenv,
         substitute(
@@ -1003,7 +1003,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         parsed_ggplot2_args$theme
       )
 
-      teal.reporter::teal_card(base_q) <- c(teal.reporter::teal_card(base_q), "## Eigenvector plot")
+      teal.reporter::teal_card(base_q) <- c(teal.reporter::teal_card(base_q), "### Eigenvector plot")
       teal.code::eval_code(
         base_q,
         substitute(
