@@ -112,7 +112,6 @@
 #' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
 #'
 #'
-#'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
