@@ -7,8 +7,9 @@ app_driver_tm_g_response <- function() {
   teal.data::join_keys(data) <- teal.data::default_cdisc_join_keys[names(data)]
 
   init_teal_app_driver(
-    data = data,
-    modules = teal::modules(
+    teal::init(
+      data = data,
+      modules = teal::modules(
       tm_g_response(
         label = "Response Plots",
         response = teal.transform::data_extract_spec(
@@ -36,11 +37,11 @@ app_driver_tm_g_response <- function() {
         )
       )
     )
+    )
   )
 }
 
 testthat::test_that("e2e - tm_g_response: module is initialised with the specified defaults.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_response()
@@ -59,7 +60,6 @@ testthat::test_that("e2e - tm_g_response: module is initialised with the specifi
 })
 
 testthat::test_that("e2e - tm_g_response: encoding inputs produce output without validation errors.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_response()
@@ -90,7 +90,6 @@ testthat::test_that("e2e - tm_g_response: encoding inputs produce output without
 })
 
 testthat::test_that("e2e - tm_g_response: deselecting response produces validation error.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_response()
@@ -102,7 +101,6 @@ testthat::test_that("e2e - tm_g_response: deselecting response produces validati
 })
 
 testthat::test_that("e2e - tm_g_response: deselecting x produces validation error.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_g_response()
