@@ -744,15 +744,9 @@ srv_outliers <- function(id, data, outlier_var,
           table
         })
       } else {
-        warning("No categorical variable selected, summary table cannot be created")
-        within(qenv, {
-          table <- rtables::rtable(
-            header = "",
-            rtables::rrow("", "Null Report: No summary of observations available."),
-            inset = 2L
-          )
-          table
-        })
+        msg <- "No categorical variable selected, summary table cannot be created."
+        warning(msg)
+        within(qenv, cat(msg), msg = msg)
       }
 
 
