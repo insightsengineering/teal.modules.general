@@ -112,7 +112,6 @@
 #' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
 #'
 #'
-#'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
@@ -744,7 +743,6 @@ srv_outliers <- function(id, data, outlier_var,
           table <- rtables::df_to_tt(summary_data)
           table
         })
-
       } else {
         warning("No categorical variable selected, summary table cannot be created")
         within(qenv, {
