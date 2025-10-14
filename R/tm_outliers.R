@@ -745,7 +745,8 @@ srv_outliers <- function(id, data, outlier_var,
         })
       } else {
         msg <- "No categorical variable selected, summary table cannot be created."
-        warning(msg)
+        showNotification(msg, closeButton = FALSE, type = "warning",
+                         id = session$ns("no_summary_table"))
         within(qenv, cat(msg), msg = msg)
       }
 
