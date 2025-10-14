@@ -479,7 +479,7 @@ srv_outliers <- function(id, data, outlier_var,
         c(
           teal.reporter::teal_card("# Outliers Analysis"),
           teal.reporter::teal_card(qenv),
-          teal.reporter::teal_card("## Module's code")
+          teal.reporter::teal_card("## Module's output(s)")
         )
 
       outlier_var <- as.vector(merged$anl_input_r()$columns_source$outlier_var)
@@ -650,7 +650,7 @@ srv_outliers <- function(id, data, outlier_var,
       }
 
       qenv <- if (length(categorical_var) > 0) {
-        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Summary Table")
+        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Summary Table")
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -764,7 +764,7 @@ srv_outliers <- function(id, data, outlier_var,
     box_plot_q <- reactive({
       req(common_code_q())
       qenv <- common_code_q()
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Box Plot")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Box Plot")
 
       ANL <- qenv[["ANL"]]
       ANL_OUTLIER <- qenv[["ANL_OUTLIER"]]
@@ -858,7 +858,7 @@ srv_outliers <- function(id, data, outlier_var,
     # density plot
     density_plot_q <- reactive({
       qenv <- common_code_q()
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Density Plot")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Density Plot")
 
       ANL <- qenv[["ANL"]]
       ANL_OUTLIER <- qenv[["ANL_OUTLIER"]]
@@ -920,7 +920,7 @@ srv_outliers <- function(id, data, outlier_var,
     # Cumulative distribution plot
     cumulative_plot_q <- reactive({
       qenv <- common_code_q()
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Cumulative Distribution Plot")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Cumulative Distribution Plot")
 
       ANL <- qenv[["ANL"]]
       ANL_OUTLIER <- qenv[["ANL_OUTLIER"]]

@@ -635,7 +635,7 @@ srv_distribution <- function(id,
         c(
           teal.reporter::teal_card("# Distribution Plot"),
           teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
+          teal.reporter::teal_card("## Module's output(s)")
         )
 
       ANL <- obj[["ANL"]]
@@ -952,7 +952,7 @@ srv_distribution <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Histogram Plot")
+        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Histogram Plot")
         teal.code::eval_code(
           qenv,
           substitute(
@@ -1083,7 +1083,7 @@ srv_distribution <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## QQ Plot")
+        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### QQ Plot")
         teal.code::eval_code(
           qenv,
           substitute(
