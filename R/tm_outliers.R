@@ -112,7 +112,6 @@
 #' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
 #'
 #'
-#'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
@@ -649,8 +648,8 @@ srv_outliers <- function(id, data, outlier_var,
         )
       }
 
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Summary Table")
       qenv <- if (length(categorical_var) > 0) {
-        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Summary Table")
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -740,16 +739,19 @@ srv_outliers <- function(id, data, outlier_var,
               categorical_var_name = as.name(categorical_var)
             )
           )
-        )
+        ) |> within({
+          table <- rtables::df_to_tt(summary_data)
+          table
+        })
       } else {
-        within(qenv, summary_data <- data.frame())
+        msg <- "No categorical variable selected, summary table cannot be created."
+        showNotification(msg,
+          closeButton = FALSE, type = "warning",
+          id = session$ns("no_summary_table")
+        )
+        within(qenv, cat(msg), msg = msg)
       }
 
-      # Generate decoratable object from data
-      qenv <- within(qenv, {
-        table <- rtables::df_to_tt(summary_data)
-        table
-      })
 
       if (length(categorical_var) > 0 && nrow(qenv[["ANL_OUTLIER"]]) > 0) {
         shinyjs::show("order_by_outlier")
