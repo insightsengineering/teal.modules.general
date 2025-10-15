@@ -560,12 +560,8 @@ srv_g_bivariate <- function(id,
           teal.reporter::teal_card("## Module's output(s)")
         )
       obj %>%
-        teal.code::eval_code(
-          c(
-            'library("ggplot2");library("dplyr")', # nolint: quotes
-            as.expression(anl_merged_input()$expr)
-          )
-        )
+        teal.code::eval_code('library("ggplot2");library("dplyr")') %>%
+        teal.code::eval_code(as.expression(anl_merged_input()$expr)) # don't mix char with expr in single eval_code
     })
 
     merged <- list(
