@@ -236,7 +236,7 @@ testthat::test_that("e2e - tm_outliers:
     app_driver$get_text(
       normalize_math_italic_text(app_driver$namespaces(TRUE)$module("ui_outlier_help"))
     ),
-    "𝑃𝑒𝑟𝑐𝑒𝑛𝑡𝑖𝑙𝑒(𝑥)<0.01Percentile(x)<0.01 Percentile(x)",
+    "Percentile(x)<0.01Percentile(x)<0.01 Percentile(x)",
     fixed = TRUE
   )
   testthat::expect_identical(app_driver$get_active_module_input("percentile_slider"), 0.01)
