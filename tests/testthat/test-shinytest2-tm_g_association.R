@@ -48,6 +48,7 @@ app_driver_tm_g_association <- function() {
 
 testthat::test_that("e2e - tm_g_association: Data parameter and module label is passed properly.", {
   skip_if_too_deep(5)
+  testthat::skip("ggmosaic issue: will be resumed via the issue #925 in tmg")
 
   app_driver <- app_driver_tm_g_association()
   app_driver$expect_no_shiny_error()
@@ -64,6 +65,7 @@ testthat::test_that("e2e - tm_g_association: Data parameter and module label is 
 testthat::test_that("e2e - tm_g_association:
   Data extract spec elements are initialized with the default values specified by ref and vars arguments.", {
   skip_if_too_deep(5)
+  testthat::skip("ggmosaic issue: will be resumed via the issue ")
   app_driver <- app_driver_tm_g_association()
 
   testthat::expect_identical(
@@ -85,6 +87,7 @@ testthat::test_that("e2e - tm_g_association:
 
 testthat::test_that("e2e - tm_g_association: Module plot is visible.", {
   skip_if_too_deep(5)
+  testthat::skip("ggmosaic issue: will be resumed via the issue ")
   app_driver <- app_driver_tm_g_association()
 
   testthat::expect_true(app_driver$is_visible(app_driver$namespaces(TRUE)$module("myplot-plot_main > img")))
@@ -94,6 +97,7 @@ testthat::test_that("e2e - tm_g_association: Module plot is visible.", {
 
 testthat::test_that("e2e - tm_g_association: Check and set default values for radio buttons.", {
   skip_if_too_deep(5)
+  testthat::skip("ggmosaic issue: will be resumed via the issue ")
   app_driver <- app_driver_tm_g_association()
 
   testthat::expect_true(app_driver$get_active_module_input("association"))
