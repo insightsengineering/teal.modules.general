@@ -344,7 +344,7 @@ srv_tm_g_association <- function(id,
         c(
           teal.reporter::teal_card("# Association Plot"),
           teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
+          teal.reporter::teal_card("## Module's output(s)")
         )
       teal.code::eval_code(obj, "library(ggplot2);library(dplyr);library(ggmosaic)")
     })
@@ -495,7 +495,7 @@ srv_tm_g_association <- function(id,
           )
         }
       obj <- merged$anl_q_r()
-      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Plot")
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "### Plot")
       teal.code::eval_code(
         obj,
         substitute(

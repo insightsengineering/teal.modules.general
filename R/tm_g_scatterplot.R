@@ -586,7 +586,7 @@ srv_g_scatterplot <- function(id,
       teal.reporter::teal_card(obj) <- c(
         teal.reporter::teal_card("# Scatter Plot"),
         teal.reporter::teal_card(obj),
-        teal.reporter::teal_card("## Module's code")
+        teal.reporter::teal_card("## Module's output(s)")
       )
       teal.code::eval_code(data(), "library(ggplot2);library(dplyr)")
     })
@@ -1012,7 +1012,7 @@ srv_g_scatterplot <- function(id,
 
       plot_call <- substitute(expr = plot <- plot_call, env = list(plot_call = plot_call))
 
-      teal.reporter::teal_card(plot_q) <- c(teal.reporter::teal_card(plot_q), "## Plot")
+      teal.reporter::teal_card(plot_q) <- c(teal.reporter::teal_card(plot_q), "### Plot")
       teal.code::eval_code(plot_q, plot_call)
     })
 

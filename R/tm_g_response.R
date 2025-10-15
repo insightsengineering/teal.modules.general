@@ -409,7 +409,7 @@ srv_g_response <- function(id,
         c(
           teal.reporter::teal_card("# Response Plot"),
           teal.reporter::teal_card(qenv),
-          teal.reporter::teal_card("## Module's code")
+          teal.reporter::teal_card("## Module's output(s)")
         )
       ANL <- qenv[["ANL"]]
       resp_var <- as.vector(merged$anl_input_r()$columns_source$response)
@@ -570,7 +570,7 @@ srv_g_response <- function(id,
         ggthemes = parsed_ggplot2_args$ggtheme
       ))
 
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Plot")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Plot")
       teal.code::eval_code(qenv, plot_call)
     })
 
