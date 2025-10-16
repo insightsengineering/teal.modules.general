@@ -407,7 +407,6 @@ srv_g_response <- function(id,
       qenv <- merged$anl_q_r()
       teal.reporter::teal_card(qenv) <-
         c(
-          teal.reporter::teal_card("# Response Plot"),
           teal.reporter::teal_card(qenv),
           teal.reporter::teal_card("## Module's output(s)")
         )

@@ -476,7 +476,6 @@ srv_outliers <- function(id, data, outlier_var,
       qenv <- merged$anl_q_r()
       teal.reporter::teal_card(qenv) <-
         c(
-          teal.reporter::teal_card("# Outliers Analysis"),
           teal.reporter::teal_card(qenv),
           teal.reporter::teal_card("## Module's output(s)")
         )
