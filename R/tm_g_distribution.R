@@ -96,10 +96,6 @@
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
-#' vars1 <- choices_selected(
-#'   variable_choices(data[["ADSL"]], c("ARM", "COUNTRY", "SEX")),
-#'   selected = NULL
-#' )
 #'
 #' app <- init(
 #'   data = data,
@@ -108,7 +104,7 @@
 #'       dist_var = data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = select_spec(
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
+#'           choices = variable_choices("ADSL", c("AGE", "BMRKR1")),
 #'           selected = "BMRKR1",
 #'           multiple = FALSE,
 #'           fixed = FALSE
@@ -117,14 +113,20 @@
 #'       strata_var = data_extract_spec(
 #'         dataname = "ADSL",
 #'         filter = filter_spec(
-#'           vars = vars1,
+#'           vars = choices_selected(
+#'             variable_choices("ADSL", c("ARM", "COUNTRY", "SEX")),
+#'             selected = NULL
+#'           ),
 #'           multiple = TRUE
 #'         )
 #'       ),
 #'       group_var = data_extract_spec(
 #'         dataname = "ADSL",
 #'         filter = filter_spec(
-#'           vars = vars1,
+#'           vars = choices_selected(
+#'             variable_choices("ADSL", c("ARM", "COUNTRY", "SEX")),
+#'             selected = "ARM"
+#'           ),
 #'           multiple = TRUE
 #'         )
 #'       )

@@ -7,32 +7,33 @@ app_driver_tm_a_pca <- function() {
   })
 
   init_teal_app_driver(
-    data = data,
-    modules = tm_a_pca(
-      dat = teal.transform::data_extract_spec(
-        dataname = "USArrests",
-        select = teal.transform::select_spec(
-          choices = teal.transform::variable_choices(
-            data = data[["USArrests"]],
-            c("Murder", "Assault", "UrbanPop", "Rape")
-          ),
-          selected = c("Murder", "Assault"),
-          multiple = TRUE
-        )
-      ),
-      size = c(3, 1, 5),
-      alpha = c(.5, 0, 1),
-      font_size = c(10, 8, 15),
-      ggtheme = "light",
-      rotate_xaxis_labels = TRUE,
-      pre_output = shiny::tags$div(id = "unique_id_pre", "A pre output"),
-      post_output = shiny::tags$div(id = "unique_id_post", "A post output")
+    teal::init(
+      data = data,
+      modules = tm_a_pca(
+        dat = teal.transform::data_extract_spec(
+          dataname = "USArrests",
+          select = teal.transform::select_spec(
+            choices = teal.transform::variable_choices(
+              data = data[["USArrests"]],
+              c("Murder", "Assault", "UrbanPop", "Rape")
+            ),
+            selected = c("Murder", "Assault"),
+            multiple = TRUE
+          )
+        ),
+        size = c(3, 1, 5),
+        alpha = c(.5, 0, 1),
+        font_size = c(10, 8, 15),
+        ggtheme = "light",
+        rotate_xaxis_labels = TRUE,
+        pre_output = shiny::tags$div(id = "unique_id_pre", "A pre output"),
+        post_output = shiny::tags$div(id = "unique_id_post", "A post output")
+      )
     )
   )
 }
 
 testthat::test_that("e2e - tm_a_pca: Module is initialised with the specified defaults in function call.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -44,9 +45,14 @@ testthat::test_that("e2e - tm_a_pca: Module is initialised with the specified de
     c("Murder", "Assault")
   )
 
-  module_parent_id <- gsub("-module$", "", app_driver$active_module_ns())
-  testthat::expect_equal(app_driver$get_text(sprintf("#%s %s", module_parent_id, "#unique_id_pre")), "A pre output")
-  testthat::expect_equal(app_driver$get_text(sprintf("#%s %s", module_parent_id, "#unique_id_post")), "A post output")
+  testthat::expect_equal(
+    app_driver$get_text("#unique_id_pre"),
+    "A pre output"
+  )
+  testthat::expect_equal(
+    app_driver$get_text("#unique_id_post"),
+    "A post output"
+  )
 
   # Plot options that can be changed in call
   testthat::expect_true(app_driver$get_active_module_input("rotate_xaxis_labels"))
@@ -57,7 +63,6 @@ testthat::test_that("e2e - tm_a_pca: Module is initialised with the specified de
 })
 
 testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract selection Murder/Assault on header.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -75,7 +80,6 @@ testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract 
 })
 
 testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract selection Murder/UrbanPop on header.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -93,7 +97,6 @@ testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract 
 })
 
 testthat::test_that("e2e - tm_a_pca: Color by columns (data_extract) must be from non-selected variable set.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -111,7 +114,6 @@ testthat::test_that("e2e - tm_a_pca: Color by columns (data_extract) must be fro
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of tables_display does not generate errors.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -133,7 +135,6 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings of tables_display
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings for 'plot type' does not generate errors.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -157,7 +158,6 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings for 'plot type' d
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'standardization' does not generate errors.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -176,7 +176,6 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'standardizati
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'NA action' does not generate errors.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -191,31 +190,26 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'NA action' do
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'plot_type' hides and shows options.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
   app_driver$expect_no_validation_error()
 
   # Selected plot's specific settings is not visible
-  no_plot_settings_selector <- sprintf("#%s-%s %s", app_driver$active_module_ns(), "plot_settings", "span.help-block")
-  x_axis_selector <- sprintf("#%s-%s", app_driver$active_module_ns(), "x_axis")
-  color_by_selector <- sprintf(
-    "#%s-%s",
-    app_driver$active_module_ns(),
-    "response-dataset_USArrests_singleextract-select_input"
-  )
+  no_plot_settings_selector <- app_driver$namespaces(TRUE)$module("plot_settings span.help-block")
+  x_axis_selector <- app_driver$namespaces(TRUE)$module("x_axis")
+  color_by_selector <- app_driver$namespaces(TRUE)$module("response-dataset_USArrests_singleextract-select_input")
 
-  app_driver$set_active_module_input("plot_type", "Elbow plot", wait = FALSE)
+  app_driver$set_active_module_input("plot_type", "Elbow plot", wait_ = FALSE)
   testthat::expect_true(app_driver$is_visible(no_plot_settings_selector))
   testthat::expect_false(app_driver$is_visible(x_axis_selector))
   testthat::expect_false(app_driver$is_visible(color_by_selector))
 
-  app_driver$set_active_module_input("plot_type", "Circle plot", wait = FALSE)
+  app_driver$set_active_module_input("plot_type", "Circle plot", wait_ = FALSE)
   testthat::expect_false(app_driver$is_visible(no_plot_settings_selector))
   testthat::expect_true(app_driver$is_visible(x_axis_selector))
 
-  app_driver$set_active_module_input("plot_type", "Biplot", wait = FALSE)
+  app_driver$set_active_module_input("plot_type", "Biplot", wait_ = FALSE)
   testthat::expect_false(app_driver$is_visible(no_plot_settings_selector))
   testthat::expect_true(app_driver$is_visible(x_axis_selector))
   testthat::expect_true(app_driver$is_visible(color_by_selector))
@@ -224,7 +218,6 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'plot_type' hi
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'theme' does not generate errors.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -243,7 +236,6 @@ testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'theme' does n
 })
 
 testthat::test_that("e2e - tm_a_pca: Changing output encodings of 'font size' does not generate errors.", {
-  testthat::skip("chromium")
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
