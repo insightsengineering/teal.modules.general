@@ -316,7 +316,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
     ),
     tabPanel(
       "By Variable Levels",
-      teal.widgets::plot_with_settings_ui(id = ns("by_variable_plot")),
+      teal.widgets::plot_with_settings_ui(id = ns("by_variable_plot"))
     )
   )
   if (isTRUE(by_subject_plot)) {
@@ -1065,7 +1065,7 @@ srv_missing_data <- function(id,
       # extract the ANL dataset for use in further validation
       anl <- common_code_q()[["ANL"]]
 
-      group_var <- req(input$group_by_var)
+      group_var <- input$group_by_var
       validate(
         need(
           is.null(group_var) ||
