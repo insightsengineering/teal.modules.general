@@ -505,7 +505,6 @@ srv_missing_data <- function(id,
       anl <- data_r()
       obj <- data()
       teal.reporter::teal_card(obj) <- c(
-        teal.reporter::teal_card("# Missing Data"),
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's output(s)")
       )

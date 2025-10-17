@@ -328,7 +328,6 @@ srv_t_crosstable <- function(id, data, label, x, y, remove_zero_columns, basic_t
       obj <- data()
       teal.reporter::teal_card(obj) <-
         c(
-          teal.reporter::teal_card("# Cross Table"),
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's output(s)")
         )

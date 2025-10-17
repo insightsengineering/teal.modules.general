@@ -584,7 +584,6 @@ srv_g_scatterplot <- function(id,
     qenv <- reactive({
       obj <- data()
       teal.reporter::teal_card(obj) <- c(
-        teal.reporter::teal_card("# Scatter Plot"),
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's output(s)")
       )

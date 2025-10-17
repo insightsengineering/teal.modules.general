@@ -327,7 +327,6 @@ srv_g_scatterplotmatrix <- function(id,
       req(anl_merged_input())
       obj <- data()
       teal.reporter::teal_card(obj) <- c(
-        teal.reporter::teal_card("# Scatter Plot Matrix"),
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's output(s)")
       )
