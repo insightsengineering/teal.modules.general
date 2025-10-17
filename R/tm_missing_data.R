@@ -1156,47 +1156,91 @@ srv_missing_data <- function(id,
       )
 
       # convert to ggplot
-      ANL_q <- within(qenv, # nolint object_name_linter
-        {
-          keep_columns <- intersect(c(keys, group_var), colnames(ANL))
-          labels <- vapply(ANL, formatters::obj_label, character(1L))
-          ANL <- ANL %>%
-            filter(group_var_name %in% group_vals) %>%
-            pivot_longer(-keep_columns, values_transform = is.na) %>%
-            summarise(
-              .by = c(group_var_name, name),
-              value = sum(value), perc = value / n()
-            ) %>%
-            mutate(label = labels[name])
-        },
-        keys = join_keys(qenv) |> unlist() |> unique(),
-        group_var_name = as.name(group_var),
-        group_var = group_var,
-        group_vals = group_vals
-      )
+      labels <- lapply(qenv$ANL, attr, which = "label")
+      if (!any(lengths(labels))) {
+        ANL_q <- within(qenv, # nolint object_name_linter
+                        {
+                          keep_columns <- intersect(c(keys, group_var), colnames(ANL))
+                          ANL <- ANL %>%
+                            filter(group_var_name %in% group_vals) %>%
+                            pivot_longer(-keep_columns, values_transform = is.na) %>%
+                            summarise(
+                              .by = c(group_var_name, name),
+                              value = sum(value), perc = value / n()
+                            )
+                        },
+                        keys = join_keys(qenv) |> unlist() |> unique(),
+                        group_var_name = as.name(group_var),
+                        group_var = group_var,
+                        group_vals = group_vals
+        )
+        tile <- within(ANL_q,
+               {
+                 by_variable_plot <- ggplot(ANL, aes(group_var_name, name)) +
+                   geom_tile(aes(fill = column)) +
+                   geom_text(aes(label = scales::percent(perc)),
+                             data = . %>% filter(perc > 0), color = "white"
+                   ) +
+                   scale_x_discrete(expand = expansion()) +
+                   scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
+                   labs +
+                   ggthemes
+               },
+               group_var_name = as.name(group_var),
+               column = if (input$count_type == "counts") {
+                 as.name("value")
+               } else {
+                 as.name("perc")
+               },
+               labs = parsed_ggplot2_args$labs,
+               labels = if (input$count_type == "counts") quote(ggplot2::waiver()) else quote(scales::label_percent()),
+               ggthemes = parsed_ggplot2_args$ggtheme
+        )
 
-      tile <- within(ANL_q,
-        {
-          by_variable_plot <- ggplot(ANL, aes(group_var_name, label)) +
-            geom_tile(aes(fill = column)) +
-            geom_text(aes(label = scales::percent(perc)),
-              data = . %>% filter(perc > 0), color = "white"
-            ) +
-            scale_x_discrete(expand = expansion()) +
-            scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
-            labs +
-            ggthemes
-        },
-        group_var_name = as.name(group_var),
-        column = if (input$count_type == "counts") {
-          as.name("value")
-        } else {
-          as.name("perc")
-        },
-        labs = parsed_ggplot2_args$labs,
-        labels = if (input$count_type == "counts") quote(ggplot2::waiver()) else quote(scales::label_percent()),
-        ggthemes = parsed_ggplot2_args$ggtheme
-      )
+      } else {
+        ANL_q <- within(qenv, # nolint object_name_linter
+                        {
+                          keep_columns <- intersect(c(keys, group_var), colnames(ANL))
+                          labels <- vapply(qenv$ANL, attr, which = "label", FUN.VALUE = character(1L))
+                          ANL <- ANL %>%
+                            filter(group_var_name %in% group_vals) %>%
+                            pivot_longer(-keep_columns, values_transform = is.na) %>%
+                            summarise(
+                              .by = c(group_var_name, name),
+                              value = sum(value), perc = value / n()
+                            ) %>%
+                            mutate(label = labels[name])
+                        },
+                        keys = join_keys(qenv) |> unlist() |> unique(),
+                        group_var_name = as.name(group_var),
+                        group_var = group_var,
+                        group_vals = group_vals
+        )
+
+        tile <- within(ANL_q,
+               {
+                 by_variable_plot <- ggplot(ANL, aes(group_var_name, label)) +
+                   geom_tile(aes(fill = column)) +
+                   geom_text(aes(label = scales::percent(perc)),
+                             data = . %>% filter(perc > 0), color = "white"
+                   ) +
+                   scale_x_discrete(expand = expansion()) +
+                   scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
+                   labs +
+                   ggthemes
+               },
+               group_var_name = as.name(group_var),
+               column = if (input$count_type == "counts") {
+                 as.name("value")
+               } else {
+                 as.name("perc")
+               },
+               labs = parsed_ggplot2_args$labs,
+               labels = if (input$count_type == "counts") quote(ggplot2::waiver()) else quote(scales::label_percent()),
+               ggthemes = parsed_ggplot2_args$ggtheme
+        )
+      }
+
       tile
     })
 
@@ -1207,8 +1251,8 @@ srv_missing_data <- function(id,
       teal::validate_has_data(data_r(), 1)
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
-        labs = list(x = "", y = ""),
-        theme = list(legend.position = "bottom", axis.text.x = quote(ggplot2::element_blank()))
+        labs = list(x = NULL, y = NULL),
+        theme = list(legend.position = "bottom", axis.text.x =NULL)
       )
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
