@@ -461,7 +461,7 @@ srv_a_regression <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's output(s)")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint: quotes
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr)")
     })
 
     anl_merged_q <- reactive({

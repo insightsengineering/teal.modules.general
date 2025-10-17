@@ -22,6 +22,7 @@
 #' This module generates the following objects, which can be modified in place using decorators:
 #' - `summary_plot` (`ggplot`)
 #' - `combination_plot` (`grob` created with [ggplot2::ggplotGrob()])
+#' - `by_variable_plot` (`ggplot`)
 #' - `by_subject_plot` (`ggplot`)
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
@@ -34,6 +35,7 @@
 #'    decorators = list(
 #'      summary_plot = teal_transform_module(...), # applied only to `summary_plot` output
 #'      combination_plot = teal_transform_module(...), # applied only to `combination_plot` output
+#'      by_variable_plot = teal_transform_module(...) # applied only to `by_variable_plot` output
 #'      by_subject_plot = teal_transform_module(...) # applied only to `by_subject_plot` output
 #'    )
 #' )
@@ -314,8 +316,7 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
     ),
     tabPanel(
       "By Variable Levels",
-      teal.widgets::get_dt_rows(ns("levels_table"), ns("levels_table_rows")),
-      DT::dataTableOutput(ns("levels_table"))
+      teal.widgets::plot_with_settings_ui(id = ns("by_variable_plot"))
     )
   )
   if (isTRUE(by_subject_plot)) {
@@ -510,7 +511,7 @@ srv_missing_data <- function(id,
       )
 
       qenv <- teal.code::eval_code(obj, {
-        'library("dplyr");library("ggplot2");library("tidyr");library("gridExtra")' # nolint quotes
+        "library(dplyr);library(ggplot2);library(tidyr);library(gridExtra)"
       })
 
       qenv <- if (!is.null(selected_vars()) && length(selected_vars()) != ncol(anl)) {
@@ -1054,7 +1055,7 @@ srv_missing_data <- function(id,
       })
     })
 
-    summary_table_q <- reactive({
+    by_variable_plot_q <- reactive({
       req(
         input$summary_type == "By Variable Levels", # needed to trigger update on tab change
         common_code_q()
@@ -1096,7 +1097,7 @@ srv_missing_data <- function(id,
       qenv <- if (!is.null(group_var)) {
         common_code_libraries_q <- teal.code::eval_code(
           qenv,
-          'library("forcats");library("glue")' # nolint
+          "library(forcats);library(glue)"
         )
         teal.code::eval_code(
           common_code_libraries_q,
@@ -1136,10 +1137,110 @@ srv_missing_data <- function(id,
         )
       }
 
-      within(qenv, {
-        table <- rtables::df_to_tt(summary_data)
-        table
-      })
+      dev_ggplot2_args <- teal.widgets::ggplot2_args(
+        labs = list(
+          fill = if (input$count_type == "counts") "Missing counts" else "Missing percentage",
+          y = NULL
+        )
+      )
+
+      all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
+        user_plot = ggplot2_args[["By Variable Levels"]],
+        user_default = ggplot2_args$default,
+        module_plot = dev_ggplot2_args
+      )
+
+      parsed_ggplot2_args <- teal.widgets::parse_ggplot2_args(
+        all_ggplot2_args,
+        ggtheme = input$ggtheme
+      )
+
+      # convert to ggplot
+      labels <- lapply(qenv$ANL, attr, which = "label")
+      if (!any(lengths(labels))) {
+        ANL_q <- within(qenv, # nolint object_name_linter
+          {
+            keep_columns <- intersect(c(keys, group_var), colnames(ANL))
+            ANL <- ANL %>%
+              filter(group_var_name %in% group_vals) %>%
+              pivot_longer(-keep_columns, values_transform = is.na) %>%
+              summarise(
+                .by = c(group_var_name, name),
+                value = sum(value), perc = value / n()
+              )
+          },
+          keys = join_keys(qenv) |> unlist() |> unique(),
+          group_var_name = as.name(group_var),
+          group_var = group_var,
+          group_vals = group_vals
+        )
+        tile <- within(ANL_q,
+          {
+            by_variable_plot <- ggplot(ANL, aes(group_var_name, name)) +
+              geom_tile(aes(fill = column)) +
+              geom_text(aes(label = scales::percent(perc)),
+                data = . %>% filter(perc > 0), color = "white"
+              ) +
+              scale_x_discrete(expand = expansion()) +
+              scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
+              labs +
+              ggthemes
+          },
+          group_var_name = as.name(group_var),
+          column = if (input$count_type == "counts") {
+            as.name("value")
+          } else {
+            as.name("perc")
+          },
+          labs = parsed_ggplot2_args$labs,
+          labels = if (input$count_type == "counts") quote(ggplot2::waiver()) else quote(scales::label_percent()),
+          ggthemes = parsed_ggplot2_args$ggtheme
+        )
+      } else {
+        ANL_q <- within(qenv, # nolint object_name_linter
+          {
+            keep_columns <- intersect(c(keys, group_var), colnames(ANL))
+            labels <- vapply(qenv$ANL, attr, which = "label", FUN.VALUE = character(1L))
+            ANL <- ANL %>%
+              filter(group_var_name %in% group_vals) %>%
+              pivot_longer(-keep_columns, values_transform = is.na) %>%
+              summarise(
+                .by = c(group_var_name, name),
+                value = sum(value), perc = value / n()
+              ) %>%
+              mutate(label = labels[name])
+          },
+          keys = join_keys(qenv) |> unlist() |> unique(),
+          group_var_name = as.name(group_var),
+          group_var = group_var,
+          group_vals = group_vals
+        )
+
+        tile <- within(ANL_q,
+          {
+            by_variable_plot <- ggplot(ANL, aes(group_var_name, label)) +
+              geom_tile(aes(fill = column)) +
+              geom_text(aes(label = scales::percent(perc)),
+                data = . %>% filter(perc > 0), color = "white"
+              ) +
+              scale_x_discrete(expand = expansion()) +
+              scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
+              labs +
+              ggthemes
+          },
+          group_var_name = as.name(group_var),
+          column = if (input$count_type == "counts") {
+            as.name("value")
+          } else {
+            as.name("perc")
+          },
+          labs = parsed_ggplot2_args$labs,
+          labels = if (input$count_type == "counts") quote(ggplot2::waiver()) else quote(scales::label_percent()),
+          ggthemes = parsed_ggplot2_args$ggtheme
+        )
+      }
+
+      tile
     })
 
     by_subject_plot_q <- reactive({
@@ -1149,8 +1250,8 @@ srv_missing_data <- function(id,
       teal::validate_has_data(data_r(), 1)
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
-        labs = list(x = "", y = ""),
-        theme = list(legend.position = "bottom", axis.text.x = quote(ggplot2::element_blank()))
+        labs = list(x = NULL, y = NULL),
+        theme = list(legend.position = "bottom", axis.text.x = NULL)
       )
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
@@ -1285,11 +1386,11 @@ srv_missing_data <- function(id,
       })
     )
 
-    decorated_summary_table_q <- srv_decorate_teal_data(
-      id = "dec_summary_table",
-      data = summary_table_q,
-      decorators = select_decorators(decorators, "table"),
-      expr = quote(table)
+    decorated_by_variable_plot_q <- srv_decorate_teal_data(
+      id = "dec_by_variable_plot",
+      data = by_variable_plot_q,
+      decorators = select_decorators(decorators, "by_variable_plot"),
+      expr = quote(by_variable_plot)
     )
 
     decorated_by_subject_plot_q <- srv_decorate_teal_data(
@@ -1309,22 +1410,8 @@ srv_missing_data <- function(id,
       req(decorated_combination_plot_q())[["combination_plot"]]
     })
 
-    summary_table_r <- reactive({
-      q <- req(decorated_summary_table_q())
-
-      if (length(input$variables_select) == 0) {
-        # so that zeroRecords message gets printed
-        # using tibble as it supports weird column names, such as " "
-        DT::datatable(
-          tibble::tibble(` ` = logical(0)),
-          options = list(
-            language = list(zeroRecords = "No variable selected."),
-            pageLength = input$levels_table_rows
-          )
-        )
-      } else {
-        DT::datatable(q[["summary_data"]])
-      }
+    by_variable_plot_r <- reactive({
+      req(decorated_by_variable_plot_q())[["by_variable_plot"]]
     })
 
     by_subject_plot_r <- reactive({
@@ -1346,9 +1433,14 @@ srv_missing_data <- function(id,
       width = plot_width
     )
 
-    output$levels_table <- DT::renderDataTable(summary_table_r())
-
     pws3 <- teal.widgets::plot_with_settings_srv(
+      id = "by_variable_plot",
+      plot_r = by_variable_plot_r,
+      height = plot_height,
+      width = plot_width
+    )
+
+    pws4 <- teal.widgets::plot_with_settings_srv(
       id = "by_subject_plot",
       plot_r = by_subject_plot_r,
       height = plot_height,
@@ -1360,8 +1452,11 @@ srv_missing_data <- function(id,
     decorated_combination_plot_dims_q <- # nolint: object_length_linter.
       set_chunk_dims(pws2, decorated_combination_plot_q)
 
+    decorated_by_variable_plot_dims_q <- # nolint: object_length_linter.
+      set_chunk_dims(pws3, decorated_by_variable_plot_q)
+
     decorated_by_subject_plot_dims_q <- # nolint: object_length_linter.
-      set_chunk_dims(pws3, decorated_by_subject_plot_q)
+      set_chunk_dims(pws4, decorated_by_subject_plot_q)
 
     decorated_final_q <- reactive({
       sum_type <- req(input$summary_type)
@@ -1370,7 +1465,7 @@ srv_missing_data <- function(id,
       } else if (sum_type == "Combinations") {
         decorated_combination_plot_dims_q()
       } else if (sum_type == "By Variable Levels") {
-        decorated_summary_table_q()
+        decorated_by_variable_plot_dims_q()
       } else if (sum_type == "Grouped by Subject") {
         decorated_by_subject_plot_dims_q()
       }
