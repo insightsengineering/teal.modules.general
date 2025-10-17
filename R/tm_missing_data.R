@@ -1140,7 +1140,7 @@ srv_missing_data <- function(id,
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(
           fill = if (input$count_type == "counts") "Missing counts" else "Missing percentage",
-          y = quote(ggplot2::element_blank())
+          y = NULL
         )
       )
 
@@ -1252,7 +1252,7 @@ srv_missing_data <- function(id,
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(x = NULL, y = NULL),
-        theme = list(legend.position = "bottom", axis.text.x =NULL)
+        theme = list(legend.position = "bottom", axis.text.x = NULL)
       )
 
       all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
