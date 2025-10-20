@@ -14,21 +14,23 @@ app_driver_tm_missing_data <- function() {
   })
 
   init_teal_app_driver(
-    data = data,
-    modules = tm_missing_data(
-      label = "Missing data",
-      plot_height = c(600, 400, 5000),
-      plot_width = NULL,
-      datanames = "all",
-      ggtheme = "gray",
-      ggplot2_args = list(
-        "Combinations Hist" = teal.widgets::ggplot2_args(
-          labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
+    app = init(
+      data = data,
+      modules = tm_missing_data(
+        label = "Missing data",
+        plot_height = c(600, 400, 5000),
+        plot_width = NULL,
+        datanames = "all",
+        ggtheme = "gray",
+        ggplot2_args = list(
+          "Combinations Hist" = teal.widgets::ggplot2_args(
+            labs = list(subtitle = "Plot produced by Missing Data Module", caption = NULL)
+          ),
+          "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
         ),
-        "Combinations Main" = teal.widgets::ggplot2_args(labs = list(title = NULL))
-      ),
-      pre_output = NULL,
-      post_output = NULL
+        pre_output = NULL,
+        post_output = NULL
+      )
     ),
     timeout = 3000,
     seed = 1
@@ -36,14 +38,15 @@ app_driver_tm_missing_data <- function() {
 }
 
 test_that("e2e - tm_missing_data: Initializes without errors", {
-  testthat::skip("chromium")
+
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$expect_no_shiny_error()
 
+
   testthat::expect_equal(
-    app_driver$get_text("#teal-teal_modules-active_tab .active"),
+    app_driver$get_text(selector = "#teal-teal_modules-active_module_id > div.dropdown.nav-item-custom > div > ul > li > ul > li > a"),
     "Missing data"
   )
 
@@ -58,7 +61,7 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
 })
 
 test_that("e2e - tm_missing_data: Default settings and visibility of the summary graph", {
-  testthat::skip("chromium")
+
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # default summary tab
@@ -91,7 +94,7 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 })
 
 test_that("e2e - tm_missing_data: Check default settings and visibility of the combinations graph and encodings", {
-  testthat::skip("chromium")
+
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
@@ -129,7 +132,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
 })
 
 test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By Variable Levels'", {
-  testthat::skip("chromium")
+
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # By variable levels
@@ -160,7 +163,7 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
 })
 
 test_that("e2e - tm_missing_data: Validate 'By Variable Levels' table values", {
-  testthat::skip("chromium")
+
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
