@@ -19,7 +19,7 @@ testthat::test_that("bivariate_ggplot_call with numerics", {
 })
 
 testthat::test_that("bivariate_ggplot_call with factor, char, logical", {
-  error_message <- "Discrete variables 'x' and 'y' are currently not supported."
+  error_message <- "Categorical variables 'x' and 'y' are currently not supported."
   testthat::expect_error(
     bivariate_ggplot_call("factor", "factor") %>% deparse(width.cutoff = 300),
     error_message
