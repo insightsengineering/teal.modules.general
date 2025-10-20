@@ -38,22 +38,13 @@ app_driver_tm_missing_data <- function() {
 }
 
 test_that("e2e - tm_missing_data: Initializes without errors", {
-
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$expect_no_shiny_error()
+  testthat::expect_equal(app_driver$get_text(".teal-modules-tree .active"), "Missing data")
 
-
-  testthat::expect_equal(
-    app_driver$get_text(selector = "#teal-teal_modules-active_module_id > div.dropdown.nav-item-custom > div > ul > li > ul > li > a"),
-    "Missing data"
-  )
-
-  encoding_dataset <- app_driver$get_text(
-    app_driver$active_module_element("dataset_encodings .help-block")
-  )
-
+  encoding_dataset <- app_driver$get_text(paste(app_driver$namespaces(TRUE)$wrapper(NULL), ".help-block"))
   testthat::expect_match(encoding_dataset, "Datasets.*iris.*mtcars", all = FALSE)
 
 
@@ -61,7 +52,6 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
 })
 
 test_that("e2e - tm_missing_data: Default settings and visibility of the summary graph", {
-
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # default summary tab
@@ -75,18 +65,15 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
     c("Petal.Length", "Sepal.Length", "Petal.Width", "Species", "Sepal.Width")
   )
 
-  app_driver$click(selector = app_driver$active_module_element("iris-filter_na"))
+  app_driver$click(selector = app_driver$namespaces(TRUE)$module("iris-filter_na"))
   app_driver$expect_no_validation_error()
 
-  app_driver$click(selector = app_driver$active_module_element("iris-any_na"))
+  app_driver$click(selector = app_driver$namespaces(TRUE)$module("iris-any_na"))
   app_driver$expect_no_validation_error()
 
   testthat::expect_true(
     app_driver$is_visible(
-      sprintf(
-        "%s .shiny-plot-output",
-        app_driver$active_module_element("iris-summary_plot-plot_out_main")
-      )
+      app_driver$namespaces(TRUE)$module("iris-summary_plot-plot_out_main .shiny-plot-output")
     )
   )
 
@@ -94,7 +81,6 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 })
 
 test_that("e2e - tm_missing_data: Check default settings and visibility of the combinations graph and encodings", {
-
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
@@ -106,10 +92,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
   app_driver$expect_no_validation_error()
   testthat::expect_true(
     app_driver$is_visible(
-      sprintf(
-        "%s .shiny-plot-output",
-        app_driver$active_module_element("iris-combination_plot-plot_out_main")
-      )
+      app_driver$namespaces(TRUE)$module("iris-combination_plot-plot_out_main .shiny-plot-output")
     )
   )
 
@@ -117,22 +100,19 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
 
   testthat::expect_true(
     app_driver$is_visible(
-      sprintf(
-        "%s .shiny-input-container",
-        app_driver$active_module_element("iris-cutoff")
-      )
+      app_driver$namespaces(TRUE)$module("iris-cutoff .shiny-input-container")
     )
   )
 
-  testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 2L)
+  testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 1L)
   app_driver$set_active_module_input("iris-combination_cutoff", 10L)
+  testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 10L)
   app_driver$expect_no_validation_error()
 
   app_driver$stop()
 })
 
 test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By Variable Levels'", {
-
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
   # By variable levels
@@ -157,18 +137,17 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
     "counts"
   )
   app_driver$set_active_module_input("iris-count_type", "proportions")
-  testthat::expect_true(app_driver$is_visible(app_driver$active_module_element("iris-levels_table")))
+  testthat::expect_true(app_driver$is_visible(app_driver$namespaces(TRUE)$module("iris-levels_table")))
 
   app_driver$stop()
 })
 
 test_that("e2e - tm_missing_data: Validate 'By Variable Levels' table values", {
-
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$set_active_module_input("iris-summary_type", "By Variable Levels")
-  levels_table <- app_driver$active_module_element("iris-levels_table") %>%
+  levels_table <- app_driver$namespaces(TRUE)$module("iris-levels_table") %>%
     app_driver$get_html_rvest() %>%
     rvest::html_table(fill = TRUE) %>%
     .[[1]]
