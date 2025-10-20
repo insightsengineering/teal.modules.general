@@ -968,7 +968,7 @@ bivariate_ggplot_call <- function(x_class,
     )
     # Factor and character plots
   } else if (x_class == "factor" && y_class == "factor") {
-    stop("Two factors variables are currently not supported.")
+    stop("Classes for 'x' and 'y' are currently not supported.")
   } else {
     stop("x y type combination not allowed")
   }
