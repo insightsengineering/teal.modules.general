@@ -23,7 +23,6 @@ URL: https://insightsengineering.github.io/teal.modules.general/,
 BugReports:
     https://github.com/insightsengineering/teal.modules.general/issues
 Depends:
-    ggmosaic (>= 0.3.0),
     ggplot2 (>= 3.4.0),
     R (>= 4.1),
     shiny (>= 1.8.1),
