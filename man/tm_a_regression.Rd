@@ -24,6 +24,9 @@ tm_a_regression(
 )
 }
 \arguments{
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
+
 \item{regressor}{(\code{picks}) Specification for regressor variables selection.
 Created using \code{\link[teal.transform:types]{teal.transform::picks()}}, which allows selecting variables
 to use as regressors in the regression model. \code{variables(multiple = TRUE)} allowed.}
@@ -93,6 +96,9 @@ It can take the following forms:
 It takes the form of \code{c(value, min, max)} and it is passed to the \code{value_min_max}
 argument in \code{teal.widgets::optionalSliderInputValMinMax}.
 }}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,

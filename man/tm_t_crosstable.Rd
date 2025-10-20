@@ -19,6 +19,9 @@ tm_t_crosstable(
 )
 }
 \arguments{
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
+
 \item{x}{(\code{picks} or \code{list} of \code{picks})
 Object with all available choices with pre-selected option for variable X - row values.
 In case of \code{picks} use \code{variables(..., ordered = TRUE)} if table elements should be
@@ -53,6 +56,9 @@ with settings for the module table.
 The argument is merged with options variable \code{teal.basic_table_args} and default module setup.
 
 For more details see the vignette: \code{vignette("custom-basic-table-arguments", package = "teal.widgets")}}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,
