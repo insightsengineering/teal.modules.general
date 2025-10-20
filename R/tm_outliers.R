@@ -738,9 +738,10 @@ srv_outliers <- function(id, data, outlier_var,
               categorical_var_name = as.name(categorical_var)
             )
           )
-        ) |> within({
-          table <- rtables::df_to_tt(summary_data)
-          table
+        ) |>
+          within({
+            table <- rtables::df_to_tt(summary_data)
+            table
         })
       } else {
         msg <- "No categorical variable selected, summary table cannot be created."
