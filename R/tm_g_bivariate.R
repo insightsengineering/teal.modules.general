@@ -968,15 +968,7 @@ bivariate_ggplot_call <- function(x_class,
     )
     # Factor and character plots
   } else if (x_class == "factor" && y_class == "factor") {
-    shinyvalidate::validate("Two categorical variables of class factor are currently not supported")
-    # TODO: remove ggmosaic
-    plot_call <- reduce_plot_call(
-      plot_call,
-      substitute(
-        ggmosaic::geom_mosaic(aes(x = ggmosaic::product(xval), fill = yval), na.rm = TRUE),
-        env = list(xval = x, yval = y)
-      )
-    )
+    stop("Two factors variables are currently not supported.")
   } else {
     stop("x y type combination not allowed")
   }
