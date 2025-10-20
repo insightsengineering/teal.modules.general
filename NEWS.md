@@ -1,3 +1,7 @@
+# teal.modules.general 0.5.1
+
+- Removed ggmosaic package dependency to avoid being archived on CRAN (#932).
+
 # teal.modules.general 0.5.0
 
 ### Breaking changes
