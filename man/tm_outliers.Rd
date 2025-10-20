@@ -149,7 +149,6 @@ fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
 vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
 
 
-
 app <- init(
   data = data,
   modules = modules(

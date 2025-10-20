@@ -637,9 +637,8 @@ srv_g_distribution.default <- function(id,
       obj <- merged$anl_q_r()
       teal.reporter::teal_card(obj) <-
         c(
-          teal.reporter::teal_card("# Distribution Plot"),
           teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
+          teal.reporter::teal_card("## Module's output(s)")
         )
 
       ANL <- obj[["ANL"]]
@@ -956,7 +955,7 @@ srv_g_distribution.default <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Histogram Plot")
+        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Histogram Plot")
         teal.code::eval_code(
           qenv,
           substitute(
@@ -1087,7 +1086,7 @@ srv_g_distribution.default <- function(id,
           ggtheme = ggtheme
         )
 
-        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## QQ Plot")
+        teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### QQ Plot")
         teal.code::eval_code(
           qenv,
           substitute(
@@ -1278,7 +1277,7 @@ srv_g_distribution.default <- function(id,
       q_common <- common_q()
       teal.reporter::teal_card(q_common) <- c(
         teal.reporter::teal_card(q_common),
-        "## Statistics table"
+        "### Statistics table"
       )
       if (iv_r()$is_valid()) {
         within(q_common, {
@@ -1298,7 +1297,7 @@ srv_g_distribution.default <- function(id,
       q_common <- common_q()
       teal.reporter::teal_card(q_common) <- c(
         teal.reporter::teal_card(q_common),
-        "## Distribution Tests table"
+        "### Distribution Tests table"
       )
       if (inherits(test_q_out, c("try-error", "error"))) {
         within(

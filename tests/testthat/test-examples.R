@@ -141,7 +141,9 @@ for (i in rd_files()) {
     paste0("example-", basename(i)),
     {
       testthat::skip_on_cran()
-      testthat::skip("chromium")
+      if (grepl("tm_g_distribution", basename(i))) {
+        testthat::skip("distribution initializes with short validation error")
+      }
       skip_if_too_deep(5)
       testthat::skip_if_not_installed("pkgload")
       # Allow for specific validation errors for individual examples

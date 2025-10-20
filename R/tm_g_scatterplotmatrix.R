@@ -333,9 +333,8 @@ srv_g_scatterplotmatrix.default <- function(id,
       req(anl_merged_input())
       obj <- data()
       teal.reporter::teal_card(obj) <- c(
-        teal.reporter::teal_card("# Scatter Plot Matrix"),
         teal.reporter::teal_card(obj),
-        teal.reporter::teal_card("## Module's code")
+        teal.reporter::teal_card("## Module's output(s)")
       )
       qenv <- teal.code::eval_code(obj, 'library("dplyr");library("lattice")') # nolint quotes
       teal.code::eval_code(qenv, as.expression(anl_merged_input()$expr))
@@ -397,7 +396,7 @@ srv_g_scatterplotmatrix.default <- function(id,
 
 
       # create plot
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Plot")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Plot")
 
       if (add_cor) {
         shinyjs::show("cor_method")

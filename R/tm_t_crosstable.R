@@ -343,9 +343,8 @@ srv_t_crosstable.default <- function(id, data, label, x, y, remove_zero_columns,
       obj <- data()
       teal.reporter::teal_card(obj) <-
         c(
-          teal.reporter::teal_card("# Cross Table"),
           teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's code")
+          teal.reporter::teal_card("## Module's output(s)")
         )
       teal.code::eval_code(obj, 'library("rtables");library("tern");library("dplyr")') # nolint quotes
     })
@@ -401,7 +400,7 @@ srv_t_crosstable.default <- function(id, data, label, x, y, remove_zero_columns,
       )
 
       obj <- merged$anl_q_r()
-      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Table")
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "### Table")
       obj <- teal.code::eval_code(
         obj,
         substitute(

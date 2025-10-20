@@ -505,9 +505,8 @@ srv_missing_data <- function(id,
       anl <- data_r()
       obj <- data()
       teal.reporter::teal_card(obj) <- c(
-        teal.reporter::teal_card("# Missing Data"),
         teal.reporter::teal_card(obj),
-        teal.reporter::teal_card("## Module's code")
+        teal.reporter::teal_card("## Module's output(s)")
       )
 
       qenv <- teal.code::eval_code(obj, {
@@ -677,7 +676,7 @@ srv_missing_data <- function(id,
     combination_cutoff_q <- reactive({
       req(common_code_q())
       qenv <- common_code_q()
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Combination Plot")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Combination Plot")
       teal.code::eval_code(
         qenv,
         quote(
@@ -736,7 +735,7 @@ srv_missing_data <- function(id,
         )
       )
 
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Summary Plot")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Summary Plot")
 
       qenv <- teal.code::eval_code(
         qenv,
@@ -1092,7 +1091,7 @@ srv_missing_data <- function(id,
       }
 
       qenv <- common_code_q()
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Summary Table")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Summary Table")
 
       qenv <- if (!is.null(group_var)) {
         common_code_libraries_q <- teal.code::eval_code(
@@ -1173,7 +1172,7 @@ srv_missing_data <- function(id,
       }
 
       qenv <- common_code_q()
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## By Subject Plot")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### By Subject Plot")
 
       qenv <- teal.code::eval_code(
         qenv,
