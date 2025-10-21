@@ -230,6 +230,7 @@ srv_page_missing_data <- function(id, data, datanames, parent_dataname,
     })
 
     output$dataset_encodings <- renderUI({
+      req(ggtheme, datanames, is.logical(if_subject_plot))
       tagList(
         lapply(
           datanames,
@@ -453,6 +454,7 @@ srv_missing_data <- function(id,
     data_keys <- reactive(unlist(teal.data::join_keys(data())[[dataname]]))
 
     iv_r <- reactive({
+
       iv <- shinyvalidate::InputValidator$new()
       iv$add_rule(
         "variables_select",
@@ -487,6 +489,7 @@ srv_missing_data <- function(id,
     })
 
     data_parent_keys <- reactive({
+      req(data(), parent_dataname)
       if (length(parent_dataname) > 0 && parent_dataname %in% names(data())) {
         keys <- teal.data::join_keys(data())[[dataname]]
         if (parent_dataname %in% names(keys)) {
@@ -501,7 +504,7 @@ srv_missing_data <- function(id,
 
     common_code_q <- reactive({
       teal::validate_inputs(iv_r())
-
+      req(data(), data_r(), input$summary_type)
       group_var <- input$group_by_var
       anl <- data_r()
       obj <- data()
@@ -567,13 +570,14 @@ srv_missing_data <- function(id,
     })
 
     selected_vars <- reactive({
-      req(input$variables_select)
+      req(data_keys(), input$variables_select)
       keys <- data_keys()
       vars <- unique(c(keys, input$variables_select))
       vars
     })
 
     vars_summary <- reactive({
+      req(data_r())
       na_count <- data_r() %>%
         sapply(function(x) mean(is.na(x)), USE.NAMES = TRUE) %>%
         sort(decreasing = TRUE)
@@ -587,6 +591,7 @@ srv_missing_data <- function(id,
 
     # Keep encoding panel up-to-date
     output$variables <- renderUI({
+      req(vars_summary(), data_r())
       choices <- split(x = vars_summary()$key, f = vars_summary()$label, drop = TRUE) %>% rev()
       selected <- choices <- unname(unlist(choices))
 
@@ -601,6 +606,7 @@ srv_missing_data <- function(id,
     })
 
     observeEvent(input$filter_na, {
+      req(vars_summary(), data_r())
       choices <- vars_summary() %>%
         dplyr::select(!!as.name("key")) %>%
         getElement(name = 1)
@@ -619,6 +625,7 @@ srv_missing_data <- function(id,
     })
 
     output$group_by_var_ui <- renderUI({
+      req(data_r())
       all_choices <- teal.transform::variable_choices(data_r())
       cat_choices <- all_choices[!sapply(data_r(), function(x) is.numeric(x) || inherits(x, "POSIXct"))]
       validate(
@@ -639,10 +646,10 @@ srv_missing_data <- function(id,
     })
 
     output$group_by_vals_ui <- renderUI({
-      req(input$group_by_var)
+      req(isolate(prev_group_by_var()), input$group_by_var, data_r())
 
       choices <- teal.transform::value_choices(data_r(), input$group_by_var, input$group_by_var)
-      prev_choices <- isolate(input$group_by_vals)
+      prev_choices <- req(isolate(input$group_by_vals))
 
       # determine selected value based on filtered data
       # display those previously selected values that are still available
@@ -675,8 +682,8 @@ srv_missing_data <- function(id,
     })
 
     combination_cutoff_q <- reactive({
-      req(common_code_q())
-      qenv <- common_code_q()
+
+      qenv <- req(common_code_q())
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Combination Plot")
       teal.code::eval_code(
         qenv,
@@ -691,6 +698,7 @@ srv_missing_data <- function(id,
     })
 
     output$cutoff <- renderUI({
+      req(combination_cutoff_q())
       x <- combination_cutoff_q()[["combination_cutoff"]]$n
 
       # select 10-th from the top
@@ -714,9 +722,9 @@ srv_missing_data <- function(id,
 
     summary_plot_q <- reactive({
       req(input$summary_type == "Summary") # needed to trigger update on tab change
-      teal::validate_has_data(data_r(), 1)
-
-      qenv <- common_code_q()
+      teal::validate_has_data(req(data_r()), 1)
+      req(data_keys(), input$ggtheme)
+      qenv <- req(common_code_q())
       if (input$any_na) {
         new_col_name <- "**anyna**"
         qenv <- teal.code::eval_code(
@@ -765,7 +773,7 @@ srv_missing_data <- function(id,
         )
 
       # always set "**anyna**" level as the last one
-      if (isolate(input$any_na)) {
+      if (req(isolate(input$any_na))) {
         qenv <- teal.code::eval_code(
           qenv,
           quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**"))
@@ -921,8 +929,9 @@ srv_missing_data <- function(id,
     })
 
     combination_plot_q <- reactive({
-      req(input$summary_type == "Combinations", input$combination_cutoff, combination_cutoff_q())
-      teal::validate_has_data(data_r(), 1)
+      req(input$summary_type == "Combinations", input$combination_cutoff,
+          combination_cutoff_q(), data_keys(), input$ggtheme)
+      teal::validate_has_data(req(data_r()), 1)
 
       qenv <- teal.code::eval_code(
         combination_cutoff_q(),
@@ -1060,7 +1069,7 @@ srv_missing_data <- function(id,
         input$summary_type == "By Variable Levels", # needed to trigger update on tab change
         common_code_q()
       )
-      teal::validate_has_data(data_r(), 1)
+      teal::validate_has_data(req(data_r()), 1)
 
       # extract the ANL dataset for use in further validation
       anl <- common_code_q()[["ANL"]]
@@ -1091,7 +1100,7 @@ srv_missing_data <- function(id,
         function(x) round(sum(is.na(x)) / length(x), 4)
       }
 
-      qenv <- common_code_q()
+      qenv <- req(common_code_q())
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Summary Table")
 
       qenv <- if (!is.null(group_var)) {
@@ -1245,9 +1254,10 @@ srv_missing_data <- function(id,
 
     by_subject_plot_q <- reactive({
       # needed to trigger update on tab change
-      req(input$summary_type == "Grouped by Subject", common_code_q())
+      req(input$summary_type == "Grouped by Subject", common_code_q(),
+          input$ggtheme)
 
-      teal::validate_has_data(data_r(), 1)
+      teal::validate_has_data(req(data_r()), 1)
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(x = NULL, y = NULL),
@@ -1272,7 +1282,7 @@ srv_missing_data <- function(id,
         function(x) paste(as.integer(x), collapse = "")
       }
 
-      qenv <- common_code_q()
+      qenv <- req(common_code_q())
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### By Subject Plot")
 
       qenv <- teal.code::eval_code(
