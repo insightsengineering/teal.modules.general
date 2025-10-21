@@ -454,7 +454,6 @@ srv_missing_data <- function(id,
     data_keys <- reactive(unlist(teal.data::join_keys(data())[[dataname]]))
 
     iv_r <- reactive({
-
       iv <- shinyvalidate::InputValidator$new()
       iv$add_rule(
         "variables_select",
@@ -682,7 +681,6 @@ srv_missing_data <- function(id,
     })
 
     combination_cutoff_q <- reactive({
-
       qenv <- req(common_code_q())
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Combination Plot")
       teal.code::eval_code(
@@ -929,8 +927,10 @@ srv_missing_data <- function(id,
     })
 
     combination_plot_q <- reactive({
-      req(input$summary_type == "Combinations", input$combination_cutoff,
-          combination_cutoff_q(), data_keys(), input$ggtheme)
+      req(
+        input$summary_type == "Combinations", input$combination_cutoff,
+        combination_cutoff_q(), data_keys(), input$ggtheme
+      )
       teal::validate_has_data(req(data_r()), 1)
 
       qenv <- teal.code::eval_code(
@@ -1254,8 +1254,10 @@ srv_missing_data <- function(id,
 
     by_subject_plot_q <- reactive({
       # needed to trigger update on tab change
-      req(input$summary_type == "Grouped by Subject", common_code_q(),
-          input$ggtheme)
+      req(
+        input$summary_type == "Grouped by Subject", common_code_q(),
+        input$ggtheme
+      )
 
       teal::validate_has_data(req(data_r()), 1)
 
