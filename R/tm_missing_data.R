@@ -1185,13 +1185,13 @@ srv_missing_data <- function(id,
         )
         tile <- within(ANL_q,
           {
-            by_variable_plot <- ggplot(ANL, aes(group_var_name, name)) +
-              geom_tile(aes(fill = column)) +
-              geom_text(aes(label = scales::percent(perc)),
-                data = . %>% filter(perc > 0), color = "white"
+            by_variable_plot <- ggplo2::ggplot(ANL, ggplo2::aes(group_var_name, name)) +
+              ggplo2::geom_tile(ggplo2::aes(fill = column)) +
+              ggplo2::geom_text(ggplo2::aes(label = scales::percent(perc)),
+                data = . %>% dplyr::filter(perc > 0), color = "white"
               ) +
-              scale_x_discrete(expand = expansion()) +
-              scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
+              ggplo2::scale_x_discrete(expand = ggplo2::expansion()) +
+              ggplo2::scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
               labs +
               ggthemes
           },
@@ -1211,13 +1211,13 @@ srv_missing_data <- function(id,
             keep_columns <- intersect(c(keys, group_var), colnames(ANL))
             labels <- vapply(qenv$ANL, attr, which = "label", FUN.VALUE = character(1L))
             ANL <- ANL %>%
-              filter(group_var_name %in% group_vals) %>%
-              pivot_longer(-keep_columns, values_transform = is.na) %>%
-              summarise(
+              dplyr::filter(group_var_name %in% group_vals) %>%
+              dplyr::pivot_longer(-keep_columns, values_transform = is.na) %>%
+              dplyr::summarise(
                 .by = c(group_var_name, name),
                 value = sum(value), perc = value / n()
               ) %>%
-              mutate(label = labels[name])
+              dplyr::mutate(label = labels[name])
           },
           keys = join_keys(qenv) |> unlist() |> unique(),
           group_var_name = as.name(group_var),
@@ -1227,13 +1227,13 @@ srv_missing_data <- function(id,
 
         tile <- within(ANL_q,
           {
-            by_variable_plot <- ggplot(ANL, aes(group_var_name, label)) +
-              geom_tile(aes(fill = column)) +
-              geom_text(aes(label = scales::percent(perc)),
-                data = . %>% filter(perc > 0), color = "white"
+            by_variable_plot <- ggplo2::ggplot(ANL, ggplo2::aes(group_var_name, label)) +
+              ggplo2::geom_tile(ggplo2::aes(fill = column)) +
+              ggplo2::geom_text(ggplo2::aes(label = scales::percent(perc)),
+                data = . %>% dplyr::filter(perc > 0), color = "white"
               ) +
-              scale_x_discrete(expand = expansion()) +
-              scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
+              ggplo2::scale_x_discrete(expand = ggplo2::expansion()) +
+              ggplo2::scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
               labs +
               ggthemes
           },
