@@ -1212,7 +1212,7 @@ srv_missing_data <- function(id,
             labels <- vapply(qenv$ANL, attr, which = "label", FUN.VALUE = character(1L))
             ANL <- ANL %>%
               dplyr::filter(group_var_name %in% group_vals) %>%
-              dplyr::pivot_longer(-keep_columns, values_transform = is.na) %>%
+              tidyr::pivot_longer(-keep_columns, values_transform = is.na) %>%
               dplyr::summarise(
                 .by = c(group_var_name, name),
                 value = sum(value), perc = value / n()
