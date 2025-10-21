@@ -1185,13 +1185,13 @@ srv_missing_data <- function(id,
         )
         tile <- within(ANL_q,
           {
-            by_variable_plot <- ggplo2::ggplot(ANL, ggplo2::aes(group_var_name, name)) +
-              ggplo2::geom_tile(ggplo2::aes(fill = column)) +
-              ggplo2::geom_text(ggplo2::aes(label = scales::percent(perc)),
+            by_variable_plot <- ggplot2::ggplot(ANL, ggplot2::aes(group_var_name, name)) +
+              ggplot2::geom_tile(ggplot2::aes(fill = column)) +
+              ggplot2::geom_text(ggplot2::aes(label = scales::percent(perc)),
                 data = . %>% dplyr::filter(perc > 0), color = "white"
               ) +
-              ggplo2::scale_x_discrete(expand = ggplo2::expansion()) +
-              ggplo2::scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
+              ggplot2::scale_x_discrete(expand = ggplot2::expansion()) +
+              ggplot2::scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
               labs +
               ggthemes
           },
@@ -1227,13 +1227,13 @@ srv_missing_data <- function(id,
 
         tile <- within(ANL_q,
           {
-            by_variable_plot <- ggplo2::ggplot(ANL, ggplo2::aes(group_var_name, label)) +
-              ggplo2::geom_tile(ggplo2::aes(fill = column)) +
-              ggplo2::geom_text(ggplo2::aes(label = scales::percent(perc)),
+            by_variable_plot <- ggplot2::ggplot(ANL, ggplot2::aes(group_var_name, label)) +
+              ggplot2::geom_tile(ggplot2::aes(fill = column)) +
+              ggplot2::geom_text(ggplot2::aes(label = scales::percent(perc)),
                 data = . %>% dplyr::filter(perc > 0), color = "white"
               ) +
-              ggplo2::scale_x_discrete(expand = ggplo2::expansion()) +
-              ggplo2::scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
+              ggplot2::scale_x_discrete(expand = ggplot2::expansion()) +
+              ggplot2::scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
               labs +
               ggthemes
           },
