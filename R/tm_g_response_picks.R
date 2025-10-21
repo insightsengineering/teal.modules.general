@@ -98,22 +98,22 @@ ui_g_response.picks <- function(id,
       tags$label("Encodings", class = "text-primary"),
       teal::teal_nav_item(
         label = tags$strong("Response variable"),
-        teal.transform::module_input_ui(id = ns("response"), spec = response)
+        teal.transform::picks_ui(id = ns("response"), spec = response)
       ),
       teal::teal_nav_item(
         label = tags$strong("X variable"),
-        teal.transform::module_input_ui(id = ns("x"), spec = x)
+        teal.transform::picks_ui(id = ns("x"), spec = x)
       ),
       if (!is.null(row_facet)) {
         teal::teal_nav_item(
           label = tags$strong("Row facetting"),
-          teal.transform::module_input_ui(id = ns("row_facet"), spec = row_facet)
+          teal.transform::picks_ui(id = ns("row_facet"), spec = row_facet)
         )
       },
       if (!is.null(col_facet)) {
         teal::teal_nav_item(
           label = tags$strong("Column facetting"),
-          teal.transform::module_input_ui(id = ns("col_facet"), spec = col_facet)
+          teal.transform::picks_ui(id = ns("col_facet"), spec = col_facet)
         )
       },
       shinyWidgets::radioGroupButtons(
@@ -162,7 +162,7 @@ srv_g_response.picks <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::module_input_srv(
+    selectors <- teal.transform::picks_srv(
       spec = list(
         response = response,
         x = x,
@@ -227,16 +227,16 @@ srv_g_response.picks <- function(id,
 
       qenv <- merged$data()
       anl <- qenv[["anl"]]
-      response_var <- merged$merge_vars()$response
-      x_var <- merged$merge_vars()$x
+      response_var <- merged$variables()$response
+      x_var <- merged$variables()$x
 
       validate(need(is.factor(anl[[response_var]]), "Please select a factor variable as the response."))
       validate(need(is.factor(anl[[x_var]]), "Please select a factor variable as the X-Variable."))
       teal::validate_has_data(anl, 10)
       teal::validate_has_data(anl[, c(response_var, x_var)], 10, complete = TRUE, allow_inf = FALSE)
 
-      row_facet_var <- merged$merge_vars()$row_facet
-      col_facet_var <- merged$merge_vars()$col_facet
+      row_facet_var <- merged$variables()$row_facet
+      col_facet_var <- merged$variables()$col_facet
 
       freq <- input$freq == "frequency"
       swap_axes <- input$coord_flip

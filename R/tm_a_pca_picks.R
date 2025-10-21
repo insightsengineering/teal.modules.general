@@ -127,7 +127,7 @@ ui_a_pca.picks <- function(id,
         tags$label("Encodings", class = "text-primary"),
         teal::teal_nav_item(
           label = tags$strong("Data selection"),
-          teal.transform::module_input_ui(id = ns("dat"), spec = dat)
+          teal.transform::picks_ui(id = ns("dat"), spec = dat)
         ),
         bslib::accordion(
           open = TRUE,
@@ -232,7 +232,7 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::module_input_srv(spec = list(dat = dat), data = data)
+    selectors <- teal.transform::picks_srv(spec = list(dat = dat), data = data)
 
     qenv <- reactive({
       validate_input(
@@ -252,7 +252,7 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
 
     merged <- merge_srv("merge", data = qenv, selectors = selectors, output_name = "anl")
     anl_merged_q <- merged$data
-    selected_vars <- reactive(merged$merge_vars()$dat)
+    selected_vars <- reactive(merged$variables()$dat)
 
     validate_data <- reactive({
       obj <- req(anl_merged_q())

@@ -121,13 +121,13 @@ ui_g_distribution.picks <- function(id,
       tags$label("Encodings", class = "text-primary"),
       teal::teal_nav_item(
         label = tags$strong("Variable"),
-        teal.transform::module_input_ui(id = ns("dist_var"), spec = dist_var)
+        teal.transform::picks_ui(id = ns("dist_var"), spec = dist_var)
       ),
       if (!is.null(group_var)) {
         tagList(
           teal::teal_nav_item(
             label = tags$strong("Group by:"),
-            teal.transform::module_input_ui(id = ns("group_var"), spec = group_var)
+            teal.transform::picks_ui(id = ns("group_var"), spec = group_var)
           ),
           uiOutput(ns("scales_types_ui"))
         )
@@ -136,7 +136,7 @@ ui_g_distribution.picks <- function(id,
         tagList(
           teal::teal_nav_item(
             label = tags$strong("Stratify by:"),
-            teal.transform::module_input_ui(id = ns("strata_var"), spec = strata_var)
+            teal.transform::picks_ui(id = ns("strata_var"), spec = strata_var)
           )
         )
       },
@@ -212,7 +212,7 @@ srv_g_distribution.picks <- function(id,
     ns <- session$ns
 
 
-    selectors <- teal.transform::module_input_srv(
+    selectors <- teal.transform::picks_srv(
       spec = list(dist_var = dist_var, strata_var = strata_var, group_var = group_var),
       data = data
     )
@@ -241,28 +241,28 @@ srv_g_distribution.picks <- function(id,
 
       validate_input(
         inputId = "dist_var-variables-selected",
-        condition = is.numeric(anl[[merged$merge_vars()$dist_var]]),
+        condition = is.numeric(anl[[merged$variables()$dist_var]]),
         message = "Distribution variable must be numeric."
       )
 
-      if (length(merged$merge_vars()$group_var) > 0) {
+      if (length(merged$variables()$group_var) > 0) {
         validate_input(
           "group_var-variables-selected",
-          condition = inherits(anl[[merged$merge_vars()$group_var]], c("integer", "factor", "character")),
+          condition = inherits(anl[[merged$variables()$group_var]], c("integer", "factor", "character")),
           message = "Group by variable must be `factor`, `character`, or `integer`"
         )
         obj <- within(obj, library("forcats"))
         obj <- within(
           obj,
           expr = anl[[group_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[group_var]]), "NA"),
-          group_var = merged$merge_vars()$group_var
+          group_var = merged$variables()$group_var
         )
       }
 
-      if (length(merged$merge_vars()$strata_var) > 0) {
+      if (length(merged$variables()$strata_var) > 0) {
         validate_input(
           "strata_var-variables-selected",
-          condition = inherits(anl[[merged$merge_vars()$strata_var]], c("integer", "factor", "character")),
+          condition = inherits(anl[[merged$variables()$strata_var]], c("integer", "factor", "character")),
           message = "Stratify by variable must be `factor`, `character`, or `integer`"
         )
 
@@ -270,7 +270,7 @@ srv_g_distribution.picks <- function(id,
         obj <- within(
           obj,
           expr = anl[[strata_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[strata_var]]), "NA"),
-          strata_var = merged$merge_vars()$strata_var
+          strata_var = merged$variables()$strata_var
         )
       }
 
@@ -281,7 +281,7 @@ srv_g_distribution.picks <- function(id,
 
     output$scales_types_ui <- renderUI({
       validate_merged()
-      if (length(merged$merge_vars()$group_var) > 0) {
+      if (length(merged$variables()$group_var) > 0) {
         shinyWidgets::prettyRadioButtons(
           ns("scales_type"),
           label = "Scales:",
@@ -297,7 +297,7 @@ srv_g_distribution.picks <- function(id,
       eventExpr = {
         input$t_dist
         input$params_reset
-        merged$merge_vars()$dist_var
+        merged$variables()$dist_var
       },
       handlerExpr = {
         params <- if (length(input$t_dist)) {
@@ -306,7 +306,7 @@ srv_g_distribution.picks <- function(id,
           anl <- merged$data()[["anl"]]
           round(
             .calc_dist_params(
-              x = as.numeric(stats::na.omit(anl[[merged$merge_vars()$dist_var]])),
+              x = as.numeric(stats::na.omit(anl[[merged$variables()$dist_var]])),
               dist = input$t_dist
             ),
             2
@@ -401,7 +401,7 @@ srv_g_distribution.picks <- function(id,
         validate_dist()
         merged$data()
       }),
-      merge_vars = merged$merge_vars,
+      variables = merged$variables,
       t_dist = reactive(input$t_dist),
       dist_param1 = reactive(input$dist_param1),
       dist_param2 = reactive(input$dist_param2),
@@ -429,7 +429,7 @@ srv_g_distribution.picks <- function(id,
         validate_dist()
         merged$data()
       }),
-      merge_vars = merged$merge_vars,
+      variables = merged$variables,
       t_dist = reactive(input$t_dist),
       dist_param1 = reactive(input$dist_param1),
       dist_param2 = reactive(input$dist_param2),
@@ -451,7 +451,7 @@ srv_g_distribution.picks <- function(id,
         validate_merged()
         merged$data()
       }),
-      merge_vars = merged$merge_vars,
+      variables = merged$variables,
       decorators = select_decorators(decorators, "Statistics Table")
     )
 
@@ -459,8 +459,8 @@ srv_g_distribution.picks <- function(id,
       validate_merged()
       obj <- merged$data()
       anl <- obj[["anl"]]
-      s_var <- merged$merge_vars()$strata_var
-      g_var <- merged$merge_vars()$group_var
+      s_var <- merged$variables()$strata_var
+      g_var <- merged$variables()$group_var
       dist_test <- input$`test_table-dist_test`
 
       if (identical(dist_test, "Fligner-Killeen")) {
@@ -500,7 +500,7 @@ srv_g_distribution.picks <- function(id,
     test_output <- .srv_test_table(
       "test_table",
       data = test_q,
-      merge_vars = merged$merge_vars,
+      variables = merged$variables,
       t_dist = reactive(input$t_dist),
       decorators = select_decorators(decorators, "Test Table")
     )
@@ -543,7 +543,7 @@ srv_g_distribution.picks <- function(id,
 
 .srv_hist <- function(id,
                       data,
-                      merge_vars,
+                      variables,
                       ggtheme,
                       scales_type,
                       t_dist,
@@ -570,9 +570,9 @@ srv_g_distribution.picks <- function(id,
         statistic <- if (req(input$statistic) == "Density") "density" else "count"
         logger::log_debug(".srv_hist@1 Recalculating Histogram")
         add_density <- input$add_density
-        d_var <- merge_vars()$dist_var
-        s_var <- merge_vars()$strata_var
-        g_var <- merge_vars()$group_var
+        d_var <- variables()$dist_var
+        s_var <- variables()$strata_var
+        g_var <- variables()$group_var
         ndensity <- 512
 
         teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Histogram Plot")
@@ -713,7 +713,7 @@ srv_g_distribution.picks <- function(id,
 
 .srv_qq <- function(id,
                     data,
-                    merge_vars,
+                    variables,
                     t_dist,
                     dist_param1,
                     dist_param2,
@@ -734,12 +734,12 @@ srv_g_distribution.picks <- function(id,
         ggtheme()
       },
       {
-        req(data(), merge_vars(), ggtheme(), t_dist())
+        req(data(), variables(), ggtheme(), t_dist())
         logger::log_debug(".srv_qq@1 Recalculating QQ Plot...")
         obj <- data()
-        d_var <- merge_vars()$dist_var
-        s_var <- merge_vars()$strata_var
-        g_var <- merge_vars()$group_var
+        d_var <- variables()$dist_var
+        s_var <- variables()$strata_var
+        g_var <- variables()$group_var
 
         teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## QQ Plot")
 
@@ -858,14 +858,14 @@ srv_g_distribution.picks <- function(id,
   )
 }
 
-.srv_summary_table <- function(id, data, merge_vars, decorators) {
+.srv_summary_table <- function(id, data, variables, decorators) {
   moduleServer(id, function(input, output, session) {
     output_q <- reactive({
       obj <- req(data())
       roundn <- input$roundn
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Statistics table")
 
-      obj <- if (length(merge_vars()$strata_var) == 0 && length(merge_vars()$group_var) == 0) {
+      obj <- if (length(variables()$strata_var) == 0 && length(variables()$group_var) == 0) {
         within(
           obj,
           expr = {
@@ -879,7 +879,7 @@ srv_g_distribution.picks <- function(id,
                 count = dplyr::n()
               )
           },
-          d_var_name = as.name(merge_vars()$dist_var),
+          d_var_name = as.name(variables()$dist_var),
           roundn = roundn
         )
       } else {
@@ -897,8 +897,8 @@ srv_g_distribution.picks <- function(id,
                 count = dplyr::n()
               )
           },
-          d_var_name = as.name(merge_vars()$dist_var),
-          strata_vars = c(merge_vars()$group_var, merge_vars()$strata_var),
+          d_var_name = as.name(variables()$dist_var),
+          strata_vars = c(variables()$group_var, variables()$strata_var),
           roundn = roundn
         )
       }
@@ -974,7 +974,7 @@ srv_g_distribution.picks <- function(id,
   )
 }
 
-.srv_test_table <- function(id, data, merge_vars, t_dist, decorators) {
+.srv_test_table <- function(id, data, variables, t_dist, decorators) {
   moduleServer(id, function(input, output, session) {
     output_q <- eventReactive(
       ignoreNULL = FALSE,
@@ -985,9 +985,9 @@ srv_g_distribution.picks <- function(id,
       valueExpr = {
         obj <- data()
         anl <- obj[["anl"]]
-        d_var <- merge_vars()$dist_var
-        s_var <- merge_vars()$strata_var
-        g_var <- merge_vars()$group_var
+        d_var <- variables()$dist_var
+        s_var <- variables()$strata_var
+        g_var <- variables()$group_var
         d_var_name <- as.name(d_var)
         s_var_name <- if (!is.null(s_var)) as.name(s_var)
         g_var_name <- if (!is.null(g_var)) as.name(g_var)

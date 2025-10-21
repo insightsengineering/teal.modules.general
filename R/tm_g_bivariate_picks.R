@@ -151,11 +151,11 @@ ui_g_bivariate.picks <- function(id,
     encoding = shiny::tagList(
       teal::teal_nav_item(
         label = tags$strong("X variable"),
-        teal.transform::module_input_ui(id = ns("x"), spec = x)
+        teal.transform::picks_ui(id = ns("x"), spec = x)
       ),
       teal::teal_nav_item(
         label = tags$strong("Y variable"),
-        teal.transform::module_input_ui(id = ns("y"), spec = y)
+        teal.transform::picks_ui(id = ns("y"), spec = y)
       ),
       conditionalPanel(
         condition =
@@ -176,7 +176,7 @@ ui_g_bivariate.picks <- function(id,
         teal::teal_nav_item(
           tags$div(
             tags$strong("Row facetting variable"),
-            teal.transform::module_input_ui(id = ns("row_facet"), spec = row_facet),
+            teal.transform::picks_ui(id = ns("row_facet"), spec = row_facet),
             checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales)
           )
         )
@@ -185,7 +185,7 @@ ui_g_bivariate.picks <- function(id,
         teal::teal_nav_item(
           tags$div(
             tags$strong("Column facetting variable"),
-            teal.transform::module_input_ui(id = ns("col_facet"), spec = col_facet),
+            teal.transform::picks_ui(id = ns("col_facet"), spec = col_facet),
             checkboxInput(ns("free_y_scales"), "free y scales", value = free_y_scales)
           )
         )
@@ -199,11 +199,11 @@ ui_g_bivariate.picks <- function(id,
             conditionalPanel(
               condition = paste0("input['", ns("coloring"), "']"),
               tags$div(
-                teal.transform::module_input_ui(id = ns("color"), spec = color), # label = "Outline color by variable"
-                teal.transform::module_input_ui(id = ns("fill"), spec = fill), # label = "Outline color by variable"
+                teal.transform::picks_ui(id = ns("color"), spec = color), # label = "Outline color by variable"
+                teal.transform::picks_ui(id = ns("fill"), spec = fill), # label = "Outline color by variable"
                 tags$div(
                   id = ns("size_settings"),
-                  teal.transform::module_input_ui(id = ns("size"), spec = size) # label = "Size of points by variable (only if x and y are numeric)"
+                  teal.transform::picks_ui(id = ns("size"), spec = size) # label = "Size of points by variable (only if x and y are numeric)"
                 )
               )
             )
@@ -270,7 +270,7 @@ srv_g_bivariate.picks <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     ns <- session$ns
-    selectors <- teal.transform::module_input_srv(
+    selectors <- teal.transform::picks_srv(
       spec = list(
         x = x,
         y = y,
@@ -317,13 +317,13 @@ srv_g_bivariate.picks <- function(id,
       teal::validate_has_data(anl, 3)
 
 
-      x_name <- merged$merge_vars()$x
-      y_name <- merged$merge_vars()$y
-      row_facet_name <- merged$merge_vars()$row_facet
-      col_facet_name <- merged$merge_vars()$col_facet
-      color_name <- merged$merge_vars()$color
-      fill_name <- merged$merge_vars()$fill
-      size_name <- merged$merge_vars()$size
+      x_name <- merged$variables()$x
+      y_name <- merged$variables()$y
+      row_facet_name <- merged$variables()$row_facet
+      col_facet_name <- merged$variables()$col_facet
+      color_name <- merged$variables()$color
+      fill_name <- merged$variables()$fill
+      size_name <- merged$variables()$size
 
       use_density <- input$use_density == "density"
       free_x_scales <- input$free_x_scales
@@ -440,8 +440,8 @@ srv_g_bivariate.picks <- function(id,
       decorators = select_decorators(decorators, "plot"),
       expr = reactive({
         anl <- merged$data()[["anl"]]
-        row_facet_name <- merged$merge_vars()$row_facet
-        col_facet_name <- merged$merge_vars()$col_facet
+        row_facet_name <- merged$variables()$row_facet
+        col_facet_name <- merged$variables()$col_facet
 
         # Add labels to facets
         nulled_row_facet_name <- varname_w_label(row_facet_name, anl)

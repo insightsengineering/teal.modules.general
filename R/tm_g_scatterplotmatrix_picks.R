@@ -72,7 +72,7 @@ ui_g_scatterplotmatrix.picks <- function(id,
       tagList(
         lapply(names(variables), function(id) {
           teal::teal_nav_item(
-            teal.transform::module_input_ui(id = ns(id), spec = variables[[id]])
+            teal.transform::picks_ui(id = ns(id), spec = variables[[id]])
           )
         })
       ),
@@ -120,7 +120,7 @@ srv_g_scatterplotmatrix.picks <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::module_input_srv(
+    selectors <- teal.transform::picks_srv(
       spec = variables,
       data = data
     )
@@ -145,13 +145,13 @@ srv_g_scatterplotmatrix.picks <- function(id,
     })
 
     merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
-    merge_vars <- reactive(unname(unlist(merged$merge_vars())))
+    variables <- reactive(unname(unlist(merged$variables())))
 
     # plot
     output_q <- reactive({
       qenv <- req(merged$data())
       anl <- qenv[["anl"]]
-      cols_names <- merge_vars()
+      cols_names <- variables()
       alpha <- input$alpha
       cex <- input$cex
       add_cor <- input$cor
@@ -282,7 +282,7 @@ srv_g_scatterplotmatrix.picks <- function(id,
 
     # show a message if conversion to factors took place
     output$message <- renderText({
-      cols_names <- req(merge_vars())
+      cols_names <- req(variables())
       anl <- merged$data()[["anl"]]
       check_char <- vapply(anl[, cols_names], is.character, logical(1))
       if (any(check_char)) {

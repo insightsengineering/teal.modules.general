@@ -99,19 +99,19 @@ ui_p_spaghetti_module <- function(id, group_var, x_var, y_var, color_var, toolti
       class = "standard-layout encoding-panel",
       teal::teal_nav_item(
         label = tags$strong("Group Variable:"),
-        teal.transform::module_input_ui(id = ns("group_var"), spec = group_var)
+        teal.transform::picks_ui(id = ns("group_var"), spec = group_var)
       ),
       teal::teal_nav_item(
         label = tags$strong("X-axis Variable:"),
-        teal.transform::module_input_ui(id = ns("x_var"), spec = x_var)
+        teal.transform::picks_ui(id = ns("x_var"), spec = x_var)
       ),
       teal::teal_nav_item(
         label = tags$strong("Y-axis Variable:"),
-        teal.transform::module_input_ui(id = ns("y_var"), spec = y_var)
+        teal.transform::picks_ui(id = ns("y_var"), spec = y_var)
       ),
       teal::teal_nav_item(
         label = tags$strong("Color by:"),
-        teal.transform::module_input_ui(id = ns("color_var"), spec = color_var),
+        teal.transform::picks_ui(id = ns("color_var"), spec = color_var),
         colour_picker_ui(ns("colors"))
       )
     ),
@@ -120,15 +120,15 @@ ui_p_spaghetti_module <- function(id, group_var, x_var, y_var, color_var, toolti
 }
 
 srv_p_spaghetti_module <- function(id,
-                                  data,
-                                  group_var,
-                                  x_var,
-                                  y_var,
-                                  color_var,
-                                  point_colors,
-                                  tooltip_vars = NULL) {
+                                   data,
+                                   group_var,
+                                   x_var,
+                                   y_var,
+                                   color_var,
+                                   point_colors,
+                                   tooltip_vars = NULL) {
   moduleServer(id, function(input, output, session) {
-    selectors <- teal.transform::module_input_srv(
+    selectors <- teal.transform::picks_srv(
       data = data,
       spec = list(group_var = group_var, x_var = x_var, y_var = y_var, color_var = color_var, tooltip_vars = tooltip_vars)
     )

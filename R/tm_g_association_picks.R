@@ -102,11 +102,11 @@ ui_g_association.picks <- function(id,
       tags$label("Encodings", class = "text-primary"),
       teal::teal_nav_item(
         label = tags$strong("Reference variable"),
-        teal.transform::module_input_ui(id = ns("ref"), spec = ref)
+        teal.transform::picks_ui(id = ns("ref"), spec = ref)
       ),
       teal::teal_nav_item(
         label = tags$strong("Associated variables"),
-        teal.transform::module_input_ui(id = ns("vars"), spec = vars)
+        teal.transform::picks_ui(id = ns("vars"), spec = vars)
       ),
       checkboxInput(ns("association"), "Association with reference variable", value = show_association),
       checkboxInput(ns("show_dist"), "Scaled frequencies", value = FALSE),
@@ -157,7 +157,7 @@ srv_g_association.picks <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::module_input_srv(spec = list(ref = ref, vars = vars), data = data)
+    selectors <- teal.transform::picks_srv(spec = list(ref = ref, vars = vars), data = data)
 
     validated_q <- reactive({
       obj <- req(data())
@@ -191,8 +191,8 @@ srv_g_association.picks <- function(id,
       req(merged$data())
       logger::log_debug("srv_g_association@1 recalculating a plot")
       anl <- merged$data()[["anl"]]
-      ref_name <- merged$merge_vars()$ref
-      vars_names <- merged$merge_vars()$vars
+      ref_name <- merged$variables()$ref
+      vars_names <- merged$variables()$vars
       teal::validate_has_data(anl, 3)
       teal::validate_has_data(anl[, c(ref_name, vars_names)], 3, complete = TRUE, allow_inf = FALSE)
 

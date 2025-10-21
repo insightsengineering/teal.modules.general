@@ -137,7 +137,7 @@ ui_g_scatterplot.picks <- function(id,
         tags$label("Encodings", class = "text-primary"),
         teal::teal_nav_item(
           label = tags$strong("X variable"),
-          teal.transform::module_input_ui(id = ns("x"), spec = x),
+          teal.transform::picks_ui(id = ns("x"), spec = x),
           checkboxInput(ns("log_x"), "Use log transformation", value = FALSE),
           conditionalPanel(
             condition = paste0("input['", ns("log_x"), "'] == true"),
@@ -151,7 +151,7 @@ ui_g_scatterplot.picks <- function(id,
         ),
         teal::teal_nav_item(
           label = tags$strong("Y variable"),
-          teal.transform::module_input_ui(id = ns("y"), spec = y),
+          teal.transform::picks_ui(id = ns("y"), spec = y),
           checkboxInput(ns("log_y"), "Use log transformation", value = FALSE),
           conditionalPanel(
             condition = paste0("input['", ns("log_y"), "'] == true"),
@@ -166,25 +166,25 @@ ui_g_scatterplot.picks <- function(id,
         if (!is.null(color_by)) {
           teal::teal_nav_item(
             label = tags$strong("Color by:"),
-            teal.transform::module_input_ui(id = ns("color_by"), spec = color_by)
+            teal.transform::picks_ui(id = ns("color_by"), spec = color_by)
           )
         },
         if (!is.null(size_by)) {
           teal::teal_nav_item(
             label = tags$strong("Size by:"),
-            teal.transform::module_input_ui(id = ns("size_by"), spec = size_by)
+            teal.transform::picks_ui(id = ns("size_by"), spec = size_by)
           )
         },
         if (!is.null(row_facet)) {
           teal::teal_nav_item(
             label = tags$strong("Row facetting"),
-            teal.transform::module_input_ui(id = ns("row_facet"), spec = row_facet)
+            teal.transform::picks_ui(id = ns("row_facet"), spec = row_facet)
           )
         },
         if (!is.null(col_facet)) {
           teal::teal_nav_item(
             label = tags$strong("Column facetting"),
-            teal.transform::module_input_ui(id = ns("col_facet"), spec = col_facet)
+            teal.transform::picks_ui(id = ns("col_facet"), spec = col_facet)
           )
         },
         ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
@@ -270,7 +270,7 @@ srv_g_scatterplot.picks <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
 
-    selectors <- teal.transform::module_input_srv(
+    selectors <- teal.transform::picks_srv(
       spec = list(x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet),
       data = data
     )
@@ -329,8 +329,8 @@ srv_g_scatterplot.picks <- function(id,
 
     trend_line_is_applicable <- reactive({
       anl <- merged$data()[["anl"]]
-      x_var <- merged$merge_vars()$x
-      y_var <- merged$merge_vars()$y
+      x_var <- merged$variables()$x
+      y_var <- merged$variables()$y
       length(x_var) > 0 && length(y_var) > 0 && is.numeric(anl[[x_var]]) && is.numeric(anl[[y_var]])
     })
 
@@ -343,7 +343,7 @@ srv_g_scatterplot.picks <- function(id,
       observeEvent(
         eventExpr = selectors$color_by(),
         handlerExpr = {
-          color_by_var <- merged$merge_vars()$color_by
+          color_by_var <- merged$variables()$color_by
           if (length(color_by_var) > 0) {
             shinyjs::hide("color")
           } else {
@@ -356,8 +356,8 @@ srv_g_scatterplot.picks <- function(id,
     output$num_na_removed <- renderUI({
       if (add_trend_line()) {
         anl <- merged$data()[["anl"]]
-        x_var <- merged$merge_vars()$x
-        y_var <- merged$merge_vars()$y
+        x_var <- merged$variables()$x
+        y_var <- merged$variables()$y
         if ((num_total_na <- nrow(anl) - nrow(stats::na.omit(anl[, c(x_var, y_var)]))) > 0) {
           tags$div(paste(num_total_na, "row(s) with missing values were removed"), tags$hr())
         }
@@ -368,8 +368,8 @@ srv_g_scatterplot.picks <- function(id,
       eventExpr = list(selectors$row_facet(), selectors$col_facet()),
       handlerExpr = {
         if (
-          length(merged$merge_vars()$row_facet) == 0 &&
-            length(merged$merge_vars()$col_facet) == 0
+          length(merged$variables()$row_facet) == 0 &&
+            length(merged$variables()$col_facet) == 0
         ) {
           shinyjs::hide("free_scales")
         } else {
@@ -381,12 +381,12 @@ srv_g_scatterplot.picks <- function(id,
     output_q <- reactive({
       req(merged$data())
       anl <- merged$data()[["anl"]]
-      x_var <- merged$merge_vars()$x
-      y_var <- merged$merge_vars()$y
-      color_by_var <- merged$merge_vars()$color_by
-      size_by_var <- merged$merge_vars()$size_by
-      row_facet_var <- merged$merge_vars()$row_facet
-      col_facet_var <- merged$merge_vars()$col_facet
+      x_var <- merged$variables()$x
+      y_var <- merged$variables()$y
+      color_by_var <- merged$variables()$color_by
+      size_by_var <- merged$variables()$size_by
+      row_facet_var <- merged$variables()$row_facet
+      col_facet_var <- merged$variables()$col_facet
       alpha <- input$alpha
       size <- input$size
       rotate_xaxis_labels <- input$rotate_xaxis_labels

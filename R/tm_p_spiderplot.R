@@ -145,31 +145,31 @@ ui_p_spiderplot <- function(id,
       class = "standard-layout encoding-panel",
       teal::teal_nav_item(
         label = tags$strong("Time variable (x-axis):"),
-        teal.transform::module_input_ui(id = ns("time_var"), spec = time_var)
+        teal.transform::picks_ui(id = ns("time_var"), spec = time_var)
       ),
       teal::teal_nav_item(
         label = tags$strong("Value variable (y-axis):"),
-        teal.transform::module_input_ui(id = ns("value_var"), spec = value_var)
+        teal.transform::picks_ui(id = ns("value_var"), spec = value_var)
       ),
       teal::teal_nav_item(
         label = tags$strong("Subject variable:"),
-        teal.transform::module_input_ui(id = ns("subject_var"), spec = subject_var)
+        teal.transform::picks_ui(id = ns("subject_var"), spec = subject_var)
       ),
       teal::teal_nav_item(
         label = tags$strong("Color by:"),
-        teal.transform::module_input_ui(id = ns("color_var"), spec = color_var),
+        teal.transform::picks_ui(id = ns("color_var"), spec = color_var),
         colour_picker_ui(ns("colors"))
       ),
       if (!is.null(tooltip_vars)) { # todo: don't show at all
         teal::teal_nav_item(
           label = tags$strong("Tooltip variables:"),
-          teal.transform::module_input_ui(id = ns("tooltip_vars"), spec = tooltip_vars)
+          teal.transform::picks_ui(id = ns("tooltip_vars"), spec = tooltip_vars)
         )
       },
       if (!is.null(size_var)) {
         teal::teal_nav_item(
           label = tags$strong("Size by:"),
-          teal.transform::module_input_ui(id = ns("size_var"), spec = size_var)
+          teal.transform::picks_ui(id = ns("size_var"), spec = size_var)
         )
       },
       ui_decorate_teal_data(ns("decorator"), decorators = decorators),
@@ -204,7 +204,7 @@ srv_p_spiderplot <- function(id,
                              filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     logger::log_trace("srv_p_spiderplot initializing")
-    selectors <- teal.transform::module_input_srv(
+    selectors <- teal.transform::picks_srv(
       data = data,
       spec = list(
         time_var = time_var, value_var = value_var, subject_var = subject_var,

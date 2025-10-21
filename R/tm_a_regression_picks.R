@@ -150,11 +150,11 @@ ui_a_regression.picks <- function(id,
       tags$label("Encodings", class = "text-primary"), tags$br(),
       teal::teal_nav_item(
         label = tags$strong("Response variable"),
-        teal.transform::module_input_ui(id = ns("response"), spec = response)
+        teal.transform::picks_ui(id = ns("response"), spec = response)
       ),
       teal::teal_nav_item(
         label = tags$strong("Regressor variables"),
-        teal.transform::module_input_ui(id = ns("regressor"), spec = regressor)
+        teal.transform::picks_ui(id = ns("regressor"), spec = regressor)
       ),
       radioButtons(
         ns("plot_type"),
@@ -183,7 +183,7 @@ ui_a_regression.picks <- function(id,
           ),
           min = 1, max = 10, value = 9, ticks = FALSE, step = .1
         ),
-        teal.transform::module_input_ui(id = ns("outlier"), spec = outlier)
+        teal.transform::picks_ui(id = ns("outlier"), spec = outlier)
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
       bslib::accordion(
@@ -246,7 +246,7 @@ srv_a_regression.picks <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
     ns <- session$ns
 
-    selectors <- teal.transform::module_input_srv(
+    selectors <- teal.transform::picks_srv(
       spec = list(response = response, regressor = regressor, outlier = outlier),
       data = data
     )
@@ -294,15 +294,15 @@ srv_a_regression.picks <- function(id,
       teal::validate_has_data(anl, 10)
 
       teal::validate_has_data(
-        anl[, c(merged$merge_vars()$response, merged$merge_vars()$regressor)], 10,
+        anl[, c(merged$variables()$response, merged$variables()$regressor)], 10,
         complete = TRUE, allow_inf = FALSE
       )
 
       form <- stats::as.formula(
         paste(
-          merged$merge_vars()$response,
+          merged$variables()$response,
           paste(
-            merged$merge_vars()$regressor,
+            merged$variables()$regressor,
             collapse = " + "
           ),
           sep = " ~ "
@@ -332,7 +332,7 @@ srv_a_regression.picks <- function(id,
           ""
         ) %>%
           dplyr::if_else(is.na(.), "cooksd == NaN", .),
-        env = list(outlier_cutoff = input$outlier_cutoff, label_var = merged$merge_vars()$outlier)
+        env = list(outlier_cutoff = input$outlier_cutoff, label_var = merged$variables()$outlier)
       )
     })
 
@@ -377,7 +377,7 @@ srv_a_regression.picks <- function(id,
       fit <- obj[["fit"]]
       anl <- obj[["anl"]]
 
-      if (!is.factor(anl[[merged$merge_vars()$regressor]])) {
+      if (!is.factor(anl[[merged$variables()$regressor]])) {
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
@@ -385,8 +385,8 @@ srv_a_regression.picks <- function(id,
             ggplot2::geom_point(size = size, alpha = alpha) +
             ggplot2::stat_smooth(method = "lm", formula = y ~ x, se = FALSE),
           env = list(
-            regressor = merged$merge_vars()$regressor,
-            response = merged$merge_vars()$response,
+            regressor = merged$variables()$regressor,
+            response = merged$variables()$response,
             size = input$size,
             alpha = input$alpha
           )
@@ -403,7 +403,7 @@ srv_a_regression.picks <- function(id,
         plot <- substitute(
           expr = ggplot2::ggplot(fit$model[, 2:1], ggplot2::aes_string(regressor, response)) +
             ggplot2::geom_boxplot(),
-          env = list(regressor = merged$merge_vars()$regressor, response = merged$merge_vars()$response)
+          env = list(regressor = merged$variables()$regressor, response = merged$variables()$response)
         )
         if (input$show_outlier) {
           plot <- substitute(
@@ -420,8 +420,8 @@ srv_a_regression.picks <- function(id,
           module_plot = teal.widgets::ggplot2_args(
             labs = list(
               title = "Response vs Regressor",
-              x = varname_w_label(merged$merge_vars()$regressor, anl),
-              y = varname_w_label(merged$merge_vars()$response, anl)
+              x = varname_w_label(merged$variables()$regressor, anl),
+              y = varname_w_label(merged$variables()$response, anl)
             ),
             theme = list()
           )
