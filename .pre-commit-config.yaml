@@ -15,7 +15,6 @@ repos:
       - id: roxygenize
         name: Regenerate package documentation
         additional_dependencies:
-          - ggmosaic
           - ggplot2
           - shiny
           - checkmate

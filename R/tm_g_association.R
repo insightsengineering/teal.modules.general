@@ -348,7 +348,7 @@ srv_tm_g_association <- function(id,
     )
 
     qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")') # nolint quotes
+      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr");library("tern")') # nolint quotes
     )
     anl_merged_q <- reactive({
       req(anl_merged_input())
