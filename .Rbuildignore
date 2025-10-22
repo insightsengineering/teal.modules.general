@@ -50,3 +50,4 @@ data-raw/data.R
 ^.revdeprefs\.yaml$
 ^revdep$
 ^\.covrignore$
+teal_app.lock
