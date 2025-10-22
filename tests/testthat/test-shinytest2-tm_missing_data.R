@@ -14,7 +14,7 @@ app_driver_tm_missing_data <- function() {
   })
 
   init_teal_app_driver(
-    teal::init(
+    app = init(
       data = data,
       modules = tm_missing_data(
         label = "Missing data",
@@ -42,7 +42,6 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$expect_no_shiny_error()
-
   testthat::expect_equal(app_driver$get_text(".teal-modules-tree .active"), "Missing data")
 
   encoding_dataset <- app_driver$get_text(paste(app_driver$namespaces(TRUE)$wrapper(NULL), ".help-block"))

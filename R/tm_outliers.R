@@ -452,7 +452,7 @@ srv_outliers <- function(id, data, outlier_var,
       req(anl_merged_input())
       teal.code::eval_code(
         data_obj(),
-        'library("dplyr");library("tidyr");library("tibble");library("ggplot2")' # nolint quotes
+        "library(dplyr);library(tidyr);library(tibble);library(ggplot2)"
       ) %>%
         teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
@@ -738,10 +738,11 @@ srv_outliers <- function(id, data, outlier_var,
               categorical_var_name = as.name(categorical_var)
             )
           )
-        ) |> within({
-          table <- rtables::df_to_tt(summary_data)
-          table
-        })
+        ) |>
+          within({
+            table <- rtables::df_to_tt(summary_data)
+            table
+          })
       } else {
         msg <- "No categorical variable selected, summary table cannot be created."
         showNotification(msg,
