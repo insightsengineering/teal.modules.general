@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,6 +64,7 @@
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.5.1">v0.5.1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.5.1-rc2">v0.5.1-rc2</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.5.1-rc1">v0.5.1-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.5.0">v0.5.0</a>
@@ -95,12 +96,20 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.5.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.5.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.1" id="tealmodulesgeneral-051">teal.modules.general 0.5.1<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-051"></a>
+</h2>
+<ul>
+<li>Removed ggmosaic package dependency to avoid being archived on CRAN (<a href="https://github.com/insightsengineering/teal.modules.general/issues/932" class="external-link">#932</a>).</li>
+</ul>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="tealmodulesgeneral-050">teal.modules.general 0.5.0<a class="anchor" aria-label="anchor" href="#tealmodulesgeneral-050"></a>
 </h2>
+<p class="text-muted">CRAN release: 2025-08-20</p>
 <div class="section level4">
 <h4 id="breaking-changes-0-5-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-0"></a>
 </h4>
@@ -344,7 +353,7 @@
 <ul>
 <li>Added support for logging with the <code>logger</code> package and added info level logs upon initialization of a module.</li>
 <li>Added support for custom arguments for <code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme</a></code> in plot based modules.</li>
-<li>Added support for custom arguments for <code><a href="https://insightsengineering.github.io/rtables/latest-release/reference/basic_table.html" class="external-link">rtables::basic_table</a></code> in <code>tm_t_crosstable</code>.</li>
+<li>Added support for custom arguments for <code><a href="https://insightsengineering.github.io/rtables/latest-tag/reference/basic_table.html" class="external-link">rtables::basic_table</a></code> in <code>tm_t_crosstable</code>.</li>
 <li>Updated <code>tm_outliers</code>, <code>tm_g_scatterplotmatrix</code>, <code>tm_g_association</code>, and <code>tm_t_crosstable</code> modules to adopt the new <code>teal.transform::data_merge_srv</code> and <code><a href="https://insightsengineering.github.io/teal.transform/latest-tag/reference/data_extract_multiple_srv.html" class="external-link">teal.transform::data_extract_multiple_srv</a></code> modules.</li>
 <li>Distinguished bars representing <code>NA</code> in plot depicting counts of <code>tm_variable_browser</code> with a different color fill.</li>
 <li>Modified the summary statistics table for numeric columns in <code>tm_variable_browser</code> to reflect the plot after <code>outliers</code> are removed.</li>
