@@ -1,0 +1,19 @@
+pandoc: 3.7.0.2
+pkgdown: 2.1.3
+pkgdown_sha: ~
+articles:
+  decorate-module-output: decorate-module-output.html
+  teal-modules-general: teal-modules-general.html
+  using-association-plot: using-association-plot.html
+  using-bivariate-plot: using-bivariate-plot.html
+  using-cross-table: using-cross-table.html
+  using-data-table: using-data-table.html
+  using-outliers-module: using-outliers-module.html
+  using-regression-plots: using-regression-plots.html
+  using-response-plot: using-response-plot.html
+  using-scatterplot-matrix: using-scatterplot-matrix.html
+  using-scatterplot: using-scatterplot.html
+last_built: 2025-10-22T08:01Z
+urls:
+  reference: https://insightsengineering.github.io/teal.modules.general/reference
+  article: https://insightsengineering.github.io/teal.modules.general/articles
