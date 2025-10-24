@@ -3,7 +3,7 @@ tm_g_distribution.picks <- function(label = "Distribution Module",
                                     dist_var = picks(
                                       datasets(),
                                       variables(where(is.numeric)),
-                                      values(selected = tidyselect::everything())
+                                      values()
                                     ),
                                     strata_var = NULL,
                                     group_var = NULL,
@@ -121,13 +121,13 @@ ui_g_distribution.picks <- function(id,
       tags$label("Encodings", class = "text-primary"),
       teal::teal_nav_item(
         label = tags$strong("Variable"),
-        teal.transform::picks_ui(id = ns("dist_var"), spec = dist_var)
+        teal.transform::picks_ui(id = ns("dist_var"), picks = dist_var)
       ),
       if (!is.null(group_var)) {
         tagList(
           teal::teal_nav_item(
             label = tags$strong("Group by:"),
-            teal.transform::picks_ui(id = ns("group_var"), spec = group_var)
+            teal.transform::picks_ui(id = ns("group_var"), picks = group_var)
           ),
           uiOutput(ns("scales_types_ui"))
         )
@@ -136,7 +136,7 @@ ui_g_distribution.picks <- function(id,
         tagList(
           teal::teal_nav_item(
             label = tags$strong("Stratify by:"),
-            teal.transform::picks_ui(id = ns("strata_var"), spec = strata_var)
+            teal.transform::picks_ui(id = ns("strata_var"), picks = strata_var)
           )
         )
       },
@@ -213,7 +213,7 @@ srv_g_distribution.picks <- function(id,
 
 
     selectors <- teal.transform::picks_srv(
-      spec = list(dist_var = dist_var, strata_var = strata_var, group_var = group_var),
+      picks = list(dist_var = dist_var, strata_var = strata_var, group_var = group_var),
       data = data
     )
 

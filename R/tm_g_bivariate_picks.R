@@ -5,18 +5,18 @@ tm_g_bivariate.picks <- function(label = "Bivariate Plots",
                                    variables(
                                      choices = tidyselect::where(is.numeric) |
                                        teal.transform::is_categorical(min.len = 2, max.len = 10),
-                                     selected = 1
+                                     selected = 1L
                                    ),
-                                   values(selected = tidyselect::everything(), multiple = TRUE)
+                                   values()
                                  ),
                                  y = picks(
                                    datasets(),
                                    variables(
                                      choices = tidyselect::where(is.numeric) |
                                        teal.transform::is_categorical(min.len = 2, max.len = 10),
-                                     selected = 2
+                                     selected = 2L
                                    ),
-                                   values(selected = tidyselect::everything(), multiple = TRUE)
+                                   values()
                                  ),
                                  row_facet = NULL,
                                  col_facet = NULL,
@@ -151,11 +151,11 @@ ui_g_bivariate.picks <- function(id,
     encoding = shiny::tagList(
       teal::teal_nav_item(
         label = tags$strong("X variable"),
-        teal.transform::picks_ui(id = ns("x"), spec = x)
+        teal.transform::picks_ui(id = ns("x"), picks = x)
       ),
       teal::teal_nav_item(
         label = tags$strong("Y variable"),
-        teal.transform::picks_ui(id = ns("y"), spec = y)
+        teal.transform::picks_ui(id = ns("y"), picks = y)
       ),
       conditionalPanel(
         condition =
@@ -176,7 +176,7 @@ ui_g_bivariate.picks <- function(id,
         teal::teal_nav_item(
           tags$div(
             tags$strong("Row facetting variable"),
-            teal.transform::picks_ui(id = ns("row_facet"), spec = row_facet),
+            teal.transform::picks_ui(id = ns("row_facet"), picks = row_facet),
             checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales)
           )
         )
@@ -185,7 +185,7 @@ ui_g_bivariate.picks <- function(id,
         teal::teal_nav_item(
           tags$div(
             tags$strong("Column facetting variable"),
-            teal.transform::picks_ui(id = ns("col_facet"), spec = col_facet),
+            teal.transform::picks_ui(id = ns("col_facet"), picks = col_facet),
             checkboxInput(ns("free_y_scales"), "free y scales", value = free_y_scales)
           )
         )
@@ -199,11 +199,11 @@ ui_g_bivariate.picks <- function(id,
             conditionalPanel(
               condition = paste0("input['", ns("coloring"), "']"),
               tags$div(
-                teal.transform::picks_ui(id = ns("color"), spec = color), # label = "Outline color by variable"
-                teal.transform::picks_ui(id = ns("fill"), spec = fill), # label = "Outline color by variable"
+                teal.transform::picks_ui(id = ns("color"), picks = color), # label = "Outline color by variable"
+                teal.transform::picks_ui(id = ns("fill"), picks = fill), # label = "Outline color by variable"
                 tags$div(
                   id = ns("size_settings"),
-                  teal.transform::picks_ui(id = ns("size"), spec = size) # label = "Size of points by variable (only if x and y are numeric)"
+                  teal.transform::picks_ui(id = ns("size"), picks = size) # label = "Size of points by variable (only if x and y are numeric)"
                 )
               )
             )
@@ -271,7 +271,7 @@ srv_g_bivariate.picks <- function(id,
 
     ns <- session$ns
     selectors <- teal.transform::picks_srv(
-      spec = list(
+      picks = list(
         x = x,
         y = y,
         row_facet = row_facet,

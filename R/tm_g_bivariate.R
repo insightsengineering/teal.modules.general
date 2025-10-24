@@ -154,7 +154,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                              variables(
                                choices = tidyselect::where(is.numeric) |
                                  teal.transform::is_categorical(min.len = 2, max.len = 10),
-                               selected = 1
+                               selected = 1L
                              )
                            ),
                            y = picks(
@@ -162,7 +162,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                              variables(
                                choices = tidyselect::where(is.numeric) |
                                  teal.transform::is_categorical(min.len = 2, max.len = 10),
-                               selected = 2
+                               selected = 2L
                              )
                            ),
                            row_facet = NULL,

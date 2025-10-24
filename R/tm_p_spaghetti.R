@@ -99,19 +99,19 @@ ui_p_spaghetti_module <- function(id, group_var, x_var, y_var, color_var, toolti
       class = "standard-layout encoding-panel",
       teal::teal_nav_item(
         label = tags$strong("Group Variable:"),
-        teal.transform::picks_ui(id = ns("group_var"), spec = group_var)
+        teal.transform::picks_ui(id = ns("group_var"), picks = group_var)
       ),
       teal::teal_nav_item(
         label = tags$strong("X-axis Variable:"),
-        teal.transform::picks_ui(id = ns("x_var"), spec = x_var)
+        teal.transform::picks_ui(id = ns("x_var"), picks = x_var)
       ),
       teal::teal_nav_item(
         label = tags$strong("Y-axis Variable:"),
-        teal.transform::picks_ui(id = ns("y_var"), spec = y_var)
+        teal.transform::picks_ui(id = ns("y_var"), picks = y_var)
       ),
       teal::teal_nav_item(
         label = tags$strong("Color by:"),
-        teal.transform::picks_ui(id = ns("color_var"), spec = color_var),
+        teal.transform::picks_ui(id = ns("color_var"), picks = color_var),
         colour_picker_ui(ns("colors"))
       )
     ),
@@ -130,7 +130,7 @@ srv_p_spaghetti_module <- function(id,
   moduleServer(id, function(input, output, session) {
     selectors <- teal.transform::picks_srv(
       data = data,
-      spec = list(group_var = group_var, x_var = x_var, y_var = y_var, color_var = color_var, tooltip_vars = tooltip_vars)
+      picks = list(group_var = group_var, x_var = x_var, y_var = y_var, color_var = color_var, tooltip_vars = tooltip_vars)
     )
     merged_dataname <- "anl"
     merged_q <- reactive({

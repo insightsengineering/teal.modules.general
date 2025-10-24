@@ -150,11 +150,11 @@ ui_a_regression.picks <- function(id,
       tags$label("Encodings", class = "text-primary"), tags$br(),
       teal::teal_nav_item(
         label = tags$strong("Response variable"),
-        teal.transform::picks_ui(id = ns("response"), spec = response)
+        teal.transform::picks_ui(id = ns("response"), picks = response)
       ),
       teal::teal_nav_item(
         label = tags$strong("Regressor variables"),
-        teal.transform::picks_ui(id = ns("regressor"), spec = regressor)
+        teal.transform::picks_ui(id = ns("regressor"), picks = regressor)
       ),
       radioButtons(
         ns("plot_type"),
@@ -183,7 +183,7 @@ ui_a_regression.picks <- function(id,
           ),
           min = 1, max = 10, value = 9, ticks = FALSE, step = .1
         ),
-        teal.transform::picks_ui(id = ns("outlier"), spec = outlier)
+        teal.transform::picks_ui(id = ns("outlier"), picks = outlier)
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
       bslib::accordion(
@@ -247,7 +247,7 @@ srv_a_regression.picks <- function(id,
     ns <- session$ns
 
     selectors <- teal.transform::picks_srv(
-      spec = list(response = response, regressor = regressor, outlier = outlier),
+      picks = list(response = response, regressor = regressor, outlier = outlier),
       data = data
     )
 

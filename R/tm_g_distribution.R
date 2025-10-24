@@ -74,7 +74,7 @@
 #'       dist_var = picks(
 #'         datasets("iris"),
 #'         variables(tidyselect::where(is.numeric)),
-#'         values(selected = "Petal.Length")
+#'         values()
 #'       )
 #'     )
 #'   )

@@ -3,7 +3,7 @@ tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
                                          variables = list(
                                            picks(
                                              datasets(),
-                                             variables(selected = 1:5, multiple = TRUE)
+                                             variables(selected = seq(1, 5), multiple = TRUE)
                                            )
                                          ),
                                          plot_height = c(600, 200, 2000),
@@ -72,7 +72,7 @@ ui_g_scatterplotmatrix.picks <- function(id,
       tagList(
         lapply(names(variables), function(id) {
           teal::teal_nav_item(
-            teal.transform::picks_ui(id = ns(id), spec = variables[[id]])
+            teal.transform::picks_ui(id = ns(id), picks = variables[[id]])
           )
         })
       ),
@@ -121,7 +121,7 @@ srv_g_scatterplotmatrix.picks <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     selectors <- teal.transform::picks_srv(
-      spec = variables,
+      picks = variables,
       data = data
     )
 

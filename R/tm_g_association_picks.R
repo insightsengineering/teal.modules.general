@@ -5,7 +5,7 @@ tm_g_association.picks <- function(label = "Association",
                                      variables(
                                        choices = tidyselect::where(is.numeric) |
                                          teal.transform::is_categorical(min.len = 2, max.len = 10),
-                                       selected = 1
+                                       selected = 1L
                                      ),
                                      values()
                                    ),
@@ -14,7 +14,7 @@ tm_g_association.picks <- function(label = "Association",
                                      variables(
                                        choices = tidyselect::where(is.numeric) |
                                          teal.transform::is_categorical(min.len = 2, max.len = 10),
-                                       selected = 2,
+                                       selected = 2L,
                                        multiple = TRUE
                                      )
                                    ),
@@ -102,11 +102,11 @@ ui_g_association.picks <- function(id,
       tags$label("Encodings", class = "text-primary"),
       teal::teal_nav_item(
         label = tags$strong("Reference variable"),
-        teal.transform::picks_ui(id = ns("ref"), spec = ref)
+        teal.transform::picks_ui(id = ns("ref"), picks = ref)
       ),
       teal::teal_nav_item(
         label = tags$strong("Associated variables"),
-        teal.transform::picks_ui(id = ns("vars"), spec = vars)
+        teal.transform::picks_ui(id = ns("vars"), picks = vars)
       ),
       checkboxInput(ns("association"), "Association with reference variable", value = show_association),
       checkboxInput(ns("show_dist"), "Scaled frequencies", value = FALSE),
@@ -157,7 +157,7 @@ srv_g_association.picks <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::picks_srv(spec = list(ref = ref, vars = vars), data = data)
+    selectors <- teal.transform::picks_srv(picks = list(ref = ref, vars = vars), data = data)
 
     validated_q <- reactive({
       obj <- req(data())

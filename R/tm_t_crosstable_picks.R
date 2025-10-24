@@ -70,11 +70,11 @@ ui_t_crosstable.picks <- function(id, x, y, show_percentage, show_total, remove_
       tags$label("Encodings", class = "text-primary"),
       teal::teal_nav_item(
         label = tags$strong("Row values"),
-        teal.transform::picks_ui(id = ns("x"), spec = x)
+        teal.transform::picks_ui(id = ns("x"), picks = x)
       ),
       teal::teal_nav_item(
         label = tags$strong("Column values"),
-        teal.transform::picks_ui(id = ns("y"), spec = y)
+        teal.transform::picks_ui(id = ns("y"), picks = y)
       ),
       shinyWidgets::pickerInput(
         ns("join_fun"),
@@ -106,7 +106,7 @@ srv_t_crosstable.picks <- function(id, data, label, x, y, remove_zero_columns, b
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::picks_srv(spec = list(x = x, y = y), data = data)
+    selectors <- teal.transform::picks_srv(picks = list(x = x, y = y), data = data)
 
     validated_q <- reactive({
       validate_input(

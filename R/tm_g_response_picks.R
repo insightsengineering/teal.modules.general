@@ -98,22 +98,22 @@ ui_g_response.picks <- function(id,
       tags$label("Encodings", class = "text-primary"),
       teal::teal_nav_item(
         label = tags$strong("Response variable"),
-        teal.transform::picks_ui(id = ns("response"), spec = response)
+        teal.transform::picks_ui(id = ns("response"), picks = response)
       ),
       teal::teal_nav_item(
         label = tags$strong("X variable"),
-        teal.transform::picks_ui(id = ns("x"), spec = x)
+        teal.transform::picks_ui(id = ns("x"), picks = x)
       ),
       if (!is.null(row_facet)) {
         teal::teal_nav_item(
           label = tags$strong("Row facetting"),
-          teal.transform::picks_ui(id = ns("row_facet"), spec = row_facet)
+          teal.transform::picks_ui(id = ns("row_facet"), picks = row_facet)
         )
       },
       if (!is.null(col_facet)) {
         teal::teal_nav_item(
           label = tags$strong("Column facetting"),
-          teal.transform::picks_ui(id = ns("col_facet"), spec = col_facet)
+          teal.transform::picks_ui(id = ns("col_facet"), picks = col_facet)
         )
       },
       shinyWidgets::radioGroupButtons(
@@ -163,7 +163,7 @@ srv_g_response.picks <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     selectors <- teal.transform::picks_srv(
-      spec = list(
+      picks = list(
         response = response,
         x = x,
         row_facet = row_facet,

@@ -161,7 +161,7 @@ tm_g_response <- function(label = "Response Plot",
                             datasets(),
                             variables(
                               choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
-                              selected = 2
+                              selected = 2L
                             ),
                             values()
                           ),

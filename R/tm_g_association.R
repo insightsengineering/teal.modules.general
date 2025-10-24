@@ -135,16 +135,16 @@ tm_g_association <- function(label = "Association",
                                variables(
                                  choices = tidyselect::where(is.numeric) |
                                    teal.transform::is_categorical(min.len = 2, max.len = 10),
-                                 selected = 1
+                                 selected = 1L
                                ),
-                               values(selected = tidyselect::everything(), multiple = TRUE)
+                               values()
                              ),
                              vars = picks(
                                datasets(),
                                variables(
                                  choices = tidyselect::where(is.numeric) |
                                    teal.transform::is_categorical(min.len = 2, max.len = 10),
-                                 selected = 2, # todo: make sure that is doesn't fail in teal.transform
+                                 selected = 2L, # todo: make sure that is doesn't fail in teal.transform
                                  multiple = TRUE
                                ),
                                values()

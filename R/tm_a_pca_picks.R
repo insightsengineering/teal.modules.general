@@ -127,7 +127,7 @@ ui_a_pca.picks <- function(id,
         tags$label("Encodings", class = "text-primary"),
         teal::teal_nav_item(
           label = tags$strong("Data selection"),
-          teal.transform::picks_ui(id = ns("dat"), spec = dat)
+          teal.transform::picks_ui(id = ns("dat"), picks = dat)
         ),
         bslib::accordion(
           open = TRUE,
@@ -232,7 +232,7 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::picks_srv(spec = list(dat = dat), data = data)
+    selectors <- teal.transform::picks_srv(picks = list(dat = dat), data = data)
 
     qenv <- reactive({
       validate_input(

@@ -137,7 +137,7 @@ ui_g_scatterplot.picks <- function(id,
         tags$label("Encodings", class = "text-primary"),
         teal::teal_nav_item(
           label = tags$strong("X variable"),
-          teal.transform::picks_ui(id = ns("x"), spec = x),
+          teal.transform::picks_ui(id = ns("x"), picks = x),
           checkboxInput(ns("log_x"), "Use log transformation", value = FALSE),
           conditionalPanel(
             condition = paste0("input['", ns("log_x"), "'] == true"),
@@ -151,7 +151,7 @@ ui_g_scatterplot.picks <- function(id,
         ),
         teal::teal_nav_item(
           label = tags$strong("Y variable"),
-          teal.transform::picks_ui(id = ns("y"), spec = y),
+          teal.transform::picks_ui(id = ns("y"), picks = y),
           checkboxInput(ns("log_y"), "Use log transformation", value = FALSE),
           conditionalPanel(
             condition = paste0("input['", ns("log_y"), "'] == true"),
@@ -166,25 +166,25 @@ ui_g_scatterplot.picks <- function(id,
         if (!is.null(color_by)) {
           teal::teal_nav_item(
             label = tags$strong("Color by:"),
-            teal.transform::picks_ui(id = ns("color_by"), spec = color_by)
+            teal.transform::picks_ui(id = ns("color_by"), picks = color_by)
           )
         },
         if (!is.null(size_by)) {
           teal::teal_nav_item(
             label = tags$strong("Size by:"),
-            teal.transform::picks_ui(id = ns("size_by"), spec = size_by)
+            teal.transform::picks_ui(id = ns("size_by"), picks = size_by)
           )
         },
         if (!is.null(row_facet)) {
           teal::teal_nav_item(
             label = tags$strong("Row facetting"),
-            teal.transform::picks_ui(id = ns("row_facet"), spec = row_facet)
+            teal.transform::picks_ui(id = ns("row_facet"), picks = row_facet)
           )
         },
         if (!is.null(col_facet)) {
           teal::teal_nav_item(
             label = tags$strong("Column facetting"),
-            teal.transform::picks_ui(id = ns("col_facet"), spec = col_facet)
+            teal.transform::picks_ui(id = ns("col_facet"), picks = col_facet)
           )
         },
         ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
@@ -271,7 +271,7 @@ srv_g_scatterplot.picks <- function(id,
 
 
     selectors <- teal.transform::picks_srv(
-      spec = list(x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet),
+      picks = list(x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet),
       data = data
     )
 
