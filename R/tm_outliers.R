@@ -294,7 +294,6 @@ ui_outliers <- function(id, ...) {
         open = TRUE,
         bslib::accordion_panel(
           title = "Method parameters",
-          collapsed = FALSE,
           teal.widgets::optionalSelectInput(
             inputId = ns("method"),
             label = "Method",
@@ -362,14 +361,17 @@ ui_outliers <- function(id, ...) {
           decorators = select_decorators(args$decorators, "cumulative_plot")
         )
       ),
-      bslib::accordion_panel(
-        title = "Plot settings",
-        selectInput(
-          inputId = ns("ggtheme"),
-          label = "Theme (by ggplot):",
-          choices = ggplot_themes,
-          selected = args$ggtheme,
-          multiple = FALSE
+      bslib::accordion(
+        open = TRUE,
+        bslib::accordion_panel(
+          title = "Plot settings",
+          selectInput(
+            inputId = ns("ggtheme"),
+            label = "Theme (by ggplot):",
+            choices = ggplot_themes,
+            selected = args$ggtheme,
+            multiple = FALSE
+          )
         )
       )
     ),
@@ -738,10 +740,11 @@ srv_outliers <- function(id, data, outlier_var,
               categorical_var_name = as.name(categorical_var)
             )
           )
-        ) |> within({
-          table <- rtables::df_to_tt(summary_data)
-          table
-        })
+        ) |>
+          within({
+            table <- rtables::df_to_tt(summary_data)
+            table
+          })
       } else {
         msg <- "No categorical variable selected, summary table cannot be created."
         showNotification(msg,
