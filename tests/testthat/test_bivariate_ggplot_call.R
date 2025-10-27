@@ -20,31 +20,31 @@ testthat::test_that("bivariate_ggplot_call with numerics", {
 
 testthat::test_that("bivariate_ggplot_call with factor, char, logical", {
   error_message <- "Categorical variables 'x' and 'y' are currently not supported."
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("factor", "factor") %>% deparse(width.cutoff = 300),
     error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("logical", "factor") %>% deparse(width.cutoff = 300),
     error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("character", "factor") %>% deparse(width.cutoff = 300),
     error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("logical", "character") %>% deparse(width.cutoff = 300),
     error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("character", "logical") %>% deparse(width.cutoff = 300),
     error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("logical", "logical") %>% deparse(width.cutoff = 300),
     error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("character", "character") %>% deparse(width.cutoff = 300),
     error_message
   )
