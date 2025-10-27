@@ -444,6 +444,7 @@ set_chunk_dims <- function(pws, q_r, inner_classes = NULL) {
   checkmate::assert_character(inner_classes, null.ok = TRUE)
 
   reactive({
+    # browser()
     pws_dim <- stats::setNames(as.list(req(pws$dim())), c("width", "height"))
     if (identical(pws_dim$width, "auto")) { # ignore non-numeric values (such as "auto")
       pws_dim$width <- NULL

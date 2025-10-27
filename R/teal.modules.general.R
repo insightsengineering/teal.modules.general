@@ -4,7 +4,6 @@
 #' (not necessarily for clinical trials data).
 #'
 #' @import ggplot2
-#' @import ggmosaic
 #' @import shiny
 #' @import teal
 #' @import teal.transform
@@ -14,12 +13,6 @@
 #' @name teal.modules.general
 #' @keywords internal
 "_PACKAGE"
-
-# nolint start
-# Note ggmosaic (version <= 0.3.3) needs to be in DEPENDS as the following does not work if it is imported
-# df <- data.frame(x = c("A", "B", "C", "A"), y = c("Z", "Z", "W", "W"))
-# ggplot(df) + ggmosaic::geom_mosaic(aes(x = ggmosaic::product(x), fill = y))
-# nolint end
 
 # Needed to avoid R CMD note on no visible binding
 utils::globalVariables("count")

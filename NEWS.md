@@ -4,6 +4,10 @@
 
 - Modules now return a `teal_report` object that contains the data, code and reporter. All the reporter buttons were removed from the modules' UI.
 
+# teal.modules.general 0.5.1
+
+- Removed ggmosaic package dependency to avoid being archived on CRAN (#932).
+
 # teal.modules.general 0.5.0
 
 ### Breaking changes
