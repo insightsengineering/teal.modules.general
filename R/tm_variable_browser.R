@@ -1133,7 +1133,7 @@ remove_outliers_from <- function(var, outlier_definition) {
 #' Logical vector
 #'
 #' Returns a logical vector.
-#' Suitable for dplyr::filter() and data.frames.
+#' Suitable for `dplyr::filter()` and data.frames.
 #'
 #' @inheritParams remove_outliers_from
 #'
