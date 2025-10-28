@@ -888,12 +888,13 @@ get_plotted_data <- function(input, plot_var, data) {
       teal.reporter::teal_card("## Module's output(s)")
     )
   teal.code::eval_code(obj, "library(ggplot2)") |>
-    within({
-      ANL <- select(dataset_name, varname)
-    },
-    dataset_name = as.name(dataset_name),
-    varname = as.name(varname)
-  )
+    within(
+      {
+        ANL <- select(dataset_name, varname)
+      },
+      dataset_name = as.name(dataset_name),
+      varname = as.name(varname)
+    )
 }
 
 #' Renders the left-hand side `tabset` panel of the module
