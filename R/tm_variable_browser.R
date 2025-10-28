@@ -460,7 +460,6 @@ srv_variable_browser <- function(id,
     })
 
     variable_plot_r <- reactive({
-      req(plotted_data())
       display_density <- `if`(is.null(input$display_density), FALSE, input$display_density)
       remove_outliers <- `if`(is.null(input$remove_outliers), FALSE, input$remove_outliers)
 
