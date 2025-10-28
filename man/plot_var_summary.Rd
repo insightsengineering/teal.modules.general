@@ -5,11 +5,10 @@
 \title{Plot variable}
 \usage{
 plot_var_summary(
-  var,
-  var_lab,
+  qenv,
   wrap_character = NULL,
   numeric_as_factor,
-  display_density = is.numeric(var),
+  display_density = FALSE,
   remove_NA_hist = FALSE,
   outlier_definition,
   records_for_factor,
@@ -17,10 +16,7 @@ plot_var_summary(
 )
 }
 \arguments{
-\item{var}{vector of any type to be plotted. For numeric variables it produces histogram with
-density line, for factors it creates frequency plot}
-
-\item{var_lab}{text describing selected variable to be displayed on the plot}
+\item{qenv}{teal_data object were code should be evaluated.}
 
 \item{wrap_character}{(\code{numeric}) number of characters at which to wrap text values of \code{var}}
 
@@ -41,6 +37,11 @@ with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
+
+\item{var}{vector of any type to be plotted. For numeric variables it produces histogram with
+density line, for factors it creates frequency plot}
+
+\item{var_lab}{text describing selected variable to be displayed on the plot}
 }
 \value{
 plot
