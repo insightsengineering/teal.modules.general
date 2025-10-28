@@ -263,11 +263,11 @@ srv_variable_browser <- function(id,
     establish_updating_selection(datanames, input, plot_var, columns_names)
 
     # validations
-    validation_checks <- validate_input(req(input), req(plot_var), req(data))
+    validation_checks <- validate_input(req(input), req(plot_var), data)
 
     # data_for_analysis is a list with two elements: a column from a dataset and the column label
     plotted_data <- reactive({
-      req(input, plot_var, data)
+      req(input, plot_var, data())
       validation_checks()
       get_plotted_data(input, plot_var, data)
     })
@@ -311,10 +311,10 @@ srv_variable_browser <- function(id,
     })
 
     output$ui_numeric_display <- renderUI({
+      dataname <- req(input$tabset_panel)
+      varname <- req(plot_var$variable)[[dataname]]
+      df <- req(data())[[dataname]]
       validation_checks()
-      dataname <- input$tabset_panel
-      varname <- plot_var$variable[[dataname]]
-      df <- data()[[dataname]]
 
       numeric_ui <- bslib::page_fluid(
         bslib::layout_columns(
@@ -377,9 +377,9 @@ srv_variable_browser <- function(id,
 
     output$ui_histogram_display <- renderUI({
       validation_checks()
-      dataname <- input$tabset_panel
-      varname <- plot_var$variable[[dataname]]
-      df <- data()[[dataname]]
+      dataname <- req(input$tabset_panel)
+      varname <- req(plot_var$variable)[[dataname]]
+      df <- req(data())[[dataname]]
 
       numeric_ui <- bslib::input_switch(
         id = session$ns("remove_NA_hist"),
@@ -445,11 +445,24 @@ srv_variable_browser <- function(id,
       }
     })
 
+    output$variable_summary_table <- DT::renderDataTable({
+      var_summary_table(
+        plotted_data()$ANL[, 1, drop = TRUE],
+        treat_numeric_as_factor(),
+        input$variable_summary_table_rows,
+        if (!is.null(input$remove_outliers) && input$remove_outliers) {
+          req(input$outlier_definition_slider)
+          as.numeric(input$outlier_definition_slider)
+        } else {
+          0
+        }
+      )
+    })
 
     variable_plot_r <- reactive({
       req(plotted_data())
-      display_density <- `if`(is.null(input$display_density), FALSE, req(input$display_density))
-      remove_outliers <- `if`(is.null(input$remove_outliers), FALSE, req(input$remove_outliers))
+      display_density <- `if`(is.null(input$display_density), FALSE, input$display_density)
+      remove_outliers <- `if`(is.null(input$remove_outliers), FALSE, input$remove_outliers)
 
       if (remove_outliers) {
         req(input$outlier_definition_slider)
@@ -459,7 +472,7 @@ srv_variable_browser <- function(id,
       }
 
       plot_var_summary(
-        qenv = plotted_data(),
+        qenv = req(plotted_data()),
         # var = plotted_data()$data,
         # var_lab = plotted_data()$var_description,
         wrap_character = 15,
@@ -482,20 +495,6 @@ srv_variable_browser <- function(id,
       plot_r = plot_r,
       height = c(500, 200, 2000)
     )
-
-    output$variable_summary_table <- DT::renderDataTable({
-      var_summary_table(
-        plotted_data()$ANL[, 1, drop = TRUE],
-        treat_numeric_as_factor(),
-        input$variable_summary_table_rows,
-        if (!is.null(input$remove_outliers) && input$remove_outliers) {
-          req(input$outlier_definition_slider)
-          as.numeric(input$outlier_definition_slider)
-        } else {
-          0
-        }
-      )
-    })
 
     set_chunk_dims(pws, variable_plot_r)
   })
@@ -735,10 +734,11 @@ plot_var_summary <- function(qenv,
         ))
         qenv <- within(qenv, {
           remove_outliers <- remove_outliers_from
-          ANL <- filter(ANL, remove_outliers(var_name))
+          ANL <- filter(ANL, remove_outliers(var_name, outlier_definition))
         },
         remove_outliers_from = filter_outliers,
-        var_name = as.name(var_name))
+        var_name = as.name(var_name),
+        outlier_definition = outlier_definition)
       }
 
       ## histogram
@@ -760,7 +760,8 @@ plot_var_summary <- function(qenv,
       if (display_density) {
         qenv_plot <- within(qenv_plot, {
           plot <- plot + ggplot2::geom_density(ggplot2::aes(y = ggplot2::after_stat(count * binwidth)))
-        })
+        },
+        binwidth = binwidth)
       }
       if (outlier_definition != 0) {
         qenv_plot <- within(qenv_plot, {
@@ -789,7 +790,6 @@ plot_var_summary <- function(qenv,
       ANL[[var]] <- as.numeric(ANL[[var]])
       attr(ANL[[var]], "label") <- col_label
       plot <- ANL %>%
-        mutate(var_name = as.numeric(var_name)) %>%
         ggplot2::ggplot(ggplot2::aes(x = var_name, y = ggplot2::after_stat(count))) +
         ggplot2::geom_histogram(binwidth = binwidth)
     },
