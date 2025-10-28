@@ -458,7 +458,7 @@ srv_variable_browser <- function(id,
         outlier_definition <- 0
       }
 
-      pvs <- plot_var_summary(
+      plot_var_summary(
         qenv = plotted_data(),
         # var = plotted_data()$data,
         # var_lab = plotted_data()$var_description,
@@ -470,10 +470,10 @@ srv_variable_browser <- function(id,
         records_for_factor = .unique_records_for_factor,
         ggplot2_args = all_ggplot2_args()
       )
-      pvs
     })
 
     plot_r <- reactive({
+      validation_checks()
       req(variable_plot_r())[["plot"]]
     })
 
@@ -497,12 +497,7 @@ srv_variable_browser <- function(id,
       )
     })
 
-    output_q <- reactive({
-      validation_checks()
-      qenv <- req(variable_plot_r())
-      teal.reporter::as.teal_card(qenv)
-    })
-    set_chunk_dims(pws, output_q)
+    set_chunk_dims(pws, variable_plot_r)
   })
 }
 
@@ -629,8 +624,6 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #' @return plot
 #' @keywords internal
 plot_var_summary <- function(qenv,
-                             # var,
-                             # var_lab,
                              wrap_character = NULL,
                              numeric_as_factor,
                              display_density = FALSE,
@@ -638,7 +631,6 @@ plot_var_summary <- function(qenv,
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {
-  # checkmate::assert_character(var_lab)
   checkmate::assert_numeric(wrap_character, null.ok = TRUE)
   checkmate::assert_flag(numeric_as_factor)
   checkmate::assert_flag(display_density)
@@ -649,7 +641,8 @@ plot_var_summary <- function(qenv,
 
   var_name <- names(qenv$ANL)
 
-  teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Plot")
+  teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv),
+                                      teal.reporter::teal_card("### Histogram plot"))
 
   var <- qenv$ANL[[var_name]]
   qenv_plot <- if (is.factor(var) || is.character(var) || is.logical(var)) {
@@ -871,17 +864,20 @@ validate_input <- function(input, plot_var, data) {
 get_plotted_data <- function(input, plot_var, data) {
   dataset_name <- req(input$tabset_panel)
   varname <- plot_var$variable[[dataset_name]]
-  q <- within(data(), {
+  obj <- data()
+  teal.reporter::teal_card(obj) <-
+    c(
+      teal.reporter::teal_card(obj),
+      teal.reporter::teal_card("## Module's output(s)")
+    )
+  within(obj, {
     library(dplyr)
-    ANL <- dataset_name %>%
-      select(varname)
+    library(ggplot2)
+    ANL <- select(dataset_name, varname)
   },
   dataset_name = as.name(dataset_name),
   varname = as.name(varname)
   )
-  # var_description <- teal.data::col_labels(df)[[varname]]
-  # list(data = df[[varname]], var_description = var_description)
-  q
 }
 
 #' Renders the left-hand side `tabset` panel of the module
