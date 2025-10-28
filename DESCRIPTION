@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.5.0.9009
-Date: 2025-10-17
+Version: 0.5.1.9010
+Date: 2025-10-27
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -23,7 +23,6 @@ URL: https://insightsengineering.github.io/teal.modules.general/,
 BugReports:
     https://github.com/insightsengineering/teal.modules.general/issues
 Depends:
-    ggmosaic (>= 0.3.0),
     ggplot2 (>= 3.4.0),
     R (>= 4.1),
     shiny (>= 1.8.1),
