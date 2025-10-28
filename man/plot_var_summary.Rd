@@ -37,11 +37,6 @@ with settings for the module plot.
 The argument is merged with options variable \code{teal.ggplot2_args} and default module setup.
 
 For more details see the vignette: \code{vignette("custom-ggplot2-arguments", package = "teal.widgets")}}
-
-\item{var}{vector of any type to be plotted. For numeric variables it produces histogram with
-density line, for factors it creates frequency plot}
-
-\item{var_lab}{text describing selected variable to be displayed on the plot}
 }
 \value{
 plot

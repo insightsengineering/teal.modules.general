@@ -605,9 +605,6 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #'
 #' @inheritParams shared_params
 #' @param qenv teal_data object were code should be evaluated.
-#' @param var vector of any type to be plotted. For numeric variables it produces histogram with
-#' density line, for factors it creates frequency plot
-#' @param var_lab text describing selected variable to be displayed on the plot
 #' @param wrap_character (`numeric`) number of characters at which to wrap text values of `var`
 #' @param numeric_as_factor (`logical`) should the numeric variable be treated as a factor
 #' @param display_density (`logical`) should density estimation be displayed for numeric values
@@ -890,10 +887,8 @@ get_plotted_data <- function(input, plot_var, data) {
       teal.reporter::teal_card(obj),
       teal.reporter::teal_card("## Module's output(s)")
     )
-  within(obj,
-    {
-      library(dplyr)
-      library(ggplot2)
+  teal.code::eval_code(obj, "library(ggplot2)") |>
+    within({
       ANL <- select(dataset_name, varname)
     },
     dataset_name = as.name(dataset_name),
