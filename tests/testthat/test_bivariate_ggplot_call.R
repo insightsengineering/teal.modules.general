@@ -19,33 +19,34 @@ testthat::test_that("bivariate_ggplot_call with numerics", {
 })
 
 testthat::test_that("bivariate_ggplot_call with factor, char, logical", {
-  testthat::expect_match(
+  error_message <- "Categorical variables 'x' and 'y' are currently not supported."
+  testthat::expect_error(
     bivariate_ggplot_call("factor", "factor") %>% deparse(width.cutoff = 300),
-    "geom_mosaic"
+    error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("logical", "factor") %>% deparse(width.cutoff = 300),
-    "geom_mosaic"
+    error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("character", "factor") %>% deparse(width.cutoff = 300),
-    "geom_mosaic"
+    error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("logical", "character") %>% deparse(width.cutoff = 300),
-    "geom_mosaic"
+    error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("character", "logical") %>% deparse(width.cutoff = 300),
-    "geom_mosaic"
+    error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("logical", "logical") %>% deparse(width.cutoff = 300),
-    "geom_mosaic"
+    error_message
   )
-  testthat::expect_match(
+  testthat::expect_error(
     bivariate_ggplot_call("character", "character") %>% deparse(width.cutoff = 300),
-    "geom\\_mosaic"
+    error_message
   )
 })
 
