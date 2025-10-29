@@ -604,7 +604,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #' Creates summary plot with statistics relevant to data type.
 #'
 #' @inheritParams shared_params
-#' @param qenv teal_data object were code should be evaluated.
+#' @param qenv teal_data object where code should be evaluated.
 #' @param wrap_character (`numeric`) number of characters at which to wrap text values of `var`
 #' @param numeric_as_factor (`logical`) should the numeric variable be treated as a factor
 #' @param display_density (`logical`) should density estimation be displayed for numeric values
@@ -738,10 +738,10 @@ plot_var_summary <- function(qenv,
         ))
         qenv <- within(qenv,
           {
-            remove_outliers <- remove_outliers_from
-            ANL <- filter(ANL, remove_outliers(var_name, outlier_definition))
+            filter_outliers <- filter_outliers
+            ANL <- filter(ANL, filter_outliers(var_name, outlier_definition))
           },
-          remove_outliers_from = filter_outliers,
+          filter_outliers = filter_outliers,
           var_name = as.name(var_name),
           outlier_definition = outlier_definition
         )

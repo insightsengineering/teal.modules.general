@@ -16,7 +16,7 @@ plot_var_summary(
 )
 }
 \arguments{
-\item{qenv}{teal_data object were code should be evaluated.}
+\item{qenv}{teal_data object where code should be evaluated.}
 
 \item{wrap_character}{(\code{numeric}) number of characters at which to wrap text values of \code{var}}
 
