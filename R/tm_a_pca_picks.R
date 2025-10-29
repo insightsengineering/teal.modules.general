@@ -1,8 +1,8 @@
 #' @export
 tm_a_pca.picks <- function(label = "Principal Component Analysis",
-                           dat = picks(
-                             datasets(),
-                             variables(
+                           dat = teal.transform::picks(
+                             teal.transform::datasets(),
+                             teal.transform::variables(
                                choices = tidyselect::where(~ is.numeric(.x) && all(!is.na(.x))),
                                selected = tidyselect::everything(),
                                multiple = TRUE
@@ -82,10 +82,7 @@ tm_a_pca.picks <- function(label = "Principal Component Analysis",
     ui_args = args[names(args) %in% names(formals(ui_a_pca.picks))],
     server_args = args[names(args) %in% names(formals(srv_a_pca.picks))],
     transformators = transformators,
-    datanames = {
-      datanames <- datanames(list(dat))
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = .picks_datanames(list(dat))
   )
   attr(ans, "teal_bookmarkable") <- FALSE
   ans
@@ -125,8 +122,8 @@ ui_a_pca.picks <- function(id,
       ),
       encoding = tags$div(
         tags$label("Encodings", class = "text-primary"),
-        teal::teal_nav_item(
-          label = tags$strong("Data selection"),
+        tags$div(
+          tags$strong("Data selection"),
           teal.transform::picks_ui(id = ns("dat"), picks = dat)
         ),
         bslib::accordion(

@@ -1,9 +1,36 @@
 #' @export
 tm_g_response.picks <- function(label = "Response Plot",
-                                response,
-                                x,
-                                row_facet = NULL,
-                                col_facet = NULL,
+                                response = teal.transform::picks(
+                                  teal.transform::datasets(),
+                                  teal.transform::variables(
+                                    choices = teal.transform::is_categorical(min.len = 2, max.len = 10)
+                                  ),
+                                  teal.transform::values()
+                                ),
+                                x = teal.transform::picks(
+                                  teal.transform::datasets(),
+                                  teal.transform::variables(
+                                    choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                    selected = 2L
+                                  ),
+                                  teal.transform::values()
+                                ),
+                                row_facet = teal.transform::picks(
+                                  teal.transform::datasets(),
+                                  teal.transform::variables(
+                                    choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                    selected = NULL
+                                  ),
+                                  teal.transform::values()
+                                ),
+                                col_facet = teal.transform::picks(
+                                  teal.transform::datasets(),
+                                  teal.transform::variables(
+                                    choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                    selected = NULL
+                                  ),
+                                  teal.transform::values()
+                                ),
                                 coord_flip = FALSE,
                                 count_labels = TRUE,
                                 rotate_xaxis_labels = FALSE,
@@ -23,13 +50,13 @@ tm_g_response.picks <- function(label = "Response Plot",
 
   checkmate::assert_class(response, "picks")
   if (isTRUE(attr(response$variables, "multiple"))) {
-    warning("`response` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    warning("`response` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
     attr(response$variables, "multiple") <- FALSE
   }
 
   checkmate::assert_class(x, "picks")
   if (isTRUE(attr(x$variables, "multiple"))) {
-    warning("`x` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    warning("`x` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
     attr(x$variables, "multiple") <- FALSE
   }
 
@@ -66,10 +93,7 @@ tm_g_response.picks <- function(label = "Response Plot",
     ui_args = args[names(args) %in% names(formals(ui_g_response.picks))],
     server_args = args[names(args) %in% names(formals(srv_g_response.picks))],
     transformators = transformators,
-    datanames = {
-      datanames <- datanames(list(response, x, row_facet, col_facet))
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = .picks_datanames(list(response, x, row_facet, col_facet))
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
@@ -96,23 +120,23 @@ ui_g_response.picks <- function(id,
     ),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
-      teal::teal_nav_item(
-        label = tags$strong("Response variable"),
+      tags$div(
+        tags$strong("Response variable"),
         teal.transform::picks_ui(id = ns("response"), picks = response)
       ),
-      teal::teal_nav_item(
-        label = tags$strong("X variable"),
+      tags$div(
+        tags$strong("X variable"),
         teal.transform::picks_ui(id = ns("x"), picks = x)
       ),
       if (!is.null(row_facet)) {
-        teal::teal_nav_item(
-          label = tags$strong("Row facetting"),
+        tags$div(
+          tags$strong("Row facetting"),
           teal.transform::picks_ui(id = ns("row_facet"), picks = row_facet)
         )
       },
       if (!is.null(col_facet)) {
-        teal::teal_nav_item(
-          label = tags$strong("Column facetting"),
+        tags$div(
+          tags$strong("Column facetting"),
           teal.transform::picks_ui(id = ns("col_facet"), picks = col_facet)
         )
       },

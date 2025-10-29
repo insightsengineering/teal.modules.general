@@ -1,19 +1,51 @@
 #' @export
 tm_g_scatterplot.picks <- function(label = "Scatterplot",
-                                   x = picks(
-                                     datasets(),
-                                     variables(tidyselect::where(is.numeric)),
-                                     values()
+                                   x = teal.transform::picks(
+                                     teal.transform::datasets(),
+                                     teal.transform::variables(is.numeric),
+                                     teal.transform::values()
                                    ),
-                                   y = picks(
-                                     datasets(),
-                                     variables(tidyselect::where(is.numeric), selected = 2),
-                                     values()
+                                   y = teal.transform::picks(
+                                     teal.transform::datasets(),
+                                     teal.transform::variables(is.numeric, selected = 2L),
+                                     teal.transform::values()
                                    ),
-                                   color_by = NULL,
-                                   size_by = NULL,
-                                   row_facet = NULL,
-                                   col_facet = NULL,
+                                   color_by = teal.transform::picks(
+                                     teal.transform::datasets(),
+                                     teal.transform::variables(
+                                       choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                       selected = NULL,
+                                       multiple = TRUE
+                                     ),
+                                     teal.transform::values()
+                                   ),
+                                   size_by = teal.transform::picks(
+                                     teal.transform::datasets(),
+                                     teal.transform::variables(
+                                       choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                       selected = NULL,
+                                       multiple = TRUE
+                                     ),
+                                     teal.transform::values()
+                                   ),
+                                   row_facet = teal.transform::picks(
+                                     teal.transform::datasets(),
+                                     teal.transform::variables(
+                                       choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                       selected = NULL,
+                                       multiple = TRUE
+                                     ),
+                                     teal.transform::values()
+                                   ),
+                                   col_facet = teal.transform::picks(
+                                     teal.transform::datasets(),
+                                     teal.transform::variables(
+                                       choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                       selected = NULL,
+                                       multiple = TRUE
+                                     ),
+                                     teal.transform::values()
+                                   ),
                                    plot_height = c(600, 200, 2000),
                                    plot_width = NULL,
                                    alpha = c(1, 0, 1),
@@ -39,13 +71,13 @@ tm_g_scatterplot.picks <- function(label = "Scatterplot",
 
   checkmate::assert_class(row_facet, "picks", null.ok = TRUE)
   if (isTRUE(attr(row_facet$variables, "multiple"))) {
-    warning("`row_facet` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    warning("`row_facet` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
     attr(row_facet$variables, "multiple") <- FALSE
   }
 
   checkmate::assert_class(col_facet, "picks", null.ok = TRUE)
   if (isTRUE(attr(col_facet$variables, "multiple"))) {
-    warning("`col_facet` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    warning("`col_facet` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
     attr(col_facet$variables, "multiple") <- FALSE
   }
 
@@ -96,10 +128,7 @@ tm_g_scatterplot.picks <- function(label = "Scatterplot",
     ui_args = args[names(args) %in% names(formals(ui_g_scatterplot.picks))],
     server_args = args[names(args) %in% names(formals(srv_g_scatterplot.picks))],
     transformators = transformators,
-    datanames = {
-      datanames <- datanames(list(x, y, color_by, size_by, row_facet, col_facet))
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = .picks_datanames(list(x, y, color_by, size_by, row_facet, col_facet))
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
@@ -135,8 +164,8 @@ ui_g_scatterplot.picks <- function(id,
       ),
       encoding = tags$div(
         tags$label("Encodings", class = "text-primary"),
-        teal::teal_nav_item(
-          label = tags$strong("X variable"),
+        tags$div(
+          tags$strong("X variable"),
           teal.transform::picks_ui(id = ns("x"), picks = x),
           checkboxInput(ns("log_x"), "Use log transformation", value = FALSE),
           conditionalPanel(
@@ -149,8 +178,8 @@ ui_g_scatterplot.picks <- function(id,
             )
           )
         ),
-        teal::teal_nav_item(
-          label = tags$strong("Y variable"),
+        tags$div(
+          tags$strong("Y variable"),
           teal.transform::picks_ui(id = ns("y"), picks = y),
           checkboxInput(ns("log_y"), "Use log transformation", value = FALSE),
           conditionalPanel(
@@ -164,26 +193,26 @@ ui_g_scatterplot.picks <- function(id,
           )
         ),
         if (!is.null(color_by)) {
-          teal::teal_nav_item(
-            label = tags$strong("Color by:"),
+          tags$div(
+            tags$strong("Color by:"),
             teal.transform::picks_ui(id = ns("color_by"), picks = color_by)
           )
         },
         if (!is.null(size_by)) {
-          teal::teal_nav_item(
-            label = tags$strong("Size by:"),
+          tags$div(
+            tags$strong("Size by:"),
             teal.transform::picks_ui(id = ns("size_by"), picks = size_by)
           )
         },
         if (!is.null(row_facet)) {
-          teal::teal_nav_item(
-            label = tags$strong("Row facetting"),
+          tags$div(
+            tags$strong("Row facetting"),
             teal.transform::picks_ui(id = ns("row_facet"), picks = row_facet)
           )
         },
         if (!is.null(col_facet)) {
-          teal::teal_nav_item(
-            label = tags$strong("Column facetting"),
+          tags$div(
+            tags$strong("Column facetting"),
             teal.transform::picks_ui(id = ns("col_facet"), picks = col_facet)
           )
         },
@@ -339,19 +368,17 @@ srv_g_scatterplot.picks <- function(id,
       trend_line_is_applicable() && length(smoothing_degree) > 0
     })
 
-    if (!is.null(color_by)) {
-      observeEvent(
-        eventExpr = selectors$color_by(),
-        handlerExpr = {
-          color_by_var <- merged$variables()$color_by
-          if (length(color_by_var) > 0) {
-            shinyjs::hide("color")
-          } else {
-            shinyjs::show("color")
-          }
+    observeEvent(
+      eventExpr = selectors$color_by(),
+      handlerExpr = {
+        color_by_var <- merged$variables()$color_by
+        if (length(color_by_var) > 0) {
+          shinyjs::hide("color")
+        } else {
+          shinyjs::show("color")
         }
-      )
-    }
+      }
+    )
 
     output$num_na_removed <- renderUI({
       if (add_trend_line()) {
@@ -455,13 +482,6 @@ srv_g_scatterplot.picks <- function(id,
         )
       }
 
-      facet_cl <- facet_ggplot_call(
-        row_facet_var,
-        col_facet_var,
-        free_x_scales = isTRUE(input$free_scales),
-        free_y_scales = isTRUE(input$free_scales)
-      )
-
       point_sizes <- if (length(size_by_var) > 0) {
         validate(need(is.numeric(anl[[size_by_var]]), "Variable to size by must be numeric"))
         substitute(
@@ -504,7 +524,7 @@ srv_g_scatterplot.picks <- function(id,
         )
       }
 
-      pre_pro_anl <- if (input$show_count) {
+      group_anl_call <- if (input$show_count) {
         paste0(
           "anl %>% dplyr::group_by(",
           paste(
@@ -521,7 +541,10 @@ srv_g_scatterplot.picks <- function(id,
         "anl"
       }
 
-      plot_call <- substitute(expr = pre_pro_anl %>% ggplot2::ggplot(), env = list(pre_pro_anl = str2lang(pre_pro_anl)))
+      plot_call <- substitute(
+        expr = group_anl_call %>% ggplot2::ggplot(),
+        env = list(group_anl_call = str2lang(group_anl_call))
+      )
 
       plot_call <- if (length(color_by_var) == 0) {
         substitute(
@@ -666,7 +689,13 @@ srv_g_scatterplot.picks <- function(id,
         shinyjs::show("line_msg")
       }
 
-      if (!is.null(facet_cl)) {
+      if (length(row_facet_var) || length(col_facet_var)) {
+        facet_cl <- facet_ggplot_call(
+          row_facet_var,
+          col_facet_var,
+          free_x_scales = isTRUE(input$free_scales),
+          free_y_scales = isTRUE(input$free_scales)
+        )
         plot_call <- substitute(expr = plot_call + facet_cl, env = list(plot_call = plot_call, facet_cl = facet_cl))
       }
 

@@ -75,47 +75,47 @@
 #'   modules = modules(
 #'     tm_g_scatterplot(
 #'       label = "Scatterplot Choices",
-#'       x = picks(
+#'       x = teal.transform::picks(
 #'         datasets("CO2"),
-#'         variables(
+#'         teal.transform::variables(
 #'           choices = c("conc", "uptake"),
 #'           selected = "conc"
 #'         ),
-#'         values()
+#'         teal.transform::values()
 #'       ),
-#'       y = picks(
+#'       y = teal.transform::picks(
 #'         datasets("CO2"),
-#'         variables(
+#'         teal.transform::variables(
 #'           choices = c("conc", "uptake"),
 #'           selected = "uptake"
 #'         ),
-#'         values()
+#'         teal.transform::values()
 #'       ),
-#'       color_by = picks(
+#'       color_by = teal.transform::picks(
 #'         datasets("CO2"),
-#'         variables(
+#'         teal.transform::variables(
 #'           choices = c("Plant", "Type", "Treatment", "conc", "uptake"),
 #'           selected = NULL
 #'         ),
-#'         values()
+#'         teal.transform::values()
 #'       ),
-#'       size_by = picks(
+#'       size_by = teal.transform::picks(
 #'         datasets("CO2"),
-#'         variables(choices = c("conc", "uptake"), selected = "uptake"),
-#'         values()
+#'         teal.transform::variables(choices = c("conc", "uptake"), selected = "uptake"),
+#'         teal.transform::values()
 #'       ),
-#'       row_facet = picks(
+#'       row_facet = teal.transform::picks(
 #'         datasets("CO2"),
-#'         variables(
+#'         teal.transform::variables(
 #'           choices = c("Plant", "Type", "Treatment"),
 #'           selected = NULL
 #'         ),
-#'         values()
+#'         teal.transform::values()
 #'       ),
-#'       col_facet = picks(
+#'       col_facet = teal.transform::picks(
 #'         datasets("CO2"),
-#'         variables(choices = c("Plant", "Type", "Treatment"), selected = NULL),
-#'         values()
+#'         teal.transform::variables(choices = c("Plant", "Type", "Treatment"), selected = NULL),
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -144,35 +144,35 @@
 #'   modules = modules(
 #'     tm_g_scatterplot(
 #'       label = "Scatterplot Choices",
-#'       x = picks(
+#'       x = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "AGE"),
-#'         values()
+#'         teal.transform::variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "AGE"),
+#'         teal.transform::values()
 #'       ),
-#'       y = picks(
+#'       y = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "BMRKR1"),
-#'         values()
+#'         teal.transform::variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "BMRKR1"),
+#'         teal.transform::values()
 #'       ),
-#'       color_by = picks(
+#'       color_by = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1"), selected = NULL),
-#'         values()
+#'         teal.transform::variables(c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1"), selected = NULL),
+#'         teal.transform::values()
 #'       ),
-#'       size_by = picks(
+#'       size_by = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(choices = c("AGE", "BMRKR1"), selected = "AGE"),
-#'         values()
+#'         teal.transform::variables(choices = c("AGE", "BMRKR1"), selected = "AGE"),
+#'         teal.transform::values()
 #'       ),
-#'       row_facet = picks(
+#'       row_facet = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
-#'         values()
+#'         teal.transform::variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+#'         teal.transform::values()
 #'       ),
-#'       col_facet = picks(
+#'       col_facet = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
-#'         values()
+#'         teal.transform::variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -184,7 +184,11 @@
 #' @export
 #'
 tm_g_scatterplot <- function(label = "Scatterplot",
-                             x,
+                             x = teal.transform::picks(
+                               teal.transform::datasets(),
+                               teal.transform::variables(is.numeric),
+                               teal.transform::values()
+                             ),
                              y,
                              color_by = NULL,
                              size_by = NULL,

@@ -1,24 +1,24 @@
 #' @export
 tm_a_regression.picks <- function(label = "Regression Analysis",
-                                  regressor = picks(
-                                    datasets(),
-                                    variables(
-                                      choices = tidyselect::where(is.numeric),
+                                  regressor = teal.transform::picks(
+                                    teal.transform::datasets(),
+                                    teal.transform::variables(
+                                      choices = is.numeric,
                                       selected = tidyselect::last_col(),
                                       multiple = TRUE
                                     ),
-                                    values()
+                                    teal.transform::values()
                                   ),
-                                  response = picks(
-                                    datasets(),
-                                    variables(choices = tidyselect::where(is.numeric)),
-                                    values()
+                                  response = teal.transform::picks(
+                                    teal.transform::datasets(),
+                                    teal.transform::variables(choices = is.numeric),
+                                    teal.transform::values()
                                   ),
-                                  outlier = picks(
+                                  outlier = teal.transform::picks(
                                     regressor$datasets,
-                                    variables(choices = where(~ is.factor(.) || is.character(.))),
-                                    values()
-                                  ), # default should be picks(datasets(), variables(primary_keys())
+                                    teal.transform::variables(choices = tidyselect::where(~ is.factor(.) || is.character(.))),
+                                    teal.transform::values()
+                                  ), # default should be teal.transform::picks(datasets(), teal.transform::variables(primary_keys())
                                   plot_height = c(600, 200, 2000),
                                   plot_width = NULL,
                                   alpha = c(1, 0, 1),
@@ -40,12 +40,12 @@ tm_a_regression.picks <- function(label = "Regression Analysis",
 
   checkmate::assert_class(response, "picks")
   if (isTRUE(attr(response$variables, "multiple"))) {
-    warning("`response` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    warning("`response` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
     attr(response$variables, "multiple") <- FALSE
   }
   checkmate::assert_class(outlier, "picks", null.ok = TRUE)
   if (isTRUE(attr(outlier$variables, "multiple"))) {
-    warning("`outlier` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    warning("`outlier` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
     attr(outlier$variables, "multiple") <- FALSE
   }
 
@@ -117,10 +117,7 @@ tm_a_regression.picks <- function(label = "Regression Analysis",
     ui_args = args[names(args) %in% names(formals(ui_a_regression.picks))],
     server_args = args[names(args) %in% names(formals(srv_a_regression.picks))], ,
     transformators = transformators,
-    datanames = {
-      datanames <- datanames(list(regressor, response))
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = .picks_datanames(list(regressor, response))
   )
   attr(ans, "teal_bookmarkable") <- FALSE
   ans
@@ -148,12 +145,12 @@ ui_a_regression.picks <- function(id,
     )),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"), tags$br(),
-      teal::teal_nav_item(
-        label = tags$strong("Response variable"),
+      tags$div(
+        tags$strong("Response variable"),
         teal.transform::picks_ui(id = ns("response"), picks = response)
       ),
-      teal::teal_nav_item(
-        label = tags$strong("Regressor variables"),
+      tags$div(
+        tags$strong("Regressor variables"),
         teal.transform::picks_ui(id = ns("regressor"), picks = regressor)
       ),
       radioButtons(

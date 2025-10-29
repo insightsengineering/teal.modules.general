@@ -1,25 +1,39 @@
 #' @export
 tm_g_bivariate.picks <- function(label = "Bivariate Plots",
-                                 x = picks(
-                                   datasets(),
-                                   variables(
-                                     choices = tidyselect::where(is.numeric) |
+                                 x = teal.transform::picks(
+                                   teal.transform::datasets(),
+                                   teal.transform::variables(
+                                     choices = is.numeric |
                                        teal.transform::is_categorical(min.len = 2, max.len = 10),
                                      selected = 1L
                                    ),
-                                   values()
+                                   teal.transform::values()
                                  ),
-                                 y = picks(
-                                   datasets(),
-                                   variables(
-                                     choices = tidyselect::where(is.numeric) |
+                                 y = teal.transform::picks(
+                                   teal.transform::datasets(),
+                                   teal.transform::variables(
+                                     choices = is.numeric |
                                        teal.transform::is_categorical(min.len = 2, max.len = 10),
                                      selected = 2L
                                    ),
-                                   values()
+                                   teal.transform::values()
                                  ),
-                                 row_facet = NULL,
-                                 col_facet = NULL,
+                                 row_facet = teal.transform::picks(
+                                   teal.transform::datasets(),
+                                   teal.transform::variables(
+                                     choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                     selected = NULL
+                                   ),
+                                   teal.transform::values()
+                                 ),
+                                 col_facet = teal.transform::picks(
+                                   teal.transform::datasets(),
+                                   teal.transform::variables(
+                                     choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                     selected = NULL
+                                   ),
+                                   teal.transform::values()
+                                 ),
                                  facet = !is.null(row_facet) || !is.null(col_facet),
                                  color = NULL,
                                  fill = NULL,
@@ -112,10 +126,7 @@ tm_g_bivariate.picks <- function(label = "Bivariate Plots",
     ui_args = args[names(args) %in% names(formals(ui_g_bivariate.picks))],
     server_args = args[names(args) %in% names(formals(srv_g_bivariate.picks))],
     transformators = transformators,
-    datanames = {
-      datanames <- teal.transform::datanames(list(x, y, row_facet, col_facet, color, fill, size))
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = .picks_datanames(list(x, y, row_facet, col_facet, color, fill, size))
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
@@ -143,26 +154,25 @@ ui_g_bivariate.picks <- function(id,
                                  post_output = NULL,
                                  decorators = list()) {
   ns <- NS(id)
-  teal::standard_layout2(
+  teal.widgets::standard_layout(
     output = bslib::card(
       teal.widgets::plot_with_settings_ui(id = ns("myplot")),
       full_screen = TRUE
     ),
     encoding = shiny::tagList(
-      teal::teal_nav_item(
-        label = tags$strong("X variable"),
+      tags$div(
+        tags$strong("X variable"),
         teal.transform::picks_ui(id = ns("x"), picks = x)
       ),
-      teal::teal_nav_item(
-        label = tags$strong("Y variable"),
+      tags$div(
+        tags$strong("Y variable"),
         teal.transform::picks_ui(id = ns("y"), picks = y)
       ),
       conditionalPanel(
         condition =
           "$(\"button[data-id*='-x-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ||
             $(\"button[data-id*='-y-dataset'][data-id$='-select']\").text() == '- Nothing selected - ' ",
-        teal::teal_nav_item(
-          label = NULL,
+        tags$div(
           shinyWidgets::radioGroupButtons(
             inputId = ns("use_density"),
             label = NULL,
@@ -173,7 +183,7 @@ ui_g_bivariate.picks <- function(id,
         )
       ),
       if (!is.null(row_facet)) {
-        teal::teal_nav_item(
+        tags$div(
           tags$div(
             tags$strong("Row facetting variable"),
             teal.transform::picks_ui(id = ns("row_facet"), picks = row_facet),
@@ -182,7 +192,7 @@ ui_g_bivariate.picks <- function(id,
         )
       },
       if (!is.null(col_facet)) {
-        teal::teal_nav_item(
+        tags$div(
           tags$div(
             tags$strong("Column facetting variable"),
             teal.transform::picks_ui(id = ns("col_facet"), picks = col_facet),
@@ -192,8 +202,8 @@ ui_g_bivariate.picks <- function(id,
       },
       if (color_settings) {
         # Put a grey border around the coloring settings
-        teal::teal_nav_item(
-          label = tags$strong("Color settings"),
+        tags$div(
+          tags$strong("Color settings"),
           tags$div(
             bslib::input_switch(id = ns("coloring"), label = "Color settings", value = TRUE),
             conditionalPanel(
@@ -210,8 +220,8 @@ ui_g_bivariate.picks <- function(id,
           )
         )
       },
-      teal::teal_nav_item(
-        label = NULL,
+      tags$div(
+        NULL,
         teal:::.teal_navbar_menu(
           id = ns("plot_settings"),
           label = "Plot settings",
@@ -240,7 +250,7 @@ ui_g_bivariate.picks <- function(id,
           )
         )
       ),
-      teal::teal_nav_item(
+      tags$div(
         ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot"))
       )
     ),

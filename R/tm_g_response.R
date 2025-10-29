@@ -89,17 +89,17 @@
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
-#'         values()
+#'         teal.transform::values()
 #'       ),
-#'       x = picks(
+#'       x = teal.transform::picks(
 #'         datasets("mtcars"),
-#'         variables(
+#'         teal.transform::variables(
 #'           choices = c("vs", "am"),
 #'           selected = "vs",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
-#'         values()
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -126,21 +126,21 @@
 #'   modules = modules(
 #'     tm_g_response(
 #'       label = "Response Plots",
-#'       response = picks(
+#'       response = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(
+#'         teal.transform::variables(
 #'           choices = c("BMRKR2", "COUNTRY"),
 #'           selected = "BMRKR2"
 #'         ),
-#'         values()
+#'         teal.transform::values()
 #'       ),
-#'       x = picks(
+#'       x = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(
+#'         teal.transform::variables(
 #'           choices = c("SEX", "RACE"),
 #'           selected = "RACE"
 #'         ),
-#'         values()
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -152,19 +152,12 @@
 #' @export
 #'
 tm_g_response <- function(label = "Response Plot",
-                          response = picks(
-                            datasets(),
-                            variables(choices = teal.transform::is_categorical(min.len = 2, max.len = 10)),
-                            values()
+                          response = teal.transform::picks(
+                            teal.transform::datasets(),
+                            teal.transform::variables(choices = teal.transform::is_categorical(min.len = 2, max.len = 10)),
+                            teal.transform::values()
                           ),
-                          x = picks(
-                            datasets(),
-                            variables(
-                              choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
-                              selected = 2L
-                            ),
-                            values()
-                          ),
+                          x,
                           row_facet = NULL,
                           col_facet = NULL,
                           coord_flip = FALSE,

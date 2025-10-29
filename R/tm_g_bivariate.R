@@ -85,21 +85,21 @@
 #'   data = data,
 #'   modules = tm_g_bivariate(
 #'     label = "Bivariate Plots",
-#'     x = picks(
+#'     x = teal.transform::picks(
 #'       datasets("CO2"),
-#'       variables(selected = "conc")
+#'       teal.transform::variables(selected = "conc")
 #'     ),
-#'     y = picks(
+#'     y = teal.transform::picks(
 #'       datasets("CO2"),
-#'       variables(selected = "uptake")
+#'       teal.transform::variables(selected = "uptake")
 #'     ),
-#'     row_facet = picks(
+#'     row_facet = teal.transform::picks(
 #'       datasets("CO2"),
-#'       variables(selected = "Type")
+#'       teal.transform::variables(selected = "Type")
 #'     ),
-#'     col_facet = picks(
+#'     col_facet = teal.transform::picks(
 #'       datasets("CO2"),
-#'       variables(selected = "Treatment")
+#'       teal.transform::variables(selected = "Treatment")
 #'     )
 #'   )
 #' )
@@ -124,21 +124,21 @@
 #'   data = data,
 #'   modules = tm_g_bivariate(
 #'     label = "Bivariate Plots",
-#'     x = picks(
+#'     x = teal.transform::picks(
 #'       datasets("ADSL"),
-#'       variables(selected = "AGE")
+#'       teal.transform::variables(selected = "AGE")
 #'     ),
-#'     y = picks(
+#'     y = teal.transform::picks(
 #'       datasets("ADSL"),
-#'       variables(selected = "SEX")
+#'       teal.transform::variables(selected = "SEX")
 #'     ),
-#'     row_facet = picks(
+#'     row_facet = teal.transform::picks(
 #'       datasets("ADSL"),
-#'       variables(selected = "ARM")
+#'       teal.transform::variables(selected = "ARM")
 #'     ),
-#'     col_facet = picks(
+#'     col_facet = teal.transform::picks(
 #'       datasets("ADSL"),
-#'       variables(selected = "COUNTRY")
+#'       teal.transform::variables(selected = "COUNTRY")
 #'     )
 #'   )
 #' )
@@ -149,25 +149,19 @@
 #' @export
 #'
 tm_g_bivariate <- function(label = "Bivariate Plots",
-                           x = picks(
-                             datasets(),
-                             variables(
-                               choices = tidyselect::where(is.numeric) |
+                           x = teal.transform::picks(
+                             teal.transform::datasets(),
+                             teal.transform::variables(
+                               choices = is.numeric |
                                  teal.transform::is_categorical(min.len = 2, max.len = 10),
                                selected = 1L
-                             )
+                             ),
+                             teal.transform::values()
                            ),
-                           y = picks(
-                             datasets(),
-                             variables(
-                               choices = tidyselect::where(is.numeric) |
-                                 teal.transform::is_categorical(min.len = 2, max.len = 10),
-                               selected = 2L
-                             )
-                           ),
-                           row_facet = NULL,
-                           col_facet = NULL,
-                           facet = !is.null(row_facet) || !is.null(col_facet),
+                           y,
+                           row_facet,
+                           col_facet,
+                           facet,
                            color = NULL,
                            fill = NULL,
                            size = NULL,

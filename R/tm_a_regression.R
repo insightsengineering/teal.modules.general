@@ -12,10 +12,10 @@
 #' @inheritParams shared_params
 #' @param regressor (`picks`) Specification for regressor variables selection.
 #' Created using [teal.transform::picks()], which allows selecting variables
-#' to use as regressors in the regression model. `variables(multiple = TRUE)` allowed.
+#' to use as regressors in the regression model. `teal.transform::variables(multiple = TRUE)` allowed.
 #' @param response (`picks`) Specification for response variable selection.
 #' Created using [teal.transform::picks()], which allows selecting a single numeric variable
-#' to use as the response in the regression model. `variables(multiple = TRUE)` not allowed.
+#' to use as the response in the regression model. `teal.transform::variables(multiple = TRUE)` not allowed.
 #' @param outlier (`picks`) Optional specification for outlier label variable selection.
 #' Created using [teal.transform::picks()], which allows selecting a factor or character variable
 #' to label outlier points on the plots.
@@ -91,13 +91,13 @@
 #'   modules = modules(
 #'     tm_a_regression(
 #'       label = "Regression",
-#'       response = picks(
+#'       response = teal.transform::picks(
 #'         datasets("CO2"),
-#'         variables(choices = "uptake", selected = "uptake")
+#'         teal.transform::variables(choices = "uptake", selected = "uptake")
 #'       ),
-#'       regressor = picks(
+#'       regressor = teal.transform::picks(
 #'         datasets("CO2"),
-#'         variables(choices = c("conc", "Treatment"), selected = "conc", multiple = TRUE)
+#'         teal.transform::variables(choices = c("conc", "Treatment"), selected = "conc", multiple = TRUE)
 #'       )
 #'     )
 #'   )
@@ -124,13 +124,13 @@
 #'   modules = modules(
 #'     tm_a_regression(
 #'       label = "Regression",
-#'       response = picks(
+#'       response = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(choices = "BMRKR1", selected = "BMRKR1")
+#'         teal.transform::variables(choices = "BMRKR1", selected = "BMRKR1")
 #'       ),
-#'       regressor = picks(
+#'       regressor = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(choices = c("AGE", "SEX", "RACE"), selected = "AGE", multiple = TRUE)
+#'         teal.transform::variables(choices = c("AGE", "SEX", "RACE"), selected = "AGE", multiple = TRUE)
 #'       )
 #'     )
 #'   )
@@ -142,7 +142,15 @@
 #' @export
 #'
 tm_a_regression <- function(label = "Regression Analysis",
-                            regressor,
+                            regressor = teal.transform::picks(
+                              teal.transform::datasets(),
+                              teal.transform::variables(
+                                choices = is.numeric,
+                                selected = tidyselect::last_col(),
+                                multiple = TRUE
+                              ),
+                              teal.transform::values()
+                            ),
                             response,
                             plot_height = c(600, 200, 2000),
                             plot_width = NULL,

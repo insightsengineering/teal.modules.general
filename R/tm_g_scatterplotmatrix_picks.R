@@ -1,9 +1,9 @@
 #' @export
 tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
                                          variables = list(
-                                           picks(
-                                             datasets(),
-                                             variables(selected = seq(1, 5), multiple = TRUE)
+                                           teal.transform::picks(
+                                             teal.transform::datasets(),
+                                             teal.transform::variables(selected = seq(1L, 5L), multiple = TRUE)
                                            )
                                          ),
                                          plot_height = c(600, 200, 2000),
@@ -13,7 +13,6 @@ tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
                                          transformators = list(),
                                          decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
-
   if (is.null(names(variables))) {
     names(variables) <- sprintf("pick_%s", seq_along(variables))
   }
@@ -44,10 +43,7 @@ tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
     ui_args = args[names(args) %in% names(formals(ui_g_scatterplotmatrix.picks))],
     server_args = args[names(args) %in% names(formals(srv_g_scatterplotmatrix.picks))],
     transformators = transformators,
-    datanames = {
-      datanames <- datanames(variables)
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = .picks_datanames(variables)
   )
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
@@ -71,7 +67,7 @@ ui_g_scatterplotmatrix.picks <- function(id,
       tags$label("Encodings", class = "text-primary"),
       tagList(
         lapply(names(variables), function(id) {
-          teal::teal_nav_item(
+          tags$div(
             teal.transform::picks_ui(id = ns(id), picks = variables[[id]])
           )
         })
@@ -117,6 +113,8 @@ srv_g_scatterplotmatrix.picks <- function(id,
                                           decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
+  checkmate::assert_list(variables, "picks", names = "named")
+
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
@@ -127,7 +125,6 @@ srv_g_scatterplotmatrix.picks <- function(id,
 
     validated_q <- reactive({
       obj <- req(data())
-
       input_ids <- sprintf("%s-variables-selected", names(variables))
       selected_variables <- unname(unlist(lapply(selectors, function(selector) selector()$variables$selected)))
       validate_input(
@@ -145,13 +142,12 @@ srv_g_scatterplotmatrix.picks <- function(id,
     })
 
     merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
-    variables <- reactive(unname(unlist(merged$variables())))
 
     # plot
     output_q <- reactive({
       qenv <- req(merged$data())
       anl <- qenv[["anl"]]
-      cols_names <- variables()
+      cols_names <- unname(unlist(merged$variables()))
       alpha <- input$alpha
       cex <- input$cex
       add_cor <- input$cor
@@ -282,7 +278,7 @@ srv_g_scatterplotmatrix.picks <- function(id,
 
     # show a message if conversion to factors took place
     output$message <- renderText({
-      cols_names <- req(variables())
+      cols_names <- req(unname(unlist(merged$variables())))
       anl <- merged$data()[["anl"]]
       check_char <- vapply(anl[, cols_names], is.character, logical(1))
       if (any(check_char)) {

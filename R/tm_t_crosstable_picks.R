@@ -1,7 +1,21 @@
 #' @export
 tm_t_crosstable.picks <- function(label = "Cross Table",
-                                  x,
-                                  y,
+                                  x = teal.transform::picks(
+                                    teal.transform::datasets(),
+                                    teal.transform::variables(
+                                      choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                      selected = 1L, multiple = TRUE, ordered = TRUE
+                                    ),
+                                    teal.transform::values()
+                                  ),
+                                  y = teal.transform::picks(
+                                    teal.transform::datasets(),
+                                    teal.transform::variables(
+                                      choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                      selected = 2L, multiple = TRUE, ordered = TRUE
+                                    ),
+                                    teal.transform::values()
+                                  ),
                                   show_percentage = TRUE,
                                   show_total = TRUE,
                                   remove_zero_columns = FALSE,
@@ -18,7 +32,7 @@ tm_t_crosstable.picks <- function(label = "Cross Table",
 
   checkmate::assert_class(y, "picks")
   if (isTRUE(attr(y$variables, "multiple"))) {
-    warning("`y` accepts only a single variable selection. Forcing `variables(multiple) to FALSE`")
+    warning("`y` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
     attr(y$variables, "multiple") <- FALSE
   }
 
@@ -40,10 +54,7 @@ tm_t_crosstable.picks <- function(label = "Cross Table",
     ui_args = args[names(args) %in% names(formals(ui_t_crosstable.picks))],
     server_args = args[names(args) %in% names(formals(srv_t_crosstable.picks))],
     transformators = transformators,
-    datanames = {
-      datanames <- datanames(list(x, y))
-      if (length(datanames)) datanames else "all"
-    }
+    datanames = .picks_datanames(list(x, y))
   )
 
   attr(ans, "teal_bookmarkable") <- TRUE
@@ -68,12 +79,12 @@ ui_t_crosstable.picks <- function(id, x, y, show_percentage, show_total, remove_
     ),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
-      teal::teal_nav_item(
-        label = tags$strong("Row values"),
+      tags$div(
+        tags$strong("Row values"),
         teal.transform::picks_ui(id = ns("x"), picks = x)
       ),
-      teal::teal_nav_item(
-        label = tags$strong("Column values"),
+      tags$div(
+        tags$strong("Column values"),
         teal.transform::picks_ui(id = ns("y"), picks = y)
       ),
       shinyWidgets::pickerInput(

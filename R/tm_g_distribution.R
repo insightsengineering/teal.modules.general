@@ -71,10 +71,10 @@
 #'   data = data,
 #'   modules = list(
 #'     tm_g_distribution(
-#'       dist_var = picks(
+#'       dist_var = teal.transform::picks(
 #'         datasets("iris"),
-#'         variables(tidyselect::where(is.numeric)),
-#'         values()
+#'         teal.transform::variables(is.numeric),
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -101,18 +101,18 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_g_distribution(
-#'       dist_var = picks(
+#'       dist_var = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(c("BMRKR1", "AGE")),
+#'         teal.transform::variables(c("BMRKR1", "AGE")),
 #'         values(multiple = FALSE)
 #'       ),
-#'       strata_var = picks(
+#'       strata_var = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
+#'         teal.transform::variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
 #'       ),
-#'       group_var = picks(
+#'       group_var = teal.transform::picks(
 #'         datasets("ADSL"),
-#'         variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
+#'         teal.transform::variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
 #'       )
 #'     )
 #'   )
@@ -124,7 +124,11 @@
 #' @export
 #'
 tm_g_distribution <- function(label = "Distribution Module",
-                              dist_var,
+                              dist_var = teal.transform::picks(
+                                teal.transform::datasets(),
+                                teal.transform::variables(is.numeric),
+                                teal.transform::values()
+                              ),
                               strata_var = NULL,
                               group_var = NULL,
                               freq = FALSE,
