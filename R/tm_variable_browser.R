@@ -160,10 +160,9 @@ ui_variable_browser <- function(id,
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
             tags$br(),
             bslib::accordion(
-              open = TRUE,
+              open = FALSE,
               bslib::accordion_panel(
                 title = "Plot settings",
-                collapsed = TRUE,
                 selectInput(
                   inputId = ns("ggplot_theme"), label = "ggplot2 theme",
                   choices = ggplot_themes,
