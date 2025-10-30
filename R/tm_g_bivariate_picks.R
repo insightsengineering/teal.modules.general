@@ -386,7 +386,6 @@ srv_g_bivariate.picks <- function(id,
       teal::validate_has_data(anl[, c(x_name, y_name), drop = FALSE], 3, complete = TRUE, allow_inf = FALSE)
 
 
-
       cl <- bivariate_plot_call(
         data_name = "anl",
         x = x_name,

@@ -450,7 +450,8 @@ children <- function(x, dataset_name = character(0)) {
 #' @param plotly_selected (`reactive`)
 #' @param children_datanames (`character`)
 .plotly_selected_filter_children <- function(
-    data, plot_dataname, xvar, yvar, plotly_selected, children_datanames) {
+  data, plot_dataname, xvar, yvar, plotly_selected, children_datanames
+) {
   xvar_r <- if (is.reactive(xvar)) xvar else reactive(xvar)
   yvar_r <- if (is.reactive(yvar)) yvar else reactive(yvar)
 

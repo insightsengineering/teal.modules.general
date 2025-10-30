@@ -58,7 +58,6 @@ colour_picker_srv <- function(id, x, default_colors) {
 }
 
 
-
 #' Color palette discrete
 #'
 #' To specify custom discrete colors to `plotly` or `ggplot` elements one needs to specify a vector named by

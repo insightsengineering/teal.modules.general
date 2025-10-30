@@ -34,8 +34,9 @@ ui_t_reactables <- function(id, decorators = list()) {
 }
 
 srv_t_reactables <- function(
-    id, data, filter_panel_api, datanames,
-    colnames = list(), decorators = list(), reactable_args = list()) {
+  id, data, filter_panel_api, datanames,
+  colnames = list(), decorators = list(), reactable_args = list()
+) {
   moduleServer(id, function(input, output, session) {
     datanames_r <- .validate_datanames(datanames = datanames, data = data)
     colnames_r <- reactive({
