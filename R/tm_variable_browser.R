@@ -160,10 +160,9 @@ ui_variable_browser <- function(id,
             teal.widgets::plot_with_settings_ui(ns("variable_plot")),
             tags$br(),
             bslib::accordion(
-              open = TRUE,
+              open = FALSE,
               bslib::accordion_panel(
                 title = "Plot settings",
-                collapsed = TRUE,
                 selectInput(
                   inputId = ns("ggplot_theme"), label = "ggplot2 theme",
                   choices = ggplot_themes,
@@ -278,8 +277,8 @@ srv_variable_browser <- function(id,
 
     # data_for_analysis is a list with two elements: a column from a dataset and the column label
     plotted_data <- reactive({
+      req(input, plot_var, data())
       validation_checks()
-
       get_plotted_data(input, plot_var, data)
     })
 
@@ -322,10 +321,10 @@ srv_variable_browser <- function(id,
     })
 
     output$ui_numeric_display <- renderUI({
+      dataname <- req(input$tabset_panel)
+      varname <- req(plot_var$variable)[[dataname]]
+      df <- req(data())[[dataname]]
       validation_checks()
-      dataname <- input$tabset_panel
-      varname <- plot_var$variable[[dataname]]
-      df <- data()[[dataname]]
 
       numeric_ui <- bslib::page_fluid(
         bslib::layout_columns(
@@ -388,9 +387,9 @@ srv_variable_browser <- function(id,
 
     output$ui_histogram_display <- renderUI({
       validation_checks()
-      dataname <- input$tabset_panel
-      varname <- plot_var$variable[[dataname]]
-      df <- data()[[dataname]]
+      dataname <- req(input$tabset_panel)
+      varname <- req(plot_var$variable)[[dataname]]
+      df <- req(data())[[dataname]]
 
       numeric_ui <- bslib::input_switch(
         id = session$ns("remove_NA_hist"),
@@ -456,6 +455,19 @@ srv_variable_browser <- function(id,
       }
     })
 
+    output$variable_summary_table <- DT::renderDataTable({
+      var_summary_table(
+        plotted_data()$ANL[, 1, drop = TRUE],
+        treat_numeric_as_factor(),
+        input$variable_summary_table_rows,
+        if (!is.null(input$remove_outliers) && input$remove_outliers) {
+          req(input$outlier_definition_slider)
+          as.numeric(input$outlier_definition_slider)
+        } else {
+          0
+        }
+      )
+    })
 
     variable_plot_r <- reactive({
       display_density <- `if`(is.null(input$display_density), FALSE, input$display_density)
@@ -469,8 +481,7 @@ srv_variable_browser <- function(id,
       }
 
       plot_var_summary(
-        var = plotted_data()$data,
-        var_lab = plotted_data()$var_description,
+        qenv = req(plotted_data()),
         wrap_character = 15,
         numeric_as_factor = treat_numeric_as_factor(),
         remove_NA_hist = input$remove_NA_hist,
@@ -481,31 +492,18 @@ srv_variable_browser <- function(id,
       )
     })
 
+    plot_r <- reactive({
+      validation_checks()
+      req(variable_plot_r())[["plot"]]
+    })
+
     pws <- teal.widgets::plot_with_settings_srv(
       id = "variable_plot",
-      plot_r = variable_plot_r,
+      plot_r = plot_r,
       height = c(500, 200, 2000)
     )
 
-    output$variable_summary_table <- DT::renderDataTable({
-      var_summary_table(
-        plotted_data()$data,
-        treat_numeric_as_factor(),
-        input$variable_summary_table_rows,
-        if (!is.null(input$remove_outliers) && input$remove_outliers) {
-          req(input$outlier_definition_slider)
-          as.numeric(input$outlier_definition_slider)
-        } else {
-          0
-        }
-      )
-    })
-
-    reactive({
-      validation_checks()
-      qenv <- teal.data::teal_data(plot = variable_plot_r()) |> teal.code::eval_code("plot")
-      teal.reporter::teal_card(qenv)[length(teal.reporter::teal_card(qenv))]
-    })
+    set_chunk_dims(pws, variable_plot_r)
   })
 }
 
@@ -616,9 +614,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #' Creates summary plot with statistics relevant to data type.
 #'
 #' @inheritParams shared_params
-#' @param var vector of any type to be plotted. For numeric variables it produces histogram with
-#' density line, for factors it creates frequency plot
-#' @param var_lab text describing selected variable to be displayed on the plot
+#' @param qenv teal_data object where code should be evaluated.
 #' @param wrap_character (`numeric`) number of characters at which to wrap text values of `var`
 #' @param numeric_as_factor (`logical`) should the numeric variable be treated as a factor
 #' @param display_density (`logical`) should density estimation be displayed for numeric values
@@ -630,16 +626,14 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #'
 #' @return plot
 #' @keywords internal
-plot_var_summary <- function(var,
-                             var_lab,
+plot_var_summary <- function(qenv,
                              wrap_character = NULL,
                              numeric_as_factor,
-                             display_density = is.numeric(var),
+                             display_density = FALSE,
                              remove_NA_hist = FALSE, # nolint: object_name.
                              outlier_definition,
                              records_for_factor,
                              ggplot2_args) {
-  checkmate::assert_character(var_lab)
   checkmate::assert_numeric(wrap_character, null.ok = TRUE)
   checkmate::assert_flag(numeric_as_factor)
   checkmate::assert_flag(display_density)
@@ -648,47 +642,95 @@ plot_var_summary <- function(var,
   checkmate::assert_integerish(records_for_factor, lower = 0, len = 1, any.missing = FALSE)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
 
-  grid::grid.newpage()
+  var_name <- names(qenv$ANL)
 
-  plot_main <- if (is.factor(var) || is.character(var) || is.logical(var)) {
+  teal.reporter::teal_card(qenv) <- c(
+    teal.reporter::teal_card(qenv),
+    teal.reporter::teal_card("### Histogram plot")
+  )
+
+  var <- qenv$ANL[[var_name]]
+  qenv_plot <- if (is.factor(var) || is.character(var) || is.logical(var)) {
     groups <- unique(as.character(var))
     len_groups <- length(groups)
     if (len_groups >= records_for_factor) {
-      grid::textGrob(
-        sprintf(
-          "%s unique values\n%s:\n %s\n ...\n %s",
-          len_groups,
-          var_lab,
-          paste(utils::head(groups), collapse = ",\n "),
-          paste(utils::tail(groups), collapse = ",\n ")
-        ),
-        x = grid::unit(1, "line"),
-        y = grid::unit(1, "npc") - grid::unit(1, "line"),
-        just = c("left", "top")
+      qenv_plot <- within(qenv,
+        {
+          groups <- unique(as.character(ANL[[var]]))
+          len_groups <- length(groups)
+          text <- sprintf(
+            "%s unique values\n%s:\n %s\n ...\n %s",
+            len_groups,
+            teal.data::col_labels(ANL),
+            paste(utils::head(groups), collapse = ",\n "),
+            paste(utils::tail(groups), collapse = ",\n ")
+          )
+          plot <- gridExtra::arrangeGrob(
+            grid::textGrob(
+              text,
+              x = grid::unit(1, "line"),
+              y = grid::unit(1, "npc") - grid::unit(1, "line"),
+              just = c("left", "top")
+            ),
+            ncol = 1
+          )
+        },
+        var = var_name
       )
     } else {
       if (!is.null(wrap_character)) {
-        var <- stringr::str_wrap(var, width = wrap_character)
+        qenv <- within(qenv,
+          {
+            col_label <- attr(ANL[[var]], "label")
+            ANL[[var]] <- stringr::str_wrap(ANL[[var]], width = wrap_character)
+            attr(ANL[[var]], "label") <- col_label
+          },
+          var = var_name,
+          wrap_character = wrap_character
+        )
       }
-      var <- if (isTRUE(remove_NA_hist)) as.vector(stats::na.omit(var)) else var
-      ggplot2::ggplot(data.frame(var), ggplot2::aes(x = forcats::fct_infreq(as.factor(var)))) +
-        ggplot2::geom_bar(
-          stat = "count", ggplot2::aes(fill = ifelse(is.na(var), "withcolor", "")), show.legend = FALSE
-        ) +
-        ggplot2::scale_fill_manual(values = c("gray50", "tan"))
+
+      if (isTRUE(remove_NA_hist)) {
+        qenv <- within(qenv,
+          {
+            ANL <- filter(ANL, !is.na(var))
+          },
+          var = as.name(var_name)
+        )
+      }
+      qenv_plot <- within(qenv,
+        {
+          plot <- ANL %>%
+            ggplot2::ggplot(ggplot2::aes(x = forcats::fct_infreq(var_name))) +
+            ggplot2::geom_bar(
+              stat = "count", ggplot2::aes(fill = ifelse(is.na(var_name), "withcolor", "")), show.legend = FALSE
+            ) +
+            ggplot2::scale_fill_manual(values = c("gray50", "tan"))
+        },
+        var = var_name,
+        var_name = as.name(var_name)
+      )
     }
   } else if (is.numeric(var)) {
+    # Validate input
     validate(need(any(!is.na(var)), "No data left to visualize."))
-
-    # Filter out NA
-    var <- var[which(!is.na(var))]
-
+    var <- var[which(!is.na(var))] # Filter out NA
     validate(need(!any(is.infinite(var)), "Cannot display graph when data includes infinite values"))
 
     if (numeric_as_factor) {
       var <- factor(var)
-      ggplot2::ggplot(NULL, ggplot2::aes(x = var)) +
-        ggplot2::geom_histogram(stat = "count")
+      qenv_plot <- within(qenv,
+        {
+          col_label <- attr(ANL[[var]], "label")
+          ANL[[var]] <- as.factor(ANL[[var]])
+          attr(ANL[[var]], "label") <- col_label
+          p <- ANL %>%
+            ggplot2::ggplot(ggplot2::aes(x = var_name)) +
+            ggplot2::geom_histogram(stat = "count")
+        },
+        var = var_name,
+        var_name = as.name(var_name)
+      )
     } else {
       # remove outliers
       if (outlier_definition != 0) {
@@ -704,83 +746,119 @@ plot_var_summary <- function(var,
           length(var) > 1,
           "At least two data points must remain after removing outliers for this graph to be displayed"
         ))
+        qenv <- within(qenv,
+          {
+            filter_outliers <- filter_outliers
+            ANL <- filter(ANL, filter_outliers(var_name, outlier_definition))
+          },
+          filter_outliers = filter_outliers,
+          var_name = as.name(var_name),
+          outlier_definition = outlier_definition
+        )
       }
+
       ## histogram
       binwidth <- get_bin_width(var)
-      p <- ggplot2::ggplot(data = data.frame(var = var), ggplot2::aes(x = var, y = ggplot2::after_stat(count))) +
-        ggplot2::geom_histogram(binwidth = binwidth) +
-        ggplot2::scale_y_continuous(
-          sec.axis = ggplot2::sec_axis(
-            trans = ~ . / nrow(data.frame(var = var)),
-            labels = scales::percent,
-            name = "proportion (in %)"
-          )
-        )
+      qenv_plot <- within(qenv,
+        {
+          plot <- ggplot2::ggplot(data = ANL, ggplot2::aes(x = var_name, y = ggplot2::after_stat(count))) +
+            ggplot2::geom_histogram(binwidth = binwidth) +
+            ggplot2::scale_y_continuous(
+              sec.axis = ggplot2::sec_axis(
+                trans = ~ . / nrow(ANL),
+                labels = scales::percent,
+                name = "proportion (in %)"
+              )
+            )
+        },
+        var_name = as.name(var_name),
+        binwidth = binwidth
+      )
 
       if (display_density) {
-        p <- p + ggplot2::geom_density(ggplot2::aes(y = ggplot2::after_stat(count * binwidth)))
+        qenv_plot <- within(qenv_plot,
+          {
+            plot <- plot + ggplot2::geom_density(ggplot2::aes(y = ggplot2::after_stat(count * binwidth)))
+          },
+          binwidth = binwidth
+        )
       }
-
       if (outlier_definition != 0) {
-        p <- p + ggplot2::annotate(
-          geom = "text",
-          label = outlier_text,
-          x = Inf, y = Inf,
-          hjust = 1.02, vjust = 1.2,
-          color = "black",
-          # explicitly modify geom text size according
+        qenv_plot <- within(qenv_plot,
+          {
+            plot <- plot + ggplot2::annotate(
+              geom = "text",
+              label = outlier_text,
+              x = Inf, y = Inf,
+              hjust = 1.02, vjust = 1.2,
+              color = "black",
+              # explicitly modify geom text size according
+              size = size
+            )
+          },
+          outlier_text = outlier_text,
           size = ggplot2_args[["theme"]][["text"]][["size"]] / 3.5
         )
       }
-      p
+      qenv_plot
     }
+    qenv_plot
   } else if (inherits(var, "Date") || inherits(var, "POSIXct") || inherits(var, "POSIXlt")) {
     var_num <- as.numeric(var)
     binwidth <- get_bin_width(var_num, 1)
-    p <- ggplot2::ggplot(data = data.frame(var = var), ggplot2::aes(x = var, y = ggplot2::after_stat(count))) +
-      ggplot2::geom_histogram(binwidth = binwidth)
+    qenv_plot <- within(qenv,
+      {
+        col_label <- attr(ANL[[var]], "label")
+        ANL[[var]] <- as.numeric(ANL[[var]])
+        attr(ANL[[var]], "label") <- col_label
+        plot <- ANL %>%
+          ggplot2::ggplot(ggplot2::aes(x = var_name, y = ggplot2::after_stat(count))) +
+          ggplot2::geom_histogram(binwidth = binwidth)
+      },
+      binwidth = binwidth,
+      var = var_name,
+      var_name = as.name(var_name)
+    )
   } else {
-    grid::textGrob(
-      paste(strwrap(
-        utils::capture.output(utils::str(var)),
-        width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)
-      ), collapse = "\n"),
-      x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"), just = c("left", "top")
+    qenv_plot <- within(qenv,
+      {
+        plot <- gridExtra::arrangeGrob(
+          grid::textGrob(
+            paste(strwrap(
+              utils::capture.output(utils::str(ANL[[var]])),
+              width = .9 * grid::convertWidth(grid::unit(1, "npc"), "char", TRUE)
+            ), collapse = "\n"),
+            x = grid::unit(1, "line"), y = grid::unit(1, "npc") - grid::unit(1, "line"), just = c("left", "top")
+          ),
+          ncol = 1
+        )
+      },
+      var = var_name
     )
   }
 
   dev_ggplot2_args <- teal.widgets::ggplot2_args(
-    labs = list(x = var_lab)
+    labs = list(x = teal.data::col_labels(qenv$ANL))
   )
-  ###
+
   all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
     ggplot2_args,
     module_plot = dev_ggplot2_args
   )
 
-  if (is.ggplot(plot_main)) {
-    if (is.numeric(var) && !numeric_as_factor) {
-      # numeric not as factor
-      plot_main <- plot_main +
-        theme_light() +
-        list(
-          labs = do.call("labs", all_ggplot2_args$labs),
-          theme = do.call("theme", all_ggplot2_args$theme)
-        )
-    } else {
-      # factor low number of levels OR numeric as factor OR Date
-      plot_main <- plot_main +
-        theme_light() +
-        list(
-          labs = do.call("labs", all_ggplot2_args$labs),
-          theme = do.call("theme", all_ggplot2_args$theme)
-        )
-    }
-    plot_main <- ggplot2::ggplotGrob(plot_main)
+  if (is.ggplot(qenv_plot$plot)) {
+    qenv_plot <- within(qenv_plot,
+      {
+        plot <- plot +
+          theme_light() +
+          labs
+      },
+      labs = do.call("labs", all_ggplot2_args$labs)
+    )
   }
-
-  grid::grid.draw(plot_main)
-  plot_main
+  qenv_plot <- within(qenv_plot, {
+    plot
+  })
 }
 
 is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysis) {
@@ -788,12 +866,22 @@ is_num_var_short <- function(.unique_records_for_factor, input, data_for_analysi
 }
 
 get_plotted_data <- function(input, plot_var, data) {
-  dataset_name <- input$tabset_panel
+  dataset_name <- req(input$tabset_panel)
   varname <- plot_var$variable[[dataset_name]]
-  df <- data()[[dataset_name]]
-
-  var_description <- teal.data::col_labels(df)[[varname]]
-  list(data = df[[varname]], var_description = var_description)
+  obj <- data()
+  teal.reporter::teal_card(obj) <-
+    c(
+      teal.reporter::teal_card(obj),
+      teal.reporter::teal_card("## Module's output(s)")
+    )
+  teal.code::eval_code(obj, "library(ggplot2)") |>
+    within(
+      {
+        ANL <- dplyr::select(dataset_name, varname)
+      },
+      dataset_name = as.name(dataset_name),
+      varname = as.name(varname)
+    )
 }
 
 #' Renders the left-hand side `tabset` panel of the module
@@ -1020,12 +1108,25 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
 #' @returns (`numeric`) vector without the outlier values
 #' @keywords internal
 remove_outliers_from <- function(var, outlier_definition) {
+  var[filter_outliers(var, outlier_definition)]
+}
+
+
+#' Logical vector
+#'
+#' Returns a logical vector.
+#' Suitable for `dplyr::filter()` and data.frames.
+#'
+#' @inheritParams remove_outliers_from
+#'
+#' @keywords internal
+filter_outliers <- function(var, outlier_definition) {
   if (outlier_definition == 0) {
-    return(var)
+    return(rep(TRUE, length.out = length(var)))
   }
   q1_q3 <- stats::quantile(var, probs = c(0.25, 0.75), type = 2, na.rm = TRUE)
   iqr <- q1_q3[2] - q1_q3[1]
-  var[var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr]
+  var >= q1_q3[1] - outlier_definition * iqr & var <= q1_q3[2] + outlier_definition * iqr
 }
 
 

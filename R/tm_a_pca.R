@@ -262,7 +262,7 @@ ui_a_pca.default <- function(id, ...) {
           is_single_dataset = is_single_dataset_value
         ),
         bslib::accordion(
-          open = TRUE,
+          open = c("Display", "Pre-processing", "Selected plot specific settings"),
           bslib::accordion_panel(
             title = "Display",
             checkboxGroupInput(
@@ -338,7 +338,6 @@ ui_a_pca.default <- function(id, ...) {
           ),
           bslib::accordion_panel(
             title = "Plot settings",
-            collapsed = TRUE,
             conditionalPanel(
               condition = sprintf(
                 "input['%s'] == 'Elbow plot' || input['%s'] == 'Eigenvector plot'",
