@@ -32,8 +32,7 @@ tm_g_scatterplot.picks <- function(label = "Scatterplot",
                                      teal.transform::datasets(),
                                      teal.transform::variables(
                                        choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
-                                       selected = NULL,
-                                       multiple = TRUE
+                                       selected = NULL
                                      ),
                                      teal.transform::values()
                                    ),
@@ -41,8 +40,7 @@ tm_g_scatterplot.picks <- function(label = "Scatterplot",
                                      teal.transform::datasets(),
                                      teal.transform::variables(
                                        choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
-                                       selected = NULL,
-                                       multiple = TRUE
+                                       selected = NULL
                                      ),
                                      teal.transform::values()
                                    ),

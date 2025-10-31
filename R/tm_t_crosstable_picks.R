@@ -12,7 +12,7 @@ tm_t_crosstable.picks <- function(label = "Cross Table",
                                     teal.transform::datasets(),
                                     teal.transform::variables(
                                       choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
-                                      selected = 2L, multiple = TRUE, ordered = TRUE
+                                      selected = 2L, ordered = TRUE
                                     ),
                                     teal.transform::values()
                                   ),
@@ -147,7 +147,7 @@ srv_t_crosstable.picks <- function(id, data, label, x, y, remove_zero_columns, b
         selectors$y()
       },
       handlerExpr = {
-        if (identical(selectors$x()$datasets$selected, selectors$x()$datasets$selected)) {
+        if (identical(selectors$x()$datasets$selected, selectors$y()$datasets$selected)) {
           shinyjs::hide("join_fun")
         } else {
           shinyjs::show("join_fun")
@@ -160,7 +160,7 @@ srv_t_crosstable.picks <- function(id, data, label, x, y, remove_zero_columns, b
       data = validated_q,
       selectors = selectors,
       output_name = "anl",
-      join_fun = input$join_fun # todo: make reactive
+      join_fun = isolate(input$join_fun) # todo: make reactive
     )
 
     output_q <- reactive({
