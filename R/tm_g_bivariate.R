@@ -11,33 +11,30 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Variable names selected to plot along the x-axis by default.
-#' Can be numeric, factor or character.
-#' No empty selections are allowed.
-#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Variable names selected to plot along the y-axis by default.
+#' @param x (`picks`) Variable specification for the x-axis. Created using [teal.transform::picks()].
+#' Can be numeric, factor or character. No empty selections are allowed.
+#' @param y (`picks`) Variable specification for the y-axis. Created using [teal.transform::picks()].
 #' Can be numeric, factor or character.
 #' @param use_density (`logical`) optional, indicates whether to plot density (`TRUE`) or frequency (`FALSE`).
 #' Defaults to frequency (`FALSE`).
-#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) to use for faceting rows.
-#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) to use for faceting columns.
+#' @param row_facet (`picks`) optional, specification of the data variable(s) to use for faceting rows.
+#' Created using [teal.transform::picks()].
+#' @param col_facet (`picks`) optional, specification of the data variable(s) to use for faceting columns.
+#' Created using [teal.transform::picks()].
 #' @param facet (`logical`) optional, specifies whether the facet encodings `ui` elements are toggled
 #' on and shown to the user by default. Defaults to `TRUE` if either `row_facet` or `column_facet`
 #' are supplied.
 #' @param color_settings (`logical`) Whether coloring, filling and size should be applied
 #' and `UI` tool offered to the user.
-#' @param color (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) selected for the outline color inside the coloring settings.
-#' It will be applied when `color_settings` is set to `TRUE`.
-#' @param fill (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) selected for the fill color inside the coloring settings.
-#' It will be applied when `color_settings` is set to `TRUE`.
-#' @param size (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
-#' specification of the data variable(s) selected for the size of `geom_point` plots inside the coloring settings.
-#' It will be applied when `color_settings` is set to `TRUE`.
+#' @param color (`picks`) optional, specification of the data variable(s) selected for the outline color
+#' inside the coloring settings. It will be applied when `color_settings` is set to `TRUE`.
+#' Created using [teal.transform::picks()].
+#' @param fill (`picks`) optional, specification of the data variable(s) selected for the fill color
+#' inside the coloring settings. It will be applied when `color_settings` is set to `TRUE`.
+#' Created using [teal.transform::picks()].
+#' @param size (`picks`) optional, specification of the data variable(s) selected for the size of
+#' `geom_point` plots inside the coloring settings. It will be applied when `color_settings` is set to `TRUE`.
+#' Created using [teal.transform::picks()].
 #' @param free_x_scales (`logical`) optional, whether X scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).
 #' @param free_y_scales (`logical`) optional, whether Y scaling shall be changeable.
@@ -87,42 +84,22 @@
 #' app <- init(
 #'   data = data,
 #'   modules = tm_g_bivariate(
-#'     x = data_extract_spec(
-#'       dataname = "CO2",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["CO2"]]),
-#'         selected = "conc",
-#'         fixed = FALSE
-#'       )
+#'     label = "Bivariate Plots",
+#'     x = teal.transform::picks(
+#'       datasets("CO2"),
+#'       teal.transform::variables(selected = "conc")
 #'     ),
-#'     y = data_extract_spec(
-#'       dataname = "CO2",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["CO2"]]),
-#'         selected = "uptake",
-#'         multiple = FALSE,
-#'         fixed = FALSE
-#'       )
+#'     y = teal.transform::picks(
+#'       datasets("CO2"),
+#'       teal.transform::variables(selected = "uptake")
 #'     ),
-#'     row_facet = data_extract_spec(
-#'       dataname = "CO2",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["CO2"]]),
-#'         selected = "Type",
-#'         fixed = FALSE
-#'       )
+#'     row_facet = teal.transform::picks(
+#'       datasets("CO2"),
+#'       teal.transform::variables(selected = "Type")
 #'     ),
-#'     col_facet = data_extract_spec(
-#'       dataname = "CO2",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["CO2"]]),
-#'         selected = "Treatment",
-#'         fixed = FALSE
-#'       )
+#'     col_facet = teal.transform::picks(
+#'       datasets("CO2"),
+#'       teal.transform::variables(selected = "Treatment")
 #'     )
 #'   )
 #' )
@@ -146,42 +123,22 @@
 #' app <- init(
 #'   data = data,
 #'   modules = tm_g_bivariate(
-#'     x = data_extract_spec(
-#'       dataname = "ADSL",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["ADSL"]]),
-#'         selected = "AGE",
-#'         fixed = FALSE
-#'       )
+#'     label = "Bivariate Plots",
+#'     x = teal.transform::picks(
+#'       datasets("ADSL"),
+#'       teal.transform::variables(selected = "AGE")
 #'     ),
-#'     y = data_extract_spec(
-#'       dataname = "ADSL",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["ADSL"]]),
-#'         selected = "SEX",
-#'         multiple = FALSE,
-#'         fixed = FALSE
-#'       )
+#'     y = teal.transform::picks(
+#'       datasets("ADSL"),
+#'       teal.transform::variables(selected = "SEX")
 #'     ),
-#'     row_facet = data_extract_spec(
-#'       dataname = "ADSL",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["ADSL"]]),
-#'         selected = "ARM",
-#'         fixed = FALSE
-#'       )
+#'     row_facet = teal.transform::picks(
+#'       datasets("ADSL"),
+#'       teal.transform::variables(selected = "ARM")
 #'     ),
-#'     col_facet = data_extract_spec(
-#'       dataname = "ADSL",
-#'       select = select_spec(
-#'         label = "Select variable:",
-#'         choices = variable_choices(data[["ADSL"]]),
-#'         selected = "COUNTRY",
-#'         fixed = FALSE
-#'       )
+#'     col_facet = teal.transform::picks(
+#'       datasets("ADSL"),
+#'       teal.transform::variables(selected = "COUNTRY")
 #'     )
 #'   )
 #' )
@@ -192,11 +149,19 @@
 #' @export
 #'
 tm_g_bivariate <- function(label = "Bivariate Plots",
-                           x,
+                           x = teal.transform::picks(
+                             teal.transform::datasets(),
+                             teal.transform::variables(
+                               choices = is.numeric |
+                                 teal.transform::is_categorical(min.len = 2, max.len = 10),
+                               selected = 1L
+                             ),
+                             teal.transform::values()
+                           ),
                            y,
-                           row_facet = NULL,
-                           col_facet = NULL,
-                           facet = !is.null(row_facet) || !is.null(col_facet),
+                           row_facet,
+                           col_facet,
+                           facet,
                            color = NULL,
                            fill = NULL,
                            size = NULL,
@@ -214,6 +179,33 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
                            post_output = NULL,
                            transformators = list(),
                            decorators = list()) {
+  UseMethod("tm_g_bivariate", x)
+}
+
+#' @export
+tm_g_bivariate.default <- function(label = "Bivariate Plots",
+                                   x,
+                                   y,
+                                   row_facet = NULL,
+                                   col_facet = NULL,
+                                   facet = !is.null(row_facet) || !is.null(col_facet),
+                                   color = NULL,
+                                   fill = NULL,
+                                   size = NULL,
+                                   use_density = FALSE,
+                                   color_settings = FALSE,
+                                   free_x_scales = FALSE,
+                                   free_y_scales = FALSE,
+                                   plot_height = c(600, 200, 2000),
+                                   plot_width = NULL,
+                                   rotate_xaxis_labels = FALSE,
+                                   swap_axes = FALSE,
+                                   ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                   ggplot2_args = teal.widgets::ggplot2_args(),
+                                   pre_output = NULL,
+                                   post_output = NULL,
+                                   transformators = list(),
+                                   decorators = list()) {
   message("Initializing tm_g_bivariate")
 
   # Normalize the parameters
@@ -313,8 +305,8 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 
   ans <- module(
     label = label,
-    server = srv_g_bivariate,
-    ui = ui_g_bivariate,
+    server = srv_g_bivariate.default,
+    ui = ui_g_bivariate.default,
     ui_args = args,
     server_args = c(
       data_extract_list,
@@ -328,7 +320,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
 }
 
 # UI function for the bivariate module
-ui_g_bivariate <- function(id, ...) {
+ui_g_bivariate.default <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(
     args$x, args$y, args$row_facet, args$col_facet, args$color, args$fill, args$size
@@ -472,20 +464,20 @@ ui_g_bivariate <- function(id, ...) {
 }
 
 # Server function for the bivariate module
-srv_g_bivariate <- function(id,
-                            data,
-                            x,
-                            y,
-                            row_facet,
-                            col_facet,
-                            color_settings = FALSE,
-                            color,
-                            fill,
-                            size,
-                            plot_height,
-                            plot_width,
-                            ggplot2_args,
-                            decorators) {
+srv_g_bivariate.default <- function(id,
+                                    data,
+                                    x,
+                                    y,
+                                    row_facet,
+                                    col_facet,
+                                    color_settings = FALSE,
+                                    color,
+                                    fill,
+                                    size,
+                                    plot_height,
+                                    plot_width,
+                                    ggplot2_args,
+                                    decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -739,8 +731,8 @@ srv_g_bivariate <- function(id,
 
 # Get Substituted ggplot call
 bivariate_plot_call <- function(data_name,
-                                x = character(0),
-                                y = character(0),
+                                x = NULL,
+                                y = NULL,
                                 x_class = "NULL",
                                 y_class = "NULL",
                                 x_label = NULL,
@@ -752,17 +744,12 @@ bivariate_plot_call <- function(data_name,
                                 alpha = double(0),
                                 size = 2,
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
-  supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical", "ordered")
-  validate(need(x_class %in% supported_types, paste0("Data type '", x_class, "' is not supported.")))
-  validate(need(y_class %in% supported_types, paste0("Data type '", y_class, "' is not supported.")))
-
-
-  if (identical(x, character(0))) {
+  if (is.null(x)) {
     x <- x_label <- "-"
   } else {
     x <- if (is.call(x)) x else as.name(x)
   }
-  if (identical(y, character(0))) {
+  if (is.null(y)) {
     y <- y_label <- "-"
   } else {
     y <- if (is.call(y)) y else as.name(y)

@@ -10,11 +10,10 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param ref (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Reference variable, must accepts a `data_extract_spec` with `select_spec(multiple = FALSE)`
-#' to ensure single selection option.
-#' @param vars (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Variables to be associated with the reference variable.
+#' @param ref (`picks`)
+#' Reference variable specification created using `teal.transform::picks()`.
+#' @param vars (`picks`)
+#' Variables to be associated with the reference variable, specified using `teal.transform::picks()`.
 #' @param show_association (`logical`) optional, whether show association of `vars`
 #' with reference variable. Defaults to `TRUE`.
 #' @param distribution_theme,association_theme (`character`) optional, `ggplot2` themes to be used by default.
@@ -68,23 +67,19 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_g_association(
-#'       ref = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-#'           selected = "Plant",
-#'           fixed = FALSE
+#'       ref = teal.transform::picks(
+#'         datasets("CO2"),
+#'         teal.transform::variables(
+#'           choices = c("Plant", "Type", "Treatment"),
+#'           selected = "Plant"
 #'         )
 #'       ),
-#'       vars = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
+#'       vars = teal.transform::picks(
+#'         datasets("CO2"),
+#'         teal.transform::variables(
+#'           choices = c("Plant", "Type", "Treatment"),
 #'           selected = "Treatment",
-#'           multiple = TRUE,
-#'           fixed = FALSE
+#'           multiple = TRUE
 #'         )
 #'       )
 #'     )
@@ -111,29 +106,19 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_g_association(
-#'       ref = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
-#'           ),
-#'           selected = "RACE",
-#'           fixed = FALSE
+#'       ref = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(
+#'           choices = c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2"),
+#'           selected = "RACE"
 #'         )
 #'       ),
-#'       vars = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
-#'           ),
+#'       vars = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(
+#'           choices = c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2"),
 #'           selected = "BMRKR2",
-#'           multiple = TRUE,
-#'           fixed = FALSE
+#'           multiple = TRUE
 #'         )
 #'       )
 #'     )
@@ -144,9 +129,16 @@
 #' }
 #'
 #' @export
-#'
 tm_g_association <- function(label = "Association",
-                             ref,
+                             ref = teal.transform::picks(
+                               teal.transform::datasets(),
+                               teal.transform::variables(
+                                 choices = is.numeric |
+                                   teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                 selected = 1L
+                               ),
+                               teal.transform::values()
+                             ),
                              vars,
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
@@ -158,6 +150,23 @@ tm_g_association <- function(label = "Association",
                              ggplot2_args = teal.widgets::ggplot2_args(),
                              transformators = list(),
                              decorators = list()) {
+  UseMethod("tm_g_association", ref)
+}
+
+#' @export
+tm_g_association.default <- function(label = "Association",
+                                     ref,
+                                     vars,
+                                     show_association = TRUE,
+                                     plot_height = c(600, 400, 5000),
+                                     plot_width = NULL,
+                                     distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length.
+                                     association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length.
+                                     pre_output = NULL,
+                                     post_output = NULL,
+                                     ggplot2_args = teal.widgets::ggplot2_args(),
+                                     transformators = list(),
+                                     decorators = list()) {
   message("Initializing tm_g_association")
 
   # Normalize the parameters
@@ -207,8 +216,8 @@ tm_g_association <- function(label = "Association",
 
   ans <- module(
     label = label,
-    server = srv_tm_g_association,
-    ui = ui_tm_g_association,
+    server = srv_tm_g_association.default,
+    ui = ui_tm_g_association.default,
     ui_args = args,
     server_args = c(
       data_extract_list,
@@ -222,7 +231,7 @@ tm_g_association <- function(label = "Association",
 }
 
 # UI function for the association module
-ui_tm_g_association <- function(id, ...) {
+ui_tm_g_association.default <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$ref, args$vars)
@@ -295,14 +304,14 @@ ui_tm_g_association <- function(id, ...) {
 }
 
 # Server function for the association module
-srv_tm_g_association <- function(id,
-                                 data,
-                                 ref,
-                                 vars,
-                                 plot_height,
-                                 plot_width,
-                                 ggplot2_args,
-                                 decorators) {
+srv_tm_g_association.default <- function(id,
+                                         data,
+                                         ref,
+                                         vars,
+                                         plot_height,
+                                         plot_width,
+                                         ggplot2_args,
+                                         decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
 
