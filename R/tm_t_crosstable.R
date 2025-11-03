@@ -5,14 +5,14 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param x (`picks` or `list` of `picks`)
 #' Object with all available choices with pre-selected option for variable X - row values.
-#' In case of `data_extract_spec` use `select_spec(..., ordered = TRUE)` if table elements should be
+#' In case of `picks` use `teal.transform::variables(..., ordered = TRUE)` if table elements should be
 #' rendered according to selection order.
-#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param y (`picks` or `list` of multiple `picks`)
 #' Object with all available choices with pre-selected option for variable Y - column values.
 #'
-#' `data_extract_spec` must not allow multiple selection in this case.
+#' `picks` must not allow multiple selection in this case.
 #' @param show_percentage (`logical(1)`)
 #' Indicates whether to show percentages (relevant only when `x` is a `factor`).
 #' Defaults to `TRUE`.
@@ -82,26 +82,26 @@
 #'   modules = modules(
 #'     tm_t_crosstable(
 #'       label = "Cross Table",
-#'       x = data_extract_spec(
-#'         dataname = "mtcars",
-#'         select = select_spec(
-#'           label = "Select variable:",
+#'       x = teal.transform::picks(
+#'         datasets("mtcars"),
+#'         teal.transform::variables(
 #'           choices = variable_choices(data[["mtcars"]], c("cyl", "vs", "am", "gear")),
 #'           selected = c("cyl", "gear"),
 #'           multiple = TRUE,
 #'           ordered = TRUE,
 #'           fixed = FALSE
-#'         )
+#'         ),
+#'         teal.transform::values()
 #'       ),
-#'       y = data_extract_spec(
-#'         dataname = "mtcars",
-#'         select = select_spec(
-#'           label = "Select variable:",
+#'       y = teal.transform::picks(
+#'         datasets("mtcars"),
+#'         teal.transform::variables(
 #'           choices = variable_choices(data[["mtcars"]], c("cyl", "vs", "am", "gear")),
 #'           selected = "vs",
 #'           multiple = FALSE,
 #'           fixed = FALSE
-#'         )
+#'         ),
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -127,10 +127,9 @@
 #'   modules = modules(
 #'     tm_t_crosstable(
 #'       label = "Cross Table",
-#'       x = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
+#'       x = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(
 #'           choices = variable_choices(data[["ADSL"]], subset = function(data) {
 #'             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
 #'             return(names(data)[idx])
@@ -139,12 +138,12 @@
 #'           multiple = TRUE,
 #'           ordered = TRUE,
 #'           fixed = FALSE
-#'         )
+#'         ),
+#'         teal.transform::values()
 #'       ),
-#'       y = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
+#'       y = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(
 #'           choices = variable_choices(data[["ADSL"]], subset = function(data) {
 #'             idx <- vapply(data, is.factor, logical(1))
 #'             return(names(data)[idx])
@@ -152,7 +151,8 @@
 #'           selected = "SEX",
 #'           multiple = FALSE,
 #'           fixed = FALSE
-#'         )
+#'         ),
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -164,7 +164,13 @@
 #' @export
 #'
 tm_t_crosstable <- function(label = "Cross Table",
-                            x,
+                            x = teal.transform::picks(
+                              teal.transform::datasets(),
+                              teal.transform::variables(
+                                choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                selected = 1L, multiple = TRUE, ordered = TRUE
+                              )
+                            ),
                             y,
                             show_percentage = TRUE,
                             show_total = TRUE,
@@ -174,6 +180,21 @@ tm_t_crosstable <- function(label = "Cross Table",
                             basic_table_args = teal.widgets::basic_table_args(),
                             transformators = list(),
                             decorators = list()) {
+  UseMethod("tm_t_crosstable", x)
+}
+
+#' @export
+tm_t_crosstable.default <- function(label = "Cross Table",
+                                    x,
+                                    y,
+                                    show_percentage = TRUE,
+                                    show_total = TRUE,
+                                    remove_zero_columns = FALSE,
+                                    pre_output = NULL,
+                                    post_output = NULL,
+                                    basic_table_args = teal.widgets::basic_table_args(),
+                                    transformators = list(),
+                                    decorators = list()) {
   message("Initializing tm_t_crosstable")
 
   # Normalize the parameters
@@ -211,8 +232,8 @@ tm_t_crosstable <- function(label = "Cross Table",
 
   ans <- module(
     label = label,
-    server = srv_t_crosstable,
-    ui = ui_t_crosstable,
+    server = srv_t_crosstable.default,
+    ui = ui_t_crosstable.default,
     ui_args = ui_args,
     server_args = server_args,
     transformators = transformators,
@@ -223,7 +244,7 @@ tm_t_crosstable <- function(label = "Cross Table",
 }
 
 # UI function for the cross-table module
-ui_t_crosstable <- function(id, x, y, show_percentage, show_total, remove_zero_columns, pre_output, post_output, ...) {
+ui_t_crosstable.default <- function(id, x, y, show_percentage, show_total, remove_zero_columns, pre_output, post_output, ...) {
   args <- list(...)
   ns <- NS(id)
   is_single_dataset <- teal.transform::is_single_dataset(x, y)
@@ -270,7 +291,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, remove_zero_c
 }
 
 # Server function for the cross-table module
-srv_t_crosstable <- function(id, data, label, x, y, remove_zero_columns, basic_table_args, decorators) {
+srv_t_crosstable.default <- function(id, data, label, x, y, remove_zero_columns, basic_table_args, decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

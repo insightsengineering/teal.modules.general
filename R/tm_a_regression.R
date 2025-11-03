@@ -10,11 +10,15 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param regressor (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Regressor variables from an incoming dataset with filtering and selecting.
-#' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Response variables from an incoming dataset with filtering and selecting.
-#' @param default_outlier_label (`character`) optional, default column selected to label outliers.
+#' @param regressor (`picks`) Specification for regressor variables selection.
+#' Created using [teal.transform::picks()], which allows selecting variables
+#' to use as regressors in the regression model. `teal.transform::variables(multiple = TRUE)` allowed.
+#' @param response (`picks`) Specification for response variable selection.
+#' Created using [teal.transform::picks()], which allows selecting a single numeric variable
+#' to use as the response in the regression model. `teal.transform::variables(multiple = TRUE)` not allowed.
+#' @param outlier (`picks`) Optional specification for outlier label variable selection.
+#' Created using [teal.transform::picks()], which allows selecting a factor or character variable
+#' to label outlier points on the plots.
 #' @param default_plot_type (`numeric`) optional, defaults to "Response vs Regressor".
 #' 1. Response vs Regressor
 #' 2. Residuals vs Fitted
@@ -87,25 +91,13 @@
 #'   modules = modules(
 #'     tm_a_regression(
 #'       label = "Regression",
-#'       response = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = "uptake",
-#'           selected = "uptake",
-#'           multiple = FALSE,
-#'           fixed = TRUE
-#'         )
+#'       response = teal.transform::picks(
+#'         datasets("CO2"),
+#'         teal.transform::variables(choices = "uptake", selected = "uptake")
 #'       ),
-#'       regressor = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
-#'           selected = "conc",
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
+#'       regressor = teal.transform::picks(
+#'         datasets("CO2"),
+#'         teal.transform::variables(choices = c("conc", "Treatment"), selected = "conc", multiple = TRUE)
 #'       )
 #'     )
 #'   )
@@ -132,25 +124,13 @@
 #'   modules = modules(
 #'     tm_a_regression(
 #'       label = "Regression",
-#'       response = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = "BMRKR1",
-#'           selected = "BMRKR1",
-#'           multiple = FALSE,
-#'           fixed = TRUE
-#'         )
+#'       response = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(choices = "BMRKR1", selected = "BMRKR1")
 #'       ),
-#'       regressor = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variables:",
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
-#'           selected = "AGE",
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
+#'       regressor = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(choices = c("AGE", "SEX", "RACE"), selected = "AGE", multiple = TRUE)
 #'       )
 #'     )
 #'   )
@@ -162,7 +142,14 @@
 #' @export
 #'
 tm_a_regression <- function(label = "Regression Analysis",
-                            regressor,
+                            regressor = teal.transform::picks(
+                              teal.transform::datasets(),
+                              teal.transform::variables(
+                                choices = is.numeric,
+                                selected = tidyselect::last_col(),
+                                multiple = TRUE
+                              )
+                            ),
                             response,
                             plot_height = c(600, 200, 2000),
                             plot_width = NULL,
@@ -177,6 +164,26 @@ tm_a_regression <- function(label = "Regression Analysis",
                             label_segment_threshold = c(0.5, 0, 10),
                             transformators = list(),
                             decorators = list()) {
+  UseMethod("tm_a_regression", regressor)
+}
+
+#' @export
+tm_a_regression.default <- function(label = "Regression Analysis",
+                                    regressor,
+                                    response,
+                                    plot_height = c(600, 200, 2000),
+                                    plot_width = NULL,
+                                    alpha = c(1, 0, 1),
+                                    size = c(2, 1, 8),
+                                    ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                    ggplot2_args = teal.widgets::ggplot2_args(),
+                                    pre_output = NULL,
+                                    post_output = NULL,
+                                    default_plot_type = 1,
+                                    default_outlier_label = "USUBJID",
+                                    label_segment_threshold = c(0.5, 0, 10),
+                                    transformators = list(),
+                                    decorators = list()) {
   message("Initializing tm_a_regression")
 
   # Normalize the parameters
@@ -256,8 +263,8 @@ tm_a_regression <- function(label = "Regression Analysis",
 
   ans <- module(
     label = label,
-    server = srv_a_regression,
-    ui = ui_a_regression,
+    server = srv_a_regression.default,
+    ui = ui_a_regression.default,
     ui_args = args,
     server_args = c(
       data_extract_list,
@@ -277,7 +284,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 }
 
 # UI function for the regression module
-ui_a_regression <- function(id, ...) {
+ui_a_regression.default <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$regressor, args$response)
@@ -380,15 +387,15 @@ ui_a_regression <- function(id, ...) {
 }
 
 # Server function for the regression module
-srv_a_regression <- function(id,
-                             data,
-                             response,
-                             regressor,
-                             plot_height,
-                             plot_width,
-                             ggplot2_args,
-                             default_outlier_label,
-                             decorators) {
+srv_a_regression.default <- function(id,
+                                     data,
+                                     response,
+                                     regressor,
+                                     plot_height,
+                                     plot_width,
+                                     ggplot2_args,
+                                     default_outlier_label,
+                                     decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

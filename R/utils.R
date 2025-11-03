@@ -38,6 +38,10 @@
 #' decorator for tables or plots included in the module output reported.
 #' The decorators are applied to the respective output objects.
 #'
+#' @param table_datanames (`character`) names of the datasets which should be listed below the plot
+#'  when some data points are selected. Objects named after `table_datanames` will be pulled from
+#'  `data` so it is important that data actually contains these datasets. Please be aware that
+#'  table datasets must be linked with `plot_dataname` by the relevant [join_keys()].
 #' See section "Decorating Module" below for more details.
 #'
 #' @return Object of class `teal_module` to be used in `teal` applications.
@@ -234,13 +238,12 @@ variable_type_icons <- function(var_type) {
   ))
 }
 
-#'
 #' @param id (`character(1)`) the id of the tab panel with tabs.
 #' @param name (`character(1)`) the name of the tab.
 #' @return JavaScript expression to be used in `shiny::conditionalPanel()` to determine
 #' if the specified tab is active.
+#' @noRd
 #' @keywords internal
-#'
 is_tab_active_js <- function(id, name) {
   # supporting the bs3 and higher version at the same time
   sprintf(

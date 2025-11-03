@@ -51,8 +51,12 @@ vector of \code{value}, \code{min}, and \code{max}.
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,
 decorator for tables or plots included in the module output reported.
-The decorators are applied to the respective output objects.
+The decorators are applied to the respective output objects.}
 
+\item{table_datanames}{(\code{character}) names of the datasets which should be listed below the plot
+when some data points are selected. Objects named after \code{table_datanames} will be pulled from
+\code{data} so it is important that data actually contains these datasets. Please be aware that
+table datasets must be linked with \code{plot_dataname} by the relevant \code{\link[teal.data:join_keys]{teal.data::join_keys()}}.
 See section "Decorating Module" below for more details.}
 }
 \value{
