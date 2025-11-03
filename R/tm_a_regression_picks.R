@@ -6,8 +6,7 @@ tm_a_regression.picks <- function(label = "Regression Analysis",
                                       choices = is.numeric,
                                       selected = tidyselect::last_col(),
                                       multiple = TRUE
-                                    ),
-                                    teal.transform::values()
+                                    )
                                   ),
                                   response = teal.transform::picks(
                                     teal.transform::datasets(),
