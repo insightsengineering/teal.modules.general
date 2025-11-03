@@ -148,8 +148,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                                 choices = is.numeric,
                                 selected = tidyselect::last_col(),
                                 multiple = TRUE
-                              ),
-                              teal.transform::values()
+                              )
                             ),
                             response,
                             plot_height = c(600, 200, 2000),

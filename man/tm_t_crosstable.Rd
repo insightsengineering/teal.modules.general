@@ -8,7 +8,7 @@ tm_t_crosstable(
   label = "Cross Table",
   x = teal.transform::picks(teal.transform::datasets(), teal.transform::variables(choices
     = teal.transform::is_categorical(min.len = 2, max.len = 10), selected = 1L, multiple
-    = TRUE, ordered = TRUE), teal.transform::values()),
+    = TRUE, ordered = TRUE)),
   y,
   show_percentage = TRUE,
   show_total = TRUE,

@@ -16,17 +16,15 @@ tm_g_scatterplot.picks <- function(label = "Scatterplot",
                                        choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
                                        selected = NULL,
                                        multiple = TRUE
-                                     ),
-                                     teal.transform::values()
+                                     )
                                    ),
                                    size_by = teal.transform::picks(
                                      teal.transform::datasets(),
                                      teal.transform::variables(
-                                       choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                       choices = is.numeric,
                                        selected = NULL,
                                        multiple = TRUE
-                                     ),
-                                     teal.transform::values()
+                                     )
                                    ),
                                    row_facet = teal.transform::picks(
                                      teal.transform::datasets(),

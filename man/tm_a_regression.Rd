@@ -8,7 +8,7 @@ tm_a_regression(
   label = "Regression Analysis",
   regressor = teal.transform::picks(teal.transform::datasets(),
     teal.transform::variables(choices = is.numeric, selected = tidyselect::last_col(),
-    multiple = TRUE), teal.transform::values()),
+    multiple = TRUE)),
   response,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,

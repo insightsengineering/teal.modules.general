@@ -169,8 +169,7 @@ tm_t_crosstable <- function(label = "Cross Table",
                               teal.transform::variables(
                                 choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
                                 selected = 1L, multiple = TRUE, ordered = TRUE
-                              ),
-                              teal.transform::values()
+                              )
                             ),
                             y,
                             show_percentage = TRUE,
