@@ -108,7 +108,7 @@ ui_rmarkdown <- function(id, rmd_file, allow_download, ...) {
     output = teal.widgets::white_small_well(
       tags$div(
         tags$h4(
-          "Module from R Markdown file: ",
+          "Rendered report from: ",
           tags$code(basename(rmd_file))
         ),
         if (allow_download) {
