@@ -134,11 +134,13 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-    output$download_rmd <- downloadHandler(
-      filename = function() basename(rmd_file),
-      content = function(file) file.copy(rmd_file, file),
-      contentType = "text/plain"
-    )
+    if (allow_download) {
+      output$download_rmd <- downloadHandler(
+        filename = function() basename(rmd_file),
+        content = function(file) file.copy(rmd_file, file),
+        contentType = "text/plain"
+      )
+    }
 
     q_r <- reactive({
       data_q <- req(data())
