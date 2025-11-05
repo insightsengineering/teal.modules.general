@@ -63,7 +63,7 @@
 #'
 #' @export
 #'
-tm_rmarkdown <- function(label = "Outliers Module",
+tm_rmarkdown <- function(label = "RMarkdown Module",
                          rmd_file,
                          datanames = "all",
                          allow_download = TRUE,

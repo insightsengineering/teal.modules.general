@@ -5,7 +5,7 @@
 \title{\code{teal} module: Rmarkdown render}
 \usage{
 tm_rmarkdown(
-  label = "Outliers Module",
+  label = "RMarkdown Module",
   rmd_file,
   datanames = "all",
   allow_download = TRUE,
@@ -15,8 +15,20 @@ tm_rmarkdown(
 )
 }
 \arguments{
+\item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
+For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
+
 \item{rmd_file}{(\code{character}) Path to the R Markdown file to be rendered.
 The file must be accessible from the Shiny app environment.}
+
+\item{datanames}{(\code{character}) Names of the datasets relevant to the item.
+There are 2 reserved values that have specific behaviors:
+\itemize{
+\item The keyword \code{"all"} includes all datasets available in the data passed to the teal application.
+\item \code{NULL} hides the sidebar panel completely.
+\item If \code{transformators} are specified, their \code{datanames} are automatically added to this \code{datanames}
+argument.
+}}
 
 \item{allow_download}{(\code{logical}) whether to allow downloading of the R Markdown file.
 Defaults to \code{TRUE}.}
@@ -27,6 +39,9 @@ with text placed before the output to put the output into context. For example a
 
 \item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
 adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
+
+\item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
+To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
