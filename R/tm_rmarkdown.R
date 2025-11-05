@@ -99,7 +99,7 @@ tm_rmarkdown <- function(label = "RMarkdown Module",
   ans
 }
 
-# UI function for the outliers module
+# UI function for the rmarkdown module
 ui_rmarkdown <- function(id, rmd_file, allow_download, ...) {
   args <- list(...)
   ns <- NS(id)
@@ -129,8 +129,7 @@ ui_rmarkdown <- function(id, rmd_file, allow_download, ...) {
   )
 }
 
-# Server function for the outliers module
-# Server function for the outliers module
+# Server function for the rmarkdown module
 srv_rmarkdown <- function(id, data, rmd_file, allow_download) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
