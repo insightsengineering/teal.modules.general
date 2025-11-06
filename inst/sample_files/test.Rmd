@@ -1,0 +1,34 @@
+---
+title: "Test R Markdown"
+output: html_document
+params:
+  CO2: NULL
+  yada: 42
+  n_rows: NULL
+---
+
+This is an example of an R markdown file with an inline r execution that gives the current date: `r Sys.Date()`
+
+Code chunk that performs a simple calculation (`1+1`)
+
+```{r}
+1+1
+```
+
+Code chunk that shows the structure of the params object
+
+```{r}
+lapply(params, class)
+```
+
+Code chunk that shows the summary of the first `n_rows` of the `CO2` dataset if it is provided
+
+```{r}
+summary(head(params$CO2, n = params$n_rows))
+```
+
+Code chunk that plots the first `n_rows` of the `CO2` dataset if it is provided
+
+```{r, eval = !is.null(params$CO2)}
+plot(head(params$CO2, n = params$n_rows))
+```

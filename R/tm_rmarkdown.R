@@ -64,7 +64,7 @@
 #' }
 #'
 #' @examples
-#' static_decorator <- teal_transform_module(
+#' nrow_transform <- teal_transform_module(
 #'   label = "N Rows selector",
 #'   ui = function(id) {
 #'     ns <- NS(id)
@@ -91,7 +91,7 @@
 #'       label = "RMarkdown Module",
 #'       rmd_file = "test.Rmd",
 #'       allow_download = FALSE,
-#'       decorators = list(static_decorator)
+#'       extra_transform = list(nrow_transform)
 #'     )
 #'   )
 #' ) |> shiny::runApp()
@@ -165,7 +165,7 @@ ui_rmarkdown <- function(id, rmd_file, allow_download, extra_transform, ...) {
 }
 
 # Server function for the rmarkdown module
-srv_rmarkdown <- function(id, data, rmd_file, allow_download, decorators) {
+srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
