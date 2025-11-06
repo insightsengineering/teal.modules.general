@@ -207,10 +207,6 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
 
     rendered_path_r <- reactive({
       datasets <- req(q_r()) # Ensure data is available
-
-      temp_output <- tempfile(tmpdir = temp_dir, fileext = ".md")
-
-
       tryCatch(
         {
           rmarkdown::render(
@@ -220,13 +216,11 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
               toc = TRUE,
               preserve_yaml = TRUE
             ),
-            output_file = temp_output,
             params = datasets[["rmd_data"]],
             envir = new.env(parent = globalenv()),
             quiet = TRUE,
             runtime = "static"
           )
-          temp_output
         },
         error = function(e) {
           warning("Error rendering RMD file: ", e$message) # verbose error in logs
@@ -240,6 +234,7 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
       validate(
         need(inherits(output_path, "character"), "Error rendering RMD file. Please contact the app developer.")
       )
+      print(output_path)
       htmltools::includeMarkdown(output_path)
     })
 
