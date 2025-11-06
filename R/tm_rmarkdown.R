@@ -28,6 +28,8 @@
 #' The file must be accessible from the Shiny app environment.
 #' @param allow_download (`logical`) whether to allow downloading of the R Markdown file.
 #' Defaults to `TRUE`.
+#' @param extra_transform (`list`) of [teal::teal_transform_module()] that will be added in the module's UI.
+#' This can be used to create interactive inputs that modify the parameters in R Markdown rendering.
 #'
 #' @inherit shared_params return
 #'
@@ -61,6 +63,38 @@
 #'   shinyApp(app$ui, app$server)
 #' }
 #'
+#' @examples
+#' static_decorator <- teal_transform_module(
+#'   label = "N Rows selector",
+#'   ui = function(id) {
+#'     ns <- NS(id)
+#'     tags$div(
+#'       numericInput(ns("n_rows"), "Show n rows", value = 5, min = 0, max = 200, step = 5)
+#'     )
+#'   },
+#'   server = function(id, data) {
+#'     moduleServer(id, function(input, output, session) {
+#'       reactive({
+#'         req(data())
+#'         within(data(), {
+#'           rmd_data$n_rows <- n_rows_value
+#'         }, n_rows_value = input$n_rows)
+#'       })
+#'     })
+#'   }
+#' )
+#'
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_rmarkdown(
+#'       label = "RMarkdown Module",
+#'       rmd_file = "test.Rmd",
+#'       allow_download = FALSE,
+#'       decorators = list(static_decorator)
+#'     )
+#'   )
+#' ) |> shiny::runApp()
 #' @export
 #'
 tm_rmarkdown <- function(label = "RMarkdown Module",
@@ -69,7 +103,8 @@ tm_rmarkdown <- function(label = "RMarkdown Module",
                          allow_download = TRUE,
                          pre_output = NULL,
                          post_output = NULL,
-                         transformators = list()) {
+                         transformators = list(),
+                         extra_transform = list()) {
   message("Initializing tm_rmarkdown")
 
   # Start of assertions
@@ -89,7 +124,7 @@ tm_rmarkdown <- function(label = "RMarkdown Module",
   ans <- module(
     label = label,
     server = srv_rmarkdown,
-    server_args = list(rmd_file = rmd_file, allow_download = allow_download),
+    server_args = list(rmd_file = rmd_file, allow_download = allow_download, extra_transform = extra_transform),
     ui = ui_rmarkdown,
     ui_args = args,
     transformators = transformators,
@@ -100,7 +135,7 @@ tm_rmarkdown <- function(label = "RMarkdown Module",
 }
 
 # UI function for the rmarkdown module
-ui_rmarkdown <- function(id, rmd_file, allow_download, ...) {
+ui_rmarkdown <- function(id, rmd_file, allow_download, extra_transform, ...) {
   args <- list(...)
   ns <- NS(id)
 
@@ -117,8 +152,8 @@ ui_rmarkdown <- function(id, rmd_file, allow_download, ...) {
             sprintf("Download '%s'", basename(rmd_file)),
             class = "btn-primary btn-sm"
           )
-        }
-
+        },
+         ui_transform_teal_data(ns("extra_transform"), transformators = extra_transform)
       ),
       tags$hr(),
       uiOutput(ns("rmd_output"))
@@ -130,7 +165,7 @@ ui_rmarkdown <- function(id, rmd_file, allow_download, ...) {
 }
 
 # Server function for the rmarkdown module
-srv_rmarkdown <- function(id, data, rmd_file, allow_download) {
+srv_rmarkdown <- function(id, data, rmd_file, allow_download, decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -142,7 +177,7 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download) {
       )
     }
 
-    q_r <- reactive({
+    pre_decorated_q_r <- reactive({
       data_q <- req(data())
       teal.reporter::teal_card(data_q) <- c(
         teal.reporter::teal_card(data_q),
@@ -157,9 +192,14 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download) {
       )
     })
 
+    q_r <- data_with_output_decorated <- teal::srv_transform_teal_data(
+      "extra_transform",
+      data = pre_decorated_q_r,
+      transformators = extra_transform
+    )
+
     rendered_path_r <- reactive({
       datasets <- req(q_r())  # Ensure data is available
-
       temp_dir <- tempdir()
       temp_rmd <- tempfile(tmpdir = temp_dir, fileext = ".Rmd")
       temp_html <- tempfile(tmpdir = temp_dir, fileext = ".md")
@@ -197,22 +237,25 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download) {
     output$rmd_output <- renderUI(rendered_html_r())
 
     reactive({
-      out_data <- eval_code(
-        q_r(),
-        paste(
-          sep = "\n",
-          sprintf("## R Markdown contents are generated from file, please download it from the module UI."),
-          sprintf("# rmarkdown::render(%s, params = rmd_data)", shQuote(basename(rmd_file), type = "cmd"))
-        )
-      )
+      out_data <- q_r()
 
-      out_data@verified <- FALSE
+      if (allow_download) {
+        out_data <- eval_code(
+          q_r(),
+          paste(
+            sep = "\n",
+            sprintf("## R Markdown contents are generated from file, please download it from the module UI."),
+            sprintf("# rmarkdown::render(%s, params = rmd_data)", shQuote(basename(rmd_file), type = "cmd"))
+          )
+        )
+        out_data@verified <- FALSE # manual change verified status as code is being injected
+      }
 
       teal.reporter::teal_card(out_data) <- c(
         teal.reporter::teal_card(out_data),
         rendered_html_r()
       )
       out_data
-    })
-  })
+      })
+})
 }
