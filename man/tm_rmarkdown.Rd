@@ -111,7 +111,7 @@ nrow_transform <- teal_transform_module(
         req(data())
         within(data(),
           {
-            rmd_data$n_rows <- n_rows_value
+            params$n_rows <- n_rows_value
           },
           n_rows_value = input$n_rows
         )

@@ -78,7 +78,7 @@
 #'         req(data())
 #'         within(data(),
 #'           {
-#'             rmd_data$n_rows <- n_rows_value
+#'             params$n_rows <- n_rows_value
 #'           },
 #'           n_rows_value = input$n_rows
 #'         )
@@ -189,7 +189,7 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
       eval_code(
         data_q,
         sprintf(
-          "rmd_data <- list(%s)",
+          "params <- list(%s)",
           toString(sprintf("%1$s = %1$s", sapply(names(data_q), as.name)))
         )
       )
@@ -216,7 +216,7 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
               toc = TRUE,
               preserve_yaml = TRUE
             ),
-            params = datasets[["rmd_data"]],
+            params = datasets[["params"]],
             envir = new.env(parent = globalenv()),
             quiet = TRUE,
             runtime = "static"
@@ -234,7 +234,6 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
       validate(
         need(inherits(output_path, "character"), "Error rendering RMD file. Please contact the app developer.")
       )
-      print(output_path)
       htmltools::includeMarkdown(output_path)
     })
 
@@ -249,7 +248,7 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
           paste(
             sep = "\n",
             sprintf("## R Markdown contents are generated from file, please download it from the module UI."),
-            sprintf("# rmarkdown::render(%s, params = rmd_data)", shQuote(basename(rmd_file), type = "cmd"))
+            sprintf("# rmarkdown::render(%s, params = params)", shQuote(basename(rmd_file), type = "cmd"))
           )
         )
         out_data@verified <- FALSE # manual change verified status as code is being injected
