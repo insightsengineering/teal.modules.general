@@ -11,7 +11,8 @@ tm_rmarkdown(
   allow_download = TRUE,
   pre_output = NULL,
   post_output = NULL,
-  transformators = list()
+  transformators = list(),
+  extra_transform = list()
 )
 }
 \arguments{
@@ -42,6 +43,9 @@ adding context or further instructions. Elements like \code{shiny::helpText()} a
 
 \item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
 To learn more check \code{vignette("transform-input-data", package = "teal")}.}
+
+\item{extra_transform}{(\code{list}) of \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} that will be added in the module's UI.
+This can be used to create interactive inputs that modify the parameters in R Markdown rendering.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -85,7 +89,7 @@ app <- init(
   modules = modules(
     tm_rmarkdown(
       label = "RMarkdown Module",
-      rmd_file = "test.Rmd"
+      rmd_file = system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general")
     )
   )
 )
@@ -93,12 +97,46 @@ if (interactive()) {
   shinyApp(app$ui, app$server)
 }
 
+nrow_transform <- teal_transform_module(
+  label = "N Rows selector",
+  ui = function(id) {
+    ns <- NS(id)
+    tags$div(
+      numericInput(ns("n_rows"), "Show n rows", value = 5, min = 0, max = 200, step = 5)
+    )
+  },
+  server = function(id, data) {
+    moduleServer(id, function(input, output, session) {
+      reactive({
+        req(data())
+        within(data(),
+          {
+            rmd_data$n_rows <- n_rows_value
+          },
+          n_rows_value = input$n_rows
+        )
+      })
+    })
+  }
+)
+
+app <- init(
+  data = data,
+  modules = modules(
+    tm_rmarkdown(
+      label = "RMarkdown Module",
+      rmd_file = system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general"),
+      allow_download = FALSE,
+      extra_transform = list(nrow_transform)
+    )
+  )
+) |> shiny::runApp()
 }
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cSjQqCaKny7FaqV0AF4AplcK0+EIRKJ4bpUcIxNCIFUqqQYElGP1GEN+Gslq0CbpqFB6HB-AiulgALIsClU3RsgQ4940gmk-hJEy0ESYrrkUSkbAwfhdQU7Ko7Ha0Ey6dgqcjMSw6Gy2Cr43SiIoQVgAQXQ7DBABJBLQynaZowdIwdrslGBduMgA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cSjQqCaKny7FaqV0AF4AplcK0+EIRKJ4bpUcIxNCIFUqqQYElGP1GEN+Gslq0CbpqFB6HB-AiulgALIsClU3RsgQ4940gmk-hJEy0ESYrrkUSkbAwfhdQU7Ko7Ha0Ey6dgqcjMSw6Gy2Cr43SiIoQVgAQXQ7DBABJBLQynaZowdIwdrslGBduMgA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cSjQqCaKny7FaqV0AF4AplcK0+EIRKJ4bpUcIxNCIFUqqQYElGP1GEN+Gslq0CbpqFB6HB-AiulgALIsClU3RsgQ4940gmk-hJEy0ESY0T3cgwDBikTseVwDCoIIFaFgUSRESi8Vid4-MDkUSkbAwfhAsqqghDKBSTFdRK8PnoyTSWRAwU7Ko7Ha0Ey6dgqcjMSw6Gy2Cr43SiIoQVgAQXQ7DBABJBLQymmZowdIwdrslGBduMgA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cSjQqCaKny7FaqV0AF4AplcK0+EIRKJ4bpUcIxNCIFUqqQYElGP1GEN+Gslq0CbpqFB6HB-AiulgALIsClU3RsgQ4940gmk-hJEy0ESY0T3cgwDBikTseVwDCoIIFaFgUSRESi8Vid4-MDkUSkbAwfhAsqqghDKBSTFdRK8PnoyTSWRAwU7Ko7Ha0Ey6dgqcjMSw6Gy2Cr43SiIoQVgAQXQ7DBABJBLQymmZowdIwdrslGBduMgA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

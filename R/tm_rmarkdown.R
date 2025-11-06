@@ -55,7 +55,7 @@
 #'   modules = modules(
 #'     tm_rmarkdown(
 #'       label = "RMarkdown Module",
-#'       rmd_file = "test.Rmd"
+#'       rmd_file = system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general")
 #'     )
 #'   )
 #' )
@@ -92,7 +92,7 @@
 #'   modules = modules(
 #'     tm_rmarkdown(
 #'       label = "RMarkdown Module",
-#'       rmd_file = "test.Rmd",
+#'       rmd_file = system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general"),
 #'       allow_download = FALSE,
 #'       extra_transform = list(nrow_transform)
 #'     )
