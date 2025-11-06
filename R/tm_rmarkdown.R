@@ -76,9 +76,12 @@
 #'     moduleServer(id, function(input, output, session) {
 #'       reactive({
 #'         req(data())
-#'         within(data(), {
-#'           rmd_data$n_rows <- n_rows_value
-#'         }, n_rows_value = input$n_rows)
+#'         within(data(),
+#'           {
+#'             rmd_data$n_rows <- n_rows_value
+#'           },
+#'           n_rows_value = input$n_rows
+#'         )
 #'       })
 #'     })
 #'   }
@@ -153,7 +156,7 @@ ui_rmarkdown <- function(id, rmd_file, allow_download, extra_transform, ...) {
             class = "btn-primary btn-sm"
           )
         },
-         ui_transform_teal_data(ns("extra_transform"), transformators = extra_transform)
+        ui_transform_teal_data(ns("extra_transform"), transformators = extra_transform)
       ),
       tags$hr(),
       uiOutput(ns("rmd_output"))
@@ -199,31 +202,34 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
     )
 
     rendered_path_r <- reactive({
-      datasets <- req(q_r())  # Ensure data is available
+      datasets <- req(q_r()) # Ensure data is available
       temp_dir <- tempdir()
       temp_rmd <- tempfile(tmpdir = temp_dir, fileext = ".Rmd")
       temp_html <- tempfile(tmpdir = temp_dir, fileext = ".md")
       file.copy(rmd_file, temp_rmd) # Use a copy of the Rmd file to avoid modifying the original
 
-      tryCatch({
-        rmarkdown::render(
-          temp_rmd,
-          output_format = rmarkdown::md_document(
-            variant = "gfm",
-            toc = TRUE,
-            preserve_yaml = TRUE
-          ),
-          output_file = temp_html,
-          params = datasets[["rmd_data"]],
-          envir = new.env(parent = globalenv()),
-          quiet = TRUE,
-          runtime = "static"
-        )
-        temp_html
-      }, error = function(e) {
-        warning("Error rendering RMD file: ", e$message) # verbose error in logs
-        e
-      })
+      tryCatch(
+        {
+          rmarkdown::render(
+            temp_rmd,
+            output_format = rmarkdown::md_document(
+              variant = "gfm",
+              toc = TRUE,
+              preserve_yaml = TRUE
+            ),
+            output_file = temp_html,
+            params = datasets[["rmd_data"]],
+            envir = new.env(parent = globalenv()),
+            quiet = TRUE,
+            runtime = "static"
+          )
+          temp_html
+        },
+        error = function(e) {
+          warning("Error rendering RMD file: ", e$message) # verbose error in logs
+          e
+        }
+      )
     })
 
     rendered_html_r <- reactive({
@@ -256,6 +262,6 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
         rendered_html_r()
       )
       out_data
-      })
-})
+    })
+  })
 }

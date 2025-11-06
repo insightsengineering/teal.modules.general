@@ -12,7 +12,7 @@ This is an example of an R markdown file with an inline r execution that gives t
 Code chunk that performs a simple calculation (`1+1`)
 
 ```{r}
-1+1
+1 + 1
 ```
 
 Code chunk that shows the structure of the params object
