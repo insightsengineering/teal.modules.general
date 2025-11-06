@@ -201,12 +201,15 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
       transformators = extra_transform
     )
 
+    temp_dir <- tempdir()
+    temp_rmd <- tempfile(tmpdir = temp_dir, fileext = ".Rmd")
+    file.copy(rmd_file, temp_rmd) # Use a copy of the Rmd file to avoid modifying the original
+
     rendered_path_r <- reactive({
       datasets <- req(q_r()) # Ensure data is available
-      temp_dir <- tempdir()
-      temp_rmd <- tempfile(tmpdir = temp_dir, fileext = ".Rmd")
-      temp_html <- tempfile(tmpdir = temp_dir, fileext = ".md")
-      file.copy(rmd_file, temp_rmd) # Use a copy of the Rmd file to avoid modifying the original
+
+      temp_output <- tempfile(tmpdir = temp_dir, fileext = ".md")
+
 
       tryCatch(
         {
@@ -217,13 +220,13 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
               toc = TRUE,
               preserve_yaml = TRUE
             ),
-            output_file = temp_html,
+            output_file = temp_output,
             params = datasets[["rmd_data"]],
             envir = new.env(parent = globalenv()),
             quiet = TRUE,
             runtime = "static"
           )
-          temp_html
+          temp_output
         },
         error = function(e) {
           warning("Error rendering RMD file: ", e$message) # verbose error in logs
