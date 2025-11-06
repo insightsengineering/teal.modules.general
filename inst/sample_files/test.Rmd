@@ -3,7 +3,6 @@ title: "Test R Markdown"
 output: html_document
 params:
   CO2: NULL
-  yada: 42
   n_rows: NULL
 ---
 
