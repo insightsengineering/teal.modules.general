@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0393683517929598" branch-rate="0" lines-covered="359" lines-valid="9119" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2025-11-06 13:53:20.209687">
+<coverage line-rate="0.0393726694450537" branch-rate="0" lines-covered="359" lines-valid="9118" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2025-11-06 14:31:13.767797">
   <sources>
     <source>/__w/teal.modules.general/teal.modules.general/teal.modules.general</source>
   </sources>
   <packages>
-    <package name="teal.modules.general" line-rate="0.0393683517929598" branch-rate="0" complexity="0">
+    <package name="teal.modules.general" line-rate="0.0393726694450537" branch-rate="0" complexity="0">
       <classes>
         <class name="tm_a_pca.R" filename="R/tm_a_pca.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -15725,10 +15725,10 @@
                 <line number="236" hits="0" branch="false"/>
                 <line number="237" hits="0" branch="false"/>
                 <line number="238" hits="0" branch="false"/>
-                <line number="239" hits="0" branch="false"/>
-                <line number="241" hits="0" branch="false"/>
+                <line number="240" hits="0" branch="false"/>
+                <line number="242" hits="0" branch="false"/>
                 <line number="243" hits="0" branch="false"/>
-                <line number="244" hits="0" branch="false"/>
+                <line number="245" hits="0" branch="false"/>
                 <line number="246" hits="0" branch="false"/>
                 <line number="247" hits="0" branch="false"/>
                 <line number="248" hits="0" branch="false"/>
@@ -15739,14 +15739,13 @@
                 <line number="253" hits="0" branch="false"/>
                 <line number="254" hits="0" branch="false"/>
                 <line number="255" hits="0" branch="false"/>
-                <line number="256" hits="0" branch="false"/>
+                <line number="257" hits="0" branch="false"/>
                 <line number="258" hits="0" branch="false"/>
                 <line number="259" hits="0" branch="false"/>
                 <line number="260" hits="0" branch="false"/>
                 <line number="261" hits="0" branch="false"/>
                 <line number="262" hits="0" branch="false"/>
                 <line number="263" hits="0" branch="false"/>
-                <line number="264" hits="0" branch="false"/>
               </lines>
             </method>
           </methods>
@@ -15855,10 +15854,10 @@
             <line number="236" hits="0" branch="false"/>
             <line number="237" hits="0" branch="false"/>
             <line number="238" hits="0" branch="false"/>
-            <line number="239" hits="0" branch="false"/>
-            <line number="241" hits="0" branch="false"/>
+            <line number="240" hits="0" branch="false"/>
+            <line number="242" hits="0" branch="false"/>
             <line number="243" hits="0" branch="false"/>
-            <line number="244" hits="0" branch="false"/>
+            <line number="245" hits="0" branch="false"/>
             <line number="246" hits="0" branch="false"/>
             <line number="247" hits="0" branch="false"/>
             <line number="248" hits="0" branch="false"/>
@@ -15869,14 +15868,13 @@
             <line number="253" hits="0" branch="false"/>
             <line number="254" hits="0" branch="false"/>
             <line number="255" hits="0" branch="false"/>
-            <line number="256" hits="0" branch="false"/>
+            <line number="257" hits="0" branch="false"/>
             <line number="258" hits="0" branch="false"/>
             <line number="259" hits="0" branch="false"/>
             <line number="260" hits="0" branch="false"/>
             <line number="261" hits="0" branch="false"/>
             <line number="262" hits="0" branch="false"/>
             <line number="263" hits="0" branch="false"/>
-            <line number="264" hits="0" branch="false"/>
           </lines>
         </class>
         <class name="tm_t_crosstable.R" filename="R/tm_t_crosstable.R" line-rate="0" branch-rate="0" complexity="0">
