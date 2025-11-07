@@ -78,7 +78,7 @@
 #'         req(data())
 #'         within(data(),
 #'           {
-#'             params$n_rows <- n_rows_value
+#'             n_rows <- n_rows_value
 #'           },
 #'           n_rows_value = input$n_rows
 #'         )
@@ -172,27 +172,13 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
-    if (allow_download) {
-      output$download_rmd <- downloadHandler(
-        filename = function() basename(rmd_file),
-        content = function(file) file.copy(rmd_file, file),
-        contentType = "text/plain"
-      )
-    }
-
     pre_decorated_q_r <- reactive({
       data_q <- req(data())
       teal.reporter::teal_card(data_q) <- c(
         teal.reporter::teal_card(data_q),
         teal.reporter::teal_card("## Module's output(s)")
       )
-      eval_code(
-        data_q,
-        sprintf(
-          "params <- list(%s)",
-          toString(sprintf("%1$s = %1$s", sapply(names(data_q), as.name)))
-        )
-      )
+      data_q
     })
 
     q_r <- data_with_output_decorated <- teal::srv_transform_teal_data(
@@ -200,6 +186,32 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
       data = pre_decorated_q_r,
       transformators = extra_transform
     )
+
+    if (allow_download) {
+      output$download_rmd <- downloadHandler(
+        filename = function() basename(rmd_file),
+        content = function(file) {
+          lines <- readLines(rmd_file)
+
+          # find the end of the YAML header or start of the file
+          # and insert the contents of teal.code::get_code(q_r())
+          yaml_end <- which(lines == "---")[2]
+          insert_pos <- if (!is.na(yaml_end)) yaml_end else 0
+          note_lines <- c(
+            "",
+            "```{r}",
+            "# The following code chunk was automatically added by the teal markdown module",
+            "# It shows how to generate the data used in this report",
+            teal.code::get_code(q_r()),
+            "```",
+            ""
+          )
+          lines <- append(lines, note_lines, after = insert_pos)
+          writeLines(lines, con = file)
+        },
+        contentType = "text/plain"
+      )
+    }
 
     temp_dir <- tempdir()
     temp_rmd <- tempfile(tmpdir = temp_dir, fileext = ".Rmd")
@@ -212,12 +224,11 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
           rmarkdown::render(
             temp_rmd,
             output_format = rmarkdown::md_document(
-              variant = "gfm",
-              toc = TRUE,
-              preserve_yaml = TRUE
+              variant = "markdown",
+              standalone = TRUE,
+              dev = "png"
             ),
-            params = datasets[["params"]],
-            envir = new.env(parent = globalenv()),
+            envir = environment(datasets),
             quiet = TRUE,
             runtime = "static"
           )
@@ -254,11 +265,69 @@ srv_rmarkdown <- function(id, data, rmd_file, allow_download, extra_transform) {
         out_data@verified <- FALSE # manual change verified status as code is being injected
       }
 
+      report_doc <- .markdown_internal(rendered_path_r(), temp_dir, rendered_html_r())
       teal.reporter::teal_card(out_data) <- c(
-        teal.reporter::teal_card(out_data),
-        rendered_html_r()
+        teal.reporter::teal_card(out_data), report_doc
       )
       out_data
     })
   })
+}
+
+#' @exportS3Method tools::toHTML
+toHTML.markdown_teal_internal <- function(block, ...) {
+  cached_html <- attr(block, "cached_html", exact = TRUE)
+  if (!is.null(cached_html)) {
+    return(cached_html)
+  }
+  NextMethod(unclass(block), ...)
+}
+
+#' @method to_rmd markdown_internal
+to_rmd.markdown_teal_internal <- function(block, figures_dir = "figures", include_chunk_output = TRUE, ...) {
+  images_base64 <- attr(block, "images_base64", exact = TRUE)
+  for (img_path in names(images_base64)) {
+    img_data <- sub("^data:.*;base64,", "", images_base64[[img_path]])
+    img_tag_pattern <- paste0("!\\[.*?\\]\\(", img_path, "\\)")
+    dir.create(figures_dir, showWarnings = FALSE, recursive = TRUE)
+    path <- file.path(
+      figures_dir,
+      sprintf(
+        "markdown_img_%s.%s",
+        substr(rlang::hash(img_data), 1, 6),
+        sprintf("%s", tools::file_ext(img_path))
+      )
+    )
+    writeBin(base64enc::base64decode(img_data), path)
+    replacement_tag <- sprintf("![](%s)", path)
+    block <- gsub(img_tag_pattern, replacement_tag, block, fixed = FALSE)
+  }
+  NextMethod(unclass(block), ...)
+}
+
+.markdown_internal <- function(markdown_file, temp_dir, rendered_html) {
+  # Read the markdown file
+  lines <- readLines(markdown_file)
+  images_base64 <- list()
+
+  # Extract images based on pattern ![](.*)
+  img_pattern <- "!\\[.*?\\]\\((.*?)\\)"
+  img_tags <- unlist(regmatches(lines, gregexpr(img_pattern, lines)))
+  for (ix in seq_along(img_tags)) {
+    img_tag <- img_tags[[ix]]
+    img_path <- gsub("!\\[.*?\\]\\((.*?)\\)", "\\1", img_tag)
+    full_img_path <- file.path(temp_dir, img_path)
+    if (file.exists(full_img_path)) {
+      img_data <- knitr::image_uri(full_img_path)
+      images_base64[[img_path]] <- img_data
+    }
+  }
+
+  # Create new custom structure with contents and images in base64 as attribute
+  structure(
+    lines,
+    class = c("markdown_teal_internal", "character"),
+    images_base64 = images_base64,
+    cached_html = rendered_html
+  )
 }
