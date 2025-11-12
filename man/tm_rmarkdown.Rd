@@ -6,7 +6,7 @@
 \usage{
 tm_rmarkdown(
   label = "RMarkdown Module",
-  rmd_file,
+  rmd_content,
   datanames = "all",
   allow_download = TRUE,
   pre_output = NULL,
@@ -19,8 +19,8 @@ tm_rmarkdown(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{rmd_file}{(\code{character}) Path to the R Markdown file to be rendered.
-The file must be accessible from the Shiny app environment.}
+\item{rmd_content}{(\code{character}) Content of the R Markdown file to be rendered.
+This can be the value of \code{readLines("path/to/file.Rmd")}.}
 
 \item{datanames}{(\code{character}) Names of the datasets relevant to the item.
 There are 2 reserved values that have specific behaviors:
@@ -89,7 +89,7 @@ app <- init(
   modules = modules(
     tm_rmarkdown(
       label = "RMarkdown Module",
-      rmd_file = system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general")
+      rmd_content = readLines(system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general"))
     )
   )
 )
@@ -125,7 +125,7 @@ app <- init(
   modules = modules(
     tm_rmarkdown(
       label = "RMarkdown Module",
-      rmd_file = system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general"),
+      rmd_content = readLines(system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general")),
       allow_download = FALSE,
       extra_transform = list(nrow_transform)
     )
@@ -135,8 +135,8 @@ app <- init(
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cSjQqCaKny7FaqV0AF4AplcK0+EIRKJ4bpUcIxNCIFUqqQYElGP1GEN+Gslq0CbpqFB6HB-AiulgALIsClU3RsgQ4940gmk-hJEy0ESY0T3cgwDBikTseVwDCoIIFaFgUSRESi8Vid4-MDkUSkbAwfhAsqqghDKBSTFdRK8PnoyTSWRAwU7Ko7Ha0Ey6dgqcjMSw6Gy2Cr43SiIoQVgAQXQ7DBABJBLQymmZowdIwdrslGBduMgA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cSjQqCaKny7FaqV0AF4AplcK0+EIRKJ4bpUcIxNCIFUqqQYElGP1GEN+Gslq0CbpqFB6HB-AiulgALIsClU3RsgQ4940gmk-hJEy0ESY0T3cgwDBikTseVwDCoIIFaFgUSRESi8Vid4-MDkUSkbAwfhAsqqghDKBSTFdRK8PnoyTSWRAwU7Ko7Ha0Ey6dgqcjMSw6Gy2Cr43SiIoQVgAQXQ7DBABJBLQymmZowdIwdrslGBduMgA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cSjQqCaKny7FaqV0AF4AplcK0+EIRKJ4bpUcIxNCIFUqqQYElGP1GEN+Gslq0CbpqFB6HB-AiulgALIsClU3RsgQ4940gmk-hJYiqMiYxhwKD8AAyKlxonu5BgGBMtBE7HVIgwqCCBWhYFEkRESW1YnePzA5FEpGwMH4QLKeoIQygUkxXUSvD56Mk0lkQJ2tODuh2O1oJl07BU5GYlh0NlsFXxulERQgrAAguh2GCACSCWhlAszRg6Rg7XZKMC7cZAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cSjQqCaKny7FaqV0AF4AplcK0+EIRKJ4bpUcIxNCIFUqqQYElGP1GEN+Gslq0CbpqFB6HB-AiulgALIsClU3RsgQ4940gmk-hJYiqMiYxhwKD8AAyKlxonu5BgGBMtBE7HVIgwqCCBWhYFEkRESW1YnePzA5FEpGwMH4QLKeoIQygUkxXUSvD56Mk0lkQJ2tODuh2O1oJl07BU5GYlh0NlsFXxulERQgrAAguh2GCACSCWhlAszRg6Rg7XZKMC7cZAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }
