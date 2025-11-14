@@ -59,28 +59,28 @@ The R Markdown file should be designed to accept variables available in the data
 For example, if the \code{teal_data} object contains datasets named "mtcars" and "iris",
 the R Markdown file can use these as variables as they will be available in the R Markdown environment.
 
-\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
-title: "R Markdown Report"
-output: html_document
----
-
-```\{r\}
-summary(mtcars) |> print()
-summary(iris) |> print()
-```
-}\if{html}{\out{</div>}}
-
 The libraries used in the R Markdown file must be available in the deployed shiny
 app environment.
 
 When developing the R Markdown file, the working data can be simulated on a code chunk,
 which in turn can look for the presence of \code{.raw_data} object to determine if it is being
 run inside the \code{teal} module or not.
-For example:
 
-\if{html}{\out{<div class="sourceCode md">}}\preformatted{```\{r eval=!exists(".raw_data")\}
+Example R markdown file:
+
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
+title: "R Markdown Report"
+output: html_document
+---
+
+```\{r eval=!exists(".raw_data")\}
 mtcars <- datasets::mtcars
 iris <- datasets::iris
+```
+
+```\{r\}
+summary(mtcars) |> print()
+summary(iris) |> print()
 ```
 }\if{html}{\out{</div>}}
 }
@@ -90,17 +90,23 @@ iris <- datasets::iris
 data <- teal_data()
 data <- within(data, {
   CO2 <- CO2
-  CO2[["primary_key"]] <- seq_len(nrow(CO2))
 })
-join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
-
 
 app <- init(
   data = data,
   modules = modules(
     tm_rmarkdown(
       label = "RMarkdown Module",
-      rmd_content = readLines(system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general"))
+      rmd_content = c(
+        "---",
+        "title: \"R Markdown Report\"",
+        "output: html_document",
+        "---",
+        "",
+        "```{r}",
+        "summary(CO2) |> print()",
+        "```"
+      )
     )
   )
 )
@@ -146,8 +152,8 @@ app <- init(
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cSjQqCaKny7FaqV0AF4AplcK0+EIRKJ4bpUcIxNCIFUqqQYElGP1GEN+Gslq0CbpqFB6HB-AiulgALIsClU3RsgQ4940gmk-hJYiqMiYxhwKD8AAyKlxonu5BgGBMtBE7HVIgwqCCBWhYFEkRESW1YnePzA5FEpGwMH4QLKeoIQygUkxXUSvD56Mk0lkQJ2tODuh2O1oJl07BU5GYlh0NlsFXxulERQgrAAguh2GCACSCWhlAszRg6Rg7XZKMC7cZAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cSjQqCaKny7FaqV0AF4AplcK0+EIRKJ4bpUcIxNCIFUqqQYElGP1GEN+Gslq0CbpqFB6HB-AiulgALIsClU3RsgQ4940gmk-hJYiqMiYxhwKD8AAyKlxonu5BgGBMtBE7HVIgwqCCBWhYFEkRESW1YnePzA5FEpGwMH4QLKeoIQygUkxXUSvD56Mk0lkQJ2tODuh2O1oJl07BU5GYlh0NlsFXxulERQgrAAguh2GCACSCWhlAszRg6Rg7XZKMC7cZAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ1KAL6KEEpoqE0q+eyVAZm6ALxDwbiDfEIioqO608JiAxBVVaQwSYwwLADW-EQ5ECtra9RQ9HD+YwpgWACyewdHuvcCS7eTq6e62-xJxFUZHmBBOPyqt0MUM+g3Bt00pBEiF0ClRd1eT0OqywcFQREYpFRtxh3zhYCIglIqEpyIKG2SBwIgngZBJ4IhYChhjZ7OJeFhP1uAAMRSBGK0eWTRMydmx2HV6rYAD4APl0qEYKlI6X5pMFYBFQuJeqqHVOZt0HQ6tBMunYWrUlh0NlsFW+oiKEFYAEF0OxugASQS0MqB0QyHSMDoSiBgVoAXSAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ1KAL6KEEpoqE0q+eyVAZm6ALxDwbiDfEIioqO608JiAxBVVaQwSYwwLADW-EQ5ECtra9RQ9HD+YwpgWACyewdHuvcCS7eTq6e62-xJxFUZHmBBOPyqt0MUM+g3Bt00pBEiF0ClRd1eT0OqywcFQREYpFRtxh3zhYCIglIqEpyIKG2SBwIgngZBJ4IhYChhjZ7OJeFhP1uAAMRSBGK0eWTRMydmx2HV6rYAD4APl0qEYKlI6X5pMFYBFQuJeqqHVOZt0HQ6tBMunYWrUlh0NlsFW+oiKEFYAEF0OxugASQS0MqB0QyHSMDoSiBgVoAXSAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }
