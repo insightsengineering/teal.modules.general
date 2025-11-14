@@ -66,14 +66,14 @@
 #'       label = "RMarkdown Module",
 #'       rmd_content = c(
 #'         "---",
-#'        "title: \"R Markdown Report\"",
-#'        "output: html_document",
-#'        "---",
-#'        "",
-#'        "```{r}",
-#'        "summary(CO2) |> print()",
-#'        "```"
-#'      )
+#'         "title: \"R Markdown Report\"",
+#'         "output: html_document",
+#'         "---",
+#'         "",
+#'         "```{r}",
+#'         "summary(CO2) |> print()",
+#'         "```"
+#'       )
 #'     )
 #'   )
 #' )
