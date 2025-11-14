@@ -54,24 +54,35 @@ Object of class \code{teal_module} to be used in \code{teal} applications.
 Module to render R Markdown files using the data provided in the \code{teal_data} object.
 }
 \details{
-The R Markdown file should be designed to accept parameters corresponding to the datasets.
-See using \code{params} in R Markdown documentation:
-\href{https://bookdown.org/yihui/rmarkdown/params-use.html}{bookdown.org/yihui/rmarkdown/params-use.html}
+The R Markdown file should be designed to accept variables available in the datanames of the module.
 
 For example, if the \code{teal_data} object contains datasets named "mtcars" and "iris",
-the R Markdown file can define parameters as follows:
+the R Markdown file can use these as variables as they will be available in the R Markdown environment.
 
-\if{html}{\out{<div class="sourceCode yaml">}}\preformatted{---
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
 title: "R Markdown Report"
 output: html_document
-params:
-  mtcars: NULL
-  iris: NULL
 ---
+
+```\{r\}
+summary(mtcars) |> print()
+summary(iris) |> print()
+```
 }\if{html}{\out{</div>}}
 
-The libraries used in the R Markdown file must be available in
-the Shiny app environment.
+The libraries used in the R Markdown file must be available in the deployed shiny
+app environment.
+
+When developing the R Markdown file, the working data can be simulated on a code chunk,
+which in turn can look for the presence of \code{.raw_data} object to determine if it is being
+run inside the \code{teal} module or not.
+For example:
+
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{```\{r eval=!exists(".raw_data")\}
+mtcars <- datasets::mtcars
+iris <- datasets::iris
+```
+}\if{html}{\out{</div>}}
 }
 \examples{
 

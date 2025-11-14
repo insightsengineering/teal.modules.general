@@ -2,24 +2,36 @@
 #'
 #' Module to render R Markdown files using the data provided in the `teal_data` object.
 #'
-#' The R Markdown file should be designed to accept parameters corresponding to the datasets.
-#' See using `params` in R Markdown documentation:
-#' [bookdown.org/yihui/rmarkdown/params-use.html](https://bookdown.org/yihui/rmarkdown/params-use.html)
+#' The R Markdown file should be designed to accept variables available in the datanames of the module.
 #'
 #' For example, if the `teal_data` object contains datasets named "mtcars" and "iris",
-#' the R Markdown file can define parameters as follows:
-#' ```yaml
+#' the R Markdown file can use these as variables as they will be available in the R Markdown environment.
+#'
+#' The libraries used in the R Markdown file must be available in the deployed shiny
+#' app environment.
+#'
+#' When developing the R Markdown file, the working data can be simulated on a code chunk,
+#' which in turn can look for the presence of `.raw_data` object to determine if it is being
+#' run inside the `teal` module or not.
+#'
+#' Example R markdown file:
+#'
+#' ``````md
 #' ---
 #' title: "R Markdown Report"
 #' output: html_document
-#' params:
-#'   mtcars: NULL
-#'   iris: NULL
 #' ---
-#' ````
 #'
-#' The libraries used in the R Markdown file must be available in
-#' the Shiny app environment.
+#' ```{r eval=!exists(".raw_data")}
+#' mtcars <- datasets::mtcars
+#' iris <- datasets::iris
+#' ```
+#'
+#' ```{r}
+#' summary(mtcars) |> print()
+#' summary(iris) |> print()
+#' ```
+#' ``````
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
@@ -45,17 +57,23 @@
 #' data <- teal_data()
 #' data <- within(data, {
 #'   CO2 <- CO2
-#'   CO2[["primary_key"]] <- seq_len(nrow(CO2))
 #' })
-#' join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
-#'
 #'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_rmarkdown(
 #'       label = "RMarkdown Module",
-#'       rmd_content = readLines(system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general"))
+#'       rmd_content = c(
+#'         "---",
+#'        "title: \"R Markdown Report\"",
+#'        "output: html_document",
+#'        "---",
+#'        "",
+#'        "```{r}",
+#'        "summary(CO2) |> print()",
+#'        "```"
+#'      )
 #'     )
 #'   )
 #' )
@@ -99,7 +117,6 @@
 #'   )
 #' ) |> shiny::runApp()
 #' @export
-#'
 tm_rmarkdown <- function(label = "RMarkdown Module",
                          rmd_content,
                          datanames = "all",
@@ -283,7 +300,6 @@ toHTML.markdown_internal <- function(block, ...) {
   NextMethod(unclass(block), ...)
 }
 
-#' @method to_rmd markdown_internal
 #' @exportS3Method teal.reporter::to_rmd
 to_rmd.markdown_internal <- function(block, figures_dir = "figures", include_chunk_output = TRUE, ...) {
   old_base_path <- attr(block, "old_base_path", exact = TRUE)
