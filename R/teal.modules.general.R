@@ -4,7 +4,6 @@
 #' (not necessarily for clinical trials data).
 #'
 #' @import ggplot2
-#' @import ggmosaic
 #' @import shiny
 #' @import teal
 #' @import teal.transform
