@@ -889,7 +889,7 @@ get_plotted_data <- function(input, plot_var, data) {
   teal.code::eval_code(obj, "library(ggplot2)") |>
     within(
       {
-        ANL <- select(dataset_name, varname)
+        ANL <- dplyr::select(dataset_name, varname)
       },
       dataset_name = as.name(dataset_name),
       varname = as.name(varname)
