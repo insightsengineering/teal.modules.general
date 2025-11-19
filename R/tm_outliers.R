@@ -1116,7 +1116,7 @@ srv_outliers <- function(id, data, outlier_var,
           categorical_var <- as.vector(merged$anl_input_r()$columns_source$categorical_var)
           if (!is.null(categorical_var)) q[["summary_data"]]
         },
-        option = list(
+        options = list(
           dom = "t",
           autoWidth = TRUE,
           columnDefs = list(list(width = "200px", targets = "_all"))
