@@ -9,19 +9,15 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param response (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param response (`picks`)
 #' Which variable to use as the response.
-#' You can define one fixed column by setting `fixed = TRUE` inside the `select_spec`.
-#'
-#' The `data_extract_spec` must not allow multiple selection in this case.
-#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' The `picks` must not allow multiple variable selection in this case.
+#' @param x (`picks` )
 #' Specifies which variable to use on the X-axis of the response plot.
-#' Allow the user to select multiple columns from the `data` allowed in teal.
-#'
-#' The `data_extract_spec` must not allow multiple selection in this case.
-#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' The `picks` must not allow multiple selection in this case.
+#' @param row_facet (`picks`)
 #' optional specification of the data variable(s) to use for faceting rows.
-#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param col_facet (`picks`)
 #' optional specification of the data variable(s) to use for faceting columns.
 #' @param coord_flip (`logical(1)`)
 #' Indicates whether to flip coordinates between `x` and `response`.
@@ -85,25 +81,25 @@
 #'   modules = modules(
 #'     tm_g_response(
 #'       label = "Response Plots",
-#'       response = data_extract_spec(
-#'         dataname = "mtcars",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["mtcars"]], c("cyl", "gear")),
+#'       response = picks(
+#'         datasets("mtcars"),
+#'         variables(
+#'           choices = c("cyl", "gear"),
 #'           selected = "cyl",
 #'           multiple = FALSE,
 #'           fixed = FALSE
-#'         )
+#'         ),
+#'         teal.transform::values()
 #'       ),
-#'       x = data_extract_spec(
-#'         dataname = "mtcars",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["mtcars"]], c("vs", "am")),
+#'       x = teal.transform::picks(
+#'         datasets("mtcars"),
+#'         teal.transform::variables(
+#'           choices = c("vs", "am"),
 #'           selected = "vs",
 #'           multiple = FALSE,
 #'           fixed = FALSE
-#'         )
+#'         ),
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -130,25 +126,21 @@
 #'   modules = modules(
 #'     tm_g_response(
 #'       label = "Response Plots",
-#'       response = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("BMRKR2", "COUNTRY")),
-#'           selected = "BMRKR2",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       response = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(
+#'           choices = c("BMRKR2", "COUNTRY"),
+#'           selected = "BMRKR2"
+#'         ),
+#'         teal.transform::values()
 #'       ),
-#'       x = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("SEX", "RACE")),
-#'           selected = "RACE",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       x = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(
+#'           choices = c("SEX", "RACE"),
+#'           selected = "RACE"
+#'         ),
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -160,7 +152,11 @@
 #' @export
 #'
 tm_g_response <- function(label = "Response Plot",
-                          response,
+                          response = teal.transform::picks(
+                            teal.transform::datasets(),
+                            teal.transform::variables(choices = teal.transform::is_categorical(min.len = 2, max.len = 10)),
+                            teal.transform::values()
+                          ),
                           x,
                           row_facet = NULL,
                           col_facet = NULL,
@@ -176,6 +172,27 @@ tm_g_response <- function(label = "Response Plot",
                           post_output = NULL,
                           transformators = list(),
                           decorators = list()) {
+  UseMethod("tm_g_response", response)
+}
+
+#' @export
+tm_g_response.default <- function(label = "Response Plot",
+                                  response,
+                                  x,
+                                  row_facet = NULL,
+                                  col_facet = NULL,
+                                  coord_flip = FALSE,
+                                  count_labels = TRUE,
+                                  rotate_xaxis_labels = FALSE,
+                                  freq = FALSE,
+                                  plot_height = c(600, 400, 5000),
+                                  plot_width = NULL,
+                                  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                  ggplot2_args = teal.widgets::ggplot2_args(),
+                                  pre_output = NULL,
+                                  post_output = NULL,
+                                  transformators = list(),
+                                  decorators = list()) {
   message("Initializing tm_g_response")
 
   # Normalize the parameters
@@ -235,8 +252,8 @@ tm_g_response <- function(label = "Response Plot",
 
   ans <- module(
     label = label,
-    server = srv_g_response,
-    ui = ui_g_response,
+    server = srv_g_response.default,
+    ui = ui_g_response.default,
     ui_args = args,
     server_args = c(
       data_extract_list,
@@ -255,7 +272,7 @@ tm_g_response <- function(label = "Response Plot",
 }
 
 # UI function for the response module
-ui_g_response <- function(id, ...) {
+ui_g_response.default <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$response, args$x, args$row_facet, args$col_facet)
@@ -326,16 +343,16 @@ ui_g_response <- function(id, ...) {
 }
 
 # Server function for the response module
-srv_g_response <- function(id,
-                           data,
-                           response,
-                           x,
-                           row_facet,
-                           col_facet,
-                           plot_height,
-                           plot_width,
-                           ggplot2_args,
-                           decorators) {
+srv_g_response.default <- function(id,
+                                   data,
+                                   response,
+                                   x,
+                                   row_facet,
+                                   col_facet,
+                                   plot_height,
+                                   plot_width,
+                                   ggplot2_args,
+                                   decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

@@ -10,17 +10,17 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param x (`data_extract_spec` or `list` of multiple `data_extract_spec`) Specifies
+#' @param x (`picks` or `list` of multiple `picks`) Specifies
 #' variable names selected to plot along the x-axis by default.
-#' @param y (`data_extract_spec` or `list` of multiple `data_extract_spec`) Specifies
+#' @param y (`picks` or `list` of multiple `picks`) Specifies
 #' variable names selected to plot along the y-axis by default.
-#' @param color_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' @param color_by (`picks` or `list` of multiple `picks`) optional,
 #' defines the color encoding. If `NULL` then no color encoding option will be displayed.
-#' @param size_by (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' @param size_by (`picks` or `list` of multiple `picks`) optional,
 #' defines the point size encoding. If `NULL` then no size encoding option will be displayed.
-#' @param row_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' @param row_facet (`picks` or `list` of multiple `picks`) optional,
 #' specifies the variable(s) for faceting rows.
-#' @param col_facet (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' @param col_facet (`picks` or `list` of multiple `picks`) optional,
 #' specifies the variable(s) for faceting columns.
 #' @param shape (`character`) optional, character vector with the names of the
 #' shape, e.g. `c("triangle", "square", "circle")`. It defaults to `shape_names`. This is a complete list from
@@ -75,68 +75,47 @@
 #'   modules = modules(
 #'     tm_g_scatterplot(
 #'       label = "Scatterplot Choices",
-#'       x = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-#'           selected = "conc",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       x = teal.transform::picks(
+#'         datasets("CO2"),
+#'         teal.transform::variables(
+#'           choices = c("conc", "uptake"),
+#'           selected = "conc"
+#'         ),
+#'         teal.transform::values()
 #'       ),
-#'       y = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-#'           selected = "uptake",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       y = teal.transform::picks(
+#'         datasets("CO2"),
+#'         teal.transform::variables(
+#'           choices = c("conc", "uptake"),
+#'           selected = "uptake"
+#'         ),
+#'         teal.transform::values()
 #'       ),
-#'       color_by = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["CO2"]],
-#'             c("Plant", "Type", "Treatment", "conc", "uptake")
-#'           ),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       color_by = teal.transform::picks(
+#'         datasets("CO2"),
+#'         teal.transform::variables(
+#'           choices = c("Plant", "Type", "Treatment", "conc", "uptake"),
+#'           selected = NULL
+#'         ),
+#'         teal.transform::values()
 #'       ),
-#'       size_by = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-#'           selected = "uptake",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       size_by = teal.transform::picks(
+#'         datasets("CO2"),
+#'         teal.transform::variables(choices = c("conc", "uptake"), selected = "uptake"),
+#'         teal.transform::values()
 #'       ),
-#'       row_facet = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       row_facet = teal.transform::picks(
+#'         datasets("CO2"),
+#'         teal.transform::variables(
+#'           choices = c("Plant", "Type", "Treatment"),
+#'           selected = NULL
+#'         ),
+#'         teal.transform::values()
 #'       ),
-#'       col_facet = data_extract_spec(
-#'         dataname = "CO2",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       col_facet = teal.transform::picks(
+#'         datasets("CO2"),
+#'         teal.transform::variables(choices = c("Plant", "Type", "Treatment"), selected = NULL),
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -165,68 +144,35 @@
 #'   modules = modules(
 #'     tm_g_scatterplot(
 #'       label = "Scatterplot Choices",
-#'       x = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2")),
-#'           selected = "AGE",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       x = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "AGE"),
+#'         teal.transform::values()
 #'       ),
-#'       y = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2")),
-#'           selected = "BMRKR1",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       y = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "BMRKR1"),
+#'         teal.transform::values()
 #'       ),
-#'       color_by = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(
-#'             data[["ADSL"]],
-#'             c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
-#'           ),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       color_by = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1"), selected = NULL),
+#'         teal.transform::values()
 #'       ),
-#'       size_by = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-#'           selected = "AGE",
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       size_by = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(choices = c("AGE", "BMRKR1"), selected = "AGE"),
+#'         teal.transform::values()
 #'       ),
-#'       row_facet = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("BMRKR2", "RACE", "REGION1")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       row_facet = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+#'         teal.transform::values()
 #'       ),
-#'       col_facet = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           label = "Select variable:",
-#'           choices = variable_choices(data[["ADSL"]], c("BMRKR2", "RACE", "REGION1")),
-#'           selected = NULL,
-#'           multiple = FALSE,
-#'           fixed = FALSE
-#'         )
+#'       col_facet = teal.transform::picks(
+#'         datasets("ADSL"),
+#'         teal.transform::variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+#'         teal.transform::values()
 #'       )
 #'     )
 #'   )
@@ -238,7 +184,11 @@
 #' @export
 #'
 tm_g_scatterplot <- function(label = "Scatterplot",
-                             x,
+                             x = teal.transform::picks(
+                               teal.transform::datasets(),
+                               teal.transform::variables(is.numeric),
+                               teal.transform::values()
+                             ),
                              y,
                              color_by = NULL,
                              size_by = NULL,
@@ -258,6 +208,31 @@ tm_g_scatterplot <- function(label = "Scatterplot",
                              ggplot2_args = teal.widgets::ggplot2_args(),
                              transformators = list(),
                              decorators = list()) {
+  UseMethod("tm_g_scatterplot", x)
+}
+
+#' @export
+tm_g_scatterplot.default <- function(label = "Scatterplot",
+                                     x,
+                                     y,
+                                     color_by = NULL,
+                                     size_by = NULL,
+                                     row_facet = NULL,
+                                     col_facet = NULL,
+                                     plot_height = c(600, 200, 2000),
+                                     plot_width = NULL,
+                                     alpha = c(1, 0, 1),
+                                     shape = shape_names,
+                                     size = c(5, 1, 15),
+                                     max_deg = 5L,
+                                     rotate_xaxis_labels = FALSE,
+                                     ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                     pre_output = NULL,
+                                     post_output = NULL,
+                                     table_dec = 4,
+                                     ggplot2_args = teal.widgets::ggplot2_args(),
+                                     transformators = list(),
+                                     decorators = list()) {
   message("Initializing tm_g_scatterplot")
 
   # Normalize the parameters
@@ -334,8 +309,8 @@ tm_g_scatterplot <- function(label = "Scatterplot",
 
   ans <- module(
     label = label,
-    server = srv_g_scatterplot,
-    ui = ui_g_scatterplot,
+    server = srv_g_scatterplot.default,
+    ui = ui_g_scatterplot.default,
     ui_args = args,
     server_args = c(
       data_extract_list,
@@ -355,7 +330,7 @@ tm_g_scatterplot <- function(label = "Scatterplot",
 }
 
 # UI function for the scatterplot module
-ui_g_scatterplot <- function(id, ...) {
+ui_g_scatterplot.default <- function(id, ...) {
   args <- list(...)
   ns <- NS(id)
   is_single_dataset_value <- teal.transform::is_single_dataset(
@@ -502,19 +477,19 @@ ui_g_scatterplot <- function(id, ...) {
 }
 
 # Server function for the scatterplot module
-srv_g_scatterplot <- function(id,
-                              data,
-                              x,
-                              y,
-                              color_by,
-                              size_by,
-                              row_facet,
-                              col_facet,
-                              plot_height,
-                              plot_width,
-                              table_dec,
-                              ggplot2_args,
-                              decorators) {
+srv_g_scatterplot.default <- function(id,
+                                      data,
+                                      x,
+                                      y,
+                                      color_by,
+                                      size_by,
+                                      row_facet,
+                                      col_facet,
+                                      plot_height,
+                                      plot_width,
+                                      table_dec,
+                                      ggplot2_args,
+                                      decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -1030,7 +1005,8 @@ srv_g_scatterplot <- function(id,
       plot_r = plot_r,
       height = plot_height,
       width = plot_width,
-      brushing = TRUE
+      brushing = TRUE,
+      click = TRUE
     )
 
     output$data_table <- DT::renderDataTable({

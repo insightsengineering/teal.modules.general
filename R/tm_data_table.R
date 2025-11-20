@@ -130,11 +130,10 @@ tm_data_table <- function(label = "Data Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   # End of assertions
-
   ans <- module(
     label,
-    server = srv_page_data_table,
-    ui = ui_page_data_table,
+    server = srv_data_table,
+    ui = ui_data_table,
     datanames = datanames,
     server_args = list(
       datanames = if (is.null(datanames)) "all" else datanames,
@@ -154,22 +153,13 @@ tm_data_table <- function(label = "Data Table",
 }
 
 # UI page module
-ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
+ui_data_table <- function(id, pre_output = NULL, post_output = NULL) {
   ns <- NS(id)
-
-  tagList(
+  bslib::page_fluid(
     teal.widgets::standard_layout(
-      output = teal.widgets::white_small_well(
-        bslib::page_fluid(
-          checkboxInput(
-            ns("if_distinct"),
-            "Show only distinct rows:",
-            value = FALSE
-          )
-        ),
-        bslib::page_fluid(
-          uiOutput(ns("dataset_table"))
-        )
+      output = bslib::page_fluid(
+        div(checkboxInput(ns("if_distinct"), "Show only distinct rows:", value = FALSE)),
+        uiOutput(ns("data_tables"))
       ),
       pre_output = pre_output,
       post_output = post_output
@@ -178,13 +168,19 @@ ui_page_data_table <- function(id, pre_output = NULL, post_output = NULL) {
 }
 
 # Server page module
-srv_page_data_table <- function(id,
-                                data,
-                                datanames,
-                                variables_selected,
-                                dt_args,
-                                dt_options,
-                                server_rendering) {
+srv_data_table <- function(id,
+                           data,
+                           datanames,
+                           variables_selected = list(),
+                           dt_args = list(),
+                           dt_options = list(
+                             searching = FALSE,
+                             pageLength = 30,
+                             lengthMenu = c(5, 15, 30, 100),
+                             scrollX = TRUE
+                           ),
+                           server_rendering = FALSE,
+                           filter_panel_api) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
@@ -193,24 +189,27 @@ srv_page_data_table <- function(id,
     if_filtered <- reactive(as.logical(input$if_filtered))
     if_distinct <- reactive(as.logical(input$if_distinct))
 
-    datanames <- Filter(function(name) {
-      is.data.frame(isolate(data())[[name]])
-    }, if (identical(datanames, "all")) names(isolate(data())) else datanames)
+    datanames_r <- reactive({
+      Filter(
+        function(name) is.data.frame(data()[[name]]),
+        if (identical(datanames, "all")) names(data()) else datanames
+      )
+    })
 
-
-    output$dataset_table <- renderUI({
+    output$data_tables <- renderUI({
+      req(datanames_r())
       do.call(
         tabsetPanel,
         c(
-          list(id = session$ns("dataname_tab")),
+          list(id = session$ns("tabs_selected"), selected = datanames_r()[1]),
           lapply(
-            datanames,
-            function(x) {
-              dataset <- isolate(data()[[x]])
+            datanames_r(),
+            function(dataname) {
+              dataset <- isolate(data()[[dataname]])
               choices <- names(dataset)
               labels <- vapply(
                 dataset,
-                function(x) ifelse(is.null(attr(x, "label")), "", attr(x, "label")),
+                function(column) ifelse(is.null(attr(column, "label")), "", attr(column, "label")),
                 character(1)
               )
               names(choices) <- ifelse(
@@ -218,17 +217,17 @@ srv_page_data_table <- function(id,
                 choices,
                 paste(choices, labels, sep = ": ")
               )
-              variables_selected <- if (!is.null(variables_selected[[x]])) {
-                variables_selected[[x]]
+              variables_selected <- if (!is.null(variables_selected[[dataname]])) {
+                variables_selected[[dataname]]
               } else {
                 utils::head(choices)
               }
               tabPanel(
-                title = x,
+                title = dataname,
                 bslib::layout_columns(
                   col_widths = 12,
-                  ui_data_table(
-                    id = session$ns(x),
+                  ui_dataset_table(
+                    id = session$ns(dataname),
                     choices = choices,
                     selected = variables_selected
                   )
@@ -238,30 +237,39 @@ srv_page_data_table <- function(id,
           )
         )
       )
-    })
+    }) |>
+      bindCache(datanames_r()) |>
+      bindEvent(datanames_r())
 
-    lapply(
-      datanames,
-      function(x) {
-        srv_data_table(
-          id = x,
-          data = data,
-          dataname = x,
-          if_filtered = if_filtered,
-          if_distinct = if_distinct,
-          dt_args = dt_args,
-          dt_options = dt_options,
-          server_rendering = server_rendering
-        )
-      }
-    )
+
+    # server should be run only once
+    modules_run <- reactiveVal()
+    modules_to_run <- reactive(setdiff(datanames_r(), isolate(modules_run())))
+    observeEvent(modules_to_run(), {
+      lapply(
+        modules_to_run(),
+        function(dataname) {
+          srv_dataset_table(
+            id = dataname,
+            data = data,
+            dataname = dataname,
+            if_filtered = if_filtered,
+            if_distinct = if_distinct,
+            dt_args = dt_args,
+            dt_options = dt_options,
+            server_rendering = server_rendering,
+            filter_panel_api = filter_panel_api
+          )
+        }
+      )
+      modules_run(union(modules_run(), modules_to_run()))
+    })
   })
 }
 
 # UI function for the data_table module
-ui_data_table <- function(id, choices, selected) {
+ui_dataset_table <- function(id, choices, selected) {
   ns <- NS(id)
-
   if (!is.null(selected)) {
     all_choices <- choices
     choices <- c(selected, setdiff(choices, selected))
@@ -287,14 +295,15 @@ ui_data_table <- function(id, choices, selected) {
 }
 
 # Server function for the data_table module
-srv_data_table <- function(id,
-                           data,
-                           dataname,
-                           if_filtered,
-                           if_distinct,
-                           dt_args,
-                           dt_options,
-                           server_rendering) {
+srv_dataset_table <- function(id,
+                              data,
+                              dataname,
+                              if_filtered,
+                              if_distinct,
+                              dt_args,
+                              dt_options,
+                              server_rendering,
+                              filter_panel_api) {
   moduleServer(id, function(input, output, session) {
     iv <- shinyvalidate::InputValidator$new()
     iv$add_rule("variables", shinyvalidate::sv_required("Please select valid variable names"))
@@ -314,6 +323,14 @@ srv_data_table <- function(id,
       teal.code::eval_code(
         qenv,
         substitute(
+          env = list(
+            dataname = as.name(dataname),
+            if_distinct = if_distinct(),
+            vars = input$variables,
+            args = dt_args,
+            dt_options = dt_options,
+            dt_rows = input$dt_rows
+          ),
           expr = {
             variables <- vars
             dataframe_selected <- if (if_distinct) {
@@ -328,15 +345,7 @@ srv_data_table <- function(id,
             }
             dt_args$data <- dataframe_selected
             table <- do.call(DT::datatable, dt_args)
-          },
-          env = list(
-            dataname = as.name(dataname),
-            if_distinct = if_distinct(),
-            vars = input$variables,
-            args = dt_args,
-            dt_options = dt_options,
-            dt_rows = input$dt_rows
-          )
+          }
         )
       )
     })

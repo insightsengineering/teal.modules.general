@@ -7,9 +7,9 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #'
-#' @param outlier_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param outlier_var (`picks` or `list` of multiple `picks`)
 #' Specifies variable(s) to be analyzed for outliers.
-#' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' @param categorical_var (`picks` or `list` of multiple `picks`) optional,
 #' specifies the categorical variable(s) to split the selected outlier variables on.
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Boxplot", "Density Plot", "Cumulative Distribution Plot")`
 #'
@@ -66,21 +66,22 @@
 #'   modules = modules(
 #'     tm_outliers(
 #'       outlier_var = list(
-#'         data_extract_spec(
-#'           dataname = "CO2",
-#'           select = select_spec(
-#'             label = "Select variable:",
+#'         teal.transform::picks(
+#'           datasets("CO2"),
+#'           teal.transform::variables(
 #'             choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
 #'             selected = "uptake",
 #'             multiple = FALSE,
 #'             fixed = FALSE
-#'           )
+#'           ),
+#'           teal.transform::values()
 #'         )
 #'       ),
 #'       categorical_var = list(
-#'         data_extract_spec(
-#'           dataname = "CO2",
-#'           filter = filter_spec(
+#'         teal.transform::picks(
+#'           datasets("CO2"),
+#'           teal.transform::variables(),
+#'           values(
 #'             vars = vars,
 #'             choices = value_choices(data[["CO2"]], vars$selected),
 #'             selected = value_choices(data[["CO2"]], vars$selected),
@@ -117,21 +118,22 @@
 #'   modules = modules(
 #'     tm_outliers(
 #'       outlier_var = list(
-#'         data_extract_spec(
-#'           dataname = "ADSL",
-#'           select = select_spec(
-#'             label = "Select variable:",
+#'         teal.transform::picks(
+#'           datasets("ADSL"),
+#'           teal.transform::variables(
 #'             choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
 #'             selected = "AGE",
 #'             multiple = FALSE,
 #'             fixed = FALSE
-#'           )
+#'           ),
+#'           teal.transform::values()
 #'         )
 #'       ),
 #'       categorical_var = list(
-#'         data_extract_spec(
-#'           dataname = "ADSL",
-#'           filter = filter_spec(
+#'         teal.transform::picks(
+#'           datasets("ADSL"),
+#'           teal.transform::variables(),
+#'           values(
 #'             vars = vars,
 #'             choices = value_choices(data[["ADSL"]], vars$selected),
 #'             selected = value_choices(data[["ADSL"]], vars$selected),

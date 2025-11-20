@@ -6,7 +6,9 @@
 \usage{
 tm_a_regression(
   label = "Regression Analysis",
-  regressor,
+  regressor = teal.transform::picks(teal.transform::datasets(),
+    teal.transform::variables(choices = is.numeric, selected = tidyselect::last_col(),
+    multiple = TRUE)),
   response,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
@@ -27,11 +29,13 @@ tm_a_regression(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{regressor}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Regressor variables from an incoming dataset with filtering and selecting.}
+\item{regressor}{(\code{picks}) Specification for regressor variables selection.
+Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}, which allows selecting variables
+to use as regressors in the regression model. \code{teal.transform::variables(multiple = TRUE)} allowed.}
 
-\item{response}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Response variables from an incoming dataset with filtering and selecting.}
+\item{response}{(\code{picks}) Specification for response variable selection.
+Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}, which allows selecting a single numeric variable
+to use as the response in the regression model. \code{teal.transform::variables(multiple = TRUE)} not allowed.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
@@ -79,8 +83,6 @@ adding context or further instructions. Elements like \code{shiny::helpText()} a
 \item Cook's dist vs Leverage
 }}
 
-\item{default_outlier_label}{(\code{character}) optional, default column selected to label outliers.}
-
 \item{label_segment_threshold}{(\code{numeric(1)} or \code{numeric(3)})
 Minimum distance between label and point on the plot that triggers the creation of
 a line segment between the two.
@@ -103,9 +105,11 @@ To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,
 decorator for tables or plots included in the module output reported.
-The decorators are applied to the respective output objects.
+The decorators are applied to the respective output objects.}
 
-See section "Decorating Module" below for more details.}
+\item{outlier}{(\code{picks}) Optional specification for outlier label variable selection.
+Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}, which allows selecting a factor or character variable
+to label outlier points on the plots.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -177,25 +181,13 @@ app <- init(
   modules = modules(
     tm_a_regression(
       label = "Regression",
-      response = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = "uptake",
-          selected = "uptake",
-          multiple = FALSE,
-          fixed = TRUE
-        )
+      response = teal.transform::picks(
+        datasets("CO2"),
+        teal.transform::variables(choices = "uptake", selected = "uptake")
       ),
-      regressor = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variables:",
-          choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
-          selected = "conc",
-          multiple = TRUE,
-          fixed = FALSE
-        )
+      regressor = teal.transform::picks(
+        datasets("CO2"),
+        teal.transform::variables(choices = c("conc", "Treatment"), selected = "conc", multiple = TRUE)
       )
     )
   )
@@ -217,25 +209,13 @@ app <- init(
   modules = modules(
     tm_a_regression(
       label = "Regression",
-      response = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = "BMRKR1",
-          selected = "BMRKR1",
-          multiple = FALSE,
-          fixed = TRUE
-        )
+      response = teal.transform::picks(
+        datasets("ADSL"),
+        teal.transform::variables(choices = "BMRKR1", selected = "BMRKR1")
       ),
-      regressor = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variables:",
-          choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
-          selected = "AGE",
-          multiple = TRUE,
-          fixed = FALSE
-        )
+      regressor = teal.transform::picks(
+        datasets("ADSL"),
+        teal.transform::variables(choices = c("AGE", "SEX", "RACE"), selected = "AGE", multiple = TRUE)
       )
     )
   )
@@ -248,13 +228,13 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFUAwgDyAEzxugODSgC+3UpoqCMq+eyVAZm6ALwrwbjLfEIiouu6u8JiSz1VuqQwSVBJNRI1oqJWEGcXF9RQ9HD+GwpgWDgDzEzxI-2253ej1QJFEeg2qSS4VIzA0SVEqDgBDe7wuqWg8EO-zG4OWuN0cJEGkOlKxpHRmOxZPJuk+31+un+AGUfnTdFoWLQviJEKTISyCAUiLQCGIiWBBKhggBrOBilkXWkaOD8eWKlVqvDM8kwYSaKLw3QAMQAggAZLnOCEaqomWhhHWHBwuY0XbrkuTO3H3R6iTqHRHI1H0jFYnHk-GwS3Eobqlla0g03lo2NM8Xktk-eU8qmZgWMIX0faio353GS6Wyg4bcuVkRJBsy06pYDAFPjMAAXUHZSZhBIBHBnLAdhqQXgZH+ckDvveGc9f3HFjTGtN1HNIi9Tidq4ubo9uo2todrjrVX9uIf9+W3W6tBMunYKnI0e0cBstgVOcohFBArA2ug7CzAAJA0ZQwXCjA6F0kxKGAEyDkAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFUAwgDyAEzxugODSgC+3UpoqCMq+eyVAZm6ALwrwbjLfEIiouu6u8JiSz1VuqQwSVBJNRI1oqJWEGcXF9RQ9HD+GwpgWDgDzEzxI-2253ej1QJFEeg2qSS4VIzA0SVEqDgBDe7wuqWg8EO-zG4OWuN0cJEGkOlKxpHRmOxZPJuk+31+un+AGUfnTdFoWLQviJEKTISyCAUiLQCGIiWBBKhggBrOBilkXWkaOD8eWKlVqvDM8kwYSaKLw3QAMQAggAZLnOCEaqomWhhHWHBwuY0XbrkuTO3H3R6iTqHRHI1H0jFYnHk-GwS3Eobqlla0g03lo2NM8Xktk-eU8qmZgWMIX0faio353GS6Wyg4bcuVkRJBsy06pYDAFPjMAAXUHZSZhBIBHBnLAdhqQXgZH+ckDvveGc9f3HFjTGtN1HNIi9Tidq4ubo9uo2todrjrVX9uIf9+W3W6tBMunYKnI0e0cBstgVOcohFBArA2ug7CzAAJA0ZQwXCjA6F0kxKGAEyDkAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFUAwgDyAEzxugODSgC+3UpoqCMq+eyVAZm6ALwrwbjLfEIiouu6u8JiSz1VuqQwSVBJNRI1oqJWEGcXF9RQ9HD+GwpgWDgDzEzxI-2253ej1QJFEeg2iQwpGYEFEJk6MEQiFQtAIAGtRG93hdUnDSIT-mN-nIIcSLojkVBUejGJjEFoWLQvvt2AQCkRcWJDv9BKhgni4ODdHCRBo4PxhWBReLJWBunSacsoUDHqJOocGSi0RisTj8RTIcTSXByUswFS1bS6Zc4NwkUaWWyOYwufQeXyBQQhRsCHbiBYpf87DUgvAyNSyjK4HKFX9CCQCFKYMJNFF4fYnM51cTi1Vi91urQTLp2CpyMxLDobLYKudREUIKwAILodizAAkDTKA7hjB0XUmSjAEwAukA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFUAwgDyAEzxugODSgC+3UpoqCMq+eyVAZm6ALwrwbjLfEIiouu6u8JiSz1VuqQwSVBJNRI1oqJWEGcXF9RQ9HD+GwpgWDgDzEzxI-2253ej1QJFEeg2iQwpGYEFEJk6MEQiFQtAIAGtRG93hdUnDSIT-mN-nIIcSLojkVBUejGJjEFoWLQvvt2AQCkRcWJDv9BKhgni4ODdHCRBo4PxhWBReLJWBunSacsoUDHqJOocGSi0RisTj8RTIcTSXByUswFS1bS6Zc4NwkUaWWyOYwufQeXyBQQhRsCHbiBYpf87DUgvAyNSyjK4HKFX9CCQCFKYMJNFF4fYnM51cTi1Vi91urQTLp2CpyMxLDobLYKudREUIKwAILodizAAkDTKA7hjB0XUmSjAEwAukA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0lA0g0JA1RKIrBB0ZjMdQoPQ4NQkQowFg4ASxMSSPSYRjyYTUCRRHpIZk0tFSMwNGlRKg4AQyeTMZk3vzdPSFqN2SDZbo+SINEitVLLhKpTKNXVKdTaZD6QEafrdFoWLQqSJEGrOSaCCUNgQxHSwAAhACyWAA0lgAIyuk2YvUaOD8X2BkPhyNR5EXWhxRUAMUGowCzg5qdMtCicaRDhc6tl-Q1ckLsvxhNEvSRguFooNkulVfJ8tgiuVI1VeB70ZtOshMc7RtH5LNNN91u1pDtDqdYhdI7dGo9Xp9kPtjEd9BEV09tG9H1ywGAg8WYC+Xyq3bAgwA4q48EqwPmABrs78sEGLxPzkOtZzHZcy0tV8PxTKMYHTTNyycAsILqEwS2g3QczzVxt0xGtqyrIj+n6WgTF0dgVHIDttDgGxbBqDFRDKCBWEGdB2DQVAABIWiqHjeL5RgdD6ZYlDAJYviAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0lA0g0JA1RKIrBB0ZjMdQoPQ4NQkQowFg4ASxMSSPSYRjyYTUCRRHpIZk0tFSMwNGlRKg4AQyeTMZk3vzdPSFqN2SDZbo+SINEitVLLhKpTKNXVKdTaZD6QEafrdFoWLQqSJEGrOSaCCUNgQxHSwAAhACyWAA0lgAIyuk2YvUaOD8X2BkPhyNR5EXWhxRUAMUGowCzg5qdMtCicaRDhc6tl-Q1ckLsvxhNEvSRguFooNkulVfJ8tgiuVI1VeB70ZtOshMc7RtH5LNNN91u1pDtDqdYhdI7dGo9Xp9kPtjEd9BEV09tG9H1ywGAg8WYC+Xyq3bAgwA4q48EqwPmABrs78sEGLxPzkOtZzHZcy0tV8PxTKMYHTTNyycAsILqEwS2g3QczzVxt0xGtqyrIj+n6WgTF0dgVHIDttDgGxbBqDFRDKCBWEGdB2DQVAABIWiqHjeL5RgdD6ZYlDAJYviAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0lA0g0JA1RKIrBB0ZjMdQoPQ4NQkQowFg4ASxMSSPSYRjyYTUCRRHpIVNSMwIKITL0YLNULQCFt9iDyXVMnzSHKwAtRvS5ByFZjBcLReLZloWLQqQj2AQShsCGI6WAAEIAWSwAGksABGdm6PkiDRwfh2p2uj2a+WYrVhur4wmiXpIvVQEVixgSxBSmVyzkKpVwFXAtUjDVgCNZ8kJpOGxDGxim+jmy3W22Qgj5wYAcVceF09ICzgAGl76VhBl5O1rvTS4H6A5D6e3O1UYBdaHF+fYnM5+jqt+GQf1+rQTLp2CpyMxLDobLYahjRGUIKxBuh2GhUAASFpVV9vvmMHR9ZYlDAJYviAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0lA0g0JA1RKIrBB0ZjMdQoPQ4NQkQowFg4ASxMSSPSYRjyYTUCRRHpIVNSMwIKITL0YLNULQCFt9iDyXVMnzSHKwAtRvS5ByFZjBcLReLZloWLQqQj2AQShsCGI6WAAEIAWSwAGksABGdm6PkiDRwfh2p2uj2a+WYrVhur4wmiXpIvVQEVixgSxBSmVyzkKpVwFXAtUjDVgCNZ8kJpOGxDGxim+jmy3W22Qgj5wYAcVceF09ICzgAGl76VhBl5O1rvTS4H6A5D6e3O1UYBdaHF+fYnM5+jqt+GQf1+rQTLp2CpyMxLDobLYahjRGUIKxBuh2GhUAASFpVV9vvmMHR9ZYlDAJYviAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }
