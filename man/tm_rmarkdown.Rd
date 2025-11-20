@@ -140,7 +140,7 @@ nrow_transform <- teal_transform_module(
   ui = function(id) {
     ns <- NS(id)
     tags$div(
-      numericInput(ns("n_rows"), "Show n rows", value = 5, min = 0, max = 200, step = 5)
+      numericInput(ns("n_rows"), "Show n rows", value = 40, min = 0, max = 200, step = 5)
     )
   },
   server = function(id, data) {
@@ -163,7 +163,12 @@ app <- init(
   modules = modules(
     tm_rmarkdown(
       label = "RMarkdown Module",
-      rmd_content = readLines(system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general")),
+      rmd_content = readLines(
+        system.file(
+          file.path("sample_files", "co2_example.Rmd"),
+          package = "teal.modules.general"
+        )
+      ),
       allow_download = FALSE,
       extra_transform = list(nrow_transform)
     )

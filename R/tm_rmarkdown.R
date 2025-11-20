@@ -94,7 +94,7 @@
 #'   ui = function(id) {
 #'     ns <- NS(id)
 #'     tags$div(
-#'       numericInput(ns("n_rows"), "Show n rows", value = 5, min = 0, max = 200, step = 5)
+#'       numericInput(ns("n_rows"), "Show n rows", value = 40, min = 0, max = 200, step = 5)
 #'     )
 #'   },
 #'   server = function(id, data) {
@@ -117,7 +117,12 @@
 #'   modules = modules(
 #'     tm_rmarkdown(
 #'       label = "RMarkdown Module",
-#'       rmd_content = readLines(system.file(file.path("sample_files", "test.Rmd"), package = "teal.modules.general")),
+#'       rmd_content = readLines(
+#'         system.file(
+#'           file.path("sample_files", "co2_example.Rmd"),
+#'           package = "teal.modules.general"
+#'         )
+#'       ),
 #'       allow_download = FALSE,
 #'       extra_transform = list(nrow_transform)
 #'     )
@@ -157,7 +162,6 @@ tm_rmarkdown <- function(label = "RMarkdown Module",
     transformators = transformators,
     datanames = datanames
   )
-  # attr(ans, "teal_bookmarkable") <- TRUE
   disable_src(ans)
 }
 
@@ -244,8 +248,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
     }, session)
 
     rendered_path_r <- reactive({
-      datasets <- req(q_r()) # Ensure data is available
-
+      datasets <- rlang::env_clone(as.environment(req(q_r()))) # Clone to use unlocked environment
       temp_dir <- tempfile(pattern = "rmd_")
       dir.create(temp_dir, showWarnings = FALSE, recursive = TRUE)
       temp_rmd <- tempfile(pattern = "rmarkdown_module-", tmpdir = temp_dir, fileext = ".Rmd")
@@ -306,8 +309,8 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
 #' This package registers S3 methods for `toHTML` and `to_rmd` for this class to
 #' facilitate rendering in `teal.reporter`.
 #'
-#' @param markdown_file (`character(1)`) path to markdown file
-#' @param rendered_html (`shiny.tag`) rendered HTML content
+#' @param markdown_file (`character(1)`) path to markdown file.
+#' @param rendered_html (`shiny.tag`) rendered HTML content.
 #'
 #' @return `markdown_internal` object
 #'

@@ -13,9 +13,9 @@
 \method{to_rmd}{markdown_internal}(block, figures_dir = "figures", ...)
 }
 \arguments{
-\item{markdown_file}{(\code{character(1)}) path to markdown file}
+\item{markdown_file}{(\code{character(1)}) path to markdown file.}
 
-\item{rendered_html}{(\code{shiny.tag}) rendered HTML content}
+\item{rendered_html}{(\code{shiny.tag}) rendered HTML content.}
 
 \item{x}{ An object to display. }
 
