@@ -1023,7 +1023,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
 
       join_keys <- teal.data::join_keys(data())
       if (!is.null(join_keys)) {
-        icons[intersect(join_keys[dataset_name, dataset_name], colnames(df))] <- "primary_key"
+        icons[intersect(teal.data::join_keys[dataset_name, dataset_name], colnames(df))] <- "primary_key"
       }
       icons <- variable_type_icons(icons)
 

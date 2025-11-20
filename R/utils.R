@@ -1,51 +1,3 @@
-#' Shared parameters documentation
-#'
-#' Defines common arguments shared across multiple functions in the package
-#' to avoid repetition by using `inheritParams`.
-#'
-#' @param plot_height (`numeric`) optional, specifies the plot height as a three-element vector of
-#' `value`, `min`, and `max` intended for use with a slider UI element.
-#' @param plot_width (`numeric`) optional, specifies the plot width as a three-element vector of
-#' `value`, `min`, and `max` for a slider encoding the plot width.
-#' @param rotate_xaxis_labels (`logical`) optional, whether to rotate plot X axis labels. Does not
-#' rotate by default (`FALSE`).
-#' @param ggtheme (`character`) optional, `ggplot2` theme to be used by default. Defaults to `"gray"`.
-#' @param ggplot2_args (`ggplot2_args`) object created by [teal.widgets::ggplot2_args()]
-#' with settings for the module plot.
-#' The argument is merged with options variable `teal.ggplot2_args` and default module setup.
-#'
-#' For more details see the vignette: `vignette("custom-ggplot2-arguments", package = "teal.widgets")`
-#' @param basic_table_args (`basic_table_args`) object created by [teal.widgets::basic_table_args()]
-#' with settings for the module table.
-#' The argument is merged with options variable `teal.basic_table_args` and default module setup.
-#'
-#' For more details see the vignette: `vignette("custom-basic-table-arguments", package = "teal.widgets")`
-#' @param pre_output (`shiny.tag`) optional, text or UI element to be displayed before the module's output,
-#' providing context or a title.
-#'  with text placed before the output to put the output into context. For example a title.
-#' @param post_output (`shiny.tag`) optional, text or UI element to be displayed after the module's output,
-#' adding context or further instructions. Elements like `shiny::helpText()` are useful.
-#' @param alpha (`integer(1)` or `integer(3)`) optional, specifies point opacity.
-#' - When the length of `alpha` is one: the plot points will have a fixed opacity.
-#' - When the length of `alpha` is three: the plot points opacity are dynamically adjusted based on
-#' vector of `value`, `min`, and `max`.
-#' @param size (`integer(1)` or `integer(3)`) optional, specifies point size.
-#' - When the length of `size` is one: the plot point sizes will have a fixed size.
-#' - When the length of `size` is three: the plot points size are dynamically adjusted based on
-#' vector of `value`, `min`, and `max`.
-#' @param decorators `r lifecycle::badge("experimental")`
-#' (named `list` of lists of `teal_transform_module`) optional,
-#' decorator for tables or plots included in the module output reported.
-#' The decorators are applied to the respective output objects.
-#'
-#' See section "Decorating Module" below for more details.
-#'
-#' @return Object of class `teal_module` to be used in `teal` applications.
-#'
-#' @name shared_params
-#' @keywords internal
-NULL
-
 #' Add labels for facets to a `ggplot2` object
 #'
 #' Enhances a `ggplot2` plot by adding labels that describe
@@ -234,13 +186,12 @@ variable_type_icons <- function(var_type) {
   ))
 }
 
-#'
 #' @param id (`character(1)`) the id of the tab panel with tabs.
 #' @param name (`character(1)`) the name of the tab.
 #' @return JavaScript expression to be used in `shiny::conditionalPanel()` to determine
 #' if the specified tab is active.
+#' @noRd
 #' @keywords internal
-#'
 is_tab_active_js <- function(id, name) {
   # supporting the bs3 and higher version at the same time
   sprintf(
@@ -459,4 +410,196 @@ set_chunk_dims <- function(pws, q_r, inner_classes = NULL) {
     )
     q
   })
+}
+# todo: to teal_data
+children <- function(x, dataset_name = character(0)) {
+  checkmate::assert_multi_class(x, c("teal_data", "join_keys"))
+  checkmate::assert_character(dataset_name, max.len = 1)
+  if (length(dataset_name)) {
+    names(
+      Filter(
+        function(parent) parent == dataset_name,
+        teal.data::parents(x)
+      )
+    )
+  } else {
+    all_parents <- unique(unlist(teal.data::parents(x)))
+    names(all_parents) <- all_parents
+    lapply(
+      all_parents,
+      function(parent) children(x = x, dataset_name = parent)
+    )
+  }
+}
+
+.name_to_id <- function(name) {
+  gsub("[[:space:][:punct:]]+", "_", x = tolower(name))
+}
+
+#' Filter children on `plotly_selected`
+#'
+#' @description
+#' Filters children datanames according to:
+#' - selected x and y values on the plot (based on the parent dataset)
+#' - [`teal.data::join_keys`] relationship between `children_datanames`
+#'
+#' @param data (`reactive teal_data`)
+#' @param plot_dataname (`character(1)`)
+#' @param xvar (`character(1)`)
+#' @param yvar (`character(1)`)
+#' @param plotly_selected (`reactive`)
+#' @param children_datanames (`character`)
+.plotly_selected_filter_children <- function(
+    data, plot_dataname, xvar, yvar, plotly_selected, children_datanames) {
+  xvar_r <- if (is.reactive(xvar)) xvar else reactive(xvar)
+  yvar_r <- if (is.reactive(yvar)) yvar else reactive(yvar)
+
+  plotly_selected_q <- reactive({
+    req(plotly_selected(), xvar_r(), yvar_r())
+    primary_keys <- unname(teal.data::join_keys(data())[plot_dataname, plot_dataname])
+    if (length(primary_keys) == 0) {
+      primary_keys <- unique(sapply(children_datanames, USE.NAMES = FALSE, FUN = function(childname) {
+        names(teal.data::join_keys(data())[plot_dataname, childname])
+      }))
+    }
+    req(primary_keys)
+    within(
+      data(),
+      expr = {
+        swimlane_selected <- dplyr::filter(dataname, xvar %in% xvals, yvar %in% yvals) %>%
+          dplyr::select(primary_keys)
+      },
+      dataname = str2lang(plot_dataname),
+      xvar = str2lang(xvar_r()),
+      yvar = str2lang(yvar_r()),
+      xvals = plotly_selected()$x,
+      yvals = plotly_selected()$y,
+      primary_keys = primary_keys
+    )
+  })
+
+  children_names <- reactive({
+    if (length(children_datanames) == 0) {
+      children(plotly_selected_q(), plot_dataname)
+    } else {
+      children_datanames
+    }
+  })
+
+  eventReactive(plotly_selected_q(), {
+    exprs <- as.expression(
+      lapply(
+        children_names(),
+        function(childname) {
+          join_cols <- teal.data::join_keys(plotly_selected_q())[childname, plot_dataname]
+          substitute(
+            expr = {
+              if (nrow(childname) > 0) {
+                childname <- dplyr::right_join(childname, swimlane_selected, by = by)
+              }
+            },
+            list(
+              childname = str2lang(childname),
+              by = join_cols
+            )
+          )
+        }
+      )
+    )
+    q <- teal.code::eval_code(plotly_selected_q(), exprs)
+  })
+}
+
+
+.update_cs_input <- function(inputId, data, cs) {
+  if (!missing(data) && !length(names(cs))) {
+    labels <- teal.data::col_labels(isolate(data()))[cs$choices]
+    names(cs$choices) <- labels
+  }
+  updateSelectInput(inputId = inputId, choices = cs$choices, selected = cs$selected)
+  if (length(cs$choices) < 2) shinyjs::hide(inputId)
+}
+
+
+#' @keywords internal
+#' @noRd
+trigger_tooltips_deps <- function() {
+  htmltools::htmlDependency(
+    name = "teal-modules-general-trigger-tooltips",
+    version = utils::packageVersion("teal.modules.general"),
+    package = "teal.modules.general",
+    src = "triggerTooltips",
+    script = "triggerTooltips.js",
+    stylesheet = "triggerTooltips.css"
+  )
+}
+
+
+#' @keywords internal
+#' @noRd
+setup_trigger_tooltips <- function(plot, plot_id) {
+  htmlwidgets::onRender(
+    plot,
+    paste0(
+      "function(el) {
+          const targetDiv = document.querySelector('#", plot_id, " .modebar-group:nth-child(4)');
+            if (targetDiv) {
+              const button = document.createElement('button');
+              button.setAttribute('data-count', '0');
+              button.className = 'teal-modules-general trigger-tooltips-button';
+
+              button.onclick = function () {
+                triggerSelectedTooltips('", plot_id, "')
+              };
+
+              const icon = document.createElement('i');
+              icon.className = 'fas fa-message';
+
+              const tooltip = document.createElement('span');
+              tooltip.className = 'plotly-icon-tooltip';
+              tooltip.textContent = 'Hover selection';
+
+              button.appendChild(icon);
+              button.appendChild(tooltip);
+              targetDiv.appendChild(button);
+            }
+        }"
+    )
+  )
+}
+
+#' @keywords internal
+#' @noRd
+set_plot_data <- function(plot, data_id) {
+  # Make sure to have a `customdata` column in the dataset and pass it to `plotly::plot_ly`.
+  htmlwidgets::onRender(
+    plot,
+    paste0(
+      "
+        function(el) {
+          slicedData = el.data.slice(0, -1).map(({ x, y, customdata, mode }) => ({ x, y, customdata, mode }));
+          plotData = {
+            x: [],
+            y: [],
+            customdata: [],
+            curveNumber: [],
+            pointNumber: []
+          };
+
+          slicedData.forEach((item, curveNumber) => {
+            if (item.mode === 'markers') {
+              for (let i = 0; i < item.x.length; i++) {
+                plotData.pointNumber.push(i);
+                plotData.x.push(item.x[i]);
+                plotData.y.push(item.y[i]);
+                plotData.customdata.push(item.customdata[i]);
+                plotData.curveNumber.push(curveNumber);
+              }
+            }
+          });
+          Shiny.setInputValue('", data_id, "', plotData);
+        }
+      "
+    )
+  )
 }

@@ -366,10 +366,7 @@ ui_g_scatterplot <- function(id, ...) {
     teal.widgets::standard_layout(
       output = teal.widgets::white_small_well(
         teal.widgets::plot_with_settings_ui(id = ns("scatter_plot")),
-        tags$br(),
-        tags$h1(tags$strong("Selected points:"), style = "font-size: 150%;"),
-        teal.widgets::get_dt_rows(ns("data_table"), ns("data_table_rows")),
-        DT::dataTableOutput(ns("data_table"), width = "100%")
+        teal::ui_brush_filter(ns("brush_filter"))
       ),
       encoding = tags$div(
         tags$label("Encodings", class = "text-primary"),
@@ -1030,7 +1027,8 @@ srv_g_scatterplot <- function(id,
       plot_r = plot_r,
       height = plot_height,
       width = plot_width,
-      brushing = TRUE
+      brushing = TRUE,
+      click = TRUE
     )
 
     output$data_table <- DT::renderDataTable({
