@@ -12,8 +12,8 @@ CO2 <- datasets::CO2 # nolint: object_name_linter.
 
 ```{r}
 # Convert Treatment and Type to factors (if not already)
-CO2$Treatment <- as.factor(CO2$Treatment)
-CO2$Type <- as.factor(CO2$Type)
+CO2$Treatment <- as.factor(CO2$Treatment) # nolint: object_name_linter.
+CO2$Type <- as.factor(CO2$Type) # nolint: object_name_linter.
 ```
 
 ## Uptake by Plant Type and Treatment
