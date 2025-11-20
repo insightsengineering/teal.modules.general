@@ -1,18 +1,25 @@
-#' `teal` module: Rmarkdown render
+#' `teal` module: R Markdown render
 #'
-#' Module to render R Markdown files using the data provided in the `teal_data` object.
+#' @description
+#' `r lifecycle::badge("experimental")`
 #'
-#' The R Markdown file should be designed to accept variables available in the datanames of the module.
+#' Module to render R Markdown files using the data provided in the
+#' `teal_data` object.
 #'
-#' For example, if the `teal_data` object contains datasets named "mtcars" and "iris",
-#' the R Markdown file can use these as variables as they will be available in the R Markdown environment.
+#' The R Markdown file should be designed to accept variables available
+#' in the data names of the module.
 #'
-#' The libraries used in the R Markdown file must be available in the deployed shiny
-#' app environment.
+#' @details
+#' For example, if the `teal_data` object contains datasets named `mtcars`
+#'  and `iris`, the R Markdown file can use these as variables as they
+#' will be available in the R Markdown environment.
 #'
-#' When developing the R Markdown file, the working data can be simulated on a code chunk,
-#' which in turn can look for the presence of `.raw_data` object to determine if it is being
-#' run inside the `teal` module or not.
+#' The libraries used in the R Markdown file must be available in the
+#' deployed shiny app environment.
+#'
+#' When developing the R Markdown file, the working data can be simulated
+#' on a code chunk, which in turn can look for the presence of `.raw_data`
+#' object to determine if it is being run inside the `teal` module or not.
 #'
 #' Example R markdown file:
 #'

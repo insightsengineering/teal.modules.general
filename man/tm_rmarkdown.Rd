@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_rmarkdown.R
 \name{tm_rmarkdown}
 \alias{tm_rmarkdown}
-\title{\code{teal} module: Rmarkdown render}
+\title{\code{teal} module: R Markdown render}
 \usage{
 tm_rmarkdown(
   label = "RMarkdown Module",
@@ -51,20 +51,25 @@ This can be used to create interactive inputs that modify the parameters in R Ma
 Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-Module to render R Markdown files using the data provided in the \code{teal_data} object.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+Module to render R Markdown files using the data provided in the
+\code{teal_data} object.
+
+The R Markdown file should be designed to accept variables available
+in the data names of the module.
 }
 \details{
-The R Markdown file should be designed to accept variables available in the datanames of the module.
+For example, if the \code{teal_data} object contains datasets named \code{mtcars}
+and \code{iris}, the R Markdown file can use these as variables as they
+will be available in the R Markdown environment.
 
-For example, if the \code{teal_data} object contains datasets named "mtcars" and "iris",
-the R Markdown file can use these as variables as they will be available in the R Markdown environment.
+The libraries used in the R Markdown file must be available in the
+deployed shiny app environment.
 
-The libraries used in the R Markdown file must be available in the deployed shiny
-app environment.
-
-When developing the R Markdown file, the working data can be simulated on a code chunk,
-which in turn can look for the presence of \code{.raw_data} object to determine if it is being
-run inside the \code{teal} module or not.
+When developing the R Markdown file, the working data can be simulated
+on a code chunk, which in turn can look for the presence of \code{.raw_data}
+object to determine if it is being run inside the \code{teal} module or not.
 
 Example R markdown file:
 
