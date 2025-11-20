@@ -23,7 +23,7 @@ library(dplyr)
 # Summarize mean uptake by Type and Treatment
 CO2 |>
   group_by(Type, Treatment) |>
-  summarize(mean_uptake = mean(uptake), .groups = "drop")
+  summarise(mean_uptake = mean(uptake), .groups = "drop")
 ```
 
 ## Visualization: Uptake by Concentration

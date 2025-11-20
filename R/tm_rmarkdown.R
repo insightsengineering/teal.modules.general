@@ -252,7 +252,10 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
     }, session)
 
     rendered_path_r <- reactive({
-      datasets <- rlang::env_clone(as.environment(req(q_r()))) # Clone to use unlocked environment
+      datasets <- rlang::env_clone(
+        as.environment(req(q_r())),
+        parent = new.env() # Ensuring a clean parent environment that can load libraries
+      ) # Clone to use unlocked environment
       temp_dir <- tempfile(pattern = "rmd_")
       dir.create(temp_dir, showWarnings = FALSE, recursive = TRUE)
       temp_rmd <- tempfile(pattern = "rmarkdown_module-", tmpdir = temp_dir, fileext = ".Rmd")
