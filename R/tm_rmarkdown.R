@@ -258,7 +258,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
               standalone = TRUE,
               dev = "png"
             ),
-            envir = environment(datasets),
+            envir = datasets,
             quiet = TRUE,
             runtime = "static"
           )
@@ -291,30 +291,20 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
   })
 }
 
-#' @exportS3Method tools::toHTML
-toHTML.markdown_internal <- function(block, ...) {
-  cached_html <- attr(block, "cached_html", exact = TRUE)
-  if (!is.null(cached_html)) {
-    return(cached_html)
-  }
-  NextMethod(unclass(block), ...)
-}
-
-#' @exportS3Method teal.reporter::to_rmd
-to_rmd.markdown_internal <- function(block, figures_dir = "figures", include_chunk_output = TRUE, ...) {
-  old_base_path <- attr(block, "old_base_path", exact = TRUE)
-  parent_path <- attr(block, "parent_path", exact = TRUE)
-  new_base_path <- file.path(figures_dir, old_base_path)
-
-  # Copy figures from old path to new location
-  dir.create(figures_dir, showWarnings = FALSE, recursive = TRUE)
-  file.copy(file.path(parent_path, old_base_path), figures_dir, recursive = TRUE)
-
-  # Change the image paths in the markdown content
-  block <- gsub(pattern = old_base_path, replacement = new_base_path, x = block, fixed = TRUE)
-  NextMethod(unclass(block), ...)
-}
-
+#' Create internal markdown object for use in reporter
+#'
+#' Creates an object of class `markdown_internal` that contains the
+#' content of a markdown file.
+#'
+#' This package registers S3 methods for `toHTML` and `to_rmd` for this class to
+#' facilitate rendering in `teal.reporter`.
+#'
+#' @param markdown_file (`character(1)`) path to markdown file
+#' @param rendered_html (`shiny.tag`) rendered HTML content
+#'
+#' @return `markdown_internal` object
+#'
+#' @keywords internal
 .markdown_internal <- function(markdown_file, rendered_html) {
   base_file <- basename(markdown_file)
 
@@ -326,4 +316,36 @@ to_rmd.markdown_internal <- function(block, figures_dir = "figures", include_chu
     old_base_path = sprintf("%s_files/", tools::file_path_sans_ext(base_file)),
     cached_html = rendered_html
   )
+}
+
+#' @describeIn dot-markdown_internal Custom [tools::toHTML()] method for markdown_internal class that
+#' uses a cached rendering of the module.
+#' @inheritParams tools::toHTML
+#' @param ... Arguments that will be passed to the next method.
+#' @exportS3Method tools::toHTML
+toHTML.markdown_internal <- function(x, ...) {
+  cached_html <- attr(x, "cached_html", exact = TRUE)
+  if (!is.null(cached_html)) {
+    return(cached_html)
+  }
+  NextMethod(unclass(x), ...)
+}
+
+#' @describeIn dot-markdown_internal Custom [teal.reporter::to_rmd()] method for `markdown_internal`
+#' object will be used to render the report.
+#' @inheritParams teal.reporter::to_rmd
+#' @param figures_dir (`character(1)`) directory where the R markdown auxiliary files will be saved.
+#' @exportS3Method teal.reporter::to_rmd
+to_rmd.markdown_internal <- function(block, figures_dir = "figures", ...) {
+  old_base_path <- attr(block, "old_base_path", exact = TRUE)
+  parent_path <- attr(block, "parent_path", exact = TRUE)
+  new_base_path <- file.path(figures_dir, old_base_path)
+
+  # Copy figures from old path to new location
+  dir.create(figures_dir, showWarnings = FALSE, recursive = TRUE)
+  file.copy(file.path(parent_path, old_base_path), figures_dir, recursive = TRUE)
+
+  # Change the image paths in the markdown content
+  block <- gsub(pattern = old_base_path, replacement = new_base_path, x = block, fixed = TRUE)
+  NextMethod(unclass(block), ...)
 }
