@@ -127,7 +127,11 @@
 #'       extra_transform = list(nrow_transform)
 #'     )
 #'   )
-#' ) |> shiny::runApp()
+#' )
+#'
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
 #' @export
 tm_rmarkdown <- function(label = "RMarkdown Module",
                          rmd_content,

@@ -173,7 +173,11 @@ app <- init(
       extra_transform = list(nrow_transform)
     )
   )
-) |> shiny::runApp()
+)
+
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
 }
 \section{Examples in Shinylive}{
 \describe{
