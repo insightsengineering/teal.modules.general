@@ -289,7 +289,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
       validate(
         need(inherits(output_path, "character"), "Error rendering RMD file. Please contact the app developer.")
       )
-      htmltools::includeMarkdown(output_path)
+      shiny::includeMarkdown(output_path)
     })
 
     output$rmd_output <- renderUI(rendered_html_r())
