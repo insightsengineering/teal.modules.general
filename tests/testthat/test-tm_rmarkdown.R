@@ -11,7 +11,7 @@ testthat::describe("srv_rmarkdown", {
   )
 
   data <- shiny::reactive(
-      within(teal.data::teal_data(), {
+    within(teal.data::teal_data(), {
       my_data <- CO2
     })
   )
