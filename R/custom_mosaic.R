@@ -7,7 +7,7 @@
 #' @param reduce_plot_call Function that takes multiple ggplot2 layers and combines them into a single plot call.
 #' @return An expression that creates a mosaic plot when evaluated.
 #' @keywords internal
-create_mosaic_layers <- function(data_name, x_var, y_var, reduce_plot_call) {
+.create_mosaic_layers <- function(data_name, x_var, y_var, reduce_plot_call) {
   data_call <- substitute(
     mosaic_data <- data_name |>
       # Count combinations of X and Y

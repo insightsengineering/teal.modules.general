@@ -929,7 +929,7 @@ bivariate_ggplot_call <- function(x_class,
   } else if (x_class == "factor" && y_class == "factor") {
     plot_call <- reduce_plot_call(
       plot_call,
-      create_mosaic_layers(data_name, x_var = x, y_var = y, reduce_plot_call = reduce_plot_call)
+      .create_mosaic_layers(data_name, x_var = x, y_var = y, reduce_plot_call = reduce_plot_call)
     )
   } else {
     stop("x y type combination not allowed")
