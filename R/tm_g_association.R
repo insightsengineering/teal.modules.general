@@ -345,7 +345,7 @@ srv_tm_g_association <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's output(s)")
         )
-      teal.code::eval_code(obj, "library(ggplot2);library(dplyr);library(ggmosaic)")
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr)")
     })
     anl_merged_q <- reactive({
       req(anl_merged_input())
