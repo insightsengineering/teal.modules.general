@@ -297,7 +297,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
 
     output$rmd_output <- renderUI(rendered_html_r())
 
-    reactive({
+    result <- reactive({
       out_data <- q_r()
       report_doc <- .markdown_internal(rendered_path_r(), rendered_html_r())
       teal.reporter::teal_card(out_data) <- c(
@@ -305,6 +305,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
       )
       out_data
     })
+    result
   })
 }
 
