@@ -234,6 +234,7 @@ variable_type_icons <- function(var_type) {
   ))
 }
 
+#' JavaScript expression to check if a tab is active
 #'
 #' @param id (`character(1)`) the id of the tab panel with tabs.
 #' @param name (`character(1)`) the name of the tab.

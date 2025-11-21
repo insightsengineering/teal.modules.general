@@ -60,8 +60,6 @@
 #' data <- within(data, {
 #'   require(nestcolor)
 #'   CO2 <- CO2
-#'   factors <- names(Filter(isTRUE, vapply(CO2, is.factor, logical(1L))))
-#'   CO2[factors] <- lapply(CO2[factors], as.character)
 #' })
 #'
 #' app <- init(
@@ -72,8 +70,8 @@
 #'         dataname = "CO2",
 #'         select = select_spec(
 #'           label = "Select variable:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-#'           selected = "Plant",
+#'           choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
+#'           selected = "conc",
 #'           fixed = FALSE
 #'         )
 #'       ),
@@ -81,8 +79,8 @@
 #'         dataname = "CO2",
 #'         select = select_spec(
 #'           label = "Select variables:",
-#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-#'           selected = "Treatment",
+#'           choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment", "conc", "uptake")),
+#'           selected = "uptake",
 #'           multiple = TRUE,
 #'           fixed = FALSE
 #'         )
@@ -117,9 +115,9 @@
 #'           label = "Select variable:",
 #'           choices = variable_choices(
 #'             data[["ADSL"]],
-#'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
+#'             c("AGE", "BMRKR1", "LDDTHELD")
 #'           ),
-#'           selected = "RACE",
+#'           selected = "AGE",
 #'           fixed = FALSE
 #'         )
 #'       ),
@@ -129,7 +127,7 @@
 #'           label = "Select variables:",
 #'           choices = variable_choices(
 #'             data[["ADSL"]],
-#'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
+#'             c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2", "AGE", "BMRKR1", "LDDTHELD")
 #'           ),
 #'           selected = "BMRKR2",
 #'           multiple = TRUE,

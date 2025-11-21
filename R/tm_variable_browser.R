@@ -886,7 +886,7 @@ get_plotted_data <- function(input, plot_var, data) {
       teal.reporter::teal_card(obj),
       teal.reporter::teal_card("## Module's output(s)")
     )
-  teal.code::eval_code(obj, "library(ggplot2)") |>
+  teal.code::eval_code(obj, "library(ggplot2)\nlibrary(dplyr)") |>
     within(
       {
         ANL <- dplyr::select(dataset_name, varname)
