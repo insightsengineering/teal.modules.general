@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0392521320795976" branch-rate="0" lines-covered="359" lines-valid="9146" branches-covered="0" branches-valid="0" complexity="0" version="3.6.4" timestamp="2025-11-20 13:08:08.550312">
+<coverage line-rate="0.0392564242755604" branch-rate="0" lines-covered="359" lines-valid="9145" branches-covered="0" branches-valid="0" complexity="0" version="3.6.5" timestamp="2025-11-21 13:22:50.60981">
   <sources>
     <source>/__w/teal.modules.general/teal.modules.general/teal.modules.general</source>
   </sources>
   <packages>
-    <package name="teal.modules.general" line-rate="0.0392521320795976" branch-rate="0" complexity="0">
+    <package name="teal.modules.general" line-rate="0.0392564242755604" branch-rate="0" complexity="0">
       <classes>
         <class name="tm_a_pca.R" filename="R/tm_a_pca.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
@@ -3425,7 +3425,6 @@
                 <line number="266" hits="0" branch="false"/>
                 <line number="267" hits="0" branch="false"/>
                 <line number="268" hits="0" branch="false"/>
-                <line number="269" hits="0" branch="false"/>
                 <line number="271" hits="0" branch="false"/>
                 <line number="272" hits="0" branch="false"/>
                 <line number="273" hits="0" branch="false"/>
@@ -3634,7 +3633,6 @@
             <line number="266" hits="0" branch="false"/>
             <line number="267" hits="0" branch="false"/>
             <line number="268" hits="0" branch="false"/>
-            <line number="269" hits="0" branch="false"/>
             <line number="271" hits="0" branch="false"/>
             <line number="272" hits="0" branch="false"/>
             <line number="273" hits="0" branch="false"/>
