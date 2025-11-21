@@ -218,7 +218,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
 
     if (allow_download) {
       output$download_rmd <- downloadHandler(
-        filename = function() "teal_module.Rmd", # TODO: find a better name
+        filename = function() sprintf("from_teal_module-%s.Rmd", format(Sys.time(), "%Y%m%d_%H%M")),
         content = function(file) {
           # find the end of the YAML header or start of the file
           # and insert the contents of teal.code::get_code(q_r())
