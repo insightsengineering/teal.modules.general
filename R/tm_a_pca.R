@@ -435,7 +435,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's output(s)")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tidyr")') # nolint: quotes
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr);library(tidyr)")
     })
     anl_merged_q <- reactive({
       req(anl_merged_input())
