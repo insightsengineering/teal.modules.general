@@ -927,7 +927,12 @@ bivariate_ggplot_call <- function(x_class,
     )
     # Factor and character plots
   } else if (x_class == "factor" && y_class == "factor") {
-    stop("Categorical variables 'x' and 'y' are currently not supported.")
+    plot_call <- .create_mosaic_layers(
+      data_name,
+      x_var = x,
+      y_var = y,
+      reduce_plot_call = reduce_plot_call
+    )
   } else {
     stop("x y type combination not allowed")
   }
