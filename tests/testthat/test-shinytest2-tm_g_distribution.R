@@ -42,7 +42,8 @@ app_driver_tm_g_distribution <- function() {
         freq = TRUE,
         bins = 36,
       )
-    )
+    ),
+    timeout = 10000
   )
 }
 

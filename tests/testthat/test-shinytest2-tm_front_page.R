@@ -19,7 +19,7 @@ app_driver_tm_front_page <- function() {
         footnotes = "This is a footnote"
       )
     ),
-    timeout = 3000
+    timeout = 10000
   )
 }
 

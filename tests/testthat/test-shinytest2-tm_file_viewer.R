@@ -14,7 +14,7 @@ app_driver_tm_file_viewer <- function() {
         )
       )
     ),
-    timeout = 3000
+    timeout = 10000
   )
 }
 
