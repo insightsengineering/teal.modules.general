@@ -18,7 +18,7 @@ app_driver_tm_data_table <- function() {
         post_output = NULL
       )
     ),
-    timeout = 3000
+    timeout = 10000
   )
 }
 
