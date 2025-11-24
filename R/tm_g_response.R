@@ -520,7 +520,7 @@ srv_g_response <- function(id,
             resp_cl = resp_cl,
             hjust_value = if (swap_axes) "left" else "middle",
             vjust_value = if (swap_axes) "middle" else -1,
-            position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)), # nolint line_length_linter
+            position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)), # nolint: line_length_linter.
             anl3_y = if (!freq) 1.1 else as.name("ns"),
             position_anl3_value = if (!freq) "fill" else "stack"
           )
