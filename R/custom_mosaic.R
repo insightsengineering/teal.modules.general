@@ -32,7 +32,7 @@
         xmax = xmin + x_width
       ) %>%
       # Compute y-min/y-max for stacked proportions
-      dplyr::arrange(x_var, y_var) |>
+      dplyr::arrange(x_var, y_var) %>%
       dplyr::mutate(
         .by = x_var,
         ymin = c(0, head(cumsum(prop), -1)),
@@ -46,7 +46,6 @@
       ggplot2::aes(
         xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = y_var
       ),
-      data = mosaic_data,
       color = "white"
     ),
     env = list(y_var = as.name(y_var))
@@ -67,14 +66,10 @@
   )
 
   bquote(
-    local({
-      .(data_call)
-
-      list(
-        .(layer_rect),
-        .(layer_scale_x),
+    .(data_call) %>%
+      ggplot2::ggplot() +
+        .(layer_rect) +
+        .(layer_scale_x) +
         ggplot2::scale_y_continuous(expand = c(0, 0), labels = scales::percent_format(scale = 100))
-      )
-    })
   )
 }
