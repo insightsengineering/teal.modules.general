@@ -68,8 +68,8 @@
   bquote(
     .(data_call) %>%
       ggplot2::ggplot() +
-        .(layer_rect) +
-        .(layer_scale_x) +
-        ggplot2::scale_y_continuous(expand = c(0, 0), labels = scales::percent_format(scale = 100))
+      .(layer_rect) +
+      .(layer_scale_x) +
+      ggplot2::scale_y_continuous(expand = c(0, 0), labels = scales::percent_format(scale = 100))
   )
 }
