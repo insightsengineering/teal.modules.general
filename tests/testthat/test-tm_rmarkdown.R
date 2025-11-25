@@ -51,7 +51,7 @@ testthat::describe("srv_rmarkdown", {
         extra_transform = list(), allow_download = TRUE
       ),
       expr = {
-        .noWs <- c("before", "after", "outside", "after-begin", "before-end")
+        .noWs <- c("before", "after", "outside", "after-begin", "before-end") # nolint: object_name_linter.
         testthat::expect_equal(
           gsub("\n", "", as.character(output$rmd_output$html)),
           as.character(
