@@ -46,7 +46,8 @@ app_driver_tm_outlier <- function() {
           )
         )
       )
-    )
+    ),
+    timeout = 10000
   )
 }
 
