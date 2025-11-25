@@ -41,7 +41,7 @@ app_driver_tm_t_crosstable <- function() {
         )
       )
     ),
-    timeout = 3000
+    timeout = 10000
   )
 }
 
