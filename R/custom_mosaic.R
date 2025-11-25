@@ -7,9 +7,11 @@
 #' @param reduce_plot_call Function that takes multiple ggplot2 layers and combines them into a single plot call.
 #' @return An expression that creates a mosaic plot when evaluated.
 #' @keywords internal
-.create_mosaic_layers <- function(data_name, x_var, y_var, reduce_plot_call) {
+.build_mosaic_plot <- function(data_name, x_var, y_var, reduce_plot_call) {
+  mosaic_data_name <- sprintf("%s_mosaic_%s_%s", data_name, as.character(x_var), as.character(y_var))
+  browser()
   data_call <- substitute(
-    mosaic_data <- data_name %>%
+    mosaic_data_name <- data_name %>%
       # Count combinations of X and Y
       dplyr::count(x_var, y_var) %>%
       # Compute total for each X group
@@ -38,7 +40,12 @@
         ymin = c(0, head(cumsum(prop), -1)),
         ymax = cumsum(prop)
       ),
-    env = list(x_var = as.name(x_var), y_var = as.name(y_var), data_name = as.name(data_name))
+    env = list(
+      x_var = as.name(x_var),
+      y_var = as.name(y_var),
+      data_name = as.name(data_name),
+      mosaic_data_name = as.name(mosaic_data_name)
+    )
   )
 
   layer_rect <- substitute(
@@ -53,23 +60,27 @@
 
   layer_scale_x <- substitute(
     ggplot2::scale_x_continuous(
-      breaks = mosaic_data %>%
+      breaks = mosaic_data_name %>%
         dplyr::distinct(x_var, xmin, xmax) %>%
         dplyr::mutate(mid = (xmin + xmax) / 2) %>%
         dplyr::pull(mid),
-      labels = mosaic_data %>%
+      labels = mosaic_data_name %>%
         dplyr::distinct(x_var) %>%
         dplyr::pull(x_var),
       expand = c(0, 0)
     ),
-    env = list(x_var = as.name(x_var))
+    env = list(x_var = as.name(x_var), mosaic_data_name = as.name(mosaic_data_name))
   )
 
-  bquote(
-    .(data_call) %>%
-      ggplot2::ggplot() +
-      .(layer_rect) +
-      .(layer_scale_x) +
-      ggplot2::scale_y_continuous(expand = c(0, 0), labels = scales::percent_format(scale = 100))
+  list(
+    data_call = data_call,
+    plot_call = bquote(
+      ggplot2::ggplot(.(as.name(mosaic_data_name))) +
+        .(layer_rect) +
+        .(layer_scale_x) +
+        ggplot2::scale_y_continuous(expand = c(0, 0), labels = scales::percent_format(scale = 100))
+    )
   )
 }
+
+

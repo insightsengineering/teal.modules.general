@@ -632,7 +632,7 @@ srv_g_bivariate <- function(id,
 
       teal::validate_has_data(ANL[, c(x_name, y_name), drop = FALSE], 3, complete = TRUE, allow_inf = FALSE)
 
-      cl <- bivariate_plot_call(
+      bivariate_cl <- bivariate_plot_call(
         data_name = "ANL",
         x = x_name,
         y = y_name,
@@ -648,6 +648,8 @@ srv_g_bivariate <- function(id,
         size = size,
         ggplot2_args = ggplot2_args
       )
+
+      cl <- bivariate_cl$plot_call
 
       facetting <- (isTRUE(input$facetting) && (!is.null(row_facet_name) || !is.null(col_facet_name)))
 
@@ -688,7 +690,9 @@ srv_g_bivariate <- function(id,
 
       obj <- merged$anl_q_r()
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "### Plot")
-      teal.code::eval_code(obj, substitute(expr = plot <- cl, env = list(cl = cl)))
+      browser()
+      teal.code::eval_code(obj, bivariate_cl$data_call %||% "") |>
+        teal.code::eval_code(substitute(expr = plot <- cl, env = list(cl = cl)))
     })
 
     decorated_output_q_facets <- srv_decorate_teal_data(
@@ -768,7 +772,7 @@ bivariate_plot_call <- function(data_name,
     y <- if (is.call(y)) y else as.name(y)
   }
 
-  cl <- bivariate_ggplot_call(
+  bivariate_ggplot_call(
     x_class = x_class,
     y_class = y_class,
     freq = freq,
@@ -832,6 +836,7 @@ bivariate_ggplot_call <- function(x_class,
     Reduce(function(x, y) call("+", x, y), args)
   }
 
+  data_call <- NULL
   plot_call <- substitute(ggplot2::ggplot(data_name), env = list(data_name = as.name(data_name)))
 
   # Single data plots
@@ -927,12 +932,14 @@ bivariate_ggplot_call <- function(x_class,
     )
     # Factor and character plots
   } else if (x_class == "factor" && y_class == "factor") {
-    plot_call <- .create_mosaic_layers(
+    mosaic_call <- .build_mosaic_plot(
       data_name,
       x_var = x,
       y_var = y,
       reduce_plot_call = reduce_plot_call
     )
+    plot_call <- mosaic_call$plot_call
+    data_call <- mosaic_call$data_call
   } else {
     stop("x y type combination not allowed")
   }
@@ -972,7 +979,7 @@ bivariate_ggplot_call <- function(x_class,
     plot_call <- reduce_plot_call(plot_call, quote(coord_flip()))
   }
 
-  plot_call
+  list(plot_call = plot_call, data_call = data_call)
 }
 
 # Create facet call

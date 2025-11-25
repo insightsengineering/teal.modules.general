@@ -495,6 +495,10 @@ srv_tm_g_association <- function(id,
         }
       obj <- merged$anl_q_r()
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "### Plot")
+
+      data_calls <- Map(function(x) .subset2(x, "data_call"), var_calls)
+      plot_calls <- Map(function(x) .subset2(x, "plot_call"), var_calls)
+
       teal.code::eval_code(
         obj,
         substitute(
@@ -503,15 +507,18 @@ srv_tm_g_association <- function(id,
         )
       ) %>%
         teal.code::eval_code(
+          bquote({..(data_calls)}, splice = TRUE)
+        ) %>%
+        teal.code::eval_code(
           substitute(
             expr = {
               plots <- plot_calls
-              plot <- gridExtra::arrangeGrob(plots[[1]], plots[[2]], ncol = 1)
+              plot <- gridExtra::arrangeGrob(grobs = plots, ncol = 1)
             },
             env = list(
               plot_calls = do.call(
                 "call",
-                c(list("list", ref_call), var_calls),
+                c(list("list", ref_call$plot_call), plot_calls),
                 quote = TRUE
               )
             )
