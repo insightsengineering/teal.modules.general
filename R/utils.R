@@ -287,6 +287,7 @@ srv_decorate_teal_data <- function(id, data, decorators, expr) {
 
     reactive({
       req(decorated_output())
+      browser()
       if (no_expr) {
         decorated_output()
       } else {
