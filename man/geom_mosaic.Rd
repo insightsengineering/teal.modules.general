@@ -42,5 +42,6 @@ Each rectangle's size reflects the proportion of observations for combinations o
 \examples{
 df <- data.frame(RACE = c("Black", "White", "Black", "Asian"), SEX = c("M", "M", "F", "F"))
 library(ggplot2)
-ggplot(df, aes(x = RACE, fill = SEX)) + geom_rects()
+ggplot(df, aes(x = RACE, fill = SEX)) +
+  geom_rects()
 }
