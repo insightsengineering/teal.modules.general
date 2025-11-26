@@ -2,6 +2,7 @@
 % Please edit documentation in R/custom_mosaic.R
 \name{geom_mosaic}
 \alias{geom_mosaic}
+\alias{.calculate_coordinates}
 \title{Mosaic Rectangles Layer for ggplot2}
 \usage{
 geom_mosaic(
@@ -14,6 +15,8 @@ geom_mosaic(
   show.legend = TRUE,
   inherit.aes = TRUE
 )
+
+.calculate_coordinates(data)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by \code{aes()}. Must specify \code{x} and \code{fill}.}
@@ -39,9 +42,20 @@ A ggplot2 layer that adds mosaic rectangles to the plot.
 Adds a mosaic-style rectangles layer to a ggplot, visualizing the joint distribution of categorical variables.
 Each rectangle's size reflects the proportion of observations for combinations of \code{x} and \code{fill}.
 }
+\section{Functions}{
+\itemize{
+\item \code{.calculate_coordinates()}: Computes the coordinates for rectangles in a mosaic plot based on combinations of \code{x} and \code{fill} variables.
+For each unique \code{x} and \code{fill}, calculates the proportional widths and heights, stacking rectangles within each \code{x} group.
+\subsection{Value}{
+
+A data frame with columns: \code{x}, \code{fill}, \code{xmin}, \code{xmax}, \code{ymin}, \code{ymax}, representing the position and size of each rectangle.
+}
+
+}}
 \examples{
 df <- data.frame(RACE = c("Black", "White", "Black", "Asian"), SEX = c("M", "M", "F", "F"))
 library(ggplot2)
 ggplot(df, aes(x = RACE, fill = SEX)) +
   geom_rects()
 }
+\keyword{internal}

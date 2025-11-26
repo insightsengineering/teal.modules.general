@@ -61,24 +61,12 @@ GeomMosaic <- ggplot2::ggproto(
   required_aes = c("xmin", "xmax", "ymin", "ymax")
 )
 
-#' Mosaic Statistic for ggplot2
-#'
-#' Implements a custom statistic for mosaic plots in ggplot2,
-#' calculating coordinates and axis breaks/labels for categorical
-#' variables.
-#'
-#' This statistic processes input data to compute the positions
-#' and sizes of mosaic rectangles, as well as the appropriate
-#' axis breaks and labels for the plot.
 #' @keywords internal
 StatMosaic <- ggplot2::ggproto(
   "StatMosaic", ggplot2::Stat,
   required_aes = c("x", "fill"),
-  compute_group = function(data, scales) {
-    data
-  },
+  compute_group = function(data, scales) data,
   compute_panel = function(data, scales) {
-    # old_x <- data$x
     data$x <- data[, grepl("x__", colnames(data))]
     result <- .calculate_coordinates(data)
 
@@ -125,7 +113,6 @@ StatMosaic <- ggplot2::ggproto(
   )
 }
 
-#' @rdname dot-scale_x_mosaic
 #' @keywords internal
 ScaleContinuousMosaic <- ggplot2::ggproto(
   "ScaleContinuousMosaic", ggplot2::ScaleContinuousPosition,
@@ -170,20 +157,14 @@ ScaleContinuousMosaic <- ggplot2::ggproto(
 )
 is.discrete <- function(x) is.factor(x) || is.character(x) || is.logical(x)
 
-#' Calculate Rectangle Coordinates for Mosaic Plot
-#'
+#' @describeIn geom_mosaic
 #' Computes the coordinates for rectangles in a mosaic plot based on combinations of `x` and `fill` variables.
 #' For each unique `x` and `fill`, calculates the proportional widths and heights, stacking rectangles within each `x` group.
 #'
-#' @param data A data frame containing at least `x` and `fill` columns.
+#' ### Value
 #'
-#' @return A data frame with columns: `x`, `fill`, `xmin`, `xmax`, `ymin`, `ymax`, representing the position and size of each rectangle.
+#' A data frame with columns: `x`, `fill`, `xmin`, `xmax`, `ymin`, `ymax`, representing the position and size of each rectangle.
 #'
-#' @details
-#' - Counts occurrences of each `x`/`fill` combination.
-#' - Calculates proportions within each `x` group.
-#' - Determines horizontal (`xmin`, `xmax`) and vertical (`ymin`, `ymax`) boundaries for each rectangle.
-#' - Adds small padding to each boundary for visual separation.
 #' @keywords internal
 .calculate_coordinates <- function(data) {
   # Example: compute rectangles from x and y
