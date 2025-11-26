@@ -81,7 +81,8 @@ app_driver_tm_g_scatterplot <- function() {
         ggtheme = "classic",
         max_deg = 6
       )
-    )
+    ),
+    timeout = 10000
   )
 }
 

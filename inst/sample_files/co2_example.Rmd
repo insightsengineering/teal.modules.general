@@ -1,0 +1,60 @@
+---
+title: "Test R Markdown"
+output: html_document
+---
+
+```{r, eval=!exists(".raw_data"), include=FALSE}
+# Set your local data here. note that when used in teal the `data` must be available to the module
+CO2 <- datasets::CO2 # nolint: object_name_linter.
+```
+
+## Data preparation
+
+```{r}
+# Convert Treatment and Type to factors (if not already)
+CO2$Treatment <- as.factor(CO2$Treatment) # nolint: object_name_linter.
+CO2$Type <- as.factor(CO2$Type) # nolint: object_name_linter.
+```
+
+## Uptake by Plant Type and Treatment
+
+```{r, messages=FALSE}
+library(dplyr)
+# Summarize mean uptake by Type and Treatment
+CO2 |>
+  group_by(Type, Treatment) |>
+  summarise(mean_uptake = mean(uptake), .groups = "drop")
+```
+
+## Visualization: Uptake by Concentration
+
+
+```{r}
+library(ggplot2)
+ggplot(CO2, aes(x = conc, y = uptake, color = Treatment, shape = Type)) +
+  geom_point() +
+  geom_smooth(formula = "y ~ x", method = "lm", se = FALSE) +
+  labs(
+    title = "CO2 Uptake vs. Concentration",
+    x = "CO2 Concentration (mL/L)",
+    y = "CO2 Uptake (umol/m^2 sec)",
+    color = "Treatment",
+    shape = "Plant Type"
+  ) +
+  theme_minimal()
+```
+
+## Visualization: Uptake Distribution by Plant
+
+
+```{r}
+ggplot(CO2, aes(x = Plant, y = uptake, fill = Treatment)) +
+  geom_boxplot() +
+  labs(
+    title = "CO2 Uptake Distribution by Plant",
+    x = "Plant",
+    y = "CO2 Uptake (umol/m^2 sec)",
+    fill = "Treatment"
+  ) +
+  theme_minimal()
+```

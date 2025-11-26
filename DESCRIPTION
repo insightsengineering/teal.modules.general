@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.5.1.9014
-Date: 2025-11-19
+Version: 0.5.1.9016
+Date: 2025-11-25
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -48,6 +48,7 @@ Imports:
     lattice (>= 0.18-4),
     lifecycle (>= 0.2.0),
     MASS (>= 7.3-60),
+    rmarkdown (>= 2.23),
     rtables (>= 0.6.11),
     scales (>= 1.3.0),
     shinyjs (>= 2.1.0),
@@ -73,7 +74,6 @@ Suggests:
     nestcolor (>= 0.1.0),
     pkgload,
     rlang (>= 1.0.0),
-    rmarkdown (>= 2.23),
     roxy.shinylive,
     rvest,
     shinytest2,
