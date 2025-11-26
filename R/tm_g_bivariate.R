@@ -736,7 +736,7 @@ srv_g_bivariate <- function(id,
     )
 
     set_chunk_dims(pws, decorated_output_q_facets)
-    })
+  })
 }
 
 # Get Substituted ggplot call

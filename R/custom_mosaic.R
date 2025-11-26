@@ -17,14 +17,15 @@
 #' @examples
 #' df <- data.frame(RACE = c("Black", "White", "Black", "Asian"), SEX = c("M", "M", "F", "F"))
 #' library(ggplot2)
-#' ggplot(df, aes(x = RACE, fill = SEX)) + geom_rects()
+#' ggplot(df, aes(x = RACE, fill = SEX)) +
+#'   geom_rects()
 #' @export
 geom_mosaic <- function(mapping = NULL, data = NULL,
-                       stat = "mosaic", position = "identity",
-                       ...,
-                       na.rm = FALSE,
-                       show.legend = TRUE,
-                       inherit.aes = TRUE) {
+                        stat = "mosaic", position = "identity",
+                        ...,
+                        na.rm = FALSE,
+                        show.legend = TRUE,
+                        inherit.aes = TRUE) {
   aes_x <- list(rlang::quo_get_expr(mapping$x))
   var_x <- sprintf("x__%s", as.character(aes_x))
   aes_fill <- rlang::quo_text(mapping$fill)
@@ -72,9 +73,7 @@ GeomMosaic <- ggplot2::ggproto(
 #' @keywords internal
 StatMosaic <- ggplot2::ggproto(
   "StatMosaic", ggplot2::Stat,
-
   required_aes = c("x", "fill"),
-
   compute_group = function(data, scales) {
     data
   },
@@ -104,11 +103,11 @@ StatMosaic <- ggplot2::ggproto(
 #' @inheritParams ggplot2::continuous_scale
 #' @keywords internal
 .scale_x_mosaic <- function(breaks = function(x) unique(x),
-                           minor_breaks = NULL,
-                           labels = function(x) unique(x),
-                           na.value = NA_real_,
-                           position = "bottom",
-                           ...) {
+                            minor_breaks = NULL,
+                            labels = function(x) unique(x),
+                            na.value = NA_real_,
+                            position = "bottom",
+                            ...) {
   ggplot2::continuous_scale(
     aesthetics = c(
       "x", "xmin", "xmax", "xend", "xintercept", "xmin_final", "xmax_final",
@@ -120,7 +119,7 @@ StatMosaic <- ggplot2::ggproto(
     labels = labels,
     na.value = na.value,
     position = position,
-    super = ScaleContinuousMosaic,,
+    super = ScaleContinuousMosaic, ,
     guide = ggplot2::waiver(),
     ...
   )
@@ -130,9 +129,9 @@ StatMosaic <- ggplot2::ggproto(
 #' @keywords internal
 ScaleContinuousMosaic <- ggplot2::ggproto(
   "ScaleContinuousMosaic", ggplot2::ScaleContinuousPosition,
-  train =function(self, x) {
+  train = function(self, x) {
     if (length(x) == 0) {
-        return()
+      return()
     }
     if (is.list(x)) {
       scale_x <- x[[1]]
@@ -142,26 +141,31 @@ ScaleContinuousMosaic <- ggplot2::ggproto(
       return(NULL)
     }
     if (is.discrete(x)) {
-      self$range$train(x=c(0,1))
+      self$range$train(x = c(0, 1))
       return(NULL)
     }
     self$range$train(x, call = self$call)
   },
   map = function(self, x, limits = self$get_limits()) {
-    if (is.discrete(x)) return(x)
-    if (is.list(x)) return(0) # need a number
+    if (is.discrete(x)) {
+      return(x)
+    }
+    if (is.list(x)) {
+      return(0)
+    } # need a number
     scaled <- as.numeric(self$oob(x, limits))
     ifelse(!is.na(scaled), scaled, self$na.value)
   },
   dimension = function(self, expand = c(0, 0)) {
-    c(-0.05,1.05)
+    c(-0.05, 1.05)
   },
   make_title = function(..., self) {
     title <- ggplot2::ggproto_parent(ggplot2::ScaleContinuousPosition, self)$make_title(...)
     if (isTRUE(title %in% self$aesthetics)) {
       title <- self$product_name
+    } else {
+      title
     }
-    else title
   }
 )
 is.discrete <- function(x) is.factor(x) || is.character(x) || is.logical(x)
