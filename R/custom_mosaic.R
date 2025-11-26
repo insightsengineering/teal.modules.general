@@ -31,8 +31,7 @@ geom_mosaic <- function(mapping = NULL, data = NULL,
   var_fill <- sprintf("x__fill__%s", aes_fill)
 
   mapping[[var_x]] <- mapping$x
-  mapping$x <- structure(1L, class = "mosaic")
-  # mapping[[var_fill]] <- mapping$fill
+  mapping$x <- structure(1L)
 
   layer <- ggplot2::layer(
     geom = GeomMosaic,
@@ -45,10 +44,10 @@ geom_mosaic <- function(mapping = NULL, data = NULL,
     check.aes = FALSE,
     params = list(na.rm = na.rm, ...)
   )
-  #list(layer, .scale_x_mosaic())
-  layer
+  list(layer, .scale_x_mosaic())
 }
 
+#' @keywords internal
 GeomMosaic <- ggplot2::ggproto(
   "GeomMosaic", ggplot2::GeomRect,
   default_aes = ggplot2::aes(
@@ -60,6 +59,113 @@ GeomMosaic <- ggplot2::ggproto(
   },
   required_aes = c("xmin", "xmax", "ymin", "ymax")
 )
+
+#' Mosaic Statistic for ggplot2
+#'
+#' Implements a custom statistic for mosaic plots in ggplot2,
+#' calculating coordinates and axis breaks/labels for categorical
+#' variables.
+#'
+#' This statistic processes input data to compute the positions
+#' and sizes of mosaic rectangles, as well as the appropriate
+#' axis breaks and labels for the plot.
+#' @keywords internal
+StatMosaic <- ggplot2::ggproto(
+  "StatMosaic", ggplot2::Stat,
+
+  required_aes = c("x", "fill"),
+
+  compute_group = function(data, scales) {
+    data
+  },
+  compute_panel = function(data, scales) {
+    # old_x <- data$x
+    data$x <- data[, grepl("x__", colnames(data))]
+    result <- .calculate_coordinates(data)
+
+    breaks <- result |>
+      dplyr::distinct(x, xmin, xmax) |>
+      dplyr::mutate(mid = (xmin + xmax) / 2) |>
+      dplyr::pull(mid)
+
+    labels <- dplyr::pull(dplyr::distinct(result, x))
+    result$x <- list(list2env(list(breaks = breaks[breaks != 0], labels = labels[breaks != 0])))
+
+    result$group <- 1
+    result$PANEL <- unique(data$PANEL)
+    result
+  }
+)
+
+#' Determining scales for mosaics
+#'
+#' @param name set to pseudo waiver function `product_names` by default.
+#' @param ... other arguments passed to `continuous_scale()`.
+#' @inheritParams ggplot2::continuous_scale
+#' @keywords internal
+.scale_x_mosaic <- function(breaks = function(x) unique(x),
+                           minor_breaks = NULL,
+                           labels = function(x) unique(x),
+                           na.value = NA_real_,
+                           position = "bottom",
+                           ...) {
+  ggplot2::continuous_scale(
+    aesthetics = c(
+      "x", "xmin", "xmax", "xend", "xintercept", "xmin_final", "xmax_final",
+      "xlower", "xmiddle", "xupper"
+    ),
+    palette = identity,
+    breaks = breaks,
+    minor_breaks = minor_breaks,
+    labels = labels,
+    na.value = na.value,
+    position = position,
+    super = ScaleContinuousMosaic,,
+    guide = ggplot2::waiver(),
+    ...
+  )
+}
+
+#' @rdname dot-scale_x_mosaic
+#' @importFrom ggplot2 ggproto ScaleContinuousPosition
+#' @keywords internal
+ScaleContinuousMosaic <- ggproto(
+  "ScaleContinuousMosaic", ScaleContinuousPosition,
+  train =function(self, x) {
+    if (length(x) == 0) {
+        return()
+    }
+    if (is.list(x)) {
+      scale_x <- x[[1]]
+      # re-assign the scale values now that we have the information - but only if necessary
+      if (is.function(self$breaks)) self$breaks <- scale_x$breaks
+      if (is.function(self$labels)) self$labels <- as.vector(scale_x$labels)
+      return(NULL)
+    }
+    if (is.discrete(x)) {
+      self$range$train(x=c(0,1))
+      return(NULL)
+    }
+    self$range$train(x, call = self$call)
+  },
+  map = function(self, x, limits = self$get_limits()) {
+    if (is.discrete(x)) return(x)
+    if (is.list(x)) return(0) # need a number
+    scaled <- as.numeric(self$oob(x, limits))
+    ifelse(!is.na(scaled), scaled, self$na.value)
+  },
+  dimension = function(self, expand = c(0, 0)) {
+    c(-0.05,1.05)
+  },
+  make_title = function(..., self) {
+    title <- ggplot2::ggproto_parent(ggplot2::ScaleContinuousPosition, self)$make_title(...)
+    if (isTRUE(title %in% self$aesthetics)) {
+      title <- self$product_name
+    }
+    else title
+  }
+)
+is.discrete <- function(x) is.factor(x) || is.character(x) || is.logical(x)
 
 #' Calculate Rectangle Coordinates for Mosaic Plot
 #'
@@ -75,18 +181,19 @@ GeomMosaic <- ggplot2::ggproto(
 #' - Calculates proportions within each `x` group.
 #' - Determines horizontal (`xmin`, `xmax`) and vertical (`ymin`, `ymax`) boundaries for each rectangle.
 #' - Adds small padding to each boundary for visual separation.
+#' @keywords internal
 .calculate_coordinates <- function(data) {
   # Example: compute rectangles from x and y
   result <- data |>
     # Count combinations of X and Y
-    dplyr::count(x, fill) |>
+    dplyr::count(x, fill, .drop = FALSE) |>
     # Compute total for each X group
     dplyr::mutate(
       .by = x,
       x_total = sum(n),
-      prop = n / x_total
+      prop = n / x_total,
+      prop = dplyr::if_else(is.nan(prop), 0, prop)
     ) |>
-    # Change order from biggest group to smaller
     dplyr::arrange(dplyr::desc(x_total), x, fill) |>
     # Compute total sample size to turn counts into widths
     dplyr::mutate(
@@ -112,116 +219,11 @@ GeomMosaic <- ggplot2::ggproto(
     dplyr::mutate(
       xmin = xmin / max(xmax),
       xmax = xmax / max(xmax),
-      xmin = xmin + 0.005,
-      xmax = xmax - 0.005,
-      ymin = ymin + 0.005,
-      ymax = ymax - 0.005
+      xmin = dplyr::if_else(n == 0, 0, xmin + 0.005),
+      xmax = dplyr::if_else(n == 0, 0, xmax - 0.005),
+      ymin = dplyr::if_else(n == 0, 0, ymin + 0.005),
+      ymax = dplyr::if_else(n == 0, 0, ymax - 0.005)
     ) |>
-    dplyr::select(x, fill, xmin, xmax, ymin, ymax)
+    dplyr::select(x, fill, xmin, xmax, ymin, ymax, .n = n)
   result
 }
-
-StatMosaic <- ggplot2::ggproto(
-  "StatMosaic", ggplot2::Stat,
-
-  required_aes = c("x", "fill"),
-
-  compute_group = function(data, scales) {
-    data
-  },
-  compute_panel = function(data, scales) {
-    data$x <- data[, grepl("x__", colnames(data))]
-    result <- .calculate_coordinates(data)
-
-    scale_x <- ggplot2::ScaleContinuous
-    scale_x[["breaks"]] <- result |>
-      dplyr::distinct(x, xmin, xmax) |>
-      dplyr::mutate(mid = (xmin + xmax) / 2) |>
-      dplyr::pull(mid)
-
-    scale_x[["labels"]] <- result |>
-      dplyr::distinct(x) |>
-      dplyr::pull(x)
-
-    result$x <- list(scale = scale_x)
-    result$group <- 1
-    result$PANEL <- unique(data$PANEL)
-    result
-  }
-)
-
-#' Helper function for determining scales
-#'
-#' Used internally to determine class of variable x
-#' @param x variable
-#' @return character string "productlist"
-#' @importFrom ggplot2 scale_type
-#' @export
-scale_type.mosaic <- function(x) {
-  #  cat("checking for type productlist\n")
-  #browser()
-  "mosaic"
-}
-
-
-#' Determining scales for mosaics
-#'
-#' @param name set to pseudo waiver function `product_names` by default.
-#' @param ... other arguments passed to `continuous_scale()`.
-#' @inheritParams ggplot2::continuous_scale
-#' @export
-scale_x_mosaic <- function(breaks = function() function(x) unique(x),
-                           minor_breaks = NULL,
-                           labels = function() function(x) unique(x),
-                           na.value = NA_real_,
-                           position = "bottom",
-                           ...) {
-  ggplot2::continuous_scale(
-    aesthetics = c(
-      "x", "xmin", "xmax", "xend", "xintercept", "xmin_final", "xmax_final",
-      "xlower", "xmiddle", "xupper"
-    ), palette = identity, breaks = breaks, minor_breaks = minor_breaks,
-    labels = labels, na.value = na.value, position = position,
-    super = ScaleContinuousProduct,, guide = ggplot2::waiver(), ...
-  )
-}
-
-#' @rdname dot-scale_x_mosaic
-ScaleContinuousProduct <- ggplot2::ggproto(
-  "ScaleContinuousProduct", ggplot2::ScaleContinuousPosition,
-  train =function(self, x) {
-    if (is.list(x)) {
-      x <- x[[1]]
-      if ("Scale" %in% class(x)) {
-        # re-assign the scale values now that we have the information - but only if necessary
-        if (is.function(self$breaks)) self$breaks <- x$breaks
-        if (is.function(self$labels)) self$labels <- x$labels
-        return(NULL)
-      }
-    }
-    if (self$is.discrete(x)) {
-      self$range$train(x=c(0,1))
-      return(NULL)
-    }
-    self$range$train(x)
-  },
-  map = function(self, x, limits = self$get_limits()) {
-    if (self$is.discrete(x)) return(x)
-    if (is.list(x)) return(0) # need a number
-    scaled <- as.numeric(self$oob(x, limits))
-    ifelse(!is.na(scaled), scaled, self$na.value)
-  },
-  dimension = function(self, expand = c(0, 0)) {
-    c(-0.05,1.05)
-  },
-  make_title = function(..., self) {
-    title <- ggplot2::ggproto_parent(ggplot2::ScaleContinuousPosition, self)$make_title(...)
-    if (isTRUE(title %in% self$aesthetics)) {
-      title <- self$product_name
-    }
-    else title
-  },
-  is.discrete = function(self, x) is.factor(x) || is.character(x) || is.logical(x)
-)
-
-
