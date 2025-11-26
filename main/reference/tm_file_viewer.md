@@ -37,7 +37,7 @@ Object of class `teal_module` to be used in `teal` applications.
 - example-1:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1KlNFRslRj2dJyvXQBeJuTGviERUVbdLuExBogMjNIYfxNaEX8tWjhImWHR0ZVUQVJ-VE9YvrpRUmWV0ZMian4ZPtFWA7gYPOm4BrBRWFQZqZ6FPF1tggBrKBSPrfPy8ASDcRSCBqajfOS4RrHX4QCRXG7ke6fJ7fV4wd5wSaPUQAejxBKJIgwqFR3xSf0BwLaoLg3HB3TEkmksnhiJGyN0pAAHqR0bcsY9nuSPsSyW8ZVThaQ6b91Iy9MywGCBj0uTCeWAEUjjoJGNQQWBYqRSKhRIgSSSTB5JEQtI7ZfxGIIJKT1vR9rE4PwSQAFIiMLz+uCGAAiRAIgngZEMADFwzBPIYAMqoOAEWhTAieKwQcSofgmb7GjKlFa13SlUoF3TsFTkZiWHQ2WxpfmieIQVgAQXQ7GqABJBLQUhPRDIdIxSmUlGAygBdIA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1KlNFRslRj2dJyvXQBeJuTGviERUVbdLuExBogMjNIYfxNaEX8tWjhImWHR0ZVUQVJ-VE9YvrpRUmWV0ZMian4ZPtFWA7gYPOm4BrBRWFQZqZ6FPF1tggBrKBSPrfPy8ASDcRSCBqajfOS4RrHX4QCRXG7ke6fJ7fV4wd5wSaPUQAejxBKJIgwqFR3xSf0BwLaoLg3HB3TEkmksnhiJGyN0pAAHqR0bcsY9nuSPsSyW8ZVThaQ6b91Iy9MywGCBj0uTCeWAEUjjoJGNQ+tjqTsjgLdN9YqRSKhRIgSSTIh68h5JEQtCTsaT+IxBBJSet6PtYnB+HTjcjvgAFIiMLwRuCGAAiRAIgngZEMADFkzBPIYAMqoOAEWhTAieKwQcSofgmb5x0alZGdjuNUqlGu6dgqcjMSw6Gy2NL80TxCCsACC6HY1QAJIJaClV6IZDpGKUykowGUALpAA)
 
 ## Examples
 
@@ -55,14 +55,15 @@ app <- init(
         folder = system.file("sample_files", package = "teal.modules.general"),
         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),
         txt = system.file("sample_files/sample_file.txt", package = "teal.modules.general"),
-        url = "https://fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+        url = file.path(
+          "https://www.fda.gov/files/drugs/published",
+          "Portable-Document-Format-Specifications.pdf"
+        )
       )
     )
   )
 )
 #> Initializing tm_file_viewer
-#> Warning: Non-existent file or url path. Please provide valid paths for:
-#> https://fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }

@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.5.1.9016
+## teal.modules.general 0.5.1.9017
 
 #### Enhancements
 
@@ -256,7 +256,7 @@ CRAN release: 2024-03-05
   [`ggplot2::theme`](https://ggplot2.tidyverse.org/reference/theme.html)
   in plot based modules.
 - Added support for custom arguments for
-  [`rtables::basic_table`](https://insightsengineering.github.io/rtables/latest-release/reference/basic_table.html)
+  [`rtables::basic_table`](https://insightsengineering.github.io/rtables/latest-tag/reference/basic_table.html)
   in `tm_t_crosstable`.
 - Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`,
   and `tm_t_crosstable` modules to adopt the new
