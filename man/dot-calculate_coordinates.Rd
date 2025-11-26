@@ -24,3 +24,4 @@ For each unique \code{x} and \code{fill}, calculates the proportional widths and
 \item Adds small padding to each boundary for visual separation.
 }
 }
+\keyword{internal}

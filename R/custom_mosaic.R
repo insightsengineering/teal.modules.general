@@ -127,10 +127,9 @@ StatMosaic <- ggplot2::ggproto(
 }
 
 #' @rdname dot-scale_x_mosaic
-#' @importFrom ggplot2 ggproto ScaleContinuousPosition
 #' @keywords internal
-ScaleContinuousMosaic <- ggproto(
-  "ScaleContinuousMosaic", ScaleContinuousPosition,
+ScaleContinuousMosaic <- ggplot2::ggproto(
+  "ScaleContinuousMosaic", ggplot2::ScaleContinuousPosition,
   train =function(self, x) {
     if (length(x) == 0) {
         return()
