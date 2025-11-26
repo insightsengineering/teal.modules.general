@@ -1,7 +1,9 @@
 #' Mosaic Rectangles Layer for ggplot2
 #'
-#' Adds a mosaic-style rectangles layer to a ggplot, visualizing the joint distribution of categorical variables.
-#' Each rectangle's size reflects the proportion of observations for combinations of `x` and `fill`.
+#' Adds a mosaic-style rectangles layer to a ggplot, visualizing the
+#' joint distribution of categorical variables.
+#' Each rectangle's size reflects the proportion of observations for
+#' combinations of `x` and `fill`.
 #'
 #' @param mapping Set of aesthetic mappings created by `aes()`. Must specify `x` and `fill`.
 #' @param data The data to be displayed in this layer.
@@ -23,9 +25,9 @@
 geom_mosaic <- function(mapping = NULL, data = NULL,
                         stat = "mosaic", position = "identity",
                         ...,
-                        na.rm = FALSE,
-                        show.legend = TRUE,
-                        inherit.aes = TRUE) {
+                        na.rm = FALSE, # nolint: object_name_linter.
+                        show.legend = TRUE, # nolint: object_name_linter.
+                        inherit.aes = TRUE) { # nolint: object_name_linter.
   aes_x <- list(rlang::quo_get_expr(mapping$x))
   var_x <- sprintf("x__%s", as.character(aes_x))
   aes_fill <- rlang::quo_text(mapping$fill)
@@ -49,7 +51,7 @@ geom_mosaic <- function(mapping = NULL, data = NULL,
 }
 
 #' @keywords internal
-GeomMosaic <- ggplot2::ggproto(
+GeomMosaic <- ggplot2::ggproto( # nolint: object_name_linter.
   "GeomMosaic", ggplot2::GeomRect,
   default_aes = ggplot2::aes(
     colour = NA, linewidth = 0.5, linetype = 1, alpha = 1, fill = "grey30"
@@ -62,7 +64,7 @@ GeomMosaic <- ggplot2::ggproto(
 )
 
 #' @keywords internal
-StatMosaic <- ggplot2::ggproto(
+StatMosaic <- ggplot2::ggproto( # nolint: object_name_linter.
   "StatMosaic", ggplot2::Stat,
   required_aes = c("x", "fill"),
   compute_group = function(data, scales) data,
@@ -93,7 +95,7 @@ StatMosaic <- ggplot2::ggproto(
 .scale_x_mosaic <- function(breaks = function(x) unique(x),
                             minor_breaks = NULL,
                             labels = function(x) unique(x),
-                            na.value = NA_real_,
+                            na.value = NA_real_, # nolint: object_name_linter.
                             position = "bottom",
                             ...) {
   ggplot2::continuous_scale(
@@ -114,7 +116,7 @@ StatMosaic <- ggplot2::ggproto(
 }
 
 #' @keywords internal
-ScaleContinuousMosaic <- ggplot2::ggproto(
+ScaleContinuousMosaic <- ggplot2::ggproto( # nolint: object_name_linter.
   "ScaleContinuousMosaic", ggplot2::ScaleContinuousPosition,
   train = function(self, x) {
     if (length(x) == 0) {
@@ -127,14 +129,14 @@ ScaleContinuousMosaic <- ggplot2::ggproto(
       if (is.function(self$labels)) self$labels <- as.vector(scale_x$labels)
       return(NULL)
     }
-    if (is.discrete(x)) {
+    if (is_discrete(x)) {
       self$range$train(x = c(0, 1))
       return(NULL)
     }
     self$range$train(x, call = self$call)
   },
   map = function(self, x, limits = self$get_limits()) {
-    if (is.discrete(x)) {
+    if (is_discrete(x)) {
       return(x)
     }
     if (is.list(x)) {
@@ -155,15 +157,20 @@ ScaleContinuousMosaic <- ggplot2::ggproto(
     }
   }
 )
-is.discrete <- function(x) is.factor(x) || is.character(x) || is.logical(x)
+
+#' @noRd
+is_discrete <- function(x) is.factor(x) || is.character(x) || is.logical(x)
 
 #' @describeIn geom_mosaic
-#' Computes the coordinates for rectangles in a mosaic plot based on combinations of `x` and `fill` variables.
-#' For each unique `x` and `fill`, calculates the proportional widths and heights, stacking rectangles within each `x` group.
+#' Computes the coordinates for rectangles in a mosaic plot based
+#' on combinations of `x` and `fill` variables.
+#' For each unique `x` and `fill`, calculates the proportional
+#' widths and heights, stacking rectangles within each `x` group.
 #'
 #' ### Value
 #'
-#' A data frame with columns: `x`, `fill`, `xmin`, `xmax`, `ymin`, `ymax`, representing the position and size of each rectangle.
+#' A data frame with columns: `x`, `fill`, `xmin`, `xmax`, `ymin`, `ymax`,
+#' representing the position and size of each rectangle.
 #'
 #' @keywords internal
 .calculate_coordinates <- function(data) {

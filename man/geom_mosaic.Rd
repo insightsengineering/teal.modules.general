@@ -39,16 +39,21 @@ geom_mosaic(
 A ggplot2 layer that adds mosaic rectangles to the plot.
 }
 \description{
-Adds a mosaic-style rectangles layer to a ggplot, visualizing the joint distribution of categorical variables.
-Each rectangle's size reflects the proportion of observations for combinations of \code{x} and \code{fill}.
+Adds a mosaic-style rectangles layer to a ggplot, visualizing the
+joint distribution of categorical variables.
+Each rectangle's size reflects the proportion of observations for
+combinations of \code{x} and \code{fill}.
 }
 \section{Functions}{
 \itemize{
-\item \code{.calculate_coordinates()}: Computes the coordinates for rectangles in a mosaic plot based on combinations of \code{x} and \code{fill} variables.
-For each unique \code{x} and \code{fill}, calculates the proportional widths and heights, stacking rectangles within each \code{x} group.
+\item \code{.calculate_coordinates()}: Computes the coordinates for rectangles in a mosaic plot based
+on combinations of \code{x} and \code{fill} variables.
+For each unique \code{x} and \code{fill}, calculates the proportional
+widths and heights, stacking rectangles within each \code{x} group.
 \subsection{Value}{
 
-A data frame with columns: \code{x}, \code{fill}, \code{xmin}, \code{xmax}, \code{ymin}, \code{ymax}, representing the position and size of each rectangle.
+A data frame with columns: \code{x}, \code{fill}, \code{xmin}, \code{xmax}, \code{ymin}, \code{ymax},
+representing the position and size of each rectangle.
 }
 
 }}
