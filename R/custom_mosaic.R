@@ -1,3 +1,8 @@
+# minimal implementation of ggplot2 mosaic after ggmosaic was archived in CRAN
+#
+# This was heavily inspired by github.com/haleyjeppson/ggmosaic package but
+# simplified to only support 2 categorical variables
+
 #' Mosaic Rectangles Layer for ggplot2
 #'
 #' Adds a mosaic-style rectangles layer to a ggplot, visualizing the
@@ -145,17 +150,7 @@ ScaleContinuousMosaic <- ggplot2::ggproto( # nolint: object_name_linter.
     scaled <- as.numeric(self$oob(x, limits))
     ifelse(!is.na(scaled), scaled, self$na.value)
   },
-  dimension = function(self, expand = c(0, 0)) {
-    c(-0.05, 1.05)
-  },
-  make_title = function(..., self) {
-    title <- ggplot2::ggproto_parent(ggplot2::ScaleContinuousPosition, self)$make_title(...)
-    if (isTRUE(title %in% self$aesthetics)) {
-      title <- self$product_name
-    } else {
-      title
-    }
-  }
+  dimension = function(self, expand = c(0, 0)) c(-0.05, 1.05)
 )
 
 #' @noRd
