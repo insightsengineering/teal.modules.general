@@ -18,24 +18,35 @@ testthat::test_that("bivariate_ggplot_call with numerics", {
   )
 })
 
-testthat::describe("bivariate_ggplot_call with arguments:", {
-  possible_classes <- c("factor", "logical", "character")
-  comb <- expand.grid(a = possible_classes, b = possible_classes, stringsAsFactors = FALSE)
-  apply(
-    comb,
-    1,
-    function(x) {
-      it(sprintf("%s and %s", x[[1]], x[[2]]), {
-        testthat::expect_match(
-          deparse(
-            bivariate_ggplot_call(x[[1]], x[[2]], data_name = "ANL", x = "x", y = "y"),
-            width.cutoff = 300
-          ),
-          "mosaic_data <- ",
-          all = FALSE
-        )
-      })
-    }
+testthat::test_that("bivariate_ggplot_call with factor, char, logical", {
+  error_message <- "Categorical variables 'x' and 'y' are currently not supported."
+  testthat::expect_error(
+    bivariate_ggplot_call("factor", "factor") %>% deparse(width.cutoff = 300),
+    error_message
+  )
+  testthat::expect_error(
+    bivariate_ggplot_call("logical", "factor") %>% deparse(width.cutoff = 300),
+    error_message
+  )
+  testthat::expect_error(
+    bivariate_ggplot_call("character", "factor") %>% deparse(width.cutoff = 300),
+    error_message
+  )
+  testthat::expect_error(
+    bivariate_ggplot_call("logical", "character") %>% deparse(width.cutoff = 300),
+    error_message
+  )
+  testthat::expect_error(
+    bivariate_ggplot_call("character", "logical") %>% deparse(width.cutoff = 300),
+    error_message
+  )
+  testthat::expect_error(
+    bivariate_ggplot_call("logical", "logical") %>% deparse(width.cutoff = 300),
+    error_message
+  )
+  testthat::expect_error(
+    bivariate_ggplot_call("character", "character") %>% deparse(width.cutoff = 300),
+    error_message
   )
 })
 
