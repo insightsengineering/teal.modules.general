@@ -40,7 +40,10 @@ app <- init(
         folder = system.file("sample_files", package = "teal.modules.general"),
         png = system.file("sample_files/sample_file.png", package = "teal.modules.general"),
         txt = system.file("sample_files/sample_file.txt", package = "teal.modules.general"),
-        url = "https://www.fda.gov/files/drugs/published/Portable-Document-Format-Specifications.pdf"
+        url = file.path(
+          "https://www.fda.gov/files/drugs/published",
+          "Portable-Document-Format-Specifications.pdf"
+        )
       )
     )
   )
@@ -53,8 +56,8 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1KlNFRslRj2dJyvXQBeJuTGviERUVbdLuExBogMjNIYfxNaEX8tWjhImWHR0ZVUQVJ-VE9YvrpRUmWV0ZMian4ZPtFWA7gYPOm4BrBRWFQZqZ6FPF1tggBrKBSPrfPy8ASDcRSCBqajfOS4RrHX4QCRXG7ke6fJ7fV4wd5wSaPUQAejxBKJIgwqFR3xSf0BwLaoLg3HB3TEkmksnhiJGyN0pAAHqR0bcsY9nuSPsSyW8ZVThaQ6b91Iy9MywGCBj0uTCeWAEUjjoJGNQQWBYqRSKhRIgSSTIk68h5JEQtCTsaT+IxBBJSet6PtYnB+CSAApERheINwQwAESIBEE8DIhgAYlGYJ5DABlVBwAi0KYETxWCDiVD8EzfY0ZUorBu6UqlYu6dgqcjMSw6Gy2NL80TxCCsACC6HY1QAJIJaClp6IZDpGKUykowGUALpAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1KlNFRslRj2dJyvXQBeJuTGviERUVbdLuExBogMjNIYfxNaEX8tWjhImWHR0ZVUQVJ-VE9YvrpRUmWV0ZMian4ZPtFWA7gYPOm4BrBRWFQZqZ6FPF1tggBrKBSPrfPy8ASDcRSCBqajfOS4RrHX4QCRXG7ke6fJ7fV4wd5wSaPUQAejxBKJIgwqFR3xSf0BwLaoLg3HB3TEkmksnhiJGyN0pAAHqR0bcsY9nuSPsSyW8ZVThaQ6b91Iy9MywGCBj0uTCeWAEUjjoJGNQQWBYqRSKhRIgSSTIk68h5JEQtCTsaT+IxBBJSet6PtYnB+CSAApERheINwQwAESIBEE8DIhgAYlGYJ5DABlVBwAi0KYETxWCDiVD8EzfY0ZUorBu6UqlYu6dgqcjMSw6Gy2NL80TxCCsACC6HY1QAJIJaClp6IZDpGKUykowGUALpAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1KlNFRslRj2dJyvXQBeJuTGviERUVbdLuExBogMjNIYfxNaEX8tWjhImWHR0ZVUQVJ-VE9YvrpRUmWV0ZMian4ZPtFWA7gYPOm4BrBRWFQZqZ6FPF1tggBrKBSPrfPy8ASDcRSCBqajfOS4RrHX4QCRXG7ke6fJ7fV4wd5wSaPUQAejxBKJIgwqFR3xSf0BwLaoLg3HB3TEkmksnhiJGyN0pAAHqR0bcsY9nuSPsSyW8ZVThaQ6b91Iy9MywGCBj0uTCeWAEUjjoJGNQ+tjqTsjgLdN9YqRSKhRIgSSTIh68h5JEQtCTsaT+IxBBJSet6PtYnB+HTjcjvgAFIiMLwRuCGAAiRAIgngZEMADFkzBPIYAMqoOAEWhTAieKwQcSofgmb5x0alZGdjuNUqlGu6dgqcjMSw6Gy2NL80TxCCsACC6HY1QAJIJaClV6IZDpGKUykowGUALpAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeNdqAfQ8vG3dPbyNdAHdaUgALFXYgqFxdECVdXSSfTLCME2Z4dgBGRQgAX1KlNFRslRj2dJyvXQBeJuTGviERUVbdLuExBogMjNIYfxNaEX8tWjhImWHR0ZVUQVJ-VE9YvrpRUmWV0ZMian4ZPtFWA7gYPOm4BrBRWFQZqZ6FPF1tggBrKBSPrfPy8ASDcRSCBqajfOS4RrHX4QCRXG7ke6fJ7fV4wd5wSaPUQAejxBKJIgwqFR3xSf0BwLaoLg3HB3TEkmksnhiJGyN0pAAHqR0bcsY9nuSPsSyW8ZVThaQ6b91Iy9MywGCBj0uTCeWAEUjjoJGNQ+tjqTsjgLdN9YqRSKhRIgSSTIh68h5JEQtCTsaT+IxBBJSet6PtYnB+HTjcjvgAFIiMLwRuCGAAiRAIgngZEMADFkzBPIYAMqoOAEWhTAieKwQcSofgmb5x0alZGdjuNUqlGu6dgqcjMSw6Gy2NL80TxCCsACC6HY1QAJIJaClV6IZDpGKUykowGUALpAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }
