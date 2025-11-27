@@ -61,6 +61,6 @@ representing the position and size of each rectangle.
 df <- data.frame(RACE = c("Black", "White", "Black", "Asian"), SEX = c("M", "M", "F", "F"))
 library(ggplot2)
 ggplot(df, aes(x = RACE, fill = SEX)) +
-  geom_rects()
+  geom_mosaic()
 }
 \keyword{internal}
