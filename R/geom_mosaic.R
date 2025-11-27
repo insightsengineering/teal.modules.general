@@ -84,7 +84,7 @@ StatMosaic <- ggplot2::ggproto( # nolint: object_name_linter.
     data$x <- data[, grepl("x__", colnames(data))]
     result <- .calculate_coordinates(data)
 
-    breaks <- breaks <- unique(with(result, (xmin + xmax) / 2))
+    breaks <- unique(with(result, (xmin + xmax) / 2))
     labels <- unique(result$x)
     result$x <- list(list2env(list(breaks = breaks[breaks != 0], labels = labels[breaks != 0])))
 
