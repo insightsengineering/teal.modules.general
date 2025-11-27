@@ -317,7 +317,9 @@ ui_missing_data <- function(id, by_subject_plot = FALSE) {
     ),
     tabPanel(
       "By Variable Levels",
-      teal.widgets::plot_with_settings_ui(id = ns("by_variable_plot"))
+      teal.widgets::plot_with_settings_ui(id = ns("by_variable_plot")),
+      tags$br(),
+      DT::dataTableOutput(ns("levels_table"))
     )
   )
   if (isTRUE(by_subject_plot)) {
@@ -468,7 +470,12 @@ srv_missing_data <- function(id,
       iv_summary_table$add_rule("count_type", shinyvalidate::sv_required("Please select type of counts"))
       iv_summary_table$add_rule(
         "group_by_vals",
-        shinyvalidate::sv_required("Please select both group-by variable and values")
+        ~ if (!is.null(.) && length(.) == 0) {
+          "Please select both group-by variable and values"
+        } else if (is.null(.)) {
+          # Input doesn't exist yet, skip validation
+          NULL
+        }
       )
       iv_summary_table$add_rule(
         "group_by_var",
@@ -645,10 +652,11 @@ srv_missing_data <- function(id,
     })
 
     output$group_by_vals_ui <- renderUI({
-      req(isolate(prev_group_by_var()), input$group_by_var, data_r())
+      req(input$group_by_var, data_r())
 
       choices <- teal.transform::value_choices(data_r(), input$group_by_var, input$group_by_var)
-      prev_choices <- req(isolate(input$group_by_vals))
+      prev_choices <- isolate(input$group_by_vals)
+      prev_group_var <- isolate(prev_group_by_var())
 
       # determine selected value based on filtered data
       # display those previously selected values that are still available
@@ -657,7 +665,7 @@ srv_missing_data <- function(id,
       } else if (
         !is.null(prev_choices) &&
           !any(prev_choices %in% choices) &&
-          isolate(prev_group_by_var()) == input$group_by_var
+          prev_group_var == input$group_by_var && prev_group_var != ""
       ) {
         # if not any previously selected value is available and the grouping variable is the same,
         # then display NULL
@@ -1249,6 +1257,12 @@ srv_missing_data <- function(id,
         )
       }
 
+      # Store summary_data in qenv for table display
+      tile <- teal.code::eval_code(
+        tile,
+        quote(levels_table_data <- summary_data)
+      )
+
       tile
     })
 
@@ -1426,6 +1440,14 @@ srv_missing_data <- function(id,
       req(decorated_by_variable_plot_q())[["by_variable_plot"]]
     })
 
+    levels_table_r <- reactive({
+      req(
+        input$summary_type == "By Variable Levels",
+        decorated_by_variable_plot_q()
+      )
+      decorated_by_variable_plot_q()[["levels_table_data"]]
+    })
+
     by_subject_plot_r <- reactive({
       req(decorated_by_subject_plot_q()[["by_subject_plot"]])
     })
@@ -1469,6 +1491,17 @@ srv_missing_data <- function(id,
 
     decorated_by_subject_plot_dims_q <- # nolint: object_length_linter.
       set_chunk_dims(pws4, decorated_by_subject_plot_q)
+
+    output$levels_table <- DT::renderDT({
+      req(levels_table_r())
+      DT::datatable(
+        levels_table_r(),
+        options = list(
+          scrollX = TRUE,
+          pageLength = 25
+        )
+      )
+    })
 
     decorated_final_q <- reactive({
       sum_type <- req(input$summary_type)
