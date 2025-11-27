@@ -24,8 +24,8 @@
 #' @examples
 #' df <- data.frame(RACE = c("Black", "White", "Black", "Asian"), SEX = c("M", "M", "F", "F"))
 #' library(ggplot2)
-#' ggplot(df, aes(x = RACE, fill = SEX)) +
-#'   geom_mosaic()
+#' ggplot(df) +
+#'   geom_mosaic(aes(x = RACE, fill = SEX))
 #' @export
 geom_mosaic <- function(mapping = NULL, data = NULL,
                         stat = "mosaic", position = "identity",
@@ -33,12 +33,19 @@ geom_mosaic <- function(mapping = NULL, data = NULL,
                         na.rm = FALSE, # nolint: object_name_linter.
                         show.legend = TRUE, # nolint: object_name_linter.
                         inherit.aes = TRUE) { # nolint: object_name_linter.
-  aes_x <- list(rlang::quo_get_expr(mapping$x))
-  var_x <- sprintf("x__%s", as.character(aes_x))
-  aes_fill <- rlang::quo_text(mapping$fill)
-  var_fill <- sprintf("x__fill__%s", aes_fill)
 
-  mapping[[var_x]] <- mapping$x
+  aes_x <- mapping$x
+  if (!is.null(aes_x)) {
+    aes_x <- list(rlang::quo_get_expr(mapping$x))
+    var_x <- paste0("x__", as.character(aes_x))
+    mapping[[var_x]] <- mapping$x
+  }
+
+  aes_fill <- mapping$fill
+  if (!is.null(aes_fill)) {
+    aes_fill <- rlang::quo_text(mapping$fill)
+  }
+
   mapping$x <- structure(1L)
 
   layer <- ggplot2::layer(

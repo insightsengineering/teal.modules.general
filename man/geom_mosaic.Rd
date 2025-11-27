@@ -60,7 +60,7 @@ representing the position and size of each rectangle.
 \examples{
 df <- data.frame(RACE = c("Black", "White", "Black", "Asian"), SEX = c("M", "M", "F", "F"))
 library(ggplot2)
-ggplot(df, aes(x = RACE, fill = SEX)) +
-  geom_mosaic()
+ggplot(df) +
+  geom_mosaic(aes(x = RACE, fill = SEX))
 }
 \keyword{internal}
