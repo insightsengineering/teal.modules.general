@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.0488782919692208" branch-rate="0" lines-covered="451" lines-valid="9227" branches-covered="0" branches-valid="0" complexity="0" version="3.6.5" timestamp="2025-11-27 14:56:27.692231">
+<coverage line-rate="0.0488782919692208" branch-rate="0" lines-covered="451" lines-valid="9227" branches-covered="0" branches-valid="0" complexity="0" version="3.6.5" timestamp="2025-11-27 15:37:12.220264">
   <sources>
     <source>/__w/teal.modules.general/teal.modules.general/teal.modules.general</source>
   </sources>
   <packages>
     <package name="teal.modules.general" line-rate="0.0488782919692208" branch-rate="0" complexity="0">
       <classes>
-        <class name="custom_mosaic.R" filename="R/custom_mosaic.R" line-rate="0" branch-rate="0" complexity="0">
+        <class name="geom_mosaic.R" filename="R/geom_mosaic.R" line-rate="0" branch-rate="0" complexity="0">
           <methods>
             <method name="geom_mosaic" signature="" line-rate="0" branch-rate="0" complexity="0">
               <lines>
