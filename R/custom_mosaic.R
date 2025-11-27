@@ -25,7 +25,7 @@
 #' df <- data.frame(RACE = c("Black", "White", "Black", "Asian"), SEX = c("M", "M", "F", "F"))
 #' library(ggplot2)
 #' ggplot(df, aes(x = RACE, fill = SEX)) +
-#'   geom_rects()
+#'   geom_mosaic()
 #' @export
 geom_mosaic <- function(mapping = NULL, data = NULL,
                         stat = "mosaic", position = "identity",
