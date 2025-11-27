@@ -31,7 +31,7 @@ testthat::describe("bivariate_ggplot_call with arguments:", {
             bivariate_ggplot_call(x[[1]], x[[2]], data_name = "ANL", x = "x", y = "y"),
             width.cutoff = 300
           ),
-          "mosaic_data <- ",
+          "teal.modules.general::geom_mosaic",
           all = FALSE
         )
       })
