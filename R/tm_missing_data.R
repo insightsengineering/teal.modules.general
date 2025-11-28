@@ -771,7 +771,7 @@ srv_missing_data <- function(id,
         )
 
       # always set "**anyna**" level as the last one
-      if (req(isolate(input$any_na))) {
+      if (input$any_na) {
         qenv <- teal.code::eval_code(
           qenv,
           quote(x_levels <- c(setdiff(x_levels, "**anyna**"), "**anyna**"))
