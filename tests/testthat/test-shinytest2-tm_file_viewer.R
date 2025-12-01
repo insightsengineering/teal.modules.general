@@ -44,7 +44,7 @@ test_that("e2e - tm_file_viewer: Shows selected image file", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
-  app_driver$click(selector = "[id= '4_anchor']")
+  app_driver$click(selector = "[id= '5_anchor']") # [id = 'x'] instead of #x to avoid a DOM error
   testthat::expect_true(app_driver$is_visible(app_driver$namespaces(TRUE)$module("output img")))
 
   img_src <- app_driver$get_html_rvest(app_driver$namespaces(TRUE)$module("output")) %>%
