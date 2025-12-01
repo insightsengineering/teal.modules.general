@@ -48,7 +48,6 @@ test_that("e2e - tm_missing_data: Initializes without errors", {
   encoding_dataset <- app_driver$get_text(paste(app_driver$namespaces(TRUE)$wrapper(NULL), ".help-block"))
   testthat::expect_match(encoding_dataset, "Datasets.*iris.*mtcars", all = FALSE)
 
-
   app_driver$stop()
 })
 
@@ -71,6 +70,7 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 
   app_driver$click(selector = app_driver$namespaces(TRUE)$module("iris-any_na"))
   app_driver$expect_no_validation_error()
+  app_driver$wait_for_idle()
 
   testthat::expect_true(
     app_driver$is_visible(
@@ -86,11 +86,13 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$expect_no_shiny_error()
+  app_driver$wait_for_idle()
 
   # combination graph
-
   app_driver$set_active_module_input("iris-summary_type", "Combinations")
   app_driver$expect_no_validation_error()
+  app_driver$wait_for_idle()
+
   testthat::expect_true(
     app_driver$is_visible(
       app_driver$namespaces(TRUE)$module("iris-combination_plot-plot_out_main .shiny-plot-output")
@@ -107,6 +109,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
 
   testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 1L)
   app_driver$set_active_module_input("iris-combination_cutoff", 10L)
+  app_driver$wait_for_idle()
   testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 10L)
   app_driver$expect_no_validation_error()
 
@@ -119,7 +122,7 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
   # By variable levels
   app_driver$set_active_module_input("iris-summary_type", "By Variable Levels")
   app_driver$expect_no_validation_error()
-
+  app_driver$wait_for_idle()
 
   testthat::expect_equal(
     app_driver$get_active_module_input("iris-group_by_var"),
@@ -132,12 +135,14 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
 
   app_driver$set_active_module_input("iris-group_by_vals", c("versicolor", "virginica"))
   app_driver$expect_no_validation_error()
+  app_driver$wait_for_idle()
 
   testthat::expect_equal(
     app_driver$get_active_module_input("iris-count_type"),
     "counts"
   )
   app_driver$set_active_module_input("iris-count_type", "proportions")
+  app_driver$wait_for_idle()
   testthat::expect_true(app_driver$is_visible(app_driver$namespaces(TRUE)$module("iris-levels_table")))
 
   app_driver$stop()
@@ -148,6 +153,7 @@ test_that("e2e - tm_missing_data: Validate 'By Variable Levels' table values", {
   app_driver <- app_driver_tm_missing_data()
 
   app_driver$set_active_module_input("iris-summary_type", "By Variable Levels")
+  app_driver$wait_for_idle()
   levels_table <- app_driver$namespaces(TRUE)$module("iris-levels_table") %>%
     app_driver$get_html_rvest() %>%
     rvest::html_table(fill = TRUE) %>%
