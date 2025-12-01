@@ -468,7 +468,9 @@ srv_missing_data <- function(id,
       iv_summary_table$add_rule("count_type", shinyvalidate::sv_required("Please select type of counts"))
       iv_summary_table$add_rule(
         "group_by_vals",
-        shinyvalidate::sv_required("Please select both group-by variable and values")
+        ~ if (length(input$group_by_vals) == 0L && length(.) == 1 && (.) == input$group_by_vals) {
+          "Please select both group-by variable and values"
+        }
       )
       iv_summary_table$add_rule(
         "group_by_var",
@@ -645,10 +647,10 @@ srv_missing_data <- function(id,
     })
 
     output$group_by_vals_ui <- renderUI({
-      req(isolate(prev_group_by_var()), input$group_by_var, data_r())
+      req(input$group_by_var, data_r())
 
       choices <- teal.transform::value_choices(data_r(), input$group_by_var, input$group_by_var)
-      prev_choices <- req(isolate(input$group_by_vals))
+      prev_choices <- isolate(input$group_by_vals)
 
       # determine selected value based on filtered data
       # display those previously selected values that are still available
@@ -915,7 +917,7 @@ srv_missing_data <- function(id,
         )
       }
 
-      if (isTRUE(input$if_patients_plot)) {
+      qenv <- if (isTRUE(input$if_patients_plot)) {
         within(qenv, {
           summary_plot <- gridExtra::grid.arrange(summary_plot_top, summary_plot_bottom, ncol = 2)
         })
@@ -924,6 +926,7 @@ srv_missing_data <- function(id,
           summary_plot <- summary_plot_top
         })
       }
+      qenv
     })
 
     combination_plot_q <- reactive({
@@ -1074,15 +1077,14 @@ srv_missing_data <- function(id,
       # extract the ANL dataset for use in further validation
       anl <- common_code_q()[["ANL"]]
 
+      req(input$group_by_var, input$group_by_vals)
       group_var <- input$group_by_var
       validate(
         need(
-          is.null(group_var) ||
-            length(unique(anl[[group_var]])) < 100,
+          length(unique(anl[[group_var]])) < 100,
           "Please select group-by variable with fewer than 100 unique values"
         )
       )
-
       group_vals <- input$group_by_vals
       variables_select <- input$variables_select
       vars <- unique(variables_select, group_var)
@@ -1103,48 +1105,33 @@ srv_missing_data <- function(id,
       qenv <- req(common_code_q())
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Summary Table")
 
-      qenv <- if (!is.null(group_var)) {
-        common_code_libraries_q <- teal.code::eval_code(
-          qenv,
-          "library(forcats);library(glue)"
-        )
-        teal.code::eval_code(
-          common_code_libraries_q,
-          substitute(
-            expr = {
-              summary_data <- ANL %>%
-                dplyr::mutate(group_var_name := forcats::fct_na_value_to_level(as.factor(group_var_name), "NA")) %>%
-                dplyr::group_by_at(group_var) %>%
-                dplyr::filter(group_var_name %in% group_vals)
 
-              count_data <- dplyr::summarise(summary_data, n = dplyr::n())
+      common_code_libraries_q <- teal.code::eval_code(
+        qenv,
+        "library(forcats);library(glue)"
+      )
+      qenv <- teal.code::eval_code(
+        common_code_libraries_q,
+        substitute(
+          expr = {
+            summary_data <- ANL %>%
+              dplyr::mutate(group_var_name := forcats::fct_na_value_to_level(as.factor(group_var_name), "NA")) %>%
+              dplyr::group_by_at(group_var) %>%
+              dplyr::filter(group_var_name %in% group_vals)
 
-              summary_data <- dplyr::summarise_all(summary_data, summ_fn) %>%
-                dplyr::mutate(group_var_name := paste0(group_var, ":", group_var_name, "(N=", count_data$n, ")")) %>%
-                tidyr::pivot_longer(!dplyr::all_of(group_var), names_to = "Variable", values_to = "out") %>%
-                tidyr::pivot_wider(names_from = group_var, values_from = "out") %>%
-                dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable)
-            },
-            env = list(
-              group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals, summ_fn = summ_fn
-            )
+            count_data <- dplyr::summarise(summary_data, n = dplyr::n())
+
+            summary_data <- dplyr::summarise_all(summary_data, summ_fn) %>%
+              dplyr::mutate(group_var_name := paste0(group_var, ":", group_var_name, "(N=", count_data$n, ")")) %>%
+              tidyr::pivot_longer(!dplyr::all_of(group_var), names_to = "Variable", values_to = "out") %>%
+              tidyr::pivot_wider(names_from = group_var, values_from = "out") %>%
+              dplyr::mutate(`Variable label` = create_cols_labels(Variable, just_label = TRUE), .after = Variable)
+          },
+          env = list(
+            group_var = group_var, group_var_name = as.name(group_var), group_vals = group_vals, summ_fn = summ_fn
           )
         )
-      } else {
-        teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = summary_data <- ANL %>%
-              dplyr::summarise_all(summ_fn) %>%
-              tidyr::pivot_longer(dplyr::everything(),
-                names_to = "Variable",
-                values_to = paste0("Missing (N=", nrow(ANL), ")")
-              ) %>%
-              dplyr::mutate(`Variable label` = create_cols_labels(Variable), .after = Variable),
-            env = list(summ_fn = summ_fn)
-          )
-        )
-      }
+      )
 
       dev_ggplot2_args <- teal.widgets::ggplot2_args(
         labs = list(
@@ -1181,7 +1168,7 @@ srv_missing_data <- function(id,
           keys = join_keys(qenv) |> unlist() |> unique(),
           group_var_name = as.name(group_var),
           group_var = group_var,
-          group_vals = group_vals
+          group_vals = req(group_vals)
         )
         tile <- within(ANL_q,
           {
@@ -1209,20 +1196,18 @@ srv_missing_data <- function(id,
         ANL_q <- within(qenv, # nolint object_name_linter
           {
             keep_columns <- intersect(c(keys, group_var), colnames(ANL))
-            labels <- vapply(qenv$ANL, attr, which = "label", FUN.VALUE = character(1L))
+            labels <- vapply(ANL, attr, which = "label", FUN.VALUE = character(1L))
             ANL <- ANL %>%
               dplyr::filter(group_var_name %in% group_vals) %>%
               tidyr::pivot_longer(-keep_columns, values_transform = is.na) %>%
-              dplyr::summarise(
-                .by = c(group_var_name, name),
-                value = sum(value), perc = value / n()
-              ) %>%
+              dplyr::group_by(group_var_name, name) %>%
+              dplyr::summarise(value = sum(value), perc = value / n()) %>%
               dplyr::mutate(label = labels[name])
           },
           keys = join_keys(qenv) |> unlist() |> unique(),
           group_var_name = as.name(group_var),
           group_var = group_var,
-          group_vals = group_vals
+          group_vals = req(group_vals)
         )
 
         tile <- within(ANL_q,
@@ -1248,7 +1233,6 @@ srv_missing_data <- function(id,
           ggthemes = parsed_ggplot2_args$ggtheme
         )
       }
-
       tile
     })
 
