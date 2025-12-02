@@ -5,61 +5,30 @@
 \title{Determining scales for mosaics}
 \usage{
 .scale_x_mosaic(
-  breaks = function(x) unique(x),
+  breaks = unique,
   minor_breaks = NULL,
-  labels = function(x) unique(x),
+  labels = unique,
   na.value = NA_real_,
   position = "bottom",
   ...
 )
 }
 \arguments{
-\item{breaks}{One of:
+\item{breaks, labels, minor_breaks}{One of:
 \itemize{
-\item \code{NULL} for no breaks
-\item \code{waiver()} for the default breaks computed by the
-\link[scales:new_transform]{transformation object}
-\item A numeric vector of positions
-\item A function that takes the limits as input and returns breaks
-as output (e.g., a function returned by \code{\link[scales:breaks_extended]{scales::extended_breaks()}}).
-Note that for position scales, limits are provided after scale expansion.
-Also accepts rlang \link[rlang:as_function]{lambda} function notation.
+\item \code{NULL} for no breaks / labels.
+\item \code{\link[ggplot2:waiver]{ggplot2::waiver()}} for the default breaks / labels computed by the scale.
+\item A numeric / character vector giving the positions of the breaks / labels.
+\item A function.
+See \code{\link[ggplot2:scale_continuous]{ggplot2::scale_x_continuous()}} for more details.
 }}
 
-\item{minor_breaks}{One of:
-\itemize{
-\item \code{NULL} for no minor breaks
-\item \code{waiver()} for the default breaks (none for discrete, one minor break
-between each major break for continuous)
-\item A numeric vector of positions
-\item A function that given the limits returns a vector of minor breaks. Also
-accepts rlang \link[rlang:as_function]{lambda} function notation. When
-the function has two arguments, it will be given the limits and major
-break positions.
-}}
-
-\item{labels}{One of the options below. Please note that when \code{labels} is a
-vector, it is highly recommended to also set the \code{breaks} argument as a
-vector to protect against unintended mismatches.
-\itemize{
-\item \code{NULL} for no labels
-\item \code{waiver()} for the default labels computed by the
-transformation object
-\item A character vector giving labels (must be same length as \code{breaks})
-\item An expression vector (must be the same length as breaks). See ?plotmath for details.
-\item A function that takes the breaks as input and returns labels
-as output. Also accepts rlang \link[rlang:as_function]{lambda} function
-notation.
-}}
-
-\item{na.value}{Missing values will be replaced with this value.}
+\item{na.value}{The value to be used for \code{NA} values.}
 
 \item{position}{For position scales, The position of the axis.
-\code{left} or \code{right} for y axes, \code{top} or \code{bottom} for x axes.}
+left or right for y axes, top or bottom for x axes.}
 
 \item{...}{other arguments passed to \code{continuous_scale()}.}
-
-\item{name}{set to pseudo waiver function \code{product_names} by default.}
 }
 \description{
 Determining scales for mosaics

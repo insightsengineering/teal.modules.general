@@ -84,8 +84,9 @@ StatMosaic <- ggplot2::ggproto( # nolint: object_name_linter.
     data$x <- data[, grepl("x__", colnames(data))]
     result <- .calculate_coordinates(data)
 
-    breaks <- unique(with(result, (xmin + xmax) / 2))
-    labels <- unique(result$x)
+    results_non_zero <- result[result$.n != 0, ]
+    breaks <- unique(with(results_non_zero, (xmin + xmax) / 2))
+    labels <- unique(results_non_zero$x)
     result$x <- list(list2env(list(breaks = breaks[breaks != 0], labels = labels[breaks != 0])))
 
     result$group <- 1
@@ -96,13 +97,20 @@ StatMosaic <- ggplot2::ggproto( # nolint: object_name_linter.
 
 #' Determining scales for mosaics
 #'
-#' @param name set to pseudo waiver function `product_names` by default.
+#' @param breaks,labels,minor_breaks One of:
+#' - `NULL` for no breaks / labels.
+#' - [ggplot2::waiver()] for the default breaks / labels computed by the scale.
+#' - A numeric / character vector giving the positions of the breaks / labels.
+#' - A function.
+#' See [ggplot2::scale_x_continuous()] for more details.
+#' @param na.value The value to be used for `NA` values.
+#' @param position For position scales, The position of the axis.
+#' left or right for y axes, top or bottom for x axes.
 #' @param ... other arguments passed to `continuous_scale()`.
-#' @inheritParams ggplot2::continuous_scale
 #' @keywords internal
-.scale_x_mosaic <- function(breaks = function(x) unique(x),
+.scale_x_mosaic <- function(breaks = unique,
                             minor_breaks = NULL,
-                            labels = function(x) unique(x),
+                            labels = unique,
                             na.value = NA_real_, # nolint: object_name_linter.
                             position = "bottom",
                             ...) {
@@ -175,44 +183,44 @@ is_discrete <- function(x) is.factor(x) || is.character(x) || is.logical(x)
   # Example: compute rectangles from x and y
   result <- data |>
     # Count combinations of X and Y
-    dplyr::count(x, fill, .drop = FALSE) |>
+    dplyr::count(.data$x, .data$fill, .drop = FALSE) |>
     # Compute total for each X group
     dplyr::mutate(
-      .by = x,
-      x_total = sum(n),
-      prop = n / x_total,
-      prop = dplyr::if_else(is.nan(prop), 0, prop)
+      .by = .data$x,
+      x_total = sum(.data$n),
+      prop = .data$n / .data$x_total,
+      prop = dplyr::if_else(is.nan(.data$prop), 0, .data$prop)
     ) |>
-    dplyr::arrange(dplyr::desc(x_total), x, fill) |>
+    dplyr::arrange(dplyr::desc(.data$x_total), .data$x, .data$fill) |>
     # Compute total sample size to turn counts into widths
     dplyr::mutate(
       N_total = dplyr::n(),
-      x_width = x_total / N_total
+      x_width = .data$x_total / .data$N_total
     ) |>
     # Convert counts to x widths
     dplyr::mutate(
-      .by = x,
-      x_width_last = dplyr::if_else(dplyr::row_number() == dplyr::n(), x_width, 0)
+      .by = .data$x,
+      x_width_last = dplyr::if_else(dplyr::row_number() == dplyr::n(), .data$x_width, 0)
     ) |>
     # Compute x-min/x-max for each group
     dplyr::mutate(
-      xmin = cumsum(dplyr::lag(x_width_last, default = 0)),
-      xmax = xmin + x_width
+      xmin = cumsum(dplyr::lag(.data$x_width_last, default = 0)),
+      xmax = .data$xmin + .data$x_width
     ) |>
     # Compute y-min/y-max for stacked proportions
     dplyr::mutate(
-      .by = x,
-      ymin = c(0, head(cumsum(prop), -1)),
-      ymax = cumsum(prop)
+      .by = .data$x,
+      ymin = c(0, utils::head(cumsum(.data$prop), -1)),
+      ymax = cumsum(.data$prop)
     ) |>
     dplyr::mutate(
-      xmin = xmin / max(xmax),
-      xmax = xmax / max(xmax),
-      xmin = dplyr::if_else(n == 0, 0, xmin + 0.005),
-      xmax = dplyr::if_else(n == 0, 0, xmax - 0.005),
-      ymin = dplyr::if_else(n == 0, 0, ymin + 0.005),
-      ymax = dplyr::if_else(n == 0, 0, ymax - 0.005)
+      xmin = .data$xmin / max(.data$xmax),
+      xmax = .data$xmax / max(.data$xmax),
+      xmin = dplyr::if_else(.data$n == 0, 0, .data$xmin + 0.005),
+      xmax = dplyr::if_else(.data$n == 0, 0, .data$xmax - 0.005),
+      ymin = dplyr::if_else(.data$n == 0, 0, .data$ymin + 0.005),
+      ymax = dplyr::if_else(.data$n == 0, 0, .data$ymax - 0.005)
     ) |>
-    dplyr::select(x, fill, xmin, xmax, ymin, ymax, .n = n)
+    dplyr::select(.data$x, .data$fill, .data$xmin, .data$xmax, .data$ymin, .data$ymax, .n = .data$n)
   result
 }
