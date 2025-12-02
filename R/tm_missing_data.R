@@ -571,7 +571,7 @@ srv_missing_data <- function(id,
     })
 
     selected_vars <- reactive({
-      req(data_keys(), input$variables_select)
+      req(input$variables_select)
       keys <- data_keys()
       vars <- unique(c(keys, input$variables_select))
       vars
@@ -723,7 +723,7 @@ srv_missing_data <- function(id,
     summary_plot_q <- reactive({
       req(input$summary_type == "Summary") # needed to trigger update on tab change
       teal::validate_has_data(req(data_r()), 1)
-      req(data_keys(), input$ggtheme)
+      req(input$ggtheme)
       qenv <- req(common_code_q())
       if (input$any_na) {
         new_col_name <- "**anyna**"
@@ -932,7 +932,7 @@ srv_missing_data <- function(id,
     combination_plot_q <- reactive({
       req(
         input$summary_type == "Combinations", input$combination_cutoff,
-        combination_cutoff_q(), data_keys(), input$ggtheme
+        combination_cutoff_q(), input$ggtheme
       )
       teal::validate_has_data(req(data_r()), 1)
 
@@ -1077,7 +1077,7 @@ srv_missing_data <- function(id,
       # extract the ANL dataset for use in further validation
       anl <- common_code_q()[["ANL"]]
 
-      req(input$group_by_var, input$group_by_vals)
+      req(input$group_by_var)
       group_var <- input$group_by_var
       validate(
         need(
