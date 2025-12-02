@@ -1173,9 +1173,9 @@ srv_missing_data <- function(id,
         tile <- within(ANL_q,
           {
             by_variable_plot <- ggplot2::ggplot(ANL, ggplot2::aes(group_var_name, name)) +
-              ggplot2::geom_tile(ggplot2::aes(fill = column)) +
+              ggplot2::geom_tile(ggplot2::aes(fill = column), color = "gray90") +
               ggplot2::geom_text(ggplot2::aes(label = scales::percent(perc)),
-                data = . %>% dplyr::filter(perc > 0), color = "white"
+                data = ~ dplyr::filter(.x, perc > 0),
               ) +
               ggplot2::scale_x_discrete(expand = ggplot2::expansion()) +
               ggplot2::scale_fill_gradient(high = "#ff2951ff", low = "grey90", labels = labels) +
