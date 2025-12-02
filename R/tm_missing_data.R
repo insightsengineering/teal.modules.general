@@ -1213,7 +1213,7 @@ srv_missing_data <- function(id,
         tile <- within(ANL_q,
           {
             by_variable_plot <- ggplot2::ggplot(ANL, ggplot2::aes(group_var_name, label)) +
-              ggplot2::geom_tile(ggplot2::aes(fill = column)) +
+              ggplot2::geom_tile(ggplot2::aes(fill = column), color = "gray90") +
               ggplot2::geom_text(ggplot2::aes(label = scales::percent(perc)),
                 data = . %>% dplyr::filter(perc > 0), color = "white"
               ) +
