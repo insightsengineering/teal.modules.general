@@ -74,7 +74,7 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
 
   testthat::expect_true(
     app_driver$is_visible(
-      app_driver$namespaces(TRUE)$module("iris-summary_plot-plot_main")
+      app_driver$namespaces(TRUE)$module("iris-summary_plot-plot-with-settings")
     )
   )
 
@@ -95,7 +95,7 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
 
   testthat::expect_true(
     app_driver$is_visible(
-      app_driver$namespaces(TRUE)$module("iris-combination_plot-plot_main")
+      app_driver$namespaces(TRUE)$module("iris-combination_plot-plot-with-settings")
     )
   )
 
@@ -142,7 +142,11 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
   )
   app_driver$set_active_module_input("iris-count_type", "proportions")
   app_driver$wait_for_idle()
-  testthat::expect_true(app_driver$is_visible(app_driver$namespaces(TRUE)$module("iris-levels_table")))
+  testthat::expect_true(
+    app_driver$is_visible(
+      app_driver$namespaces(TRUE)$module("iris-by_variable_plot-plot-with-settings")
+    )
+  )
 
   app_driver$stop()
 })
