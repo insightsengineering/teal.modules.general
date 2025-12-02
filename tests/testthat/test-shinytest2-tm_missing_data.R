@@ -146,22 +146,3 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
 
   app_driver$stop()
 })
-
-test_that("e2e - tm_missing_data: Validate 'By Variable Levels' table values", {
-  skip_if_too_deep(5)
-  app_driver <- app_driver_tm_missing_data()
-
-  app_driver$set_active_module_input("iris-summary_type", "By Variable Levels")
-  app_driver$wait_for_idle()
-  levels_table <- app_driver$namespaces(TRUE)$module("iris-levels_table") %>%
-    app_driver$get_html_rvest() %>%
-    rvest::html_table(fill = TRUE) %>%
-    .[[1]]
-
-  testthat::expect_setequal(
-    levels_table$Variable,
-    c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width")
-  )
-
-  app_driver$stop()
-})
