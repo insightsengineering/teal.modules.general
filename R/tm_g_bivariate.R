@@ -724,7 +724,9 @@ srv_g_bivariate <- function(id,
       })
     )
 
-    plot_r <- reactive(req(decorated_output_q_facets())[["plot"]])
+    plot_r <- reactive({
+      req(decorated_output_q_facets())[["plot"]]
+    })
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
@@ -768,7 +770,7 @@ bivariate_plot_call <- function(data_name,
     y <- if (is.call(y)) y else as.name(y)
   }
 
-  cl <- bivariate_ggplot_call(
+  bivariate_ggplot_call(
     x_class = x_class,
     y_class = y_class,
     freq = freq,
@@ -927,7 +929,13 @@ bivariate_ggplot_call <- function(x_class,
     )
     # Factor and character plots
   } else if (x_class == "factor" && y_class == "factor") {
-    stop("Categorical variables 'x' and 'y' are currently not supported.")
+    plot_call <- reduce_plot_call(
+      plot_call,
+      substitute(
+        teal.modules.general::geom_mosaic(ggplot2::aes(x = xval, fill = yval)),
+        env = list(xval = x, yval = y)
+      )
+    )
   } else {
     stop("x y type combination not allowed")
   }

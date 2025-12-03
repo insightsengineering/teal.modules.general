@@ -506,12 +506,12 @@ srv_tm_g_association <- function(id,
           substitute(
             expr = {
               plots <- plot_calls
-              plot <- gridExtra::arrangeGrob(plots[[1]], plots[[2]], ncol = 1)
+              plot <- gridExtra::arrangeGrob(grobs = plots, ncol = 1)
             },
             env = list(
               plot_calls = do.call(
                 "call",
-                c(list("list", ref_call), var_calls),
+                c(list("list", ref_call), unname(var_calls)),
                 quote = TRUE
               )
             )
