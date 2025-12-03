@@ -27,9 +27,10 @@ test_that("e2e - tm_file_viewer: Initializes without errors and shows files tree
   app_driver$expect_validation_error()
   # encoding are visible
   testthat::expect_true(app_driver$is_visible(selector = app_driver$namespaces(TRUE)$module("tree")))
-  list_files <- app_driver$get_html_rvest(selector = app_driver$namespaces(TRUE)$module("tree")) %>%
-    rvest::html_nodes("a") %>%
-    rvest::html_text()
+  selector <- paste0(app_driver$namespaces(TRUE)$module("tree"), " * a")
+  list_files <- app_driver$get_text(selector = selector)
+  # Avoids issue with DOM id starting with number
+
   testthat::expect_setequal(
     list_files,
     c("folder", "png", "txt", "url")
@@ -44,7 +45,12 @@ test_that("e2e - tm_file_viewer: Shows selected image file", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
-  app_driver$click(selector = "[id= '4_anchor']")
+  selector <- paste0(app_driver$namespaces(TRUE)$module("tree"), " * a")
+  type <- app_driver$get_text(selector = selector)
+  names(type) <- app_driver$get_attr(selector = selector, "id")
+  # Avoids issue with DOM id starting with number
+  app_driver$click(selector = paste0("[id='", names(type)[type == "png"], "']"))
+
   testthat::expect_true(app_driver$is_visible(app_driver$namespaces(TRUE)$module("output img")))
 
   img_src <- app_driver$get_html_rvest(app_driver$namespaces(TRUE)$module("output")) %>%
@@ -60,7 +66,12 @@ test_that("e2e - tm_file_viewer: Shows selected text file", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
-  app_driver$click(selector = "[id= '5_anchor']")
+  selector <- paste0(app_driver$namespaces(TRUE)$module("tree"), " * a")
+  type <- app_driver$get_text(selector = selector)
+  names(type) <- app_driver$get_attr(selector = selector, "id")
+  # Avoids issue with DOM id starting with number
+  app_driver$click(selector = paste0("[id='", names(type)[type == "txt"], "']"))
+
   testthat::expect_true(app_driver$is_visible(app_driver$namespaces(TRUE)$module("output pre")))
 
   pre_text <- app_driver$get_html_rvest(app_driver$namespaces(TRUE)$module("output")) %>%
@@ -82,7 +93,11 @@ test_that("e2e - tm_file_viewer: Shows selected url", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_file_viewer()
 
-  app_driver$click(selector = "[id= '6_anchor']")
+  selector <- paste0(app_driver$namespaces(TRUE)$module("tree"), " * a")
+  type <- app_driver$get_text(selector = selector)
+  names(type) <- app_driver$get_attr(selector = selector, "id")
+  # Avoids issue with DOM id starting with number
+  app_driver$click(selector = paste0("[id='", names(type)[type == "url"], "']"))
   testthat::expect_true(app_driver$is_visible(app_driver$namespaces(TRUE)$module("output img")))
 
   testthat::expect_equal(
