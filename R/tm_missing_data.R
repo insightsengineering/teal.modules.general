@@ -1174,7 +1174,7 @@ srv_missing_data <- function(id,
           {
             by_variable_plot <- ggplot2::ggplot(ANL, ggplot2::aes(group_var_name, name)) +
               ggplot2::geom_tile(ggplot2::aes(fill = column), color = "gray90") +
-              ggplot2::geom_text(ggplot2::aes(label = scales::percent(perc)),
+              ggplot2::geom_text(ggplot2::aes(label = text_label),
                 data = ~ dplyr::filter(.x, perc > 0),
               ) +
               ggplot2::scale_x_discrete(expand = ggplot2::expansion()) +
@@ -1188,6 +1188,7 @@ srv_missing_data <- function(id,
           } else {
             as.name("perc")
           },
+          text_label = if (input$count_type == "counts") as.name("value") else quote(scales::percent(perc)),
           labs = parsed_ggplot2_args$labs,
           labels = if (input$count_type == "counts") quote(ggplot2::waiver()) else quote(scales::label_percent()),
           ggthemes = parsed_ggplot2_args$ggtheme
@@ -1214,7 +1215,7 @@ srv_missing_data <- function(id,
           {
             by_variable_plot <- ggplot2::ggplot(ANL, ggplot2::aes(group_var_name, label)) +
               ggplot2::geom_tile(ggplot2::aes(fill = column), color = "gray90") +
-              ggplot2::geom_text(ggplot2::aes(label = scales::percent(perc)),
+              ggplot2::geom_text(ggplot2::aes(label = text_label),
                 data = ~ dplyr::filter(.x, perc > 0)
               ) +
               ggplot2::scale_x_discrete(expand = ggplot2::expansion()) +
@@ -1222,6 +1223,7 @@ srv_missing_data <- function(id,
               labs +
               ggthemes
           },
+          text_label = if (input$count_type == "counts") as.name("value") else quote(scales::percent(perc)),
           group_var_name = as.name(group_var),
           column = if (input$count_type == "counts") {
             as.name("value")
