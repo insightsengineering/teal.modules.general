@@ -29,7 +29,7 @@ visually and statistically analyze the variable's distribution.">
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,6 +70,7 @@ visually and statistically analyze the variable's distribution.">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0-rc1">v0.6.0-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.5.1">v0.5.1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.5.1-rc2">v0.5.1-rc2</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.5.1-rc1">v0.5.1-rc1</a>
@@ -103,7 +104,7 @@ visually and statistically analyze the variable's distribution.">
 
       <h1>
 <code>teal</code> module: Distribution analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.5.1-rc2/R/tm_g_distribution.R" class="external-link"><code>R/tm_g_distribution.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.6.0-rc1/R/tm_g_distribution.R" class="external-link"><code>R/tm_g_distribution.R</code></a></small>
       <div class="d-none name"><code>tm_g_distribution.Rd</code></div>
     </div>
 
@@ -275,6 +276,22 @@ See code snippet below:</p>
 <code><a href="https://insightsengineering.github.io/teal/latest-tag/articles/transform-module-output.html" class="external-link">vignette("transform-module-output", package = "teal")</a></code> or the <code><a href="https://insightsengineering.github.io/teal/latest-tag/reference/teal_transform_module.html" class="external-link">teal::teal_transform_module()</a></code> documentation.</p>
     </div>
     <div class="section level2">
+    <h2 id="reporting">Reporting<a class="anchor" aria-label="anchor" href="#reporting"></a>
+</h2>
+
+
+
+
+<p>This module returns an object of class <code>teal_module</code>, that contains a <code>server</code> function.
+Since the server function returns a <code>teal_report</code> object, this makes this module reportable, which means that
+the reporting functionality will be turned on automatically by the <code>teal</code> framework.</p>
+<p>For more information on reporting in <code>teal</code>, see the vignettes:</p>
+<ul>
+<li><p><code><a href="https://insightsengineering.github.io/teal.reporter/latest-tag/articles/reportable-shiny-application.html" class="external-link">vignette("reportable-shiny-application", package = "teal.reporter")</a></code></p></li>
+<li><p><code>vignette("adding-support-for-reporting-to-custom-modules", package = "teal")</code></p></li>
+</ul>
+</div>
+    <div class="section level2">
     <h2 id="examples-in-shinylive">Examples in Shinylive<a class="anchor" aria-label="anchor" href="#examples-in-shinylive"></a>
 </h2>
 
@@ -285,8 +302,8 @@ See code snippet below:</p>
     <a style="height: 800px; display: block;"></a></p></dd>
 
   <dt>example-2</dt>
-<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTcILRZRAEY2ghLxgjE00TgRDTh+dlqujujFoUHoIk2r1o73OuWAwAUYD6zURl0uVQIAKRWAAsoiqoivAB5RwAOQcAE18bpEQFnAANRFyOS4QFfH7kfi6AC8ulJjmaKIgwyUaFQbRUxQBEDqmR5IVyrJluj4QhEonlquEYmldTqpBgaQkGR2pBB9EEmmsgL1IVNaWB8syaWiZvUG1EqDgmJttoV4VOel5iOR+N9tvZ3tI8sjGk+Xp9yr9epebzE8uBoPBcEhadh4XhIaaKLAaIxWPqAHFXHgaWAAEI4rAAaSwDyZLPDftjnPliMbLbbYaTyZV61ocSDugAYvVmnSlaO9SZaFE-vLZ-PXCPbcNk52d7pRG7wg6WE7ci6om6457vbrR5lA32kcXh0uV9RyIx5Z-v-H7y7W1gQ1XkQIeRclzHL8JxEeUHBcIDdD3P0D2TCRGCIQRUDPH9eWdV1mFvBMH2TJ9YCnIt+jwJC-xkX9aC-GQAMTKCgXuDN7ggpC6hgcdJ3gpxtyXFDd19FDhmGWgTF0dgVG-d1tDgGxbBqZVRDKCBWHqdB2DFAASQRaCqAyvkYHRGGGAYlDAAZLiAA" class="external-link">Open in Shinylive</a>
-    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTcILRZRAEY2ghLxgjE00TgRDTh+dlqujujFoUHoIk2r1o73OuWAwAUYD6zURl0uVQIAKRWAAsoiqoivAB5RwAOQcAE18bpEQFnAANRFyOS4QFfH7kfi6AC8ulJjmaKIgwyUaFQbRUxQBEDqmR5IVyrJluj4QhEonlquEYmldTqpBgaQkGR2pBB9EEmmsgL1IVNaWB8syaWiZvUG1EqDgmJttoV4VOel5iOR+N9tvZ3tI8sjGk+Xp9yr9epebzE8uBoPBcEhadh4XhIaaKLAaIxWPqAHFXHgaWAAEI4rAAaSwDyZLPDftjnPliMbLbbYaTyZV61ocSDugAYvVmnSlaO9SZaFE-vLZ-PXCPbcNk52d7pRG7wg6WE7ci6om6457vbrR5lA32kcXh0uV9RyIx5Z-v-H7y7W1gQ1XkQIeRclzHL8JxEeUHBcIDdD3P0D2TCRGCIQRUDPH9eWdV1mFvBMH2TJ9YCnIt+jwJC-xkX9aC-GQAMTKCgXuDN7ggpC6hgcdJ3gpxtyXFDd19FDhmGWgTF0dgVG-d1tDgGxbBqZVRDKCBWHqdB2DFAASQRaCqAyvkYHRGGGAYlDAAZLiAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
+<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTcIJTRUNpVi9lqQ3N0AXjfw3Fe+IREok+un+wjELwgdTqpBgaQkGR2pEYDEEmmsryhIURaS0LGBmTS0SR6g2olQcAIEMxmMypz0XwUYD6zUZv0h1LqojgIg0wK5PNJ5MpGI5ugIJXGBDEwNxyKg9BEmwltClc0ZzNZYpeTIA4q48LpGQAhACyWAA0lgAIyMuRyNmiqH8inkfjA41my02vAijkwda0OL03QAMXqzQCzgdjtMtCicDdXzDEdc7I5w3T0cxomJ4RxeK+BKJzA0aTJFKpotpsGD6qaLJ9aepJlo1HIjGBLbbMjLQsrjtlQK+4slYjL3JdCf7MdltHlipHKvBdf6BuFTKwJs1jK8AHlHAA5BwATW3YEjAA1bfbfaLnRoE8CD45miym5nb5j-W3AyJgQ4XE-XQM2pG9310CRGCIQRUHzDtC1yQkomJUty2FcC6mreB3SZetWSArt207Vt217CsgLqQdgUXVVxwFKcKKhWd5zgJVRzVXDVyqdd6k3M890PE8z0va8sxje9XRw3itzARiwJjEEAyDf8nFTR0QMxDTgNeYZhloExdHYFR2xJbQ4BsWwanZUQyggVh6nQdh7gAEkEWgqhcrlGB0RhhgGJQwAGS4gA" class="external-link">Open in Shinylive</a>
+    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTcIJTRUNpVi9lqQ3N0AXjfw3Fe+IREok+un+wjELwgdTqpBgaQkGR2pEYDEEmmsryhIURaS0LGBmTS0SR6g2olQcAIEMxmMypz0XwUYD6zUZv0h1LqojgIg0wK5PNJ5MpGI5ugIJXGBDEwNxyKg9BEmwltClc0ZzNZYpeTIA4q48LpGQAhACyWAA0lgAIyMuRyNmiqH8inkfjA41my02vAijkwda0OL03QAMXqzQCzgdjtMtCicDdXzDEdc7I5w3T0cxomJ4RxeK+BKJzA0aTJFKpotpsGD6qaLJ9aepJlo1HIjGBLbbMjLQsrjtlQK+4slYjL3JdCf7MdltHlipHKvBdf6BuFTKwJs1jK8AHlHAA5BwATW3YEjAA1bfbfaLnRoE8CD45miym5nb5j-W3AyJgQ4XE-XQM2pG9310CRGCIQRUHzDtC1yQkomJUty2FcC6mreB3SZetWSArt207Vt217CsgLqQdgUXVVxwFKcKKhWd5zgJVRzVXDVyqdd6k3M890PE8z0va8sxje9XRw3itzARiwJjEEAyDf8nFTR0QMxDTgNeYZhloExdHYFR2xJbQ4BsWwanZUQyggVh6nQdh7gAEkEWgqhcrlGB0RhhgGJQwAGS4gA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
     <a style="height: 800px; display: block;"></a></p></dd>
 
 
@@ -325,10 +342,6 @@ See code snippet below:</p>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">vars1</span> <span class="op">&lt;-</span> <span class="fu">choices_selected</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ARM"</span>, <span class="st">"COUNTRY"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  selected <span class="op">=</span> <span class="cn">NULL</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">init</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">data</span>,</span></span>
@@ -337,7 +350,7 @@ See code snippet below:</p>
 <span class="r-in"><span>      dist_var <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
 <span class="r-in"><span>        dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span></span>
 <span class="r-in"><span>        select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>          selected <span class="op">=</span> <span class="st">"BMRKR1"</span>,</span></span>
 <span class="r-in"><span>          multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>          fixed <span class="op">=</span> <span class="cn">FALSE</span></span></span>
@@ -346,14 +359,20 @@ See code snippet below:</p>
 <span class="r-in"><span>      strata_var <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
 <span class="r-in"><span>        dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span></span>
 <span class="r-in"><span>        filter <span class="op">=</span> <span class="fu">filter_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          vars <span class="op">=</span> <span class="va">vars1</span>,</span></span>
+<span class="r-in"><span>          vars <span class="op">=</span> <span class="fu">choices_selected</span><span class="op">(</span></span></span>
+<span class="r-in"><span>            <span class="fu">variable_choices</span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ARM"</span>, <span class="st">"COUNTRY"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>            selected <span class="op">=</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span>          <span class="op">)</span>,</span></span>
 <span class="r-in"><span>          multiple <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span>        <span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span>,</span></span>
 <span class="r-in"><span>      group_var <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
 <span class="r-in"><span>        dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span></span>
 <span class="r-in"><span>        filter <span class="op">=</span> <span class="fu">filter_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          vars <span class="op">=</span> <span class="va">vars1</span>,</span></span>
+<span class="r-in"><span>          vars <span class="op">=</span> <span class="fu">choices_selected</span><span class="op">(</span></span></span>
+<span class="r-in"><span>            <span class="fu">variable_choices</span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ARM"</span>, <span class="st">"COUNTRY"</span>, <span class="st">"SEX"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>            selected <span class="op">=</span> <span class="st">"ARM"</span></span></span>
+<span class="r-in"><span>          <span class="op">)</span>,</span></span>
 <span class="r-in"><span>          multiple <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span>        <span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span></span></span>
