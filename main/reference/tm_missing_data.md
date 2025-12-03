@@ -124,6 +124,8 @@ place using decorators:
 - `combination_plot` (`grob` created with
   [`ggplot2::ggplotGrob()`](https://ggplot2.tidyverse.org/reference/ggplotGrob.html))
 
+- `by_variable_plot` (`ggplot`)
+
 - `by_subject_plot` (`ggplot`)
 
 A Decorator is applied to the specific output using a named list of
@@ -136,6 +138,7 @@ snippet below:
        decorators = list(
          summary_plot = teal_transform_module(...), # applied only to `summary_plot` output
          combination_plot = teal_transform_module(...), # applied only to `combination_plot` output
+         by_variable_plot = teal_transform_module(...) # applied only to `by_variable_plot` output
          by_subject_plot = teal_transform_module(...) # applied only to `by_subject_plot` output
        )
     )
