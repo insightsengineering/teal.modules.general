@@ -1,0 +1,358 @@
+# `teal` module: Univariate and bivariate visualizations
+
+Module enables the creation of univariate and bivariate plots,
+facilitating the exploration of data distributions and relationships
+between two variables.
+
+## Usage
+
+``` r
+tm_g_bivariate(
+  label = "Bivariate Plots",
+  x,
+  y,
+  row_facet = NULL,
+  col_facet = NULL,
+  facet = !is.null(row_facet) || !is.null(col_facet),
+  color = NULL,
+  fill = NULL,
+  size = NULL,
+  use_density = FALSE,
+  color_settings = FALSE,
+  free_x_scales = FALSE,
+  free_y_scales = FALSE,
+  plot_height = c(600, 200, 2000),
+  plot_width = NULL,
+  rotate_xaxis_labels = FALSE,
+  swap_axes = FALSE,
+  ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+  ggplot2_args = teal.widgets::ggplot2_args(),
+  pre_output = NULL,
+  post_output = NULL,
+  transformators = list(),
+  decorators = list()
+)
+```
+
+## Arguments
+
+- label:
+
+  (`character(1)`) Label shown in the navigation item for the module or
+  module group. For `modules()` defaults to `"root"`. See `Details`.
+
+- x:
+
+  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+  Variable names selected to plot along the x-axis by default. Can be
+  numeric, factor or character. No empty selections are allowed.
+
+- y:
+
+  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+  Variable names selected to plot along the y-axis by default. Can be
+  numeric, factor or character.
+
+- row_facet:
+
+  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+  optional, specification of the data variable(s) to use for faceting
+  rows.
+
+- col_facet:
+
+  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+  optional, specification of the data variable(s) to use for faceting
+  columns.
+
+- facet:
+
+  (`logical`) optional, specifies whether the facet encodings `ui`
+  elements are toggled on and shown to the user by default. Defaults to
+  `TRUE` if either `row_facet` or `column_facet` are supplied.
+
+- color:
+
+  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+  optional, specification of the data variable(s) selected for the
+  outline color inside the coloring settings. It will be applied when
+  `color_settings` is set to `TRUE`.
+
+- fill:
+
+  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+  optional, specification of the data variable(s) selected for the fill
+  color inside the coloring settings. It will be applied when
+  `color_settings` is set to `TRUE`.
+
+- size:
+
+  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+  optional, specification of the data variable(s) selected for the size
+  of `geom_point` plots inside the coloring settings. It will be applied
+  when `color_settings` is set to `TRUE`.
+
+- use_density:
+
+  (`logical`) optional, indicates whether to plot density (`TRUE`) or
+  frequency (`FALSE`). Defaults to frequency (`FALSE`).
+
+- color_settings:
+
+  (`logical`) Whether coloring, filling and size should be applied and
+  `UI` tool offered to the user.
+
+- free_x_scales:
+
+  (`logical`) optional, whether X scaling shall be changeable. Does not
+  allow scaling to be changed by default (`FALSE`).
+
+- free_y_scales:
+
+  (`logical`) optional, whether Y scaling shall be changeable. Does not
+  allow scaling to be changed by default (`FALSE`).
+
+- plot_height:
+
+  (`numeric`) optional, specifies the plot height as a three-element
+  vector of `value`, `min`, and `max` intended for use with a slider UI
+  element.
+
+- plot_width:
+
+  (`numeric`) optional, specifies the plot width as a three-element
+  vector of `value`, `min`, and `max` for a slider encoding the plot
+  width.
+
+- rotate_xaxis_labels:
+
+  (`logical`) optional, whether to rotate plot X axis labels. Does not
+  rotate by default (`FALSE`).
+
+- swap_axes:
+
+  (`logical`) optional, whether to swap X and Y axes. Defaults to
+  `FALSE`.
+
+- ggtheme:
+
+  (`character`) optional, `ggplot2` theme to be used by default.
+  Defaults to `"gray"`.
+
+- ggplot2_args:
+
+  (`ggplot2_args`) object created by
+  [`teal.widgets::ggplot2_args()`](https://insightsengineering.github.io/teal.widgets/latest-tag/reference/ggplot2_args.html)
+  with settings for the module plot. The argument is merged with options
+  variable `teal.ggplot2_args` and default module setup.
+
+  For more details see the vignette:
+  [`vignette("custom-ggplot2-arguments", package = "teal.widgets")`](https://insightsengineering.github.io/teal.widgets/latest-tag/articles/custom-ggplot2-arguments.html)
+
+- pre_output:
+
+  (`shiny.tag`) optional, text or UI element to be displayed before the
+  module's output, providing context or a title. with text placed before
+  the output to put the output into context. For example a title.
+
+- post_output:
+
+  (`shiny.tag`) optional, text or UI element to be displayed after the
+  module's output, adding context or further instructions. Elements like
+  [`shiny::helpText()`](https://rdrr.io/pkg/shiny/man/helpText.html) are
+  useful.
+
+- transformators:
+
+  (`list` of `teal_transform_module`) that will be applied to transform
+  module's data input. To learn more check
+  [`vignette("transform-input-data", package = "teal")`](https://insightsengineering.github.io/teal/latest-tag/articles/transform-input-data.html).
+
+- decorators:
+
+  **\[experimental\]** (named `list` of lists of
+  `teal_transform_module`) optional, decorator for tables or plots
+  included in the module output reported. The decorators are applied to
+  the respective output objects.
+
+  See section "Decorating Module" below for more details.
+
+## Value
+
+Object of class `teal_module` to be used in `teal` applications.
+
+## Details
+
+This is a general module to visualize 1 & 2 dimensional data.
+
+## Note
+
+For more examples, please see the vignette "Using bivariate plot" via
+[`vignette("using-bivariate-plot", package = "teal.modules.general")`](https://insightsengineering.github.io/teal.modules.general/articles/using-bivariate-plot.md).
+
+## Decorating Module
+
+This module generates the following objects, which can be modified in
+place using decorators:
+
+- `plot` (`ggplot`)
+
+A Decorator is applied to the specific output using a named list of
+`teal_transform_module` objects. The name of this list corresponds to
+the name of the output to which the decorator is applied. See code
+snippet below:
+
+    tm_g_bivariate(
+       ..., # arguments for module
+       decorators = list(
+         plot = teal_transform_module(...) # applied to the `plot` output
+       )
+    )
+
+For additional details and examples of decorators, refer to the vignette
+[`vignette("decorate-module-output", package = "teal.modules.general")`](https://insightsengineering.github.io/teal.modules.general/articles/decorate-module-output.md).
+
+To learn more please refer to the vignette
+[`vignette("transform-module-output", package = "teal")`](https://insightsengineering.github.io/teal/latest-tag/articles/transform-module-output.html)
+or the
+[`teal::teal_transform_module()`](https://insightsengineering.github.io/teal/latest-tag/reference/teal_transform_module.html)
+documentation.
+
+## Reporting
+
+This module returns an object of class `teal_module`, that contains a
+`server` function. Since the server function returns a `teal_report`
+object, this makes this module reportable, which means that the
+reporting functionality will be turned on automatically by the `teal`
+framework.
+
+For more information on reporting in `teal`, see the vignettes:
+
+- [`vignette("reportable-shiny-application", package = "teal.reporter")`](https://insightsengineering.github.io/teal.reporter/latest-tag/articles/reportable-shiny-application.html)
+
+- `vignette("adding-support-for-reporting-to-custom-modules", package = "teal")`
+
+## Examples in Shinylive
+
+- example-1:
+
+  [Open in
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHH+GRgmzPDs-QNdAL5dSmiowyp57BUjsQC8m1C4G3xCIqK6O6QwiRKJ9NostIFw692VuqGnu4lhpMwaiaKocAITxeLxS0Hg7wUYGmUP2zxBojgIg070RyNIfwBQI2IMq1Cg9CRkLAAGUkYDSLotHcCSJELCcbiCPkiLQCGJ3tTGPd6CJEszWezRMUMsBgFCYWAALpSuRw3EvNEUuD8YnECwM+G4ky0UIq94AMQAggAZEmuLWVLoguWM1jvFKfULfdQY-6A4G4sGwPQ7CWDTUKpUonbBt1Yz0K-GEvx+0nklFcnl0wMK3QCtkcnZJ2lwfkszPClJi-0DKEy22WxUJ8iquOCVBBADWcFTCpgwk0kV9umNZuc8rTOr1dd7pvNjKtjMrIMYRGyiRM6jglJ2jq+P3DHsnu3BPdLber6NRNcx26reIJRLjZOPOd5cHpeB3lQzQs5NIf+cFYhFQRL0IBtKsqDkGNb6nGdisACh4gsOEFjv2O7Wi8M4vG0i7LquHwbq6Z7YlW3oQnGkqgUeFInui+GRri0bXroUK3hR94ps+F7pgW77Zp+fJvr+xbioBZbAWhYHoghUJ2NUgTwGQsEvPBo59hOVYoVOzxdF0tAmLo7AqOQm7aI8ci2OUzyiIUECsEa6DsEsAAk9SlA5iKMDonRKLMShgLMUpAA)
+
+- example-2:
+
+  [Open in
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIZMYGkJGl6NoWLQwnBgQM6rookjMmloqRmBo0qJUHACHiCQTMm89JCFGAFqM2TD8QzRHARBokXyBZdqbT6QyCdQoPR+Ui2QF+bTSLotFiZSJEFyQZLdAQShsCGIkWrGNj6CIrgbaEaPrlgMA2Ry2V8vnJubq6sLlXB+PL2QBxVx4HWSky0KK+pEAMUGowCrh5BP6DPdodYxNypKi5PUoppdNDdSZsBZuidI05IaTXqVgsh3spYsLNalMrlrLAipFqvVFrgWurnr11ttJr7lv1hrEB3CDorizArrTrdrIqjnYTAA1tavdDALrQ4mXY-HnB7PeHI37IaeE0XdCnkxe6owiAU0mcjSrISSyRT83FB8S3gf1nSHSVGx-XQoKpAsJV1aVZWof1u2VXszQ1Add2HKcbWNSFTXNSdRxnTJ53ZSsXTdF9ILrcgb3LdksAAWRwy8Iw3XQ70TXUnzqFcGW6T91DgaC-xzAC4KA1sQLLBcq1otd0IbejpJbYckI7Ji0MFIisMHJSCTwsdCInOArWnO050dSjF2XIzlI0Li2S8AB5RwADkHAATXY3Ury4niH34x8QX6fpaBMXR2BUcgAO0XE5FsGp8VEMoIFYQZ0HYNBUAAEhaKo8vyvlGB0PpliUMAli+IA)
+
+## Examples
+
+``` r
+# general data example
+data <- teal_data()
+data <- within(data, {
+  require(nestcolor)
+  CO2 <- data.frame(CO2)
+})
+
+app <- init(
+  data = data,
+  modules = tm_g_bivariate(
+    x = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]]),
+        selected = "conc",
+        fixed = FALSE
+      )
+    ),
+    y = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]]),
+        selected = "uptake",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    ),
+    row_facet = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]]),
+        selected = "Type",
+        fixed = FALSE
+      )
+    ),
+    col_facet = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]]),
+        selected = "Treatment",
+        fixed = FALSE
+      )
+    )
+  )
+)
+#> Initializing tm_g_bivariate
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+# CDISC data example
+data <- teal_data()
+data <- within(data, {
+  require(nestcolor)
+  ADSL <- teal.data::rADSL
+})
+join_keys(data) <- default_cdisc_join_keys[names(data)]
+
+app <- init(
+  data = data,
+  modules = tm_g_bivariate(
+    x = data_extract_spec(
+      dataname = "ADSL",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["ADSL"]]),
+        selected = "AGE",
+        fixed = FALSE
+      )
+    ),
+    y = data_extract_spec(
+      dataname = "ADSL",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["ADSL"]]),
+        selected = "SEX",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    ),
+    row_facet = data_extract_spec(
+      dataname = "ADSL",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["ADSL"]]),
+        selected = "ARM",
+        fixed = FALSE
+      )
+    ),
+    col_facet = data_extract_spec(
+      dataname = "ADSL",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["ADSL"]]),
+        selected = "COUNTRY",
+        fixed = FALSE
+      )
+    )
+  )
+)
+#> Initializing tm_g_bivariate
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+```
