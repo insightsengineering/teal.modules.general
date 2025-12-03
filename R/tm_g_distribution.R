@@ -523,7 +523,7 @@ srv_distribution <- function(id,
     )
 
     qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
+      teal.code::eval_code(data(), "library(ggplot2);library(dplyr)")
     )
 
     anl_merged_q <- reactive({
@@ -663,7 +663,7 @@ srv_distribution <- function(id,
             "Group by variable must be `factor`, `character`, or `integer`"
           )
         )
-        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
+        qenv <- teal.code::eval_code(qenv, "library(forcats)")
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -681,7 +681,7 @@ srv_distribution <- function(id,
           )
         )
 
-        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
+        qenv <- teal.code::eval_code(qenv, "library(forcats)")
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -891,7 +891,7 @@ srv_distribution <- function(id,
         }
 
         if (length(t_dist) != 0 && main_type_var == "Density" && length(g_var) == 0 && length(s_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, 'library("ggpp")') # nolint quotes
+          qenv <- teal.code::eval_code(qenv, "library(ggpp)")
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -1037,7 +1037,7 @@ srv_distribution <- function(id,
         )
 
         if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, 'library("ggpp")') # nolint quotes
+          qenv <- teal.code::eval_code(qenv, "library(ggpp)")
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -1233,7 +1233,7 @@ srv_distribution <- function(id,
         qenv <- common_q()
 
         if (length(s_var) == 0 && length(g_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, 'library("generics")') # nolint quotes
+          qenv <- teal.code::eval_code(qenv, "library(generics)")
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -1247,7 +1247,7 @@ srv_distribution <- function(id,
             )
           )
         } else {
-          qenv <- teal.code::eval_code(qenv, 'library("tidyr")') # nolint quotes
+          qenv <- teal.code::eval_code(qenv, "library(tidyr)")
           qenv <- teal.code::eval_code(
             qenv,
             substitute(

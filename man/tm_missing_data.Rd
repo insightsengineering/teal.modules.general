@@ -84,6 +84,7 @@ This module generates the following objects, which can be modified in place usin
 \itemize{
 \item \code{summary_plot} (\code{ggplot})
 \item \code{combination_plot} (\code{grob} created with \code{\link[ggplot2:ggplotGrob]{ggplot2::ggplotGrob()}})
+\item \code{by_variable_plot} (\code{ggplot})
 \item \code{by_subject_plot} (\code{ggplot})
 }
 
@@ -96,6 +97,7 @@ See code snippet below:
    decorators = list(
      summary_plot = teal_transform_module(...), # applied only to `summary_plot` output
      combination_plot = teal_transform_module(...), # applied only to `combination_plot` output
+     by_variable_plot = teal_transform_module(...) # applied only to `by_variable_plot` output
      by_subject_plot = teal_transform_module(...) # applied only to `by_subject_plot` output
    )
 )
