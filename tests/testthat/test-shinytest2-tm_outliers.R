@@ -234,8 +234,8 @@ testthat::test_that("e2e - tm_outliers:
   app_driver$expect_no_shiny_error()
   testthat::expect_true(app_driver$is_visible(app_driver$namespaces(TRUE)$module("percentile_slider")))
   testthat::expect_match(
-    app_driver$get_text(
-      normalize_math_italic_text(app_driver$namespaces(TRUE)$module("ui_outlier_help"))
+    normalize_math_italic_text(
+      app_driver$get_text(app_driver$namespaces(TRUE)$module("ui_outlier_help"))
     ),
     "Percentile(x)<0.01Percentile(x)<0.01 Percentile(x)",
     fixed = TRUE
