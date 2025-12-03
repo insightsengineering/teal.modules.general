@@ -468,9 +468,11 @@ srv_missing_data <- function(id,
       iv_summary_table$add_rule("count_type", shinyvalidate::sv_required("Please select type of counts"))
       iv_summary_table$add_rule(
         "group_by_vals",
-        ~ if (length(input$group_by_vals) == 0L) {
-          "Please select both group-by variable and values"
-        }
+        ~ if (length(input$group_by_var) >= 1L && length(.) == 0L) "Please select filter values"
+      )
+      iv_summary_table$add_rule(
+        "group_by_var",
+        ~ if (length(.) == 0L) "Please select group-by variable"
       )
       iv_summary_table$add_rule(
         "group_by_var",
