@@ -1,7 +1,7 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.5.1.9019
+Version: 0.6.0
 Date: 2025-12-03
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
@@ -26,7 +26,7 @@ Depends:
     ggplot2 (>= 3.5.0),
     R (>= 4.1),
     shiny (>= 1.8.1),
-    teal (>= 1.0.0.9003),
+    teal (>= 1.1.0),
     teal.transform (>= 0.7.0)
 Imports:
     bslib (>= 0.8.0),
@@ -61,7 +61,7 @@ Imports:
     teal.code (>= 0.7.0),
     teal.data (>= 0.8.0),
     teal.logger (>= 0.4.0),
-    teal.reporter (>= 0.5.0.9001),
+    teal.reporter (>= 0.6.0),
     teal.widgets (>= 0.5.0),
     tern (>= 0.9.7),
     tibble (>= 2.0.0),
@@ -82,9 +82,6 @@ Suggests:
 VignetteBuilder:
     knitr,
     rmarkdown
-Remotes:
-    insightsengineering/teal,
-    insightsengineering/teal.reporter
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,

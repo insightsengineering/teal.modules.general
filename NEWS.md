@@ -1,9 +1,10 @@
-# teal.modules.general 0.5.1.9019
+# teal.modules.general 0.6.0
 
 ### Enhancements
 
 - Modules now return a `teal_report` object that contains the data, code and reporter. All the reporter buttons were removed from the modules' UI.
 - Support case when both variables are categorical in association and bivariate plots.
+- Improve `tm_missing_data` visualization (#495).
 
 # teal.modules.general 0.5.1
 
