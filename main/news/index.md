@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.5.1.9019
+## teal.modules.general 0.6.0
 
 #### Enhancements
 
@@ -9,6 +9,8 @@
   UI.
 - Support case when both variables are categorical in association and
   bivariate plots.
+- Improve `tm_missing_data` visualization
+  ([\#495](https://github.com/insightsengineering/teal.modules.general/issues/495)).
 
 ## teal.modules.general 0.5.1
 
