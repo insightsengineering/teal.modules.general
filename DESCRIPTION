@@ -32,6 +32,7 @@ Imports:
     bslib (>= 0.8.0),
     checkmate (>= 2.1.0),
     colourpicker (>= 1.3.0),
+    crane,
     dplyr (>= 1.1.0),
     DT (>= 0.13),
     forcats (>= 1.0.0),
