@@ -43,42 +43,44 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_gt_tbl_summary(
-#'       table= data_extract_spec(dataname = "ADSL"),
+#'       table = data_extract_spec(dataname = "ADSL"),
 #'       by = data_extract_spec(dataname = "ADSL", "SEX"),
-#'       include = data_extract_spec(dataname = "ADSL",
-#'                             select = select_spec(
-#'                                choices = c("SITEID", "COUNTRY", "ACTARM"),
-#'                                selected = "SITEID",
-#'                                multiple = TRUE,
-#'                                fixed = FALSE
-#'                                )
-#'                            )
+#'       include = data_extract_spec(
+#'         dataname = "ADSL",
+#'         select = select_spec(
+#'           choices = c("SITEID", "COUNTRY", "ACTARM"),
+#'           selected = "SITEID",
+#'           multiple = TRUE,
+#'           fixed = FALSE
+#'         )
+#'       )
 #'     )
 #'   )
 #' )
-#'if (interactive()) {
+#' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
 tm_gt_tbl_summary <- function(
-    label = "Table summary",
-    # table,
-    # passed to tbl_summary()
-    by = NULL,
-    col_label = NULL,
-    statistics = list(all_continuous() ~ "{median} ({p25}, {p75})",
-                      all_categorical() ~ "{n} ({p}%)"),
-    digits = NULL,
-    type = NULL,
-    value = NULL,
-    missing = c("ifany", "no", "always"),
-    missing_text = "<Missing>",
-    missing_stat = "{N_miss}",
-    sort = all_categorical(FALSE) ~ "alphanumeric",
-    percent = c("column", "row", "cell"),
-    include = NULL,
-
-    transformators = list(),
-    decorators = list()
+  label = "Table summary",
+  # table,
+  # passed to tbl_summary()
+  by = NULL,
+  col_label = NULL,
+  statistics = list(
+    all_continuous() ~ "{median} ({p25}, {p75})",
+    all_categorical() ~ "{n} ({p}%)"
+  ),
+  digits = NULL,
+  type = NULL,
+  value = NULL,
+  missing = c("ifany", "no", "always"),
+  missing_text = "<Missing>",
+  missing_stat = "{N_miss}",
+  sort = all_categorical(FALSE) ~ "alphanumeric",
+  percent = c("column", "row", "cell"),
+  include = NULL,
+  transformators = list(),
+  decorators = list()
 ) {
   message("Initializing tm_gt_tbl_summary")
   checkmate::assert_string(label)
@@ -90,13 +92,13 @@ tm_gt_tbl_summary <- function(
   # Make UI args
   args <- as.list(environment())
 
-  data_extract_list <- list(by = by, include = include)
   module <- module(
     label = label,
     server = srv_gt_tbl_summary,
     ui = ui_gt_tbl_summary,
     ui_args = args,
     server_args = list(
+      by = by,
       col_label = col_label,
       statistics = statistics,
       digits = digits,
@@ -106,14 +108,14 @@ tm_gt_tbl_summary <- function(
       missing_text = missing_text,
       missing_stat = missing_stat,
       sort = sort,
-      # percent = percent
-      decorators = decorators),
+      # percent = percent,
+      include = include,
+      decorators = decorators
+    ),
     transformators = transformators
   )
   attr(module, "teal_bookmarkable") <- TRUE
   module
-
-
 }
 
 
@@ -135,13 +137,20 @@ ui_gt_tbl_summary <- function(id, ...) {
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(
       textOutput(ns("title")),
-      teal.widgets::table_with_settings_ui(ns("table"))
+      # teal.widgets::table_with_settings_ui(ns("table"))
+      gt::gt_output(ns("table"))
     ),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("by", "include")]),
-      teal.transform::data_extract_ui(ns("by"), label = "Variable(s) to stratify with", args$by),
-      teal.transform::data_extract_ui(ns("include"), label = "Variable(s) to include", args$include),
+      teal.transform::data_extract_ui(ns("by"),
+        label = "Variable(s) to stratify with", ,
+        data_extract_spec = args$by
+      ),
+      teal.transform::data_extract_ui(ns("include"),
+        label = "Variable(s) to include",
+        data_extract_spec = args$include
+      ),
       radioButtons(
         ns("missing"),
         label = "Display NA counts",
@@ -169,11 +178,11 @@ srv_gt_tbl_summary <- function(id,
                                digits,
                                type,
                                value,
-                               missing,
+                               # missing,
                                missing_text,
                                missing_stat,
                                sort,
-                               percent,
+                               # percent,
                                include,
                                decorators) {
   checkmate::assert_class(data, "reactive")
@@ -181,25 +190,27 @@ srv_gt_tbl_summary <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-      # table,
+    # table,
     # by,
-      # col_label,
-      # statistics,
-      # digits,
-      # type,
-      # value,
+    # col_label,
+    # statistics,
+    # digits,
+    # type,
+    # value,
     # missing,
-      # nonmissing_text,
-      # nonmissing_stat,
-      # sort,
+    # nonmissing_text,
+    # nonmissing_stat,
+    # sort,
     # percent,
     # include
 
 
     qenv <- reactive({
-      obj <- data()
-      validate(need(is_single_dataset(list(by, include)), "Variables should come from the same dataset"))
-      req(by, include)
+      obj <- req(data())
+      if (!is.null(input$by) || !is.null(input$include)) {
+        validate(need(is_single_dataset(list(by = input$by, include = input$include)), "Variables should come from the same dataset"))
+        browser()
+      }
       teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card(obj),
@@ -209,74 +220,105 @@ srv_gt_tbl_summary <- function(id,
     })
 
     summary_args <- reactive({
+      # browser()
+      # by_input <- names(input)[endsWith(names(input), "-select")]
+      # selector_list <- teal.transform::data_extract_multiple_srv(
+      #   data_extract = list(by = input$`by-dataset_ADSL_singleextract-select`, include = input$`include-dataset_ADSL_singleextract-select`),
+      #   datasets = data)
+
       dataset <- if (!is.null(by)) {
         by$dataname
-        } else {
+      } else {
         include$dataname
-        }
-
-    # by
-      if (!is.null(by)) {
-        by_variable <- by$dataset
-      }
-    # label columns
-    if (!is.null(col_label)) {
-      labels <- input$col_label
-    }
-
-    # statistics
-
-    # digits
-    # type
-    # value
-    # nonmissing
-      if (input$missing != "ifany") {
-        nonmissing <- input$missing
       }
 
-    # nonmissing_text
-      if (!identical(missing_text, "<Missing>")) {
-        nonmissing_text <- input$missing_text
-      }
-    # nonmissing_stat
-      if (!identical(missing_stat, "{N_miss}")) {
-        nonmissing_stat <- missing_stat
-      }
-    # sort
-    # percent
-      if (input$percent != "column") {
-        percent <- input$percent
-      }
-
-    # include
-      if (!is.null(include)) {
-        include_variables <- include$dataset
-      }
+      # validate(need(!is.null(dataset), "Specify variables to stratify or to include on the summary table."),
+      #          need(teal.transform::is_single_dataset(by, include), "Input from multiple tables: this module doesn't accept that.")
+      # )
+      #
+      # nam_input <- names(input)
+      # # by
+      # if (!is.null(by)) {
+      #   # browser()
+      #   isolate({by_variable <- input[[nam_input[startsWith(nam_input, "by") & endsWith(nam_input, "select")]]]})
+      # }
+      # # label columns
+      # if (!is.null(col_label)) {
+      #   labels <- col_label
+      # }
+      #
+      # # statistics
+      # if (!is.null(statistics)) {
+      #   validate(need(all(vapply(statistics, is, class2 = "formula", logical(1L))), "All elements of statistics should be formulas"))
+      #   stats <- statistics
+      # }
+      #
+      # # digits
+      # if (!is.null(digits)) {
+      #   integer <- is.integer(digits) && length(digits) >= 1L
+      #   functions <- is.function(digits) || all(vapply(digits, is.function, logical(1L)))
+      #   validate(need(any(integer || functions), "digits should be integer(s) or a function (or list of)"))
+      # }
+      # # type
+      # if (!is.null(type)) {
+      #   possible_types <- c("continuous", "continuous2", "categorical", "dichotomous")
+      #   validate(need(length(type) == 1L && type %in% possible_types,
+      #                 paste0("One of: c(", toString(dQuote(possible_types)), ").")
+      #   ))
+      # }
+      #
+      # # value
+      # if (!is.null(type)) {
+      #   possible_types <- c("continuous", "continuous2", "categorical", "dichotomous")
+      #   validate(need(length(type) == 1L && type %in% possible_types,
+      #                 paste0("One of: c(", toString(dQuote(possible_types)), ").")
+      #   ))
+      # }
+      #
+      # # nonmissing
+      # if (req(input$missing) != "ifany") {
+      #   nonmissing <- input$missing
+      # }
+      #
+      # # nonmissing_text
+      # if (!identical(missing_text, "<Missing>")) {
+      #   valiate(need(is.character(missing_text), "Must be a character."))
+      #   nonmissing_text <- input$missing_text
+      # }
+      # # nonmissing_stat
+      # if (!identical(missing_stat, "{N_miss}")) {
+      #   valiate(need(is.character(missing_stat), "Must be a character to be parsed by glue."))
+      #   nonmissing_stat <- missing_stat
+      # }
+      # # sort
+      # if (!is.null(sort)) {
+      #   validate(need(all(vapply(statistics, is, class2 = "formula", logical(1L))), "All elements of sort should be formulas"))
+      # }
+      # # percent
+      # if (req(input$percent) != "column") {
+      #   percent <- input$percent
+      # }
+      #
+      # # include
+      # if (!is.null(include)) {
+      #   isolate({include_variables <- input[[nam_input[startsWith(nam_input, "include") & endsWith(nam_input, "select")]]]})
+      # }
 
       table_crane <- call("tbl_roche_summary",
-                         data = as.name(dataset)
-                         )
-
+        data = as.name(dataset)
+      )
     })
 
     output_q <- reactive({
       q <- req(qenv(), summary_args())
-      within(q, {
-        table <- table_crane
-      },
-      # table_crane = call("cran::tbl_roche_summary", table = as.name(by$dataname)))
-      table_crane = summary_args()
+      browser()
+      within(q,
+        {
+          table <- table_crane
+        },
+        table_crane = summary_args()
       )
     })
-
-      # arg <- quote(argument)
-      # call("cran::tbl_roche_summary", arg = arg)
-
-    # browser()
-
-
-    # crane::tbl_roche_summary
-    # browser(expr= is(output_q(), "qenv.error"))
 
     decorated_output_q <- srv_decorate_teal_data(
       id = "decorator",
@@ -286,8 +328,9 @@ srv_gt_tbl_summary <- function(id,
     )
 
     table_r <- reactive({
-      # req(iv_r()$is_valid())
-      req(decorated_output_q())[["table"]]
+      req(decorated_output_q())
+      table <- decorated_output_q()[["table"]]
+      gtsummary::as_gt(table)
     })
 
     teal.widgets::table_with_settings_srv(
@@ -295,6 +338,6 @@ srv_gt_tbl_summary <- function(id,
       table_r = table_r
     )
 
-    decorated_output_q
+    table_r
   })
 }
