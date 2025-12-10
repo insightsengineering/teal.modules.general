@@ -63,10 +63,10 @@ tm_gt_tbl_summary <- function(
     label = "Table summary",
     # table,
     # passed to tbl_summary()
-    by,
+    by = NULL,
     col_label = NULL,
-    statistics = list(all_continuous() ~ "{median} ({p25}, {p75})", all_categorical() ~
-                      "{n} ({p}%)"),
+    statistics = list(all_continuous() ~ "{median} ({p25}, {p75})",
+                      all_categorical() ~ "{n} ({p}%)"),
     digits = NULL,
     type = NULL,
     value = NULL,
@@ -90,30 +90,25 @@ tm_gt_tbl_summary <- function(
   # Make UI args
   args <- as.list(environment())
 
-  data_extract_list <- list(table = table)
-
+  data_extract_list <- list(by = by, include = include)
   module <- module(
     label = label,
     server = srv_gt_tbl_summary,
     ui = ui_gt_tbl_summary,
     ui_args = args,
-    server_args = c(data_extract_list,
-                    as.list(
-                      by = by,
-                      col_label = col_label,
-                      statistics = statistics,
-                      digits = digits,
-                      type = type,
-                      value = value,
-                      missing = missing,
-                      nonmissing_text = nonmissing_text,
-                      nonmissing_stat = nonmissing_stat,
-                      sort = sort,
-                      percent = percent,
-                      include = include),
-                    decorators = decorators),
-    transformators = transformators,
-    datanames = teal.transform::get_extract_datanames(data_extract_list)
+    server_args = list(
+      col_label = col_label,
+      statistics = statistics,
+      digits = digits,
+      type = type,
+      value = value,
+      # missing = missing,
+      missing_text = missing_text,
+      missing_stat = missing_stat,
+      sort = sort,
+      # percent = percent
+      decorators = decorators),
+    transformators = transformators
   )
   attr(module, "teal_bookmarkable") <- TRUE
   module
@@ -123,20 +118,20 @@ tm_gt_tbl_summary <- function(
 
 
 ui_gt_tbl_summary <- function(id, ...) {
-  args <- list(by = by,
-               # col_label = col_label,
-               # statistics = statistics,
-               # digits = digits,
-               # type = type,
-               # value = value,
-               missing = missing,
-               # nonmissing_text = nonmissing_text,
-               # nonmissing_stat = nonmissing_stat,
-               # sort = sort,
-               percent = percent,
-               include = include)
+  # args <- list(by = by,
+  #              # col_label = col_label,
+  #              # statistics = statistics,
+  #              # digits = digits,
+  #              # type = type,
+  #              # value = value,
+  #              missing = missing,
+  #              # nonmissing_text = nonmissing_text,
+  #              # nonmissing_stat = nonmissing_stat,
+  #              # sort = sort,
+  #              percent = percent,
+  #              include = include)
   ns <- NS(id)
-
+  args <- list(...)
   teal.widgets::standard_layout(
     output = teal.widgets::white_small_well(
       textOutput(ns("title")),
@@ -144,9 +139,9 @@ ui_gt_tbl_summary <- function(id, ...) {
     ),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
-      teal.transform::datanames_input(list(by, include)),
-      teal.transform::data_extract_ui(ns("by"), label = "Variable(s) to stratify with", by),
-      teal.transform::data_extract_ui(ns("include"), label = "Variable(s) to include", include),
+      teal.transform::datanames_input(args[c("by", "include")]),
+      teal.transform::data_extract_ui(ns("by"), label = "Variable(s) to stratify with", args$by),
+      teal.transform::data_extract_ui(ns("include"), label = "Variable(s) to include", args$include),
       radioButtons(
         ns("missing"),
         label = "Display NA counts",
@@ -156,13 +151,13 @@ ui_gt_tbl_summary <- function(id, ...) {
       radioButtons(
         ns("percent"),
         label = "Percentage based on",
-        choices = c("Column" = "column", "Column" = "row", "Cell" = "cell"),
+        choices = c("Column" = "column", "Row" = "row", "Cell" = "cell"),
         selected = "column"
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "table"))
     ),
-    pre_output = pre_output,
-    post_output = post_output
+    pre_output = args$pre_output,
+    post_output = args$post_output
   )
 }
 
@@ -175,8 +170,8 @@ srv_gt_tbl_summary <- function(id,
                                type,
                                value,
                                missing,
-                               nonmissing_text,
-                               nonmissing_stat,
+                               missing_text,
+                               missing_stat,
                                sort,
                                percent,
                                include,
@@ -185,7 +180,6 @@ srv_gt_tbl_summary <- function(id,
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
-
 
       # table,
     # by,
@@ -204,6 +198,8 @@ srv_gt_tbl_summary <- function(id,
 
     qenv <- reactive({
       obj <- data()
+      validate(need(is_single_dataset(list(by, include)), "Variables should come from the same dataset"))
+      req(by, include)
       teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card(obj),
@@ -212,30 +208,93 @@ srv_gt_tbl_summary <- function(id,
       teal.code::eval_code(obj, "library(crane);library(dplyr)")
     })
 
-    qenv_table <- reactive({
-      q <- qenv()
-      witin(q, {
-        gt <- crane::tbl_roche_summary(ADSL)
-      },
-      table = as.name(table))
-
-    })
-
+    summary_args <- reactive({
+      dataset <- if (!is.null(by)) {
+        by$dataname
+        } else {
+        include$dataname
+        }
 
     # by
+      if (!is.null(by)) {
+        by_variable <- by$dataset
+      }
     # label columns
+    if (!is.null(col_label)) {
+      labels <- input$col_label
+    }
+
     # statistics
+
     # digits
     # type
     # value
     # nonmissing
+      if (input$missing != "ifany") {
+        nonmissing <- input$missing
+      }
+
     # nonmissing_text
+      if (!identical(missing_text, "<Missing>")) {
+        nonmissing_text <- input$missing_text
+      }
     # nonmissing_stat
+      if (!identical(missing_stat, "{N_miss}")) {
+        nonmissing_stat <- missing_stat
+      }
     # sort
     # percent
+      if (input$percent != "column") {
+        percent <- input$percent
+      }
+
     # include
+      if (!is.null(include)) {
+        include_variables <- include$dataset
+      }
+
+      table_crane <- call("tbl_roche_summary",
+                         data = as.name(dataset)
+                         )
+
+    })
+
+    output_q <- reactive({
+      q <- req(qenv(), summary_args())
+      within(q, {
+        table <- table_crane
+      },
+      # table_crane = call("cran::tbl_roche_summary", table = as.name(by$dataname)))
+      table_crane = summary_args()
+      )
+    })
+
+      # arg <- quote(argument)
+      # call("cran::tbl_roche_summary", arg = arg)
+
+    # browser()
+
 
     # crane::tbl_roche_summary
-    qenv_table
+    # browser(expr= is(output_q(), "qenv.error"))
+
+    decorated_output_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = select_decorators(decorators, "table"),
+      expr = quote(table)
+    )
+
+    table_r <- reactive({
+      # req(iv_r()$is_valid())
+      req(decorated_output_q())[["table"]]
+    })
+
+    teal.widgets::table_with_settings_srv(
+      id = "table",
+      table_r = table_r
+    )
+
+    decorated_output_q
   })
 }
