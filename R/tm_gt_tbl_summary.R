@@ -230,81 +230,111 @@ srv_gt_tbl_summary <- function(id,
       } else {
         include$dataname
       }
-      #
-      # validate(need(!is.null(dataset), "Specify variables to stratify or to include on the summary table."),
-      #          need(teal.transform::is_single_dataset(by, include), "Input from multiple tables: this module doesn't accept that.")
-      # )
-      #
-      # nam_input <- names(input)
-      # # by
-      # if (!is.null(by)) {
-      #   # browser()
-      #   isolate({by_variable <- input[[nam_input[startsWith(nam_input, "by") & endsWith(nam_input, "select")]]]})
-      # }
-      # # label columns
-      # if (!is.null(col_label)) {
-      #   labels <- col_label
-      # }
-      #
-      # # statistics
-      # if (!is.null(statistics)) {
-      #   validate(need(all(vapply(statistics, is, class2 = "formula", logical(1L))), "All elements of statistics should be formulas"))
-      #   stats <- statistics
-      # }
-      #
-      # # digits
-      # if (!is.null(digits)) {
-      #   integer <- is.integer(digits) && length(digits) >= 1L
-      #   functions <- is.function(digits) || all(vapply(digits, is.function, logical(1L)))
-      #   validate(need(any(integer || functions), "digits should be integer(s) or a function (or list of)"))
-      # }
-      # # type
-      # if (!is.null(type)) {
-      #   possible_types <- c("continuous", "continuous2", "categorical", "dichotomous")
-      #   validate(need(length(type) == 1L && type %in% possible_types,
-      #                 paste0("One of: c(", toString(dQuote(possible_types)), ").")
-      #   ))
-      # }
-      #
-      # # value
-      # if (!is.null(type)) {
-      #   possible_types <- c("continuous", "continuous2", "categorical", "dichotomous")
-      #   validate(need(length(type) == 1L && type %in% possible_types,
-      #                 paste0("One of: c(", toString(dQuote(possible_types)), ").")
-      #   ))
-      # }
-      #
-      # # nonmissing
-      # if (req(input$missing) != "ifany") {
-      #   nonmissing <- input$missing
-      # }
-      #
-      # # nonmissing_text
-      # if (!identical(missing_text, "<Missing>")) {
-      #   valiate(need(is.character(missing_text), "Must be a character."))
-      #   nonmissing_text <- input$missing_text
-      # }
-      # # nonmissing_stat
-      # if (!identical(missing_stat, "{N_miss}")) {
-      #   valiate(need(is.character(missing_stat), "Must be a character to be parsed by glue."))
-      #   nonmissing_stat <- missing_stat
-      # }
-      # # sort
-      # if (!is.null(sort)) {
-      #   validate(need(all(vapply(statistics, is, class2 = "formula", logical(1L))), "All elements of sort should be formulas"))
-      # }
-      # # percent
-      # if (req(input$percent) != "column") {
-      #   percent <- input$percent
-      # }
+
+      validate(need(!is.null(dataset), "Specify variables to stratify or to include on the summary table."),
+               need(teal.transform::is_single_dataset(by, include), "Input from multiple tables: this module doesn't accept that.")
+      )
+
+      nam_input <- names(input)
+      # by
+      if (!is.null(by)) {
+        # browser()
+        by_variable <- input[[nam_input[startsWith(nam_input, "by") & endsWith(nam_input, "select")]]]
+      } else {
+        by_variable <- NULL
+      }
+
+      # label columns
+      if (!is.null(col_label)) {
+        labels <- col_label
+      }
+
+      # statistics
+      if (!is.null(statistics)) {
+        validate(need(all(vapply(statistics, is, class2 = "formula", logical(1L))), "All elements of statistics should be formulas"))
+      }
+
+      # digits
+      if (!is.null(digits)) {
+        integer <- is.integer(digits) && length(digits) >= 1L
+        functions <- is.function(digits) || all(vapply(digits, is.function, logical(1L)))
+        validate(need(any(integer || functions), "digits should be integer(s) or a function (or list of)"))
+      }
+      # type
+      if (!is.null(type)) {
+        possible_types <- c("continuous", "continuous2", "categorical", "dichotomous")
+        validate(need(length(type) == 1L && type %in% possible_types,
+                      paste0("One of: c(", toString(dQuote(possible_types)), ").")
+        ))
+      }
+
+      # value
+      if (!is.null(type)) {
+        possible_types <- c("continuous", "continuous2", "categorical", "dichotomous")
+        validate(need(length(type) == 1L && type %in% possible_types,
+                      paste0("One of: c(", toString(dQuote(possible_types)), ").")
+        ))
+      }
+
+      # nonmissing
+
+      # nonmissing_text
+      if (!identical(missing_text, "<Missing>")) {
+        valiate(need(is.character(missing_text), "Must be a character."))
+        nonmissing_text <- missing_text
+      } else {
+        nonmissing_text <- missing_text
+      }
+      # nonmissing_stat
+      if (!identical(missing_stat, "{N_miss}")) {
+        valiate(need(is.character(missing_stat), "Must be a character to be parsed by glue."))
+        nonmissing_stat <- missing_stat
+      } else {
+        nonmissing_stat <- missing_stat
+      }
+      # sort
+      if (!is.null(sort)) {
+        validate(need(all(vapply(statistics, is, class2 = "formula", logical(1L))), "All elements of sort should be formulas"))
+      }
+      # percent
+      if (req(input$percent) != "column") {
+        percent <- input$percent
+      }
       #
       # # include
-      # if (!is.null(include)) {
-      #   isolate({include_variables <- input[[nam_input[startsWith(nam_input, "include") & endsWith(nam_input, "select")]]]})
-      # }
+      if (!is.null(include)) {
+        include_variables <- input[[nam_input[startsWith(nam_input, "include") & endsWith(nam_input, "select")]]]
+      } else {
+        include_variables <- NULL
+      }
+      # table,
+      # by,
+      # col_label,
+      # statistics,
+      # digits,
+      # type,
+      # value,
+      # missing,
+      # nonmissing_text,
+      # nonmissing_stat,
+      # sort,
+      # percent,
+      # include
 
       call("tbl_roche_summary",
-           data = as.name(dataset)
+           data = as.name(dataset),
+           by = by_variable,
+           label = col_label,
+           statistic = statistics,
+           digits = digits,
+           type = type,
+           value = value,
+           nonmissing = input$missing,
+           nonmissing_text = nonmissing_text,
+           nonmissing_stat = nonmissing_stat,
+           sort = sort,
+           percent = input$percent,
+           include = include_variables
            )
     })
 
@@ -317,21 +347,21 @@ srv_gt_tbl_summary <- function(id,
       )
     })
 
-    # decorated_output_q <- srv_decorate_teal_data(
-    #   id = "decorator",
-    #   data = output_q,
-    #   decorators = select_decorators(decorators, "table"),
-    #   expr = quote(table)
-    # )
-    #
-    # table_r <- reactive({
-    #   req(decorated_output_q())
-    #   table <- decorated_output_q()[["table"]]
-    #   gtsummary::as_gt(table)
-    # })
+    decorated_output_q <- srv_decorate_teal_data(
+      id = "decorator",
+      data = output_q,
+      decorators = select_decorators(decorators, "table"),
+      expr = quote(table)
+    )
+
+    table_r <- reactive({
+      req(decorated_output_q())
+      table <- decorated_output_q()[["table"]]
+      gtsummary::as_gt(table)
+    })
     output$table <- gt::render_gt({
       gtsummary::as_gt(output_q()[["table"]])})
 
-    output_q()
+    decorated_output_q
   })
 }
