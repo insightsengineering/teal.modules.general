@@ -4,7 +4,7 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param ... Other argumments passed (eventually) to gtsummary::tbl_summary()
+#' @param ... Other arguments passed (eventually) to gtsummary::tbl_summary()
 #' Object with all available choices with pre-selected option for being summarized.
 #' @inherit shared_params return
 #'
@@ -231,8 +231,9 @@ srv_gt_tbl_summary <- function(id,
         include$dataname
       }
 
-      validate(need(!is.null(dataset), "Specify variables to stratify or to include on the summary table."),
-               need(teal.transform::is_single_dataset(by, include), "Input from multiple tables: this module doesn't accept that.")
+      validate(
+        need(!is.null(dataset), "Specify variables to stratify or to include on the summary table."),
+        need(teal.transform::is_single_dataset(by, include), "Input from multiple tables: this module doesn't accept that.")
       )
 
       nam_input <- names(input)
@@ -263,16 +264,18 @@ srv_gt_tbl_summary <- function(id,
       # type
       if (!is.null(type)) {
         possible_types <- c("continuous", "continuous2", "categorical", "dichotomous")
-        validate(need(length(type) == 1L && type %in% possible_types,
-                      paste0("One of: c(", toString(dQuote(possible_types)), ").")
+        validate(need(
+          length(type) == 1L && type %in% possible_types,
+          paste0("One of: c(", toString(dQuote(possible_types)), ").")
         ))
       }
 
       # value
       if (!is.null(type)) {
         possible_types <- c("continuous", "continuous2", "categorical", "dichotomous")
-        validate(need(length(type) == 1L && type %in% possible_types,
-                      paste0("One of: c(", toString(dQuote(possible_types)), ").")
+        validate(need(
+          length(type) == 1L && type %in% possible_types,
+          paste0("One of: c(", toString(dQuote(possible_types)), ").")
         ))
       }
 
@@ -314,28 +317,30 @@ srv_gt_tbl_summary <- function(id,
       # include
 
       call("tbl_roche_summary",
-           data = as.name(dataset),
-           by = by_variable,
-           label = col_label,
-           statistic = statistics,
-           digits = digits,
-           type = type,
-           value = value,
-           nonmissing = input$missing,
-           nonmissing_text = missing_text,
-           nonmissing_stat = missing_stat,
-           sort = sort,
-           percent = input$percent,
-           include = include_variables
-           )
+        data = as.name(dataset),
+        by = by_variable,
+        label = col_label,
+        statistic = statistics,
+        digits = digits,
+        type = type,
+        value = value,
+        nonmissing = input$missing,
+        nonmissing_text = missing_text,
+        nonmissing_stat = missing_stat,
+        sort = sort,
+        percent = input$percent,
+        include = include_variables
+      )
     })
 
     output_q <- reactive({
       q <- req(qenv())
       table_call <- req(summary_args())
       within(q,
-             expr = {table <- table_crane},
-             table_crane = table_call
+        expr = {
+          table <- table_crane
+        },
+        table_crane = table_call
       )
     })
 
@@ -352,7 +357,8 @@ srv_gt_tbl_summary <- function(id,
       gtsummary::as_gt(table)
     })
     output$table <- gt::render_gt({
-      gtsummary::as_gt(output_q()[["table"]])})
+      gtsummary::as_gt(output_q()[["table"]])
+    })
 
     decorated_output_q
   })

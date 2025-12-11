@@ -5,9 +5,20 @@
 \title{\code{teal} module: Summary table}
 \usage{
 tm_gt_tbl_summary(
-  label = "label",
-  table,
-  ...,
+  label = "Table summary",
+  by = NULL,
+  col_label = NULL,
+  statistics = list(gtsummary::all_continuous() ~ c("{mean} ({sd})", "{median}",
+    "{min} - {max}"), gtsummary::all_categorical() ~ "{n} ({p}\%)"),
+  digits = NULL,
+  type = NULL,
+  value = NULL,
+  missing = c("ifany", "no", "always"),
+  missing_text = "<Missing>",
+  missing_stat = "{N_nonmiss}",
+  sort = gtsummary::all_categorical(FALSE) ~ "alphanumeric",
+  percent = c("column", "row", "cell"),
+  include = tidyselect::everything(),
   transformators = list(),
   decorators = list()
 )
@@ -15,11 +26,6 @@ tm_gt_tbl_summary(
 \arguments{
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
-
-\item{table}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Object with all available choices with pre-selected option for being summarized.}
-
-\item{...}{Other argumments passed (eventually) to gtsummary::tbl_summary()}
 
 \item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
 To learn more check \code{vignette("transform-input-data", package = "teal")}.}
@@ -30,6 +36,9 @@ decorator for tables or plots included in the module output reported.
 The decorators are applied to the respective output objects.
 
 See section "Decorating Module" below for more details.}
+
+\item{...}{Other arguments passed (eventually) to gtsummary::tbl_summary()
+Object with all available choices with pre-selected option for being summarized.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -49,7 +58,7 @@ A Decorator is applied to the specific output using a named list of \code{teal_t
 The name of this list corresponds to the name of the output to which the decorator is applied.
 See code snippet below:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{tm_t_crosstable(
+\if{html}{\out{<div class="sourceCode">}}\preformatted{tm_gt_tbl_summary(
    ..., # arguments for module
    decorators = list(
      table = teal_transform_module(...) # applied to the `table` output
@@ -80,3 +89,29 @@ For more information on reporting in \code{teal}, see the vignettes:
 
 }
 
+\examples{
+data <- within(teal_data(), {
+  ADSL <- teal.data::rADSL
+})
+join_keys(data) <- default_cdisc_join_keys[names(data)]
+app <- init(
+  data = data,
+  modules = modules(
+    tm_gt_tbl_summary(
+      by = data_extract_spec(dataname = "ADSL", "SEX"),
+      include = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = c("SITEID", "COUNTRY", "ACTARM"),
+          selected = "SITEID",
+          multiple = TRUE,
+          fixed = FALSE
+        )
+      )
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+}
