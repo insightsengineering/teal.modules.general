@@ -216,19 +216,22 @@ app <- init(
   data = data,
   modules = modules(
     tm_gt_tbl_summary(
-      by = data_extract_spec(dataname = "ADSL",
-                             select = select_spec(
-                               choices = c("SEX", "COUNTRY", "SITEID", "ACTARM"),
-                               selected = "SEX",
-                               multiple = FALSE)
+      by = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = c("SEX", "COUNTRY", "SITEID", "ACTARM"),
+          selected = "SEX",
+          multiple = FALSE
+        )
       ),
-      include = data_extract_spec(dataname = "ADSL",
-                                  select = select_spec(
-                                    choices = c("SITEID", "COUNTRY", "ACTARM"),
-                                    selected = "SITEID",
-                                    multiple = TRUE,
-                                    fixed = FALSE
-                                  )
+      include = data_extract_spec(
+        dataname = "ADSL",
+        select = select_spec(
+          choices = c("SITEID", "COUNTRY", "ACTARM"),
+          selected = "SITEID",
+          multiple = TRUE,
+          fixed = FALSE
+        )
       )
     )
   )
