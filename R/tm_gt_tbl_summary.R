@@ -5,7 +5,6 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param ... Other argumments passed (eventually) to gtsummary::tbl_summary()
-#' @param table (`data_extract_spec` or `list` of multiple `data_extract_spec`)
 #' Object with all available choices with pre-selected option for being summarized.
 #' @inherit shared_params return
 #'
@@ -19,7 +18,7 @@
 #' See code snippet below:
 #'
 #' ```
-#' tm_t_crosstable(
+#' tm_gt_tbl_summary(
 #'    ..., # arguments for module
 #'    decorators = list(
 #'      table = teal_transform_module(...) # applied to the `table` output
@@ -43,7 +42,6 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_gt_tbl_summary(
-#'       table = data_extract_spec(dataname = "ADSL"),
 #'       by = data_extract_spec(dataname = "ADSL", "SEX"),
 #'       include = data_extract_spec(
 #'         dataname = "ADSL",
@@ -135,16 +133,12 @@ ui_gt_tbl_summary <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
   teal.widgets::standard_layout(
-    output = teal.widgets::white_small_well(
-      textOutput(ns("title")),
-      # teal.widgets::table_with_settings_ui(ns("table"))
-      gt::gt_output(ns("table"))
-    ),
+    output = gt::gt_output(ns("table")),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("by", "include")]),
       teal.transform::data_extract_ui(ns("by"),
-        label = "Variable(s) to stratify with", ,
+        label = "Variable(s) to stratify with",
         data_extract_spec = args$by
       ),
       teal.transform::data_extract_ui(ns("include"),
@@ -187,6 +181,9 @@ srv_gt_tbl_summary <- function(id,
                                decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
+  checkmate::assert_character(missing_text, len = 1L)
+  checkmate::assert_character(missing_stat, len = 1L)
+
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
@@ -204,13 +201,12 @@ srv_gt_tbl_summary <- function(id,
     # percent,
     # include
 
+    # if (!is.null(by) || !is.null(include)) {
+    #   validate(need(is_single_dataset(list(by = by, include = include)), "Variables should come from the same dataset."))
+    # }
 
     qenv <- reactive({
       obj <- req(data())
-      if (!is.null(input$by) || !is.null(input$include)) {
-        validate(need(is_single_dataset(list(by = input$by, include = input$include)), "Variables should come from the same dataset"))
-        browser()
-      }
       teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card(obj),
@@ -220,18 +216,21 @@ srv_gt_tbl_summary <- function(id,
     })
 
     summary_args <- reactive({
+      # req(qenv())
       # browser()
       # by_input <- names(input)[endsWith(names(input), "-select")]
       # selector_list <- teal.transform::data_extract_multiple_srv(
       #   data_extract = list(by = input$`by-dataset_ADSL_singleextract-select`, include = input$`include-dataset_ADSL_singleextract-select`),
       #   datasets = data)
+      # browser()
+
 
       dataset <- if (!is.null(by)) {
         by$dataname
       } else {
         include$dataname
       }
-
+      #
       # validate(need(!is.null(dataset), "Specify variables to stratify or to include on the summary table."),
       #          need(teal.transform::is_single_dataset(by, include), "Input from multiple tables: this module doesn't accept that.")
       # )
@@ -304,40 +303,35 @@ srv_gt_tbl_summary <- function(id,
       #   isolate({include_variables <- input[[nam_input[startsWith(nam_input, "include") & endsWith(nam_input, "select")]]]})
       # }
 
-      table_crane <- call("tbl_roche_summary",
-        data = as.name(dataset)
-      )
+      call("tbl_roche_summary",
+           data = as.name(dataset)
+           )
     })
 
     output_q <- reactive({
-      q <- req(qenv(), summary_args())
-      browser()
+      q <- req(qenv())
+      table_call <- req(summary_args())
       within(q,
-        {
-          table <- table_crane
-        },
-        table_crane = summary_args()
+             expr = {table <- table_crane},
+             table_crane = table_call
       )
     })
 
-    decorated_output_q <- srv_decorate_teal_data(
-      id = "decorator",
-      data = output_q,
-      decorators = select_decorators(decorators, "table"),
-      expr = quote(table)
-    )
+    # decorated_output_q <- srv_decorate_teal_data(
+    #   id = "decorator",
+    #   data = output_q,
+    #   decorators = select_decorators(decorators, "table"),
+    #   expr = quote(table)
+    # )
+    #
+    # table_r <- reactive({
+    #   req(decorated_output_q())
+    #   table <- decorated_output_q()[["table"]]
+    #   gtsummary::as_gt(table)
+    # })
+    output$table <- gt::render_gt({
+      gtsummary::as_gt(output_q()[["table"]])})
 
-    table_r <- reactive({
-      req(decorated_output_q())
-      table <- decorated_output_q()[["table"]]
-      gtsummary::as_gt(table)
-    })
-
-    teal.widgets::table_with_settings_srv(
-      id = "table",
-      table_r = table_r
-    )
-
-    table_r
+    output_q()
   })
 }
