@@ -297,10 +297,10 @@ srv_gt_tbl_summary <- function(id,
       }
       # percent
       # include
-      if (!is.null(include)) {
-        include_variables <- input[[nam_input[startsWith(nam_input, "include") & endsWith(nam_input, "select")]]]
-      } else {
-        include_variables <- NULL
+      # browser()
+      include_variables <- input[[nam_input[startsWith(nam_input, "include") & endsWith(nam_input, "select")]]]
+      if (is.null(include_variables)) {
+        include_variables <- formals(tm_gt_tbl_summary)$include
       }
       # table,
       # by,
@@ -336,6 +336,7 @@ srv_gt_tbl_summary <- function(id,
     output_q <- reactive({
       q <- req(qenv())
       table_call <- req(summary_args())
+      # browser()
       within(q,
         expr = {
           table <- table_crane
