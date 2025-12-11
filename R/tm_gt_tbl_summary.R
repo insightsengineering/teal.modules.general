@@ -187,23 +187,6 @@ srv_gt_tbl_summary <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    # table,
-    # by,
-    # col_label,
-    # statistics,
-    # digits,
-    # type,
-    # value,
-    # missing,
-    # nonmissing_text,
-    # nonmissing_stat,
-    # sort,
-    # percent,
-    # include
-
-    # if (!is.null(by) || !is.null(include)) {
-    #   validate(need(is_single_dataset(list(by = by, include = include)), "Variables should come from the same dataset."))
-    # }
 
     qenv <- reactive({
       obj <- req(data())
@@ -212,18 +195,16 @@ srv_gt_tbl_summary <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's output(s)")
         )
-      teal.code::eval_code(obj, "library(crane);library(dplyr)")
+      teal.code::eval_code(obj, "library(crane)")
     })
 
     summary_args <- reactive({
-      # req(qenv())
-      # browser()
-      # by_input <- names(input)[endsWith(names(input), "-select")]
-      # selector_list <- teal.transform::data_extract_multiple_srv(
-      #   data_extract = list(by = input$`by-dataset_ADSL_singleextract-select`, include = input$`include-dataset_ADSL_singleextract-select`),
-      #   datasets = data)
-      # browser()
+      req(qenv())
 
+      # table
+      if (!is.null(by) || !is.null(include)) {
+        validate(need(is_single_dataset(list(by = by, include = include)), "Variables should come from the same dataset."))
+      }
 
       dataset <- if (!is.null(by)) {
         by$dataname
@@ -237,12 +218,10 @@ srv_gt_tbl_summary <- function(id,
       )
 
       nam_input <- names(input)
-      # by
+
+      # by: input + corner cases
       if (!is.null(by)) {
-        # browser()
         by_variable <- input[[nam_input[startsWith(nam_input, "by") & endsWith(nam_input, "select")]]]
-      } else {
-        by_variable <- NULL
       }
 
       # label columns
@@ -279,7 +258,7 @@ srv_gt_tbl_summary <- function(id,
         ))
       }
 
-      # nonmissing
+      # nonmissing: input
 
       # nonmissing_text
       if (!identical(missing_text, "<Missing>")) {
@@ -295,26 +274,12 @@ srv_gt_tbl_summary <- function(id,
       if (!is.null(sort)) {
         validate(need(all(vapply(statistics, is, class2 = "formula", logical(1L))), "All elements of sort should be formulas"))
       }
-      # percent
-      # include
-      # browser()
+      # percent: input
+      # include: input + corner cases
       include_variables <- input[[nam_input[startsWith(nam_input, "include") & endsWith(nam_input, "select")]]]
       if (is.null(include_variables)) {
         include_variables <- formals(tm_gt_tbl_summary)$include
       }
-      # table,
-      # by,
-      # col_label,
-      # statistics,
-      # digits,
-      # type,
-      # value,
-      # missing,
-      # nonmissing_text,
-      # nonmissing_stat,
-      # sort,
-      # percent,
-      # include
 
       call("tbl_roche_summary",
         data = as.name(dataset),
@@ -336,7 +301,6 @@ srv_gt_tbl_summary <- function(id,
     output_q <- reactive({
       q <- req(qenv())
       table_call <- req(summary_args())
-      # browser()
       within(q,
         expr = {
           table <- table_crane
