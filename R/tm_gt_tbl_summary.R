@@ -4,14 +4,29 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param ... Other arguments passed (eventually) to gtsummary::tbl_summary()
-#' Object with all available choices with pre-selected option for being summarized.
-#' @inherit shared_params return
+#' @param by (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' Object with all available choices with pre-selected option for how to split the rows
 #'
+#' `data_extract_spec` must not allow multiple selection.
+#' @param include  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' Object with all available choices with pre-selected option for which columns to include as rows.
+#'
+#' `data_extract_spec` can allow multiple selection in this case.
+#' @param col_label Used to override default labels in summary table, e.g. `list(age = "Age, years")`.
+#' The default for each variable is the column label attribute, `attr(., 'label')`.
+#' If no label has been set, the column name is used.
+#' @inheritParams gtsummary::tbl_summary
+#' @inherit shared_params return
+#' @param missing_text String indicating text shown on missing row.
+#' @param missing_stat statistic to show on missing row. Default is `"{N_miss}"`.
+#' Possible values are `N_miss`, `N_obs`, `N_nonmiss`, `p_miss`, `p_nonmiss`.
+#' @inheritSection gtsummary::tbl_summary statistic argument
+#' @inheritSection gtsummary::tbl_summary digits argument
+#' @inheritSection gtsummary::tbl_summary type and value arguments
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `table` (`gtsummary` - output of `crane::tbl_roche_summary()`)
+#' - `table` (`gtsummary` - output of [`crane::tbl_roche_summary()`])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -33,6 +48,7 @@
 #'
 #' @inheritSection teal::example_module Reporting
 #' @export
+#' @importFrom methods is
 #' @examples
 #' data <- within(teal_data(), {
 #'   ADSL <- teal.data::rADSL
@@ -66,18 +82,16 @@ tm_gt_tbl_summary <- function(
   label = "Table summary",
   by = NULL,
   col_label = NULL,
-  statistics = list(
+  statistic = list(
     gtsummary::all_continuous() ~ c("{mean} ({sd})", "{median}", "{min} - {max}"),
     gtsummary::all_categorical() ~ "{n} ({p}%)"
   ),
   digits = NULL,
   type = NULL,
   value = NULL,
-  missing = c("ifany", "no", "always"),
   missing_text = "<Missing>",
   missing_stat = "{N_nonmiss}",
   sort = gtsummary::all_categorical(FALSE) ~ "alphanumeric",
-  percent = c("column", "row", "cell"),
   include = tidyselect::everything(),
   transformators = list(),
   decorators = list()
@@ -104,7 +118,7 @@ tm_gt_tbl_summary <- function(
     server_args = list(
       by = by,
       col_label = col_label,
-      statistics = statistics,
+      statistic = statistic,
       digits = digits,
       type = type,
       value = value,
@@ -162,15 +176,13 @@ srv_gt_tbl_summary <- function(id,
                                data,
                                by,
                                col_label,
-                               statistics,
+                               statistic,
                                digits,
                                type,
                                value,
-                               # missing,
                                missing_text,
                                missing_stat,
                                sort,
-                               # percent,
                                include,
                                decorators) {
   checkmate::assert_class(data, "reactive")
@@ -223,9 +235,9 @@ srv_gt_tbl_summary <- function(id,
         checkmate::check_character(col_label)
       }
 
-      # statistics
-      if (!is.null(statistics)) {
-        validate(need(all(vapply(statistics, is, class2 = "formula", logical(1L))), "All elements of statistics should be formulas"))
+      # statistic
+      if (!is.null(statistic)) {
+        validate(need(all(vapply(statistic, is, class2 = "formula", logical(1L))), "All elements of statistic should be formulas"))
       }
 
       # digits
@@ -266,20 +278,20 @@ srv_gt_tbl_summary <- function(id,
 
       # sort
       if (!is.null(sort)) {
-        validate(need(all(vapply(statistics, is, class2 = "formula", logical(1L))), "All elements of sort should be formulas"))
+        validate(need(all(vapply(sort, is, class2 = "formula", logical(1L))), "All elements of sort should be formulas"))
       }
       # percent: input
       # include: input + corner cases
       include_variables <- input[[nam_input[startsWith(nam_input, "include") & endsWith(nam_input, "select")]]]
       if (is.null(include_variables)) {
-        include_variables <- formals(tm_gt_tbl_summary)$include
+        include_variables <- formals(tbl_summary)$include
       }
 
       call("tbl_roche_summary",
         data = as.name(dataset),
         by = by_variable,
         label = col_label,
-        statistic = statistics,
+        statistic = statistic,
         digits = digits,
         type = type,
         value = value,

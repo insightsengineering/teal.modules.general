@@ -8,16 +8,14 @@ tm_gt_tbl_summary(
   label = "Table summary",
   by = NULL,
   col_label = NULL,
-  statistics = list(gtsummary::all_continuous() ~ c("{mean} ({sd})", "{median}",
+  statistic = list(gtsummary::all_continuous() ~ c("{mean} ({sd})", "{median}",
     "{min} - {max}"), gtsummary::all_categorical() ~ "{n} ({p}\%)"),
   digits = NULL,
   type = NULL,
   value = NULL,
-  missing = c("ifany", "no", "always"),
   missing_text = "<Missing>",
   missing_stat = "{N_nonmiss}",
   sort = gtsummary::all_categorical(FALSE) ~ "alphanumeric",
-  percent = c("column", "row", "cell"),
   include = tidyselect::everything(),
   transformators = list(),
   decorators = list()
@@ -26,6 +24,51 @@ tm_gt_tbl_summary(
 \arguments{
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
+
+\item{by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Object with all available choices with pre-selected option for how to split the rows
+
+\code{data_extract_spec} must not allow multiple selection.}
+
+\item{col_label}{Used to override default labels in summary table, e.g. \code{list(age = "Age, years")}.
+The default for each variable is the column label attribute, \code{attr(., 'label')}.
+If no label has been set, the column name is used.}
+
+\item{statistic}{(\code{\link[gtsummary:syntax]{formula-list-selector}})\cr
+Specifies summary statistics to display for each variable.  The default is
+\code{list(all_continuous() ~ "{median} ({p25}, {p75})", all_categorical() ~ "{n} ({p}\%)")}.
+See below for details.}
+
+\item{digits}{(\code{\link[gtsummary:syntax]{formula-list-selector}})\cr
+Specifies how summary statistics are rounded. Values may be either integer(s)
+or function(s). If not specified, default formatting is assigned
+via \code{assign_summary_digits()}. See below for details.}
+
+\item{type}{(\code{\link[gtsummary:syntax]{formula-list-selector}})\cr
+Specifies the summary type. Accepted value are
+\code{c("continuous", "continuous2", "categorical", "dichotomous")}.
+If not specified, default type is assigned via
+\code{assign_summary_type()}. See below for details.}
+
+\item{value}{(\code{\link[gtsummary:syntax]{formula-list-selector}})\cr
+Specifies the level of a variable to display on a single row.
+The gtsummary type selectors, e.g. \code{all_dichotomous()}, cannot be used
+with this argument. Default is \code{NULL}. See below for details.}
+
+\item{missing_text}{String indicating text shown on missing row.}
+
+\item{missing_stat}{statistic to show on missing row. Default is \code{"{N_miss}"}.
+Possible values are \code{N_miss}, \code{N_obs}, \code{N_nonmiss}, \code{p_miss}, \code{p_nonmiss}.}
+
+\item{sort}{(\code{\link[gtsummary:syntax]{formula-list-selector}})\cr
+Specifies sorting to perform for categorical variables.
+Values must be one of \code{c("alphanumeric", "frequency")}.
+Default is \code{all_categorical(FALSE) ~ "alphanumeric"}.}
+
+\item{include}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Object with all available choices with pre-selected option for which columns to include as rows.
+
+\code{data_extract_spec} can allow multiple selection in this case.}
 
 \item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
 To learn more check \code{vignette("transform-input-data", package = "teal")}.}
@@ -36,9 +79,6 @@ decorator for tables or plots included in the module output reported.
 The decorators are applied to the respective output objects.
 
 See section "Decorating Module" below for more details.}
-
-\item{...}{Other arguments passed (eventually) to gtsummary::tbl_summary()
-Object with all available choices with pre-selected option for being summarized.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
@@ -51,7 +91,7 @@ Generates a table summary from a dataset using gtsummary.
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{table} (\code{gtsummary} - output of \code{crane::tbl_roche_summary()})
+\item \code{table} (\code{gtsummary} - output of \code{\link[crane:tbl_roche_summary]{crane::tbl_roche_summary()}})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
@@ -71,6 +111,84 @@ For additional details and examples of decorators, refer to the vignette
 
 To learn more please refer to the vignette
 \code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
+}
+
+\section{statistic argument}{
+
+
+The statistic argument specifies the statistics presented in the table. The
+input dictates the summary statistics presented in the table. For example,
+\code{statistic = list(age ~ "{mean} ({sd})")} would report the mean and
+standard deviation for age; \code{statistic = list(all_continuous() ~ "{mean} ({sd})")}
+would report the mean and standard deviation for all continuous variables.
+
+The values are interpreted using  \code{\link[glue:glue]{glue::glue()}} syntax:
+a name that appears between curly brackets will be interpreted as a function
+name and the formatted result of that function will be placed in the table.
+
+For categorical variables, the following statistics are available to display:
+\code{{n}} (frequency), \code{{N}} (denominator), \code{{p}} (percent).
+
+For continuous variables, \strong{any univariate function may be used}.
+The most commonly used functions are \code{{median}}, \code{{mean}}, \code{{sd}}, \code{{min}},
+and \code{{max}}.
+Additionally, \verb{{p##}} is available for percentiles, where \verb{##} is an integer from 0 to 100.
+For example, \code{p25: quantile(probs=0.25, type=2)}.
+
+When the summary type is \code{"continuous2"}, pass a vector of statistics.
+Each element of the vector will result in a separate row in the summary table.
+
+For both categorical and continuous variables, statistics on the number of
+missing and non-missing observations and their proportions are available to
+display.
+\itemize{
+\item \code{{N_obs}} total number of observations
+\item \code{{N_miss}} number of missing observations
+\item \code{{N_nonmiss}} number of non-missing observations
+\item \code{{p_miss}} percentage of observations missing
+\item \code{{p_nonmiss}} percentage of observations not missing
+}
+
+}
+
+\section{digits argument}{
+
+
+The digits argument specifies the the number of digits (or formatting function)
+statistics are rounded to.
+
+The values passed can either be a single integer, a vector of integers, a
+function, or a list of functions. If a single integer or function is passed,
+it is recycled to the length of the number of statistics presented.
+For example, if the statistic is \code{"{mean} ({sd})"}, it is equivalent to
+pass \code{1}, \code{c(1, 1)}, \code{label_style_number(digits=1)}, and
+\code{list(label_style_number(digits=1), label_style_number(digits=1))}.
+
+Named lists are also accepted to change the default formatting for a single
+statistic, e.g. \code{list(sd = label_style_number(digits=1))}.
+
+}
+
+\section{type and value arguments}{
+
+
+There are four summary types. Use the \code{type} argument to change the default summary types.
+\itemize{
+\item \code{"continuous"} summaries are shown on a \emph{single row}. Most numeric
+variables default to summary type continuous.
+\item \code{"continuous2"} summaries are shown on \emph{2 or more rows}
+\item \code{"categorical"} \emph{multi-line} summaries of nominal data. Character variables,
+factor variables, and numeric variables with fewer than 10 unique levels default to
+type categorical. To change a numeric variable to continuous that
+defaulted to categorical, use \code{type = list(varname ~ "continuous")}
+\item \code{"dichotomous"} categorical variables that are displayed on a \emph{single row},
+rather than one row per level of the variable.
+Variables coded as \code{TRUE}/\code{FALSE}, \code{0}/\code{1}, or \code{yes}/\code{no} are assumed to be dichotomous,
+and the \code{TRUE}, \code{1}, and \code{yes} rows are displayed.
+Otherwise, the value to display must be specified in the \code{value}
+argument, e.g. \code{value = list(varname ~ "level to show")}
+}
+
 }
 
 \section{Reporting}{
@@ -98,15 +216,19 @@ app <- init(
   data = data,
   modules = modules(
     tm_gt_tbl_summary(
-      by = data_extract_spec(dataname = "ADSL", "SEX"),
-      include = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          choices = c("SITEID", "COUNTRY", "ACTARM"),
-          selected = "SITEID",
-          multiple = TRUE,
-          fixed = FALSE
-        )
+      by = data_extract_spec(dataname = "ADSL",
+                             select = select_spec(
+                               choices = c("SEX", "COUNTRY", "SITEID", "ACTARM"),
+                               selected = "SEX",
+                               multiple = FALSE)
+      ),
+      include = data_extract_spec(dataname = "ADSL",
+                                  select = select_spec(
+                                    choices = c("SITEID", "COUNTRY", "ACTARM"),
+                                    selected = "SITEID",
+                                    multiple = TRUE,
+                                    fixed = FALSE
+                                  )
       )
     )
   )
