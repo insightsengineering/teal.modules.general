@@ -42,15 +42,19 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_gt_tbl_summary(
-#'       by = data_extract_spec(dataname = "ADSL", "SEX"),
-#'       include = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = c("SITEID", "COUNTRY", "ACTARM"),
-#'           selected = "SITEID",
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
+#'       by = data_extract_spec(dataname = "ADSL",
+#'                              select = select_spec(
+#'                                choices = c("SEX", "COUNTRY", "SITEID", "ACTARM"),
+#'                                selected = "SEX",
+#'                                multiple = FALSE)
+#'       ),
+#'       include = data_extract_spec(dataname = "ADSL",
+#'                                   select = select_spec(
+#'                                     choices = c("SITEID", "COUNTRY", "ACTARM"),
+#'                                     selected = "SITEID",
+#'                                     multiple = TRUE,
+#'                                     fixed = FALSE
+#'                                   )
 #'       )
 #'     )
 #'   )
@@ -60,8 +64,6 @@
 #' }
 tm_gt_tbl_summary <- function(
   label = "Table summary",
-  # table,
-  # passed to tbl_summary()
   by = NULL,
   col_label = NULL,
   statistics = list(
@@ -82,9 +84,13 @@ tm_gt_tbl_summary <- function(
 ) {
   message("Initializing tm_gt_tbl_summary")
   checkmate::assert_string(label)
-  # if (inherits(by, "data_extract_spec")) table <- list(by)
-  # checkmate::assert_list(by, types = "data_extract_spec")
-  # assert_single_selection(by)
+  if (inherits(by, "data_extract_spec")) {
+    checkmate::assert_list(list(by), types = "data_extract_spec", null.ok = TRUE, any.missing = FALSE, all.missing = FALSE)
+    assert_single_selection(list(by))
+  }
+  if (inherits(include, "data_extract_spec")) {
+    checkmate::assert_list(list(include), types = "data_extract_spec", any.missing = FALSE, all.missing = FALSE)
+  }
   assert_decorators(decorators, "table")
 
   # Make UI args
@@ -118,18 +124,6 @@ tm_gt_tbl_summary <- function(
 
 
 ui_gt_tbl_summary <- function(id, ...) {
-  # args <- list(by = by,
-  #              # col_label = col_label,
-  #              # statistics = statistics,
-  #              # digits = digits,
-  #              # type = type,
-  #              # value = value,
-  #              missing = missing,
-  #              # nonmissing_text = nonmissing_text,
-  #              # nonmissing_stat = nonmissing_stat,
-  #              # sort = sort,
-  #              percent = percent,
-  #              include = include)
   ns <- NS(id)
   args <- list(...)
   teal.widgets::standard_layout(
