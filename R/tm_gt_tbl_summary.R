@@ -65,18 +65,18 @@ tm_gt_tbl_summary <- function(
   by = NULL,
   col_label = NULL,
   statistics = list(
-    all_continuous() ~ "{median} ({p25}, {p75})",
-    all_categorical() ~ "{n} ({p}%)"
+    gtsummary::all_continuous() ~ c("{mean} ({sd})", "{median}", "{min} - {max}"),
+    gtsummary::all_categorical() ~ "{n} ({p}%)"
   ),
   digits = NULL,
   type = NULL,
   value = NULL,
   missing = c("ifany", "no", "always"),
   missing_text = "<Missing>",
-  missing_stat = "{N_miss}",
-  sort = all_categorical(FALSE) ~ "alphanumeric",
+  missing_stat = "{N_nonmiss}",
+  sort = gtsummary::all_categorical(FALSE) ~ "alphanumeric",
   percent = c("column", "row", "cell"),
-  include = NULL,
+  include = tidyselect::everything(),
   transformators = list(),
   decorators = list()
 ) {
@@ -147,13 +147,13 @@ ui_gt_tbl_summary <- function(id, ...) {
       ),
       radioButtons(
         ns("missing"),
-        label = "Display NA counts",
-        choices = c("If any" = "ifany", "No" = "no", "Always" = "always"),
-        selected = "ifany"
+        label = "Display missing counts:",
+        choices = c("No" = "no", "If any" = "ifany", "Always" = "always"),
+        selected = "no"
       ),
       radioButtons(
         ns("percent"),
-        label = "Percentage based on",
+        label = "Percentage based on:",
         choices = c("Column" = "column", "Row" = "row", "Cell" = "cell"),
         selected = "column"
       ),
@@ -246,7 +246,7 @@ srv_gt_tbl_summary <- function(id,
 
       # label columns
       if (!is.null(col_label)) {
-        labels <- col_label
+        checkmate::check_character(col_label)
       }
 
       # statistics
@@ -258,7 +258,7 @@ srv_gt_tbl_summary <- function(id,
       if (!is.null(digits)) {
         integer <- is.integer(digits) && length(digits) >= 1L
         functions <- is.function(digits) || all(vapply(digits, is.function, logical(1L)))
-        validate(need(any(integer || functions), "digits should be integer(s) or a function (or list of)"))
+        validate(need(any(integer || functions), "digits should be integer(s) or a function (or list of)."))
       }
       # type
       if (!is.null(type)) {
@@ -280,28 +280,20 @@ srv_gt_tbl_summary <- function(id,
 
       # nonmissing_text
       if (!identical(missing_text, "<Missing>")) {
-        valiate(need(is.character(missing_text), "Must be a character."))
-        nonmissing_text <- missing_text
-      } else {
-        nonmissing_text <- missing_text
+        validate(need(is.character(missing_text), "Must be a character."))
       }
+
       # nonmissing_stat
       if (!identical(missing_stat, "{N_miss}")) {
-        valiate(need(is.character(missing_stat), "Must be a character to be parsed by glue."))
-        nonmissing_stat <- missing_stat
-      } else {
-        nonmissing_stat <- missing_stat
+        validate(need(is.character(missing_stat), "Must be a character to be parsed by glue."))
       }
+
       # sort
       if (!is.null(sort)) {
         validate(need(all(vapply(statistics, is, class2 = "formula", logical(1L))), "All elements of sort should be formulas"))
       }
       # percent
-      if (req(input$percent) != "column") {
-        percent <- input$percent
-      }
-      #
-      # # include
+      # include
       if (!is.null(include)) {
         include_variables <- input[[nam_input[startsWith(nam_input, "include") & endsWith(nam_input, "select")]]]
       } else {
@@ -330,8 +322,8 @@ srv_gt_tbl_summary <- function(id,
            type = type,
            value = value,
            nonmissing = input$missing,
-           nonmissing_text = nonmissing_text,
-           nonmissing_stat = nonmissing_stat,
+           nonmissing_text = missing_text,
+           nonmissing_stat = missing_stat,
            sort = sort,
            percent = input$percent,
            include = include_variables
