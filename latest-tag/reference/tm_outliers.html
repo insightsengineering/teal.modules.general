@@ -29,7 +29,7 @@ box plots, density plots, and cumulative distribution plots to help interpret th
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,6 +70,7 @@ box plots, density plots, and cumulative distribution plots to help interpret th
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0">v0.6.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0-rc1">v0.6.0-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.5.1">v0.5.1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.5.1-rc2">v0.5.1-rc2</a>
@@ -104,7 +105,7 @@ box plots, density plots, and cumulative distribution plots to help interpret th
 
       <h1>
 <code>teal</code> module: Outliers analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.5.1/R/tm_outliers.R" class="external-link"><code>R/tm_outliers.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.6.0/R/tm_outliers.R" class="external-link"><code>R/tm_outliers.R</code></a></small>
       <div class="d-none name"><code>tm_outliers.Rd</code></div>
     </div>
 
@@ -251,6 +252,22 @@ See code snippet below:</p>
 <code><a href="https://insightsengineering.github.io/teal/latest-tag/articles/transform-module-output.html" class="external-link">vignette("transform-module-output", package = "teal")</a></code> or the <code><a href="https://insightsengineering.github.io/teal/latest-tag/reference/teal_transform_module.html" class="external-link">teal::teal_transform_module()</a></code> documentation.</p>
     </div>
     <div class="section level2">
+    <h2 id="reporting">Reporting<a class="anchor" aria-label="anchor" href="#reporting"></a>
+</h2>
+
+
+
+
+<p>This module returns an object of class <code>teal_module</code>, that contains a <code>server</code> function.
+Since the server function returns a <code>teal_report</code> object, this makes this module reportable, which means that
+the reporting functionality will be turned on automatically by the <code>teal</code> framework.</p>
+<p>For more information on reporting in <code>teal</code>, see the vignettes:</p>
+<ul>
+<li><p><code><a href="https://insightsengineering.github.io/teal.reporter/latest-tag/articles/reportable-shiny-application.html" class="external-link">vignette("reportable-shiny-application", package = "teal.reporter")</a></code></p></li>
+<li><p><code>vignette("adding-support-for-reporting-to-custom-modules", package = "teal")</code></p></li>
+</ul>
+</div>
+    <div class="section level2">
     <h2 id="examples-in-shinylive">Examples in Shinylive<a class="anchor" aria-label="anchor" href="#examples-in-shinylive"></a>
 </h2>
 
@@ -261,8 +278,8 @@ See code snippet below:</p>
     <a style="height: 800px; display: block;"></a></p></dd>
 
   <dt>example-2</dt>
-<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3EpIe0VCV2HVQnldABeJURXCKvhCEREtXa4TfRX1UgwdJEQSkOgyebG+q6C1W2gyB4sVW6OiiUgKiD2v3qqDpGKkZj3USoOAEH3+-1ZL7u3nNJF4O0xqk00ju9ORzbhyPRmP+6jM6kJsCBak53SM5kiRDwzW+wt+klksTumssuBsttciI8hFJ-nVKO8gDirjwunhACEALJYADSWAAjPDcY3m37s7T+GWGhOG6nCzANrR4no1T8Gi1As5N1v6iZaNE6e7r7fXE3myMf8e5A+LbhHAEjYhy3Cuow7qet6x71FkQbRCGQqUhGo7foWcawJe06DgMKYYTGz4AjI7rEYCqH5nB-oih2TyAVurYcu2aqPNQgjdkxnILP2cJ4cmKLVCKAAkO7kPwAHUdula7nR7Gcey3EwnxfJgIJ1ZPKJMniZJhEnmeF7uqCX6Pr+hZmX6Fm6GZIwjLQJi6MCqihpoOg2LYtRNqI5QQKwDToOwkLCYItDVEFVKMDoOJDEoYCDFcQA" class="external-link">Open in Shinylive</a>
-    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3EpIe0VCV2HVQnldABeJURXCKvhCEREtXa4TfRX1UgwdJEQSkOgyebG+q6C1W2gyB4sVW6OiiUgKiD2v3qqDpGKkZj3USoOAEH3+-1ZL7u3nNJF4O0xqk00ju9ORzbhyPRmP+6jM6kJsCBak53SM5kiRDwzW+wt+klksTumssuBsttciI8hFJ-nVKO8gDirjwunhACEALJYADSWAAjPDcY3m37s7T+GWGhOG6nCzANrR4no1T8Gi1As5N1v6iZaNE6e7r7fXE3myMf8e5A+LbhHAEjYhy3Cuow7qet6x71FkQbRCGQqUhGo7foWcawJe06DgMKYYTGz4AjI7rEYCqH5nB-oih2TyAVurYcu2aqPNQgjdkxnILP2cJ4cmKLVCKAAkO7kPwAHUdula7nR7Gcey3EwnxfJgIJ1ZPKJMniZJhEnmeF7uqCX6Pr+hZmX6Fm6GZIwjLQJi6MCqihpoOg2LYtRNqI5QQKwDToOwkLCYItDVEFVKMDoOJDEoYCDFcQA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
+<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3JD2ioSuw6qE8roALyKiK4BV8IQiImqrXCb4K+qkGDpIiCUh0GTzI31XTmy20GQPFgq3R0USkeUQO2+tVQdIxUjMe6iVBwAjev1+rJfN285pIvC26NUmmkN1piObMMRqPRv3UZnU+NgQLU7O6RnMkSIeEan0F30ksliN3VllwNmtrkRHkIxP86qR3kAcVceF08IAQgBZLAAaSwAEZ4biG03fVnafxSw1x-WUwWYBtaPE9Kqfg0WoFnBvN-UTLRonS3Veb65G02Rt+j3J7824RwBI2IctwLqMG6Hpeke9RZIG0TBkKlLhiOX4FrGsAXlOA4DMm6HRk+AIyG6RGAiheawX6Irtk8AGbi2HJtqqjzUIIXaMZyCx9nCuFJii1QigAJNu5D8P+VFbhWO60WxHHslxMK8XyYACVWTwidJYkSQRx6nuebqgp+D4-gWpm+uZuimSMIy0CYujAqoIaaDoNi2LUjaiOUECsA06DsJCQmCLQ1SBVSjA6DiQxKGAgxXEAA" class="external-link">Open in Shinylive</a>
+    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3JD2ioSuw6qE8roALyKiK4BV8IQiImqrXCb4K+qkGDpIiCUh0GTzI31XTmy20GQPFgq3R0USkeUQO2+tVQdIxUjMe6iVBwAjev1+rJfN285pIvC26NUmmkN1piObMMRqPRv3UZnU+NgQLU7O6RnMkSIeEan0F30ksliN3VllwNmtrkRHkIxP86qR3kAcVceF08IAQgBZLAAaSwAEZ4biG03fVnafxSw1x-WUwWYBtaPE9Kqfg0WoFnBvN-UTLRonS3Veb65G02Rt+j3J7824RwBI2IctwLqMG6Hpeke9RZIG0TBkKlLhiOX4FrGsAXlOA4DMm6HRk+AIyG6RGAiheawX6Irtk8AGbi2HJtqqjzUIIXaMZyCx9nCuFJii1QigAJNu5D8P+VFbhWO60WxHHslxMK8XyYACVWTwidJYkSQRx6nuebqgp+D4-gWpm+uZuimSMIy0CYujAqoIaaDoNi2LUjaiOUECsA06DsJCQmCLQ1SBVSjA6DiQxKGAgxXEAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
     <a style="height: 800px; display: block;"></a></p></dd>
 
 
@@ -328,7 +345,6 @@ See code snippet below:</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">fact_vars_adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Filter</a></span><span class="op">(</span><span class="va">isTRUE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="va">is.factor</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu">choices_selected</span><span class="op">(</span><span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="va">fact_vars_adsl</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">init</span><span class="op">(</span></span></span>

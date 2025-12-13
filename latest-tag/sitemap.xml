@@ -22,9 +22,14 @@
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/add_facet_labels.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/call_fun_dots.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/create_sparklines.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/dot-markdown_internal.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/dot-scale_x_mosaic.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/establish_updating_selection.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/filter_outliers.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/geom_mosaic.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/get_scatterplotmatrix_stats.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/index.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/is_tab_active_js.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/plot_var_summary.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/remove_outliers_from.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/render_single_tab.html</loc></url>
@@ -32,6 +37,8 @@
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/render_tab_table.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/render_tabset_panel_content.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/select_decorators.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/set_chunk_attrs.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/set_chunk_dims.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/shared_params.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/srv_decorate_teal_data.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/teal.modules.general.html</loc></url>
@@ -48,6 +55,7 @@
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/tm_g_scatterplotmatrix.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/tm_missing_data.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/tm_outliers.html</loc></url>
+<url><loc>https://insightsengineering.github.io/teal.modules.general/reference/tm_rmarkdown.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/tm_t_crosstable.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/tm_variable_browser.html</loc></url>
 <url><loc>https://insightsengineering.github.io/teal.modules.general/reference/validate_input.html</loc></url>
