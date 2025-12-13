@@ -1,0 +1,240 @@
+# teal.modules.general
+
+[![CRAN
+Version](https://www.r-pkg.org/badges/version/teal.modules.general?color=green)](https://cran.r-project.org/package=teal.modules.general)
+[![Total
+Downloads](http://cranlogs.r-pkg.org/badges/grand-total/teal.modules.general?color=green)](https://cran.r-project.org/package=teal.modules.general)
+[![Last Month
+Downloads](http://cranlogs.r-pkg.org/badges/last-month/teal.modules.general?color=green)](https://cran.r-project.org/package=teal.modules.general)
+[![Last Week
+Downloads](http://cranlogs.r-pkg.org/badges/last-week/teal.modules.general?color=green)](https://cran.r-project.org/package=teal.modules.general)
+
+[![Check
+🛠](https://github.com/insightsengineering/teal.modules.general/actions/workflows/check.yaml/badge.svg)](https://insightsengineering.github.io/teal.modules.general/main/unit-test-report/)
+[![Docs
+📚](https://github.com/insightsengineering/teal.modules.general/actions/workflows/docs.yaml/badge.svg)](https://insightsengineering.github.io/teal.modules.general/)
+[![Code Coverage
+📔](https://raw.githubusercontent.com/insightsengineering/teal.modules.general/_xml_coverage_reports/data/main/badge.svg)](https://insightsengineering.github.io/teal.modules.general/main/coverage-report/)
+
+![GitHub
+forks](https://img.shields.io/github/forks/insightsengineering/teal.modules.general?style=social)![GitHub
+repo
+stars](https://img.shields.io/github/stars/insightsengineering/teal.modules.general?style=social)
+
+![GitHub commit
+activity](https://img.shields.io/github/commit-activity/m/insightsengineering/teal.modules.general)![GitHub
+contributors](https://img.shields.io/github/contributors/insightsengineering/teal.modules.general)![GitHub
+last
+commit](https://img.shields.io/github/last-commit/insightsengineering/teal.modules.general)![GitHub
+pull
+requests](https://img.shields.io/github/issues-pr/insightsengineering/teal.modules.general)![GitHub
+repo
+size](https://img.shields.io/github/repo-size/insightsengineering/teal.modules.general)![GitHub
+language
+count](https://img.shields.io/github/languages/count/insightsengineering/teal.modules.general)[![Project
+Status: Active – The project has reached a stable, usable state and is
+being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Current
+Version](https://img.shields.io/github/r-package/v/insightsengineering/teal.modules.general/main?color=purple&label=package%20version)](https://github.com/insightsengineering/teal.modules.general/tree/main)
+[![Open
+Issues](https://img.shields.io/github/issues-raw/insightsengineering/teal.modules.general?color=red&label=open%20issues)](https://github.com/insightsengineering/teal.modules.general/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)
+
+This package contains a set of standard `teal` modules for you to
+include in applications. These include modules for:
+
+- viewing data (including `tm_variable_browser`, `tm_data_table`,
+  `tm_file_viewer`, …)
+- visualizing data (`tm_g_scatterplot`, `tm_g_association`, …)
+- understanding missing and outlier values within your data
+  (`tm_missing_data`, `tm_outliers`, …)
+- performing simple data analysis (`tm_a_pca`, `tm_g_distribution`,
+  `tm_a_regression`, …).
+
+These modules work with `CDISC` data, independent datasets and general
+relational data.
+
+Please see [`teal`
+gallery](https://github.com/insightsengineering/teal.gallery) and [TLG
+Catalog](https://github.com/insightsengineering/tlg-catalog) to see
+examples of `teal` apps with modules from this package.
+
+## Installation
+
+``` r
+install.packages('teal.modules.general')
+```
+
+Alternatively, you might want to use the development version.
+
+``` r
+# install.packages("pak")
+pak::pak("insightsengineering/teal.modules.general")
+```
+
+## Usage
+
+To understand how to use this package, please refer to the [Getting
+Started](https://insightsengineering.github.io/teal.modules.general/latest-tag/articles/teal-modules-general.html)
+article, which provides multiple examples of code implementation.
+
+## Playground
+
+You can try out the package without installing it in the Shinylive:
+
+- [stable](https://shinylive.io/r/editor/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCGAC+AXSA)
+- [development](https://shinylive.io/r/editor/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMI1UgSxIGcAKAdzgCMAnAfVQGsA5jy5xURRgAIAvJILMAOmC4BaAK4Q6ANzhdGcJTMlKAFqVKpGiAPTXUJqFxhQdeuBlUbtu-RgAmcFpKuJKCcKQA8rQMEIpg7Nx8QiJiEkoAlJkKEAA2dNyOAJ7M5FA5GDBEfmo5cIwYYRC6ZenZYAC+ALpAA)
+
+## Getting help
+
+If you encounter a bug or have a feature request, please file an issue.
+For questions, discussions, and staying up to date, please use the
+`teal` channel in the [`pharmaverse` slack
+workspace](https://pharmaverse.slack.com).
+
+## Acknowledgment
+
+This package is a result of a joint efforts by many developers and
+stakeholders. We would like to thank everyone who contributed so far!
+
+[![Stargazers repo roster for
+@insightsengineering/teal.modules.general](https://reporoster.com/stars/insightsengineering/teal.modules.general)](https://github.com/insightsengineering/teal.modules.general/stargazers)
+[![Forkers repo roster for
+@insightsengineering/teal.modules.general](https://reporoster.com/forks/insightsengineering/teal.modules.general)](https://github.com/insightsengineering/teal.modules.general/network/members)
+
+## Stargazers over time
+
+[![Stargazers over
+time](https://starchart.cc/insightsengineering/teal.modules.general.svg)](https://starchart.cc/insightsengineering/teal.modules.general)
+
+# Package index
+
+- [`teal.modules.general-package`](https://insightsengineering.github.io/teal.modules.general/reference/teal.modules.general.md)
+  [`teal.modules.general`](https://insightsengineering.github.io/teal.modules.general/reference/teal.modules.general.md)
+  :
+
+  `teal.modules.general`: General modules to add to a `teal` application
+
+## General functionality modules
+
+- [`tm_data_table()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_data_table.md)
+  :
+
+  `teal` module: Data table viewer
+
+- [`tm_file_viewer()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_file_viewer.md)
+  :
+
+  `teal` module: File viewer
+
+- [`tm_front_page()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_front_page.md)
+  :
+
+  `teal` module: Front page
+
+- [`tm_missing_data()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_missing_data.md)
+  :
+
+  `teal` module: Missing data analysis
+
+- [`tm_outliers()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_outliers.md)
+  :
+
+  `teal` module: Outliers analysis
+
+- [`tm_rmarkdown()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_rmarkdown.md)
+  **\[experimental\]** :
+
+  `teal` module: R Markdown render
+
+- [`tm_variable_browser()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_variable_browser.md)
+  :
+
+  `teal` module: Variable browser
+
+## Modules for tables
+
+- [`tm_t_crosstable()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_t_crosstable.md)
+  :
+
+  `teal` module: Cross-table
+
+## Modules for plots
+
+- [`tm_g_association()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_association.md)
+  :
+
+  `teal` module: Stack plots of variables and show association with
+  reference variable
+
+- [`tm_g_bivariate()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_bivariate.md)
+  :
+
+  `teal` module: Univariate and bivariate visualizations
+
+- [`tm_g_distribution()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_distribution.md)
+  :
+
+  `teal` module: Distribution analysis
+
+- [`tm_g_response()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_response.md)
+  :
+
+  `teal` module: Response plot
+
+- [`tm_g_scatterplot()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_scatterplot.md)
+  :
+
+  `teal` module: Scatterplot
+
+- [`tm_g_scatterplotmatrix()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_scatterplotmatrix.md)
+  :
+
+  `teal` module: Scatterplot matrix
+
+- [`tm_a_pca()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_a_pca.md)
+  :
+
+  `teal` module: Principal component analysis
+
+- [`tm_a_regression()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_a_regression.md)
+  :
+
+  `teal` module: Scatterplot and regression analysis
+
+## Utilities functions
+
+- [`add_facet_labels()`](https://insightsengineering.github.io/teal.modules.general/reference/add_facet_labels.md)
+  :
+
+  Add labels for facets to a `ggplot2` object
+
+- [`get_scatterplotmatrix_stats()`](https://insightsengineering.github.io/teal.modules.general/reference/get_scatterplotmatrix_stats.md)
+  : Get stats for x-y pairs in scatterplot matrix
+
+# Articles
+
+### All vignettes
+
+- [Decorate Module
+  Output](https://insightsengineering.github.io/teal.modules.general/articles/decorate-module-output.md):
+- [Getting started with
+  teal.modules.general](https://insightsengineering.github.io/teal.modules.general/articles/teal-modules-general.md):
+- [Using association
+  plot](https://insightsengineering.github.io/teal.modules.general/articles/using-association-plot.md):
+- [Using bivariate
+  plot](https://insightsengineering.github.io/teal.modules.general/articles/using-bivariate-plot.md):
+- [Using cross
+  table](https://insightsengineering.github.io/teal.modules.general/articles/using-cross-table.md):
+- [Using data
+  table](https://insightsengineering.github.io/teal.modules.general/articles/using-data-table.md):
+- [Using outliers
+  module](https://insightsengineering.github.io/teal.modules.general/articles/using-outliers-module.md):
+- [Using regression
+  plots](https://insightsengineering.github.io/teal.modules.general/articles/using-regression-plots.md):
+- [Using response
+  plot](https://insightsengineering.github.io/teal.modules.general/articles/using-response-plot.md):
+- [Using scatterplot
+  matrix](https://insightsengineering.github.io/teal.modules.general/articles/using-scatterplot-matrix.md):
+- [Using
+  scatterplot](https://insightsengineering.github.io/teal.modules.general/articles/using-scatterplot.md):
