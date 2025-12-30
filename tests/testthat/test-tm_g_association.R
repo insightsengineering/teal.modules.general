@@ -244,20 +244,6 @@ testthat::describe("tm_g_association input validation", {
 })
 
 # Helper functions for server behavior tests
-create_test_data <- function(test_data_df) {
-  # Use force to ensure the parameter is evaluated
-  force(test_data_df)
-  shiny::reactive(
-    eval(substitute(
-      within(teal.data::teal_data(), {
-        require(nestcolor)
-        test_data <- df
-      }),
-      list(df = test_data_df)
-    ))
-  )
-}
-
 create_association_module <- function(data, ref_vars, vars_vars, ref_selected, vars_selected, ...) {
   tm_g_association(
     ref = list(
