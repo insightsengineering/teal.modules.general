@@ -315,4 +315,3 @@ testthat::describe("tm_t_crosstable module server behavior", {
     )
   })
 })
-

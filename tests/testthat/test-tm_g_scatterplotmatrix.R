@@ -231,4 +231,3 @@ testthat::describe("tm_g_scatterplotmatrix module server behavior", {
     )
   })
 })
-
