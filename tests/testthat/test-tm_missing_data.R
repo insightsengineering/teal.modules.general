@@ -8,13 +8,13 @@ create_dummy_module_data <- function() {
       x
     }
 
-  iris <- iris
-  mtcars <- mtcars
+    iris <- iris
+    mtcars <- mtcars
 
-  iris[] <- lapply(iris, add_nas)
-  mtcars[] <- lapply(mtcars, add_nas)
-  mtcars[["cyl"]] <- as.factor(mtcars[["cyl"]])
-  mtcars[["gear"]] <- as.factor(mtcars[["gear"]])
+    iris[] <- lapply(iris, add_nas)
+    mtcars[] <- lapply(mtcars, add_nas)
+    mtcars[["cyl"]] <- as.factor(mtcars[["cyl"]])
+    mtcars[["gear"]] <- as.factor(mtcars[["gear"]])
   })
 }
 
@@ -31,13 +31,13 @@ testthat::describe("tm_missing_data module creation", {
   it("creates a teal_module object with pre_output", {
     pre_output <- shiny::actionButton("pre_output", "My pre output")
     default_mod <- tm_missing_data(
-        label = "Missing Data"
+      label = "Missing Data"
     )
     testthat::expect_null(default_mod$ui_args$pre_output)
 
     pre_output_mod <- tm_missing_data(
-        label = "Missing Data",
-        pre_output = pre_output
+      label = "Missing Data",
+      pre_output = pre_output
     )
     testthat::expect_equal(pre_output_mod$ui_args$pre_output, pre_output)
   })
@@ -45,13 +45,13 @@ testthat::describe("tm_missing_data module creation", {
   it("creates a teal_module object with post_output", {
     post_output <- shiny::actionButton("post_output", "My post output")
     default_mod <- tm_missing_data(
-        label = "Missing Data"
+      label = "Missing Data"
     )
     testthat::expect_null(default_mod$ui_args$post_output)
 
     post_output_mod <- tm_missing_data(
-        label = "Missing Data",
-        post_output = post_output
+      label = "Missing Data",
+      post_output = post_output
     )
     testthat::expect_equal(post_output_mod$ui_args$post_output, post_output)
   })
@@ -82,23 +82,24 @@ testthat::describe("tm_missing_data module creation", {
   it("accepts multiple decorators", {
     ggplot_caption_decorator <- function(default_caption = "I am a dummy decorator") {
       teal_transform_module(
-      label = "Caption",
-      ui = function(id) {
-        shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
-      },
-      server = function(id, data) {
-        moduleServer(id, function(input, output, session) {
-          reactive({
-            data() |>
-              within(
-                {
-                  plot <- plot + ggplot2::labs(caption = footnote)
-                },
-                footnote = input$footnote
-              )
+        label = "Caption",
+        ui = function(id) {
+          shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
+        },
+        server = function(id, data) {
+          moduleServer(id, function(input, output, session) {
+            reactive({
+              data() |>
+                within(
+                  {
+                    plot <- plot + ggplot2::labs(caption = footnote)
+                  },
+                  footnote = input$footnote
+                )
+            })
           })
-        })
-      })
+        }
+      )
     }
 
     testthat::expect_s3_class(
@@ -114,7 +115,6 @@ testthat::describe("tm_missing_data module creation", {
   })
 
   it("accepts a transformator", {
-
     transformator_iris <- teal_transform_module(
       label = "Custom transformator for iris",
       ui = function(id) {
@@ -123,17 +123,17 @@ testthat::describe("tm_missing_data module creation", {
           numericInput(ns("n_rows"), "Number of rows to display", value = 6, min = 1, max = 150, step = 1)
         )
       },
-    server = function(id, data) {
-      moduleServer(id, function(input, output, session) {
-        reactive({
-          within(
-            data(),
-            iris <- head(iris, num_rows),
-            num_rows = input$n_rows
-          )
+      server = function(id, data) {
+        moduleServer(id, function(input, output, session) {
+          reactive({
+            within(
+              data(),
+              iris <- head(iris, num_rows),
+              num_rows = input$n_rows
+            )
+          })
         })
-      })
-    }
+      }
     )
 
     testthat::expect_s3_class(
@@ -190,7 +190,7 @@ testthat::describe("tm_missing_data module creation", {
       tm_missing_data(
         label = "Missing Data",
         ggplot2_args = list(
-          default =  teal.widgets::ggplot2_args(
+          default = teal.widgets::ggplot2_args(
             labs = list(title = "User default title"),
             theme = list(legend.position = "right", legend.direction = "vertical")
           ),
@@ -330,7 +330,7 @@ testthat::describe("tm_missing_data input_validation", {
 testthat::describe("tm_missing_data using single or all datasets ui functions", {
   it("uses diferent functions in single or all datasets", {
     mod_single <- tm_missing_data(datanames = "ADSL")
-    mod_all <-  tm_missing_data()
+    mod_all <- tm_missing_data()
 
     expect_false(as.character(mod_single$ui("test")) == as.character(mod_all$ui("test")))
   })
@@ -560,10 +560,10 @@ testthat::describe("tm_missing_data module server behavior", {
           "test_data-ggtheme" = "minimal"
         )
         session$flushReact()
-        
+
         # session$returned() is a reactive, call it to get the value
         result <- session$returned()
-        
+
         testthat::expect_true(inherits(result, "teal_data"))
         testthat::expect_true(inherits(result[["summary_plot"]], "ggplot"))
       }
@@ -604,7 +604,7 @@ testthat::describe("tm_missing_data module server behavior", {
           "test_data-ggtheme" = "gray"
         )
         session$flushReact()
-        
+
         result <- session$returned()
         testthat::expect_true(inherits(result, "teal_data"))
         testthat::expect_true(inherits(result[["by_variable_plot"]], "ggplot"))
@@ -612,5 +612,4 @@ testthat::describe("tm_missing_data module server behavior", {
       }
     )
   })
-  
 })
