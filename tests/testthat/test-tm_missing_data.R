@@ -147,7 +147,10 @@ testthat::describe("tm_missing_data module creation", {
       tm_missing_data(
         label = "Missing Data",
         ggplot2_args = list(
-          default = teal.widgets::ggplot2_args(),
+          default =  teal.widgets::ggplot2_args(
+            labs = list(title = "User default title"),
+            theme = list(legend.position = "right", legend.direction = "vertical")
+          ),
           "Summary Obs" = teal.widgets::ggplot2_args(),
           "Summary Patients" = teal.widgets::ggplot2_args(),
           "Combinations Main" = teal.widgets::ggplot2_args(),
@@ -165,7 +168,7 @@ testthat::describe("tm_missing_data input_validation", {
     testthat::expect_error(
       tm_missing_data(
         label = "Missing Data",
-        plot_height = c(100, 200, 300) # min > max
+        plot_height = c(100, 200, 300) # min > max nolint: commented_code_linter
       ),
       "Assertion on 'plot_height' failed"
     )
@@ -185,7 +188,7 @@ testthat::describe("tm_missing_data input_validation", {
     testthat::expect_error(
       tm_missing_data(
         label = "Missing Data",
-        plot_width = c(100, 200, 300) # min > max
+        plot_width = c(100, 200, 300) # min > max nolint: commented_code_linter
       ),
       "Assertion on 'plot_width' failed"
     )
@@ -298,12 +301,12 @@ testthat::describe("tm_missing_data module server behavior", {
       var2 = c(NA, 2, 3, 4, 5, 6, 7, 8, 9, 10),
       var3 = factor(c("A", "B", "A", NA, "B", "A", "B", "A", "B", "A"))
     ))
-    
+
     mod <- tm_missing_data(
       label = "Missing Data",
       datanames = "test_data"
     )
-    
+
     shiny::testServer(
       mod$server,
       args = c(
@@ -322,19 +325,19 @@ testthat::describe("tm_missing_data module server behavior", {
       }
     )
   })
-  
+
   it("server function handles Combinations tab", {
     data <- create_test_data(data.frame(
       var1 = c(1, 2, NA, 4, 5, 6, 7, 8, 9, 10),
       var2 = c(NA, 2, 3, 4, 5, 6, 7, 8, 9, 10),
       var3 = c(1, NA, 3, 4, 5, 6, 7, 8, 9, 10)
     ))
-    
+
     mod <- tm_missing_data(
       label = "Missing Data",
       datanames = "test_data"
     )
-    
+
     shiny::testServer(
       mod$server,
       args = c(
@@ -355,19 +358,19 @@ testthat::describe("tm_missing_data module server behavior", {
       }
     )
   })
-  
+
   it("server function handles By Variable Levels tab", {
     data <- create_test_data(data.frame(
       group = factor(c("A", "A", "B", "B", "C", "C", "A", "B", "C", "A")),
       var1 = c(1, 2, NA, 4, 5, 6, 7, 8, 9, 10),
       var2 = c(NA, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     ))
-    
+
     mod <- tm_missing_data(
       label = "Missing Data",
       datanames = "test_data"
     )
-    
+
     shiny::testServer(
       mod$server,
       args = c(
@@ -388,19 +391,19 @@ testthat::describe("tm_missing_data module server behavior", {
       }
     )
   })
-  
+
   it("server function handles By Variable Levels tab with proportions", {
     data <- create_test_data(data.frame(
       group = factor(c("A", "A", "B", "B", "C", "C", "A", "B", "C", "A")),
       var1 = c(1, 2, NA, 4, 5, 6, 7, 8, 9, 10),
       var2 = c(NA, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     ))
-    
+
     mod <- tm_missing_data(
       label = "Missing Data",
       datanames = "test_data"
     )
-    
+
     shiny::testServer(
       mod$server,
       args = c(
@@ -421,20 +424,20 @@ testthat::describe("tm_missing_data module server behavior", {
       }
     )
   })
-  
+
   it("server function handles Grouped by Subject tab", {
     data <- create_test_data(data.frame(
       USUBJID = c("S1", "S1", "S2", "S2", "S3", "S3", "S4", "S4", "S5", "S5"),
       var1 = c(1, 2, NA, 4, 5, 6, 7, 8, 9, 10),
       var2 = c(NA, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     ))
-    
+
     mod <- tm_missing_data(
       label = "Missing Data",
       datanames = "test_data",
       parent_dataname = "test_data"
     )
-    
+
     shiny::testServer(
       mod$server,
       args = c(
@@ -452,19 +455,19 @@ testthat::describe("tm_missing_data module server behavior", {
       }
     )
   })
-  
+
   it("server function handles any_na option in Summary tab", {
     data <- create_test_data(data.frame(
       var1 = c(1, 2, NA, 4, 5, 6, 7, 8, 9, 10),
       var2 = c(NA, 2, 3, 4, 5, 6, 7, 8, 9, 10),
       var3 = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     ))
-    
+
     mod <- tm_missing_data(
       label = "Missing Data",
       datanames = "test_data"
     )
-    
+
     shiny::testServer(
       mod$server,
       args = c(
@@ -483,19 +486,19 @@ testthat::describe("tm_missing_data module server behavior", {
       }
     )
   })
-  
+
   it("server function handles different ggtheme options", {
     data <- create_test_data(data.frame(
       var1 = c(1, 2, NA, 4, 5),
       var2 = c(NA, 2, 3, 4, 5)
     ))
-    
+
     mod <- tm_missing_data(
       label = "Missing Data",
       datanames = "test_data",
       ggtheme = "minimal"
     )
-    
+
     shiny::testServer(
       mod$server,
       args = c(
