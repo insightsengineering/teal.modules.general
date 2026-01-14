@@ -80,10 +80,31 @@ testthat::describe("tm_missing_data module creation", {
   })
 
   it("accepts multiple decorators", {
+    ggplot_caption_decorator <- function(default_caption = "I am a dummy decorator") {
+      teal_transform_module(
+      label = "Caption",
+      ui = function(id) {
+        shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
+      },
+      server = function(id, data) {
+        moduleServer(id, function(input, output, session) {
+          reactive({
+            data() |>
+              within(
+                {
+                  plot <- plot + ggplot2::labs(caption = footnote)
+                },
+                footnote = input$footnote
+              )
+          })
+        })
+      })
+    }
+
     testthat::expect_s3_class(
       tm_missing_data(
         decorators = list(
-          summary_plot = teal::teal_transform_module(),
+          summary_plot = ggplot_caption_decorator(),
           combination_plot = teal::teal_transform_module(),
           by_subject_plot = teal::teal_transform_module()
         )
@@ -93,6 +114,28 @@ testthat::describe("tm_missing_data module creation", {
   })
 
   it("accepts a transformator", {
+
+    transformator_iris <- teal_transform_module(
+      label = "Custom transformator for iris",
+      ui = function(id) {
+        ns <- NS(id)
+        tags$div(
+          numericInput(ns("n_rows"), "Number of rows to display", value = 6, min = 1, max = 150, step = 1)
+        )
+      },
+    server = function(id, data) {
+      moduleServer(id, function(input, output, session) {
+        reactive({
+          within(
+            data(),
+            iris <- head(iris, num_rows),
+            num_rows = input$n_rows
+          )
+        })
+      })
+    }
+    )
+
     testthat::expect_s3_class(
       tm_missing_data(
         transformators = list(
@@ -476,13 +519,16 @@ testthat::describe("tm_missing_data module server behavior", {
       ),
       expr = {
         session$setInputs(
+          "dataname_tab" = "test_data",
           "test_data-variables_select" = c("var1", "var2", "var3"),
           "test_data-summary_type" = "Summary",
           "test_data-any_na" = TRUE,
           "test_data-ggtheme" = "gray"
         )
         session$flushReact()
-        testthat::expect_true(inherits(session$returned(), "teal_data"))
+        result <- session$returned()
+        testthat::expect_true(inherits(result, "teal_data"))
+        testthat::expect_true(inherits(result[["summary_plot_obs"]], "tbl"))
       }
     )
   })
@@ -507,14 +553,64 @@ testthat::describe("tm_missing_data module server behavior", {
       ),
       expr = {
         session$setInputs(
+          "dataname_tab" = "test_data",
           "test_data-variables_select" = c("var1", "var2"),
           "test_data-summary_type" = "Summary",
           "test_data-any_na" = FALSE,
           "test_data-ggtheme" = "minimal"
         )
         session$flushReact()
-        testthat::expect_true(inherits(session$returned(), "teal_data"))
+        
+        # session$returned() is a reactive, call it to get the value
+        result <- session$returned()
+        
+        testthat::expect_true(inherits(result, "teal_data"))
+        testthat::expect_true(inherits(result[["summary_plot"]], "ggplot"))
       }
     )
   })
+
+  it("server function handles By Variable Levels tab with labeled columns", {
+    test_df <- data.frame(
+      group = factor(c("A", "A", "B", "B", "C", "C", "A", "B", "C", "A")),
+      var1 = c(1, 2, NA, 4, 5, 6, 7, 8, 9, 10),
+      var2 = c(NA, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    )
+    attr(test_df$group, "label") <- "Group Category"
+    attr(test_df$var1, "label") <- "Variable 1"
+    attr(test_df$var2, "label") <- "Variable 2"
+
+    data <- create_test_data(test_df)
+
+    mod <- tm_missing_data(
+      label = "Missing Data",
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs(
+          "dataname_tab" = "test_data",
+          "test_data-variables_select" = c("group", "var1", "var2"),
+          "test_data-summary_type" = "By Variable Levels",
+          "test_data-group_by_var" = "group",
+          "test_data-group_by_vals" = c("A", "B", "C"),
+          "test_data-count_type" = "counts",
+          "test_data-ggtheme" = "gray"
+        )
+        session$flushReact()
+        
+        result <- session$returned()
+        testthat::expect_true(inherits(result, "teal_data"))
+        testthat::expect_true(inherits(result[["by_variable_plot"]], "ggplot"))
+        testthat::expect_true("label" %in% names(result[["ANL"]]))
+      }
+    )
+  })
+  
 })
