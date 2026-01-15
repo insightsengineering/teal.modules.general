@@ -197,7 +197,8 @@ testthat::describe("tm_g_association input validation", {
           invalid_named_object = teal.widgets::ggplot2_args()
         )
       ),
-      "Assertion on 'names\\(ggplot2_args\\)' failed"
+      "Assertion on 'names(ggplot2_args)' failed",
+      fixed = TRUE
     )
   })
 
