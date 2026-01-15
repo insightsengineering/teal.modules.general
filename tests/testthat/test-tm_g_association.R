@@ -188,13 +188,13 @@ testthat::describe("tm_g_association input validation", {
     }
   })
 
-  it("fails when ggplot2_args has invalid names", {
+  it("fails when ggplot2_args object uses a named object that is not supported", {
     testthat::expect_error(
       tm_g_association(
         ref = mock_data_extract_spec(select_multiple = FALSE),
         vars = mock_data_extract_spec(select_multiple = TRUE),
         ggplot2_args = list(
-          invalid_name = teal.widgets::ggplot2_args()
+          invalid_named_object = teal.widgets::ggplot2_args()
         )
       ),
       "Assertion on 'names\\(ggplot2_args\\)' failed"
