@@ -123,7 +123,7 @@ testthat::describe("tm_g_response input validation", {
       tm_g_response(
         response = mock_data_extract_spec(select_multiple = FALSE),
         x = mock_data_extract_spec(select_multiple = FALSE),
-        plot_height = c(100, 200, 300) # min > max
+        plot_height = c(100, 200, 300) # testing when min > max
       ),
       "Assertion on 'plot_height' failed"
     )
@@ -145,7 +145,7 @@ testthat::describe("tm_g_response input validation", {
       tm_g_response(
         response = mock_data_extract_spec(select_multiple = FALSE),
         x = mock_data_extract_spec(select_multiple = FALSE),
-        plot_width = c(100, 200, 300) # min > max
+        plot_width = c(100, 200, 300) # testing when min > max
       ),
       "Assertion on 'plot_width' failed"
     )

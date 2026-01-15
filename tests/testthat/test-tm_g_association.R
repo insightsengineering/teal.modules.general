@@ -101,7 +101,7 @@ testthat::describe("tm_g_association input validation", {
       tm_g_association(
         ref = mock_data_extract_spec(select_multiple = FALSE),
         vars = mock_data_extract_spec(select_multiple = TRUE),
-        plot_height = c(100, 200, 300) # min > max
+        plot_height = c(100, 200, 300) # testing when min > max
       ),
       "Assertion on 'plot_height' failed"
     )
@@ -123,7 +123,7 @@ testthat::describe("tm_g_association input validation", {
       tm_g_association(
         ref = mock_data_extract_spec(select_multiple = FALSE),
         vars = mock_data_extract_spec(select_multiple = TRUE),
-        plot_width = c(100, 200, 300) # min > max
+        plot_width = c(100, 200, 300) # testing when min > max
       ),
       "Assertion on 'plot_width' failed"
     )
