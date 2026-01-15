@@ -234,7 +234,6 @@ testthat::describe("tm_g_response input validation", {
 })
 
 
-# Server and UI function tests removed - srv_g_response and ui_g_response are not exported
 
 testthat::describe("tm_g_response module server behavior", {
   it("server function executes successfully through module interface", {
