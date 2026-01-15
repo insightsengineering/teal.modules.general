@@ -560,10 +560,10 @@ testthat::describe("tm_missing_data module server behavior", {
           "test_data-ggtheme" = "minimal"
         )
         session$flushReact()
-        
+
         # session$returned() is a reactive, call it to get the value
         result <- session$returned()
-        
+
         testthat::expect_true(inherits(result, "teal_data"))
         testthat::expect_true(inherits(result[["summary_plot"]], "ggplot"))
       }
@@ -604,7 +604,7 @@ testthat::describe("tm_missing_data module server behavior", {
           "test_data-ggtheme" = "gray"
         )
         session$flushReact()
-        
+
         result <- session$returned()
         testthat::expect_true(inherits(result, "teal_data"))
         testthat::expect_true(inherits(result[["by_variable_plot"]], "ggplot"))
