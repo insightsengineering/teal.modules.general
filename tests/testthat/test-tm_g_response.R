@@ -1,4 +1,3 @@
-# Unit tests for tm_g_response module
 
 testthat::describe("tm_g_response module creation", {
   it("creates a teal_module object", {
