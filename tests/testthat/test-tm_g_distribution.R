@@ -6,6 +6,17 @@ testthat::describe("tm_g_distribtuion module creation", {
     )
   })
 
+  it("creates a teal_module object with all data_extract_specs", {
+    testthat::expect_s3_class(
+      tm_g_distribution(
+        dist_var = mock_data_extract_spec("iris", "Petal.Length"),
+        strata_var = mock_data_extract_spec("iris", "Species"),
+        group_var = mock_data_extract_spec("iris", "Species")
+      ),
+      "teal_module"
+    )
+  })
+
   it("creates a teal_module object with list of data extract specs", {
     testthat::expect_s3_class(
       tm_g_distribution(
@@ -168,9 +179,32 @@ testthat::describe("tm_g_distribution input validation", {
 
 testthat::describe("tm_g_response module server behavior", {
   default_distribution_mod <- function() {
-    tm_g_distribution(dist_var = mock_data_extract_spec("iris", "Petal.Length"))
+    tm_g_distribution(
+      dist_var = mock_data_extract_spec("iris", "Petal.Length")
+    )
   }
-  data <- within(teal.data::teal_data(), iris <- iris)
+  data <- within(teal.data::teal_data(), iris <- tibble::rowid_to_column(iris, var = "row_number"))
+  teal.data::join_keys(data) <- teal.data::join_keys(teal.data::join_key("iris", "iris", "row_number"))
+
+  set_shared_inputs <- function(session) {
+    session$setInputs(
+      "dist_i-dataset" = "iris",
+      "dist_i-dataset_iris_singleextract-select" = "Petal.Length",
+      "tabs" = "Histogram",
+      "bins" = 30,
+      "main_type" = "Density",
+      "add_dens" = TRUE,
+      "roundn" = 2,
+      "ggtheme" = "gray",
+
+      "scales_types_ui-scales_type" = "Fixed",
+
+      "t_dist" = "normal",
+      "dist_param1" = 1.18,
+      "dist_param2" = 0.59,
+      "dist_tests" = "Shapiro-Wilk",
+    )
+  }
 
   it("server function fails to execute with missing test", {
     shiny::testServer(
@@ -185,7 +219,7 @@ testthat::describe("tm_g_response module server behavior", {
     )
   })
 
-  it("server function fails to execute with missing test", {
+  it("server function returns teal_report object with valid inputs", {
     shiny::testServer(
       default_distribution_mod()$server,
       args = c(
@@ -193,31 +227,167 @@ testthat::describe("tm_g_response module server behavior", {
         list(id = "test", data = reactive(data))
       ),
       expr = {
+        set_shared_inputs(session)
+        session$flushReact()
+        testthat::expect_s4_class(session$returned(), "teal_report")
+      }
+    )
+  })
+
+  it("server function resets the parameters", {
+    shiny::testServer(
+      default_distribution_mod()$server,
+      args = c(
+        mod$server_args,
+        list(id = "test", data = reactive(data))
+      ),
+      expr = {
+        set_shared_inputs(session)
+        session$setInputs("dist_param1" = "1.2")
+        session$flushReact()
+        session$setInputs("params_reset" = "1")
+        session$flushReact()
+        browser()
+        testthat::expect_s4_class(session$returned(), "teal_report")
+      }
+    )
+  })
+
+  it("server function returns teal_report object with valid inputs (with strata)", {
+    mod <- tm_g_distribution(
+      dist_var = mock_data_extract_spec("iris", "Petal.Length"),
+      strata_var = mock_data_extract_spec("iris", "Species")
+    )
+    shiny::testServer(
+      mod$server,
+      args = c(mod$server_args, list(id = "test", data = reactive(data))),
+      expr = {
+        set_shared_inputs(session)
+        session$setInputs("strata_i-dataset_iris_singleextract-select" = "Species")
+        session$flushReact()
+        testthat::expect_match(
+          teal.code::get_code(session$returned()),
+          "strata_vars <- \"Species\"",
+          all = FALSE,
+          fixed = TRUE
+        )
+      }
+    )
+  })
+
+  it("server function returns teal_report object with valid inputs (with group)", {
+    mod <- tm_g_distribution(
+      dist_var = data_extract_spec(
+        dataname = "iris",
+        select = teal.transform::select_spec(
+          choices = teal.transform::variable_choices("iris", c("Petal.Length", "Sepal.Length")),
+          selected = "Petal.Length",
+        )
+      ),
+      group_var = teal.transform::data_extract_spec(
+        dataname = "iris",
+        filter = teal.transform::filter_spec(
+          vars = teal.transform::choices_selected(
+            teal.transform::variable_choices("iris", c("Species")),
+            selected = "Species",
+          ),
+          multiple = TRUE
+        )
+      )
+    )
+    shiny::testServer(
+      mod$server,
+      args = c(mod$server_args, list(id = "test", data = reactive(data))),
+      expr = {
+        set_shared_inputs(session)
         session$setInputs(
-          "dist_var" = "Petal.Length",
-          "dist_i-dataset" = "iris",
-          "dist_i-dataset_iris_singleextract-select" = "Petal.Length",
-          "tabs" = "Histogram",
-          "bins" = 30,
-          "main_type" = "Density",
-          "add_dens" = TRUE,
-          "roundn" = 2,
-          "ggtheme" = "gray",
-
-          "scales_types_ui-scales_type" = "Fixed",
-
-          "t_dist" = "normal",
-          "dist_param1" = 1.18,
-          "dist_param2" = 0.59,
-          "dist_tests" = "Shapiro-Wilk",
+          "group_i-dataset_iris_singleextract-select" = "Species",
+          "group_i-dataset_iris_singleextract-filter1-vals" = c("setosa", "versicolor", "virginica"),
+          "scales_type" = "Fixed"
         )
         session$flushReact()
-        testthat::expect_error(session$returned())
+        testthat::expect_match(
+          teal.code::get_code(session$returned()),
+          "strata_vars <- \"Species\"",
+          all = FALSE,
+          fixed = TRUE
+        )
       }
     )
   })
 
-  it("server function generates contents provided", {
-    # use shiny::testServer
+  it("server function returns teal_report object with valid inputs (with group and strata)", {
+    mod <- tm_g_distribution(
+      dist_var = data_extract_spec(
+        dataname = "iris",
+        select = teal.transform::select_spec(
+          choices = teal.transform::variable_choices("iris", c("Petal.Length", "Sepal.Length")),
+          selected = "Petal.Length",
+        )
+      ),
+      strata = teal.transform::data_extract_spec(
+        dataname = "iris",
+        select = teal.transform::select_spec(
+          choices = teal.transform::variable_choices("iris", c("Species")),
+          selected = "Species",
+        )
+      ),
+      group_var = teal.transform::data_extract_spec(
+        dataname = "iris",
+        filter = teal.transform::filter_spec(
+          vars = teal.transform::choices_selected(
+            teal.transform::variable_choices("iris", c("Species")),
+            selected = "Species",
+          ),
+          multiple = TRUE
+        )
+      )
+    )
+    shiny::testServer(
+      mod$server,
+      args = c(mod$server_args, list(id = "test", data = reactive(data))),
+      expr = {
+        set_shared_inputs(session)
+        session$setInputs(
+          "strata_i-dataset_iris_singleextract-select" = "Species",
+          "group_i-dataset_iris_singleextract-select" = "Species",
+          "group_i-dataset_iris_singleextract-filter1-vals" = c("setosa", "versicolor", "virginica"),
+          "scales_type" = "Fixed"
+        )
+        session$flushReact()
+        testthat::expect_match(
+          teal.code::get_code(session$returned()),
+          "strata_vars <- c(\"group_i.Species\", \"dist_i.Species\")",
+          all = FALSE,
+          fixed = TRUE
+        )
+      }
+    )
+  })
+})
+
+testthat::describe("tm_g_distribution module ui behavior returns a htmltools tag or taglist", {
+  it("with minimal arguments", {
+    mod <- tm_g_distribution(dist_var = mock_data_extract_spec("iris", "Petal.Length"))
+    ui <- do.call(what = mod$ui, args = c(mod$ui_args, list(id = "test")), quote = TRUE)
+    checkmate::expect_multi_class(ui, c("shiny.tag", "shiny.tag.list"))
+  })
+
+  it("with minimal arguments and strata", {
+    mod <- tm_g_distribution(
+      dist_var = mock_data_extract_spec("iris", "Petal.Length"),
+      strata_var = mock_data_extract_spec("iris", "Species")
+    )
+    ui <- do.call(what = mod$ui, args = c(mod$ui_args, list(id = "test")), quote = TRUE)
+    checkmate::expect_multi_class(ui, c("shiny.tag", "shiny.tag.list"))
+  })
+
+  it("with default arguments and group", {
+    mod <- tm_g_distribution(
+      dist_var = mock_data_extract_spec("iris", "Petal.Length"),
+      group_var = mock_data_extract_spec("iris", "Species")
+    )
+    ui <- do.call(what = mod$ui, args = c(mod$ui_args, list(id = "test")), quote = TRUE)
+    checkmate::expect_multi_class(ui, c("shiny.tag", "shiny.tag.list"))
   })
 })

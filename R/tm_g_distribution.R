@@ -801,7 +801,6 @@ srv_distribution <- function(id,
         qenv <- common_q()
 
         m_type <- if (main_type_var == "Density") "density" else "count"
-
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
             expr = ggplot2::ggplot(ANL, ggplot2::aes(dist_var_name)) +
