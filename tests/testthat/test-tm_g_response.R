@@ -1,4 +1,3 @@
-
 testthat::describe("tm_g_response module creation", {
   it("creates a teal_module object", {
     testthat::expect_s3_class(
