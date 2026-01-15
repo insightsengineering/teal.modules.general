@@ -196,9 +196,7 @@ testthat::describe("tm_g_response module server behavior", {
       "add_dens" = TRUE,
       "roundn" = 2,
       "ggtheme" = "gray",
-
       "scales_types_ui-scales_type" = "Fixed",
-
       "t_dist" = "normal",
       "dist_param1" = 1.18,
       "dist_param2" = 0.59,
