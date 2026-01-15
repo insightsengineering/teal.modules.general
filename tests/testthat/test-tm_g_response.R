@@ -184,14 +184,12 @@ testthat::describe("tm_g_response input validation", {
     }
   })
 
-  it("fails when ggplot2_args is not a ggplot2_args object", {
+  it("fails when ggplot2_args object does not inherit from 'ggplot2_args'", {
     testthat::expect_error(
       tm_g_response(
         response = mock_data_extract_spec(select_multiple = FALSE),
         x = mock_data_extract_spec(select_multiple = FALSE),
-        ggplot2_args = list(
-          invalid_name = teal.widgets::ggplot2_args()
-        )
+        ggplot2_args = list(teal.widgets::ggplot2_args())
       ),
       "Assertion on 'ggplot2_args' failed"
     )
