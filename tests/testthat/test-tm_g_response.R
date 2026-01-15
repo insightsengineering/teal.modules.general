@@ -234,7 +234,6 @@ testthat::describe("tm_g_response input validation", {
 })
 
 
-
 testthat::describe("tm_g_response module server behavior", {
   it("server function executes successfully through module interface", {
     data <- shiny::reactive(
