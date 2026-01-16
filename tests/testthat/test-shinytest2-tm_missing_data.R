@@ -31,7 +31,7 @@ app_driver_tm_missing_data <- function() {
         pre_output = NULL,
         post_output = NULL
       )
-    )
+    ),
     seed = 1
   )
 }
