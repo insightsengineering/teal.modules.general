@@ -32,7 +32,6 @@ app_driver_tm_missing_data <- function() {
         post_output = NULL
       )
     ),
-    timeout = 10000,
     seed = 1
   )
 }
@@ -72,10 +71,8 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
   app_driver$expect_no_validation_error()
   app_driver$wait_for_idle()
 
-  testthat::expect_true(
-    app_driver$is_visible(
-      app_driver$namespaces(TRUE)$module("iris-summary_plot-plot-with-settings")
-    )
+  app_driver$expect_visible(
+    app_driver$namespaces(TRUE)$module("iris-summary_plot-plot-with-settings")
   )
 
   app_driver$stop()
@@ -93,17 +90,13 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
   app_driver$expect_no_validation_error()
   app_driver$wait_for_idle()
 
-  testthat::expect_true(
-    app_driver$is_visible(
-      app_driver$namespaces(TRUE)$module("iris-combination_plot-plot-with-settings")
-    )
+  app_driver$expect_visible(
+    app_driver$namespaces(TRUE)$module("iris-combination_plot-plot-with-settings")
   )
 
   # combination encoding
-  testthat::expect_true(
-    app_driver$is_visible(
-      app_driver$namespaces(TRUE)$module("iris-cutoff .shiny-input-container")
-    )
+  app_driver$expect_visible(
+    app_driver$namespaces(TRUE)$module("iris-cutoff .shiny-input-container")
   )
 
   testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 1L)
@@ -142,11 +135,14 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
   )
   app_driver$set_active_module_input("iris-count_type", "proportions")
   app_driver$wait_for_idle()
-  testthat::expect_true(
-    app_driver$is_visible(
-      app_driver$namespaces(TRUE)$module("iris-by_variable_plot-plot-with-settings")
-    )
+  app_driver$expect_visible(
+    app_driver$namespaces(TRUE)$module("iris-by_variable_plot-plot-with-settings")
   )
+
+  plot_output <- app_driver$get_value(
+    output = gsub("^#", "", app_driver$namespaces(TRUE)$module("iris-by_variable_plot-plot_main"))
+  )
+  testthat::expect_equal(plot_output$coordmap$panels[[1]]$mapping$fill, "perc")
 
   app_driver$stop()
 })
