@@ -597,7 +597,7 @@ srv_distribution <- function(id,
         updateNumericInput(
           inputId = "dist_param2",
           label = params_names[2],
-          value = restoreInput(ns("dist_param1"), params_vals[2])
+          value = restoreInput(ns("dist_param2"), params_vals[2])
         )
       },
       ignoreInit = TRUE
