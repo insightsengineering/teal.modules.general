@@ -24,3 +24,18 @@ normalize_math_italic_text <- function(text) {
     setNames(latin, unlist(stringr::str_split(math_italic, "")))
   )
 }
+
+# Helper function for creating test data in server behavior tests
+create_test_data <- function(test_data_df) {
+  # Use force to ensure the parameter is evaluated
+  force(test_data_df)
+  shiny::reactive(
+    eval(substitute(
+      within(teal.data::teal_data(), {
+        require(nestcolor)
+        test_data <- df
+      }),
+      list(df = test_data_df)
+    ))
+  )
+}
