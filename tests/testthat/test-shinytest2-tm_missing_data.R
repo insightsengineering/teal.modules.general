@@ -139,7 +139,9 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
     app_driver$namespaces(TRUE)$module("iris-by_variable_plot-plot-with-settings")
   )
 
-  plot_output <- app_driver$get_value(output = gsub("^#", "", app_driver$namespaces(TRUE)$module("iris-by_variable_plot-plot_main")))
+  plot_output <- app_driver$get_value(
+    output = gsub("^#", "", app_driver$namespaces(TRUE)$module("iris-by_variable_plot-plot_main"))
+  )
   testthat::expect_equal(plot_output$coordmap$panels[[1]]$mapping$fill, "perc")
 
   app_driver$stop()
