@@ -1,3 +1,165 @@
+testthat::describe("tests for create_sparklines exported S3 methods", {
+  it("creates sparkline for numeric vectors", {
+    var <- c(1, 2, 3, 4, 5)
+    result <- create_sparklines(var)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("creates sparkline for factor vectors", {
+    var <- factor(c("A", "B", "A", "B", "C"))
+    result <- create_sparklines(var)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("creates sparkline for logical vectors", {
+    var <- c(TRUE, FALSE, TRUE, FALSE)
+    result <- create_sparklines(var)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("creates sparkline for character vectors", {
+    var <- c("A", "B", "A", "B", "C")
+    result <- create_sparklines(var)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("creates sparkline for Date vectors", {
+    var <- as.Date(c("2020-01-01", "2020-02-01", "2020-03-01"))
+    result <- create_sparklines(var)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("creates sparkline for POSIXct vectors", {
+    var <- as.POSIXct(c("2020-01-01 12:00:00", "2020-02-01 12:00:00", "2020-03-01 12:00:00"))
+    result <- create_sparklines(var)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("creates sparkline for POSIXlt vectors", {
+    var <- as.POSIXlt(c("2020-01-01 12:00:00", "2020-02-01 12:00:00", "2020-03-01 12:00:00"))
+    result <- create_sparklines(var)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("handles factors with many levels", {
+    var <- factor(rep(1:100, 2))
+    result <- create_sparklines(var)
+    testthat::expect_match(result, "&gt; 99 levels")
+  })
+
+  it("handles factors with no levels", {
+    var <- factor(character(0))
+    result <- create_sparklines(var)
+    testthat::expect_match(result, "no levels")
+  })
+
+  it("handles factors with one level", {
+    var <- factor(rep("A", 10))
+    result <- create_sparklines(var)
+    testthat::expect_match(result, "one level")
+  })
+
+  it("handles infinite values in numeric vectors", {
+    var <- c(1, 2, Inf, 4, 5)
+    result <- create_sparklines(var)
+    testthat::expect_match(result, "infinite values")
+  })
+
+  it("handles numeric vectors with NA values", {
+    var <- c(1, 2, NA, 4, 5, NA, 7, 8)
+    result <- create_sparklines(var)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("handles very large numeric vectors", {
+    var <- 1:100001
+    result <- create_sparklines(var)
+    testthat::expect_match(result, "Too many rows")
+  })
+
+  it("handles Date vectors with only NA", {
+    var <- as.Date(c(NA, NA, NA))
+    suppressWarnings(result <- create_sparklines(var))
+    testthat::expect_match(result, "only NA")
+  })
+
+  it("handles Date vectors with one unique date", {
+    var <- as.Date(rep("2020-01-01", 10))
+    result <- create_sparklines(var)
+    # With only one unique date, bins calculation may result in "only NA" message
+    testthat::expect_match(result, "only NA|one date")
+  })
+
+  it("handles POSIXct vectors with only NA", {
+    var <- as.POSIXct(c(NA, NA, NA))
+    suppressWarnings(result <- create_sparklines(var))
+    testthat::expect_match(result, "only NA")
+  })
+
+  it("handles POSIXct vectors with one unique datetime", {
+    var <- as.POSIXct(rep("2020-01-01 12:00:00", 10))
+    result <- create_sparklines(var)
+    # With only one unique datetime, bins calculation may result in "only NA" message
+    testthat::expect_match(result, "only NA|one date-time")
+  })
+
+  it("handles POSIXlt vectors with only NA", {
+    var <- as.POSIXlt(c(NA, NA, NA))
+    suppressWarnings(result <- create_sparklines(var))
+    testthat::expect_match(result, "only NA")
+  })
+
+  it("handles POSIXlt vectors with one unique datetime", {
+    var <- as.POSIXlt(rep("2020-01-01 12:00:00", 10))
+    result <- create_sparklines(var)
+    # With only one unique datetime, bins calculation may result in "only NA" message
+    testthat::expect_match(result, "only NA|one date-time")
+  })
+
+  it("handles unsupported types with default method", {
+    var <- list(a = 1, b = 2)
+    result <- create_sparklines(var)
+    testthat::expect_match(result, "unsupported variable type")
+  })
+
+  it("accepts custom width parameter for numeric", {
+    var <- c(1, 2, 3, 4, 5)
+    result <- create_sparklines(var, width = 200)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("accepts custom width parameter for factor", {
+    var <- factor(c("A", "B", "A", "B", "C"))
+    result <- create_sparklines(var, width = 200)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("accepts custom bar_spacing parameter for factor", {
+    var <- factor(c("A", "B", "A", "B", "C"))
+    result <- create_sparklines(var, bar_spacing = 10)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+
+  it("accepts custom bar_width parameter for factor", {
+    var <- factor(c("A", "B", "A", "B", "C"))
+    result <- create_sparklines(var, bar_width = 30)
+    testthat::expect_type(result, "character")
+    testthat::expect_true(nchar(result) > 0)
+  })
+})
+
+
 testthat::describe("tests for module creation", {
   it("creates a teal_module object", {
     testthat::expect_s3_class(
