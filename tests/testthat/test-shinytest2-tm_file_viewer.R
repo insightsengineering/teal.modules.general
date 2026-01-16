@@ -13,8 +13,7 @@ app_driver_tm_file_viewer <- function() {
           url = nest_logo_url
         )
       )
-    ),
-    timeout = 10000
+    )
   )
 }
 

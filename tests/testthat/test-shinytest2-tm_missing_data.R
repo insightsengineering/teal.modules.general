@@ -31,8 +31,7 @@ app_driver_tm_missing_data <- function() {
         pre_output = NULL,
         post_output = NULL
       )
-    ),
-    timeout = 10000,
+    )
     seed = 1
   )
 }

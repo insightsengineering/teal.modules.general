@@ -37,8 +37,7 @@ app_driver_tm_g_response <- function() {
           )
         )
       )
-    ),
-    timeout = 10000
+    )
   )
 }
 

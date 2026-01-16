@@ -82,8 +82,7 @@ app_driver_tm_g_bivariate <- function() {
         ggtheme = "classic",
         swap_axes = TRUE
       )
-    ),
-    timeout = 10000
+    )
   )
 }
 
