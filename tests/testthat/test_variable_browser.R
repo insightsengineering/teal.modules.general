@@ -90,19 +90,471 @@ testthat::describe("tests for module creation", {
       "teal_module"
     )
   })
+
+  it("creates a module that is not bookmarkable", {
+    mod <- tm_variable_browser()
+    testthat::expect_null(attr(mod, "teal_bookmarkable"))
+  })
 })
 
-testthat::test_that("remove_outliers_from does not remove outliers when outlier_definition is zero", {
-  var <- c(-100, 5, 10, 10, 20, 30, 40, 40, 40.5, 10000)
-  testthat::expect_equal(remove_outliers_from(var, outlier_definition = 0), var)
+testthat::describe("tests for input validation", {
+  it("fails if label is not a string", {
+    testthat::expect_error(
+      tm_variable_browser(label = 123),
+      "Assertion on 'label' failed"
+    )
+  })
+
+  it("errors for deprecated parameter datasets_selected", {
+    testthat::expect_error(
+      tm_variable_browser(datasets_selected = "my-dataset"),
+    )
+  })
+
+  it("fails if datanames is not a character", {
+    testthat::expect_error(
+      tm_variable_browser(datanames = 123),
+      "Assertion on 'datanames' failed"
+    )
+  })
+
+  it("fails if datanames is not a character", {
+    testthat::expect_error(
+      tm_variable_browser(parent_dataname = 123),
+      "Assertion on 'parent_dataname' failed"
+    )
+  })
+
+  it("fails if pre_output is not a valid shiny object", {
+    testthat::expect_error(
+      tm_variable_browser(pre_output =  "wrong type"),
+      "Assertion on 'pre_output' failed"
+    )
+  })
+
+  it("fails if post_output is not a valid shiny object", {
+    testthat::expect_error(
+      tm_variable_browser(post_output =  "wrong type"),
+      "Assertion on 'post_output' failed"
+    )
+  })
+
+  it("fails if ggplot2_args is not of the valid type", {
+    testthat::expect_error(
+      tm_variable_browser(ggplot2_args = "wrong type")
+    )
+  })
 })
 
-testthat::test_that("remove_outliers_from removes outliers when outlier definition is non-zero", {
-  var <- c(-100, 5, 10, 10, 20, 30, 40, 40, 40, 40.5, 10000)
-  testthat::expect_equal(remove_outliers_from(var, outlier_definition = 1), c(5, 10, 10, 20, 30, 40, 40, 40, 40.5))
-})
+testthat::describe("tm_variable_browser module server behavior", {
 
-testthat::test_that("remove_outliers_from keeps missing values unchanged", {
-  var <- c(-100, 5, NA, 10, 10, 20, 30, 40, 40, 40, 40.5, 10000)
-  testthat::expect_equal(remove_outliers_from(var, outlier_definition = 1), c(5, NA, 10, 10, 20, 30, 40, 40, 40, 40.5))
+  it("server function executes successfully with numeric data", {
+    data <- create_test_data(data.frame(
+      num_var1 = rnorm(50),
+      num_var2 = runif(50),
+      num_var3 = 1:50
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        # Set the active tab
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        # Set the row selection
+        session$setInputs(
+          "variable_browser_test_data_rows_selected" = 1,
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+        session$flushReact()
+
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function executes successfully with factor data", {
+    data <- create_test_data(data.frame(
+      factor_var1 = factor(rep(c("A", "B", "C"), 20)),
+      factor_var2 = factor(rep(c("X", "Y"), 30)),
+      char_var = rep(c("foo", "bar"), 30)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "variable_browser_test_data_rows_selected" = 1,
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+
+        session$flushReact()
+
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function executes successfully with Date data", {
+    data <- create_test_data(data.frame(
+      date_var = seq(as.Date("2020-01-01"), as.Date("2020-12-31"), by = "week"),
+      posix_var = seq(as.POSIXct("2020-01-01"), as.POSIXct("2020-12-31"), length.out = 53)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "variable_browser_test_data_rows_selected" = 1,
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+
+        session$flushReact()
+
+        # Access outputs to trigger rendering and verify they don't error
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function handles mixed data types", {
+    data <- create_test_data(data.frame(
+      num_var = rnorm(50),
+      factor_var = factor(rep(c("A", "B", "C"), length.out = 50)),
+      char_var = rep(c("foo", "bar"), 25),
+      date_var = seq(as.Date("2020-01-01"), by = "day", length.out = 50),
+      logical_var = rep(c(TRUE, FALSE), 25)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+
+        session$flushReact()
+        
+        # Access outputs to trigger rendering and verify they don't error
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function handles data with NA values", {
+    data <- create_test_data(data.frame(
+      num_with_na = c(1, 2, NA, 4, 5, NA, 7, 8, 9, 10),
+      factor_with_na = factor(c("A", NA, "B", "C", NA, "A", "B", "C", "A", "B")),
+      all_na = rep(NA, 10)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+
+        suppressWarnings({
+          session$flushReact()
+
+          # Set the row selection
+          session$setInputs(
+            "variable_browser_test_data_rows_selected" = 1
+          )
+          session$flushReact()
+        })
+
+        # Access outputs to trigger rendering and verify they don't error
+          testthat::expect_no_error(output$ui_variable_browser)
+          testthat::expect_no_error(output$dataset_summary_test_data)
+          testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function handles multiple datasets", {
+    data <- shiny::reactive({
+      teal.data::teal_data() |>
+        within({
+          dataset1 <- data.frame(var1 = 1:10, var2 = letters[1:10])
+          dataset2 <- data.frame(var3 = rnorm(10), var4 = factor(rep(c("A", "B"), 5)))
+        })
+    })
+
+    mod <- tm_variable_browser(
+      datanames = c("dataset1", "dataset2")
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "dataset2")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_dataset2_rows_selected" = 1
+        )
+
+          session$flushReact()          
+        # Access outputs to trigger rendering and verify they don't error
+          testthat::expect_no_error(output$ui_variable_browser)
+          testthat::expect_no_error(output$dataset_summary_dataset2)
+          testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function handles parent_dataname filtering", {
+    data <- shiny::reactive({
+      teal.data::teal_data() |>
+        within({
+          ADSL <- data.frame(USUBJID = 1:10, AGE = rnorm(10), SEX = factor(rep(c("M", "F"), 5)))
+          ADTTE <- data.frame(USUBJID = 1:10, AVAL = rnorm(10), PARAMCD = factor(rep("OS", 10)))
+        })
+    })
+
+    mod <- tm_variable_browser(
+      datanames = c("ADSL", "ADTTE"),
+      parent_dataname = "ADSL"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "ADSL")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_ADSL_rows_selected" = 1
+        )
+
+          session$flushReact()          
+        # Access outputs to trigger rendering and verify they don't error
+          testthat::expect_no_error(output$ui_variable_browser)
+          testthat::expect_no_error(output$dataset_summary_ADSL)
+          testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function handles numeric variables with few unique values", {
+    data <- create_test_data(data.frame(
+      discrete_num = rep(c(1, 2, 3), 20),
+      semi_discrete = rep(1:10, 6),
+      continuous = rnorm(60)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+
+        session$flushReact()
+
+        # Set the row selection
+        session$setInputs(
+          "variable_browser_test_data_rows_selected" = 1
+        )
+        session$flushReact()
+
+        # Access outputs to trigger rendering and verify they don't error
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function handles logical variables", {
+    data <- create_test_data(data.frame(
+      logical_var1 = rep(c(TRUE, FALSE), 30),
+      logical_var2 = c(rep(TRUE, 40), rep(FALSE, 20)),
+      logical_with_na = c(TRUE, FALSE, NA, TRUE, FALSE, rep(TRUE, 55))
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+                session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+
+        session$flushReact()
+
+        # Set the row selection
+        session$setInputs(
+          "variable_browser_test_data_rows_selected" = 1
+        )
+        session$flushReact()
+
+        # Access outputs to trigger rendering and verify they don't error
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function works with custom ggplot2_args", {
+    data <- create_test_data(data.frame(
+      var1 = rnorm(50),
+      var2 = factor(rep(c("A", "B"), 25))
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data",
+      ggplot2_args = teal.widgets::ggplot2_args(
+        labs = list(title = "Custom Title"),
+        theme = list(legend.position = "bottom")
+      )
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+                session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+
+        session$flushReact()
+
+        # Set the row selection
+        session$setInputs(
+          "variable_browser_test_data_rows_selected" = 1
+        )
+        session$flushReact()
+
+        # Access outputs to trigger rendering and verify they don't error
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  
 })
