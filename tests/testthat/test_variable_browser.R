@@ -1068,4 +1068,447 @@ testthat::describe("testServer for data exceptions", {
       }
     )
   })
+
+})
+
+testthat::describe("UI switches and controls", {
+  it("server handles toggling display_density switch", {
+    data <- create_test_data(data.frame(
+      numeric_var = rnorm(100)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+        session$flushReact()
+
+        # Toggle density display OFF
+        session$setInputs("display_density" = FALSE)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+
+        # Toggle density display ON
+        session$setInputs("display_density" = TRUE)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server handles toggling remove_NA_hist for categorical variables", {
+    data <- create_test_data(data.frame(
+      factor_with_na = factor(c("A", "B", NA, "C", "A", NA, "B", "C", "A", "B",
+                                  rep(c("A", "B", "C"), 30)))
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+        session$flushReact()
+
+        # Toggle remove NA OFF
+        session$setInputs("remove_NA_hist" = FALSE)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+
+        # Toggle remove NA ON
+        session$setInputs("remove_NA_hist" = TRUE)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server handles different outlier definition thresholds", {
+    data <- create_test_data(data.frame(
+      numeric_var = c(rnorm(95), 50, 60, 70, -50, -60)  # with outliers
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+        session$flushReact()
+
+        # Enable outlier removal
+        session$setInputs("remove_outliers" = TRUE)
+        session$flushReact()
+
+        # Test different outlier thresholds
+        for (threshold in c(1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5)) {
+          session$setInputs("outlier_definition_slider" = threshold)
+          session$flushReact()
+          testthat::expect_no_error(output$variable_summary_table)
+        }
+
+        # Disable outlier removal
+        session$setInputs("remove_outliers" = FALSE)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server handles numeric_as_factor checkbox toggle", {
+    data <- create_test_data(data.frame(
+      # Numeric with few unique values (< 30)
+      discrete_numeric = rep(c(1, 2, 3, 4, 5), 20)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+        session$flushReact()
+
+        # Treat as continuous (numeric_as_factor = FALSE)
+        session$setInputs("numeric_as_factor" = FALSE)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+
+        # Treat as factor (numeric_as_factor = TRUE)
+        session$setInputs("numeric_as_factor" = TRUE)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+
+        # Toggle display_density when treated as numeric
+        session$setInputs("numeric_as_factor" = FALSE)
+        session$flushReact()
+        session$setInputs("display_density" = TRUE)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+
+        session$setInputs("display_density" = FALSE)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server handles variables with different unique value counts", {
+    data <- create_test_data(data.frame(
+      # Very few unique values (< 6 - default as factor)
+      very_discrete = rep(c(1, 2, 3), 40),
+      # Some unique values (6-29 - user can choose)
+      somewhat_discrete = rep(1:15, 8),
+      # Many unique values (>= 30 - always continuous)
+      continuous = 1:120
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+
+        # Test very discrete (should default to factor)
+        session$setInputs("variable_browser_test_data_rows_selected" = 1)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+
+        # Test somewhat discrete (user can toggle)
+        session$setInputs("variable_browser_test_data_rows_selected" = 2)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+
+        # Test continuous (no factor option)
+        session$setInputs("variable_browser_test_data_rows_selected" = 3)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server handles categorical variables with many levels", {
+    data <- create_test_data(data.frame(
+      # Factor with >= 30 levels (many categories)
+      many_categories = factor(rep(paste0("Cat", 1:40), 5))
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+        session$flushReact()
+
+        # Should not show remove_NA_hist option for many levels
+        testthat::expect_no_error(output$variable_summary_table)
+        testthat::expect_no_error(output$ui_histogram_display)
+      }
+    )
+  })
+
+  it("server handles data without join_keys", {
+    data <- shiny::reactive({
+      # Create teal_data without join_keys
+      td <- teal.data::teal_data()
+      td <- within(td, {
+        dataset1 <- data.frame(var1 = 1:10, var2 = rnorm(10))
+      })
+      td
+    })
+
+    mod <- tm_variable_browser(
+      datanames = "dataset1"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "dataset1")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_dataset1_rows_selected" = 1
+        )
+        session$flushReact()
+
+        testthat::expect_no_error(output$dataset_summary_dataset1)
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server handles variables with all NA values", {
+    data <- create_test_data(data.frame(
+      all_na_numeric = rep(NA_real_, 50),
+      all_na_character = rep(NA_character_, 50),
+      all_na_factor = factor(rep(NA, 50))
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+
+        # Test all NA numeric
+        suppressWarnings({
+          session$setInputs("variable_browser_test_data_rows_selected" = 1)
+          session$flushReact()
+        })
+        testthat::expect_no_error(output$variable_summary_table)
+
+        # Test all NA character
+        suppressWarnings({
+          session$setInputs("variable_browser_test_data_rows_selected" = 2)
+          session$flushReact()
+        })
+        testthat::expect_no_error(output$variable_summary_table)
+
+        # Test all NA factor
+        suppressWarnings({
+          session$setInputs("variable_browser_test_data_rows_selected" = 3)
+          session$flushReact()
+        })
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server handles wrap_character parameter for long labels", {
+    data <- create_test_data(data.frame(
+      long_labels = factor(c(
+        "Very Long Category Name That Should Be Wrapped",
+        "Another Very Long Category Name",
+        "Yet Another Extremely Long Category Name",
+        "Short"
+      ) |> rep(25))
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+        session$flushReact()
+
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server handles combined outlier removal and density display", {
+    data <- create_test_data(data.frame(
+      numeric_var = c(rnorm(90), rep(c(100, -100), 5))
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+        session$flushReact()
+
+        # Enable both outlier removal and density display
+        session$setInputs(
+          "remove_outliers" = TRUE,
+          "outlier_definition_slider" = 3,
+          "display_density" = TRUE
+        )
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+
+        # Outliers ON, density OFF
+        session$setInputs("display_density" = FALSE)
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+
+        # Outliers OFF, density ON
+        session$setInputs(
+          "remove_outliers" = FALSE,
+          "display_density" = TRUE
+        )
+        session$flushReact()
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
 })
