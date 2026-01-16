@@ -717,6 +717,355 @@ testthat::describe("tm_variable_browser module server behavior", {
       }
     )
   })
+})
 
-  
+testthat::describe("testServer for data exceptions", {
+  it("server function handles empty dataframes", {
+    data <- create_test_data(data.frame())
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+      }
+    )
+  })
+
+  it("server function handles single row dataframes", {
+    data <- create_test_data(data.frame(
+      var1 = 1,
+      var2 = "A",
+      var3 = TRUE
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        suppressWarnings({
+          session$setInputs("tabset_panel" = "test_data")
+          session$flushReact()
+
+          session$setInputs(
+            "ggplot_theme" = "grey",
+            "font_size" = 15,
+            "label_rotation" = 45,
+            "variable_browser_test_data_rows_selected" = 1
+          )
+
+          session$flushReact()
+        })
+
+
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function handles single column dataframes", {
+    data <- create_test_data(data.frame(
+      single_var = rnorm(100)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+
+        session$flushReact()
+
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function handles different ggplot themes", {
+    data <- create_test_data(data.frame(
+      var1 = rnorm(50),
+      var2 = factor(rep(c("A", "B"), 25))
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        # Test different themes
+        for (theme in c("grey", "bw", "minimal", "classic", "dark")) {
+          session$setInputs(
+            "ggplot_theme" = theme,
+            "font_size" = 15,
+            "label_rotation" = 45,
+            "variable_browser_test_data_rows_selected" = 1
+          )
+          session$flushReact()
+
+          testthat::expect_no_error(output$variable_summary_table)
+        }
+      }
+    )
+  })
+
+  it("server function handles different font sizes", {
+    data <- create_test_data(data.frame(
+      var1 = rnorm(50)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        # Test different font sizes
+        for (font_size in c(10, 12, 15, 18, 20)) {
+          session$setInputs(
+            "ggplot_theme" = "grey",
+            "font_size" = font_size,
+            "label_rotation" = 45,
+            "variable_browser_test_data_rows_selected" = 1
+          )
+          session$flushReact()
+
+          testthat::expect_no_error(output$variable_summary_table)
+        }
+      }
+    )
+  })
+
+  it("server function handles different label rotations", {
+    data <- create_test_data(data.frame(
+      var1 = rnorm(50)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        # Test different label rotations
+        for (rotation in c(0, 45, 90)) {
+          session$setInputs(
+            "ggplot_theme" = "grey",
+            "font_size" = 15,
+            "label_rotation" = rotation,
+            "variable_browser_test_data_rows_selected" = 1
+          )
+          session$flushReact()
+
+          testthat::expect_no_error(output$variable_summary_table)
+        }
+      }
+    )
+  })
+
+  it("server function handles switching between different variables", {
+    data <- create_test_data(data.frame(
+      numeric_var = rnorm(50),
+      factor_var = factor(rep(c("A", "B", "C"), length.out = 50)),
+      logical_var = rep(c(TRUE, FALSE), 25),
+      date_var = seq(as.Date("2020-01-01"), by = "day", length.out = 50)
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+
+        # Test switching between different variables
+        for (row_num in 1:4) {
+          session$setInputs(
+            "variable_browser_test_data_rows_selected" = row_num
+          )
+          session$flushReact()
+
+          testthat::expect_no_error(output$variable_summary_table)
+        }
+      }
+    )
+  })
+
+  it("server function handles datasets with special characters in names", {
+    data <- shiny::reactive({
+      teal.data::teal_data() |>
+        within({
+          `data-with-dashes` <- data.frame(var1 = 1:10, var2 = letters[1:10])
+        })
+    })
+
+    mod <- tm_variable_browser(
+      datanames = "data-with-dashes"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "data-with-dashes")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_data-with-dashes_rows_selected" = 1
+        )
+
+        session$flushReact()
+
+        testthat::expect_no_error(output$ui_variable_browser)
+      }
+    )
+  })
+
+  it("server function handles integer variables", {
+    data <- create_test_data(data.frame(
+      int_var = as.integer(1:100),
+      int_with_na = as.integer(c(1:50, rep(NA, 50)))
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+
+        session$flushReact()
+
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+
+  it("server function handles factors with ordered levels", {
+    data <- create_test_data(data.frame(
+      ordered_factor = ordered(rep(c("Low", "Medium", "High"), length.out = 60), 
+                               levels = c("Low", "Medium", "High"))
+    ))
+
+    mod <- tm_variable_browser(
+      datanames = "test_data"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45,
+          "variable_browser_test_data_rows_selected" = 1
+        )
+
+        session$flushReact()
+
+        testthat::expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
 })
