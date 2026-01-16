@@ -163,8 +163,7 @@ testthat::describe("tests for create_sparklines exported S3 methods", {
 testthat::describe("tests for module creation", {
   it("creates a teal_module object", {
     testthat::expect_s3_class(
-      tm_variable_browser(
-      ),
+      tm_variable_browser(),
       "teal_module"
     )
   })
@@ -209,45 +208,45 @@ testthat::describe("tests for module creation", {
     testthat::expect_equal(post_output_mod$ui_args$post_output, post_output)
   })
 
-    it("accepts a transformator", {
-      transformator_iris <- teal_transform_module(
-        label = "Custom transformator for iris",
-        ui = function(id) {
-          ns <- NS(id)
-          tags$div(
-            numericInput(ns("n_rows"), "Number of rows to display", value = 6, min = 1, max = 150, step = 1)
-          )
-        },
-        server = function(id, data) {
-          moduleServer(id, function(input, output, session) {
-            reactive({
-              within(
-                data(),
-                iris <- head(iris, num_rows),
-                num_rows = input$n_rows
-              )
-            })
+  it("accepts a transformator", {
+    transformator_iris <- teal_transform_module(
+      label = "Custom transformator for iris",
+      ui = function(id) {
+        ns <- NS(id)
+        tags$div(
+          numericInput(ns("n_rows"), "Number of rows to display", value = 6, min = 1, max = 150, step = 1)
+        )
+      },
+      server = function(id, data) {
+        moduleServer(id, function(input, output, session) {
+          reactive({
+            within(
+              data(),
+              iris <- head(iris, num_rows),
+              num_rows = input$n_rows
+            )
           })
-        }
-      )
+        })
+      }
+    )
 
-      testthat::expect_s3_class(
-        tm_variable_browser(
-          transformators = list(
-            teal::teal_transform_module()
-          )
-        ),
-        "teal_module"
-      )
+    testthat::expect_s3_class(
+      tm_variable_browser(
+        transformators = list(
+          teal::teal_transform_module()
+        )
+      ),
+      "teal_module"
+    )
   })
 
   it("accepts valid ggplot2_args", {
     testthat::expect_s3_class(
       tm_variable_browser(
         ggplot2_args = teal.widgets::ggplot2_args(
-            labs = list(title = "User default title"),
-            theme = list(legend.position = "right", legend.direction = "vertical")
-          )
+          labs = list(title = "User default title"),
+          theme = list(legend.position = "right", legend.direction = "vertical")
+        )
       ),
       "teal_module"
     )
@@ -289,14 +288,14 @@ testthat::describe("tests for input validation", {
 
   it("fails if pre_output is not a valid shiny object", {
     testthat::expect_error(
-      tm_variable_browser(pre_output =  "wrong type"),
+      tm_variable_browser(pre_output = "wrong type"),
       "Assertion on 'pre_output' failed"
     )
   })
 
   it("fails if post_output is not a valid shiny object", {
     testthat::expect_error(
-      tm_variable_browser(post_output =  "wrong type"),
+      tm_variable_browser(post_output = "wrong type"),
       "Assertion on 'post_output' failed"
     )
   })
@@ -309,7 +308,6 @@ testthat::describe("tests for input validation", {
 })
 
 testthat::describe("tm_variable_browser module server behavior", {
-
   it("server function executes successfully with numeric data", {
     data <- create_test_data(data.frame(
       num_var1 = rnorm(50),
@@ -500,9 +498,9 @@ testthat::describe("tm_variable_browser module server behavior", {
         })
 
         # Access outputs to trigger rendering and verify they don't error
-          testthat::expect_no_error(output$ui_variable_browser)
-          testthat::expect_no_error(output$dataset_summary_test_data)
-          testthat::expect_no_error(output$variable_summary_table)
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_test_data)
+        testthat::expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -537,11 +535,11 @@ testthat::describe("tm_variable_browser module server behavior", {
           "variable_browser_dataset2_rows_selected" = 1
         )
 
-          session$flushReact()
+        session$flushReact()
         # Access outputs to trigger rendering and verify they don't error
-          testthat::expect_no_error(output$ui_variable_browser)
-          testthat::expect_no_error(output$dataset_summary_dataset2)
-          testthat::expect_no_error(output$variable_summary_table)
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_dataset2)
+        testthat::expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -577,11 +575,11 @@ testthat::describe("tm_variable_browser module server behavior", {
           "variable_browser_ADSL_rows_selected" = 1
         )
 
-          session$flushReact()
+        session$flushReact()
         # Access outputs to trigger rendering and verify they don't error
-          testthat::expect_no_error(output$ui_variable_browser)
-          testthat::expect_no_error(output$dataset_summary_ADSL)
-          testthat::expect_no_error(output$variable_summary_table)
+        testthat::expect_no_error(output$ui_variable_browser)
+        testthat::expect_no_error(output$dataset_summary_ADSL)
+        testthat::expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -647,7 +645,7 @@ testthat::describe("tm_variable_browser module server behavior", {
         mod$server_args
       ),
       expr = {
-                session$setInputs("tabset_panel" = "test_data")
+        session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
 
         session$setInputs(
@@ -693,7 +691,7 @@ testthat::describe("tm_variable_browser module server behavior", {
         mod$server_args
       ),
       expr = {
-                session$setInputs("tabset_panel" = "test_data")
+        session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
 
         session$setInputs(
@@ -1038,7 +1036,8 @@ testthat::describe("testServer for data exceptions", {
   it("server function handles factors with ordered levels", {
     data <- create_test_data(data.frame(
       ordered_factor = ordered(rep(c("Low", "Medium", "High"), length.out = 60),
-                               levels = c("Low", "Medium", "High"))
+        levels = c("Low", "Medium", "High")
+      )
     ))
 
     mod <- tm_variable_browser(
@@ -1068,7 +1067,6 @@ testthat::describe("testServer for data exceptions", {
       }
     )
   })
-
 })
 
 testthat::describe("UI switches and controls", {
@@ -1114,8 +1112,10 @@ testthat::describe("UI switches and controls", {
 
   it("server handles toggling remove_NA_hist for categorical variables", {
     data <- create_test_data(data.frame(
-      factor_with_na = factor(c("A", "B", NA, "C", "A", NA, "B", "C", "A", "B",
-                                  rep(c("A", "B", "C"), 30)))
+      factor_with_na = factor(c(
+        "A", "B", NA, "C", "A", NA, "B", "C", "A", "B",
+        rep(c("A", "B", "C"), 30)
+      ))
     ))
 
     mod <- tm_variable_browser(
@@ -1155,7 +1155,7 @@ testthat::describe("UI switches and controls", {
 
   it("server handles different outlier definition thresholds", {
     data <- create_test_data(data.frame(
-      numeric_var = c(rnorm(95), 50, 60, 70, -50, -60)  # with outliers
+      numeric_var = c(rnorm(95), 50, 60, 70, -50, -60) # with outliers
     ))
 
     mod <- tm_variable_browser(
