@@ -101,7 +101,7 @@ testthat::describe("tm_g_association input validation", {
       tm_g_association(
         ref = mock_data_extract_spec(select_multiple = FALSE),
         vars = mock_data_extract_spec(select_multiple = TRUE),
-        plot_height = c(100, 200, 300) # min > max
+        plot_height = c(100, 200, 300) # testing when min > max
       ),
       "Assertion on 'plot_height' failed"
     )
@@ -123,7 +123,7 @@ testthat::describe("tm_g_association input validation", {
       tm_g_association(
         ref = mock_data_extract_spec(select_multiple = FALSE),
         vars = mock_data_extract_spec(select_multiple = TRUE),
-        plot_width = c(100, 200, 300) # min > max
+        plot_width = c(100, 200, 300) # testing when min > max
       ),
       "Assertion on 'plot_width' failed"
     )
@@ -188,16 +188,17 @@ testthat::describe("tm_g_association input validation", {
     }
   })
 
-  it("fails when ggplot2_args has invalid names", {
+  it("fails when ggplot2_args object uses a named object that is not supported", {
     testthat::expect_error(
       tm_g_association(
         ref = mock_data_extract_spec(select_multiple = FALSE),
         vars = mock_data_extract_spec(select_multiple = TRUE),
         ggplot2_args = list(
-          invalid_name = teal.widgets::ggplot2_args()
+          invalid_named_object = teal.widgets::ggplot2_args()
         )
       ),
-      "Assertion on 'names\\(ggplot2_args\\)' failed"
+      "Assertion on 'names(ggplot2_args)' failed",
+      fixed = TRUE
     )
   })
 

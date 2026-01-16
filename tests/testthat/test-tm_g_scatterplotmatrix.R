@@ -77,7 +77,7 @@ testthat::describe("tm_g_scatterplotmatrix input validation", {
     testthat::expect_error(
       tm_g_scatterplotmatrix(
         variables = mock_data_extract_spec(select_multiple = TRUE),
-        plot_height = c(100, 200, 300) # min > max
+        plot_height = c(100, 200, 300) # testing when min > max
       ),
       "Assertion on 'plot_height' failed"
     )
@@ -97,7 +97,7 @@ testthat::describe("tm_g_scatterplotmatrix input validation", {
     testthat::expect_error(
       tm_g_scatterplotmatrix(
         variables = mock_data_extract_spec(select_multiple = TRUE),
-        plot_width = c(100, 200, 300) # min > max
+        plot_width = c(100, 200, 300) # testing when min > max
       ),
       "Assertion on 'plot_width' failed"
     )
@@ -138,27 +138,26 @@ testthat::describe("tm_g_scatterplotmatrix input validation", {
   })
 })
 
-
-create_scatterplotmatrix_module <- function(data, vars, vars_selected, ...) {
-  tm_g_scatterplotmatrix(
-    variables = list(
-      teal.transform::data_extract_spec(
-        dataname = "test_data",
-        select = teal.transform::select_spec(
-          choices = teal.transform::variable_choices(
-            data = isolate(data())[["test_data"]],
-            vars
-          ),
-          selected = vars_selected,
-          multiple = TRUE
-        )
-      )
-    ),
-    ...
-  )
-}
-
 testthat::describe("tm_g_scatterplotmatrix module server behavior", {
+  create_scatterplotmatrix_mod <- function(data, vars, vars_selected, ...) {
+    tm_g_scatterplotmatrix(
+      variables = list(
+        teal.transform::data_extract_spec(
+          dataname = "test_data",
+          select = teal.transform::select_spec(
+            choices = teal.transform::variable_choices(
+              data = isolate(data())[["test_data"]],
+              vars
+            ),
+            selected = vars_selected,
+            multiple = TRUE
+          )
+        )
+      ),
+      ...
+    )
+  }
+
   it("server function executes successfully through module interface", {
     test_data_df <- data.frame(
       var1 = rnorm(30),
@@ -167,7 +166,7 @@ testthat::describe("tm_g_scatterplotmatrix module server behavior", {
     )
     data <- create_test_data(test_data_df)
 
-    mod <- create_scatterplotmatrix_module(
+    mod <- create_scatterplotmatrix_mod(
       data,
       vars = c("var1", "var2", "var3"),
       vars_selected = c("var1", "var2", "var3")
@@ -203,7 +202,7 @@ testthat::describe("tm_g_scatterplotmatrix module server behavior", {
     )
     data <- create_test_data(test_data_df)
 
-    mod <- create_scatterplotmatrix_module(
+    mod <- create_scatterplotmatrix_mod(
       data,
       vars = c("var1", "var2", "var3"),
       vars_selected = c("var1", "var2")

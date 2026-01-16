@@ -7,6 +7,13 @@ init_teal_app_driver <- function(...) {
   testthat::with_mocked_bindings(
     {
       TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
+      dots <- list(...)
+      if (!is.null(dots$load_timeout)) {
+        dots$load_timeout <- 150 * 1000
+      }
+      if (!is.null(dots$timeout)) {
+        dots$timeout <- 60 * 1000
+      }
       TealAppDriver$new(...)
     },
     shinyApp = function(ui, server, ...) {
