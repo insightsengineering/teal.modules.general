@@ -14,7 +14,7 @@ init_teal_app_driver <- function(...) {
       if (!is.null(dots$timeout)) {
         dots$timeout <- 60 * 1000
       }
-      TealAppDriver$new(...)
+      TealAppDriver$new(dots)
     },
     shinyApp = function(ui, server, ...) {
       functionBody(server) <- bquote({
