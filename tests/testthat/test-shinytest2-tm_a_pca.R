@@ -29,8 +29,7 @@ app_driver_tm_a_pca <- function() {
         pre_output = shiny::tags$div(id = "unique_id_pre", "A pre output"),
         post_output = shiny::tags$div(id = "unique_id_post", "A post output")
       )
-    ),
-    timeout = 10000
+    )
   )
 }
 

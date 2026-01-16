@@ -32,7 +32,6 @@ app_driver_tm_missing_data <- function() {
         post_output = NULL
       )
     ),
-    timeout = 10000,
     seed = 1
   )
 }
@@ -137,17 +136,13 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
   app_driver$set_active_module_input("iris-count_type", "proportions")
   app_driver$wait_for_idle()
   app_driver$expect_visible(
-    app_driver$namespaces(TRUE)$module("iris-levels_table")
+    app_driver$namespaces(TRUE)$module("iris-by_variable_plot-plot-with-settings")
   )
 
-  table_contents <- app_driver$get_text(
-    selector = sprintf("%s tr td", app_driver$namespaces(TRUE)$module("iris-levels_table"))
+  plot_output <- app_driver$get_value(
+    output = gsub("^#", "", app_driver$namespaces(TRUE)$module("iris-by_variable_plot-plot_main"))
   )
-  # Sepal length line should have proprotions of species as a decimal number
-  testthat::expect_match(
-    paste(table_contents[table_contents != ""], collapse = " "),
-    "[0-9]+ Sepal[.]Length 0+[.][0-9]+ 0[.][0-9]+"
-  )
+  testthat::expect_equal(plot_output$coordmap$panels[[1]]$mapping$fill, "perc")
 
   app_driver$stop()
 })
