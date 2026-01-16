@@ -15,6 +15,7 @@ module
 ### 1 - Load libraries
 
 ``` r
+
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
 ```
@@ -30,6 +31,7 @@ Inside this app 4 datasets will be used
 4.  `ADLB` A long data set with lab measurements for each subject
 
 ``` r
+
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.data::rADSL %>%
@@ -57,6 +59,7 @@ The app itself will be constructed by multiple calls of
 using different combinations of data sets.
 
 ``` r
+
 # configuration for the single wide dataset
 mod1 <- tm_g_response(
   label = "Single wide dataset",
@@ -377,6 +380,7 @@ will let you run the app. Note that app is only displayed when running
 this code inside an `R` session.
 
 ``` r
+
 shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
 ```
 

@@ -67,6 +67,7 @@ Here’s an example to showcase how you can edit an output of class
 can be applied to modify this object.
 
 ``` r
+
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -142,6 +143,7 @@ Here’s an example to showcase how you can edit an output of class
 `ggplot`. You can extend them using `ggplot2` functions.
 
 ``` r
+
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -215,6 +217,7 @@ Here’s an example to showcase how you can edit an output of class
 `grob`. You can extend them using `grid` and `gridExtra` functions.
 
 ``` r
+
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -301,6 +304,7 @@ functions](https://rstudio.github.io/DT/functions.html) of the `DT`
 package to learn more about extending the `datatables` objects.
 
 ``` r
+
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -380,6 +384,7 @@ app <- init(
     ## Initializing tm_g_distribution
 
 ``` r
+
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -393,6 +398,7 @@ Here’s an example to showcase how you can edit an output of class
 can be applied to modify this object.
 
 ``` r
+
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])

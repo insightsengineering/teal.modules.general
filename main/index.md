@@ -62,12 +62,14 @@ examples of `teal` apps with modules from this package.
 ## Installation
 
 ``` r
+
 install.packages('teal.modules.general')
 ```
 
 Alternatively, you might want to use the development version.
 
 ``` r
+
 # install.packages("pak")
 pak::pak("insightsengineering/teal.modules.general")
 ```

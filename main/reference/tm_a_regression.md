@@ -236,6 +236,7 @@ For more information on reporting in `teal`, see the vignettes:
 ## Examples
 
 ``` r
+
 # general data example
 data <- teal_data()
 data <- within(data, {
