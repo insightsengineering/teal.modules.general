@@ -1,3 +1,22 @@
+# Setup timeout options for shinytest2 if none are set in options nor on environment variables
+withr::local_options(
+  list(
+    shinytest2.timeout = getOption(
+      "shinytest2.timeout",
+      default = Sys.getenv("SHINYTEST2_TIMEOUT", unset = 30 * 1000)
+    ),
+    shinytest2.load_timeout = getOption(
+      "shinytest2.load_timeout",
+      default = Sys.getenv("SHINYTEST2_LOAD_TIMEOUT", unset = 60 * 1000)
+    ),
+    shinytest2.duration = getOption(
+      "shinytest2.duration",
+      default = Sys.getenv("SHINYTEST2_DURATION", unset = 0.5 * 1000)
+    )
+  ),
+  .local_envir = testthat::test_env()
+)
+
 # Initialization function to create a new TealAppDriver object
 #
 # By manipulating the server function as below, we can hint {shinytest2} to load
@@ -7,14 +26,7 @@ init_teal_app_driver <- function(...) {
   testthat::with_mocked_bindings(
     {
       TealAppDriver <- getFromNamespace("TealAppDriver", "teal") # nolint: object_name.
-      dots <- list(...)
-      if (!is.null(dots$load_timeout)) {
-        dots$load_timeout <- 150 * 1000
-      }
-      if (!is.null(dots$timeout)) {
-        dots$timeout <- 60 * 1000
-      }
-      do.call(TealAppDriver$new, dots)
+      TealAppDriver$new(...)
     },
     shinyApp = function(ui, server, ...) {
       functionBody(server) <- bquote({
