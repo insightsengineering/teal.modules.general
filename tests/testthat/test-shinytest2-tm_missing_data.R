@@ -72,10 +72,8 @@ test_that("e2e - tm_missing_data: Default settings and visibility of the summary
   app_driver$expect_no_validation_error()
   app_driver$wait_for_idle()
 
-  testthat::expect_true(
-    app_driver$is_visible(
-      app_driver$namespaces(TRUE)$module("iris-summary_plot-plot-with-settings")
-    )
+  app_driver$expect_visible(
+    app_driver$namespaces(TRUE)$module("iris-summary_plot-plot-with-settings")
   )
 
   app_driver$stop()
@@ -93,17 +91,13 @@ test_that("e2e - tm_missing_data: Check default settings and visibility of the c
   app_driver$expect_no_validation_error()
   app_driver$wait_for_idle()
 
-  testthat::expect_true(
-    app_driver$is_visible(
-      app_driver$namespaces(TRUE)$module("iris-combination_plot-plot-with-settings")
-    )
+  app_driver$expect_visible(
+    app_driver$namespaces(TRUE)$module("iris-combination_plot-plot-with-settings")
   )
 
   # combination encoding
-  testthat::expect_true(
-    app_driver$is_visible(
-      app_driver$namespaces(TRUE)$module("iris-cutoff .shiny-input-container")
-    )
+  app_driver$expect_visible(
+    app_driver$namespaces(TRUE)$module("iris-cutoff .shiny-input-container")
   )
 
   testthat::expect_equal(app_driver$get_active_module_input("iris-combination_cutoff"), 1L)
@@ -142,10 +136,17 @@ test_that("e2e - tm_missing_data: Validate functionality and UI response for 'By
   )
   app_driver$set_active_module_input("iris-count_type", "proportions")
   app_driver$wait_for_idle()
-  testthat::expect_true(
-    app_driver$is_visible(
-      app_driver$namespaces(TRUE)$module("iris-by_variable_plot-plot-with-settings")
-    )
+  app_driver$expect_visible(
+    app_driver$namespaces(TRUE)$module("iris-levels_table")
+  )
+
+  table_contents <- app_driver$get_text(
+    selector = sprintf("%s tr td", app_driver$namespaces(TRUE)$module("iris-levels_table"))
+  )
+  # Sepal length line should have proprotions of species as a decimal number
+  testthat::expect_match(
+    paste(table_contents[table_contents != ""], collapse = " "),
+    "[0-9]+ Sepal[.]Length 0+[.][0-9]+ 0[.][0-9]+"
   )
 
   app_driver$stop()
