@@ -1,844 +1,646 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="examples" timestamp="2026-01-16T09:52:35Z" hostname="54192b0b19e0" tests="43" skipped="1" failures="0" errors="0" time="5.552">
-    <testcase time="2.217" classname="examples" name="example_add_facet_labels.Rd"/>
-    <testcase time="0.0570000000000004" classname="examples" name="example_call_fun_dots.Rd"/>
-    <testcase time="0.0209999999999999" classname="examples" name="example_create_sparklines.Rd"/>
-    <testcase time="0.00800000000000001" classname="examples" name="example_dot_markdown_internal.Rd"/>
-    <testcase time="0.00700000000000012" classname="examples" name="example_dot_scale_x_mosaic.Rd"/>
-    <testcase time="0.00699999999999967" classname="examples" name="example_establish_updating_selection.Rd"/>
-    <testcase time="0.00600000000000023" classname="examples" name="example_filter_outliers.Rd"/>
-    <testcase time="0.0219999999999998" classname="examples" name="example_geom_mosaic.Rd"/>
-    <testcase time="0.0169999999999999" classname="examples" name="example_get_scatterplotmatrix_stats.Rd"/>
-    <testcase time="0.00700000000000012" classname="examples" name="example_is_tab_active_js.Rd"/>
-    <testcase time="0.00600000000000023" classname="examples" name="example_plot_var_summary.Rd"/>
-    <testcase time="0.00699999999999967" classname="examples" name="example_remove_outliers_from.Rd"/>
-    <testcase time="0.00600000000000023" classname="examples" name="example_render_single_tab.Rd"/>
-    <testcase time="0.00700000000000012" classname="examples" name="example_render_tab_header.Rd"/>
-    <testcase time="0.00699999999999967" classname="examples" name="example_render_tab_table.Rd"/>
-    <testcase time="0.00600000000000023" classname="examples" name="example_render_tabset_panel_content.Rd"/>
-    <testcase time="0.00700000000000012" classname="examples" name="example_select_decorators.Rd"/>
-    <testcase time="0.00699999999999967" classname="examples" name="example_set_chunk_attrs.Rd"/>
-    <testcase time="0.00700000000000012" classname="examples" name="example_set_chunk_dims.Rd"/>
-    <testcase time="0.00700000000000012" classname="examples" name="example_shared_params.Rd"/>
-    <testcase time="0.00700000000000012" classname="examples" name="example_srv_decorate_teal_data.Rd"/>
-    <testcase time="0.00699999999999967" classname="examples" name="example_teal.modules.general.Rd"/>
-    <testcase time="0.202" classname="examples" name="example_tm_a_pca.Rd"/>
-    <testcase time="0.135" classname="examples" name="example_tm_a_regression.Rd"/>
-    <testcase time="0.142" classname="examples" name="example_tm_data_table.Rd"/>
-    <testcase time="0.219" classname="examples" name="example_tm_file_viewer.Rd"/>
-    <testcase time="0.0939999999999994" classname="examples" name="example_tm_front_page.Rd"/>
-    <testcase time="0.182" classname="examples" name="example_tm_g_association.Rd"/>
-    <testcase time="0.159" classname="examples" name="example_tm_g_bivariate.Rd"/>
-    <testcase time="0.00399999999999956" classname="examples" name="example_tm_g_distribution.Rd">
-      <skipped message="Reason: distribution initializes with short validation error ('test-examples.R:145:9')"/>
+  <testsuite name="examples" timestamp="2026-01-16T10:50:56Z" hostname="aca9f2323b5a" tests="43" skipped="43" failures="0" errors="0" time="0.647">
+    <testcase time="0.0209999999999999" classname="examples" name="example_add_facet_labels.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
     </testcase>
-    <testcase time="0.199" classname="examples" name="example_tm_g_response.Rd"/>
-    <testcase time="0.165" classname="examples" name="example_tm_g_scatterplot.Rd"/>
-    <testcase time="0.422000000000001" classname="examples" name="example_tm_g_scatterplotmatrix.Rd"/>
-    <testcase time="0.254" classname="examples" name="example_tm_missing_data.Rd"/>
-    <testcase time="0.167" classname="examples" name="example_tm_outliers.Rd"/>
-    <testcase time="0.0990000000000002" classname="examples" name="example_tm_rmarkdown.Rd"/>
-    <testcase time="0.444" classname="examples" name="example_tm_t_crosstable.Rd"/>
-    <testcase time="0.178" classname="examples" name="example_tm_variable_browser.Rd"/>
-    <testcase time="0.00800000000000001" classname="examples" name="example_validate_input.Rd"/>
-    <testcase time="0.00700000000000056" classname="examples" name="example_var_missings_info.Rd"/>
-    <testcase time="0.00800000000000001" classname="examples" name="example_var_summary_table.Rd"/>
-    <testcase time="0.00699999999999967" classname="examples" name="example_variable_type_icons.Rd"/>
-    <testcase time="0.00699999999999967" classname="examples" name="example_varname_w_label.Rd"/>
+    <testcase time="0.054" classname="examples" name="example_call_fun_dots.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0580000000000001" classname="examples" name="example_create_sparklines.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0129999999999999" classname="examples" name="example_dot_markdown_internal.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0130000000000001" classname="examples" name="example_dot_scale_x_mosaic.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_establish_updating_selection.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_filter_outliers.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_geom_mosaic.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0149999999999999" classname="examples" name="example_get_scatterplotmatrix_stats.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0130000000000001" classname="examples" name="example_is_tab_active_js.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0119999999999998" classname="examples" name="example_plot_var_summary.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0130000000000001" classname="examples" name="example_remove_outliers_from.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_render_single_tab.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_render_tab_header.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0149999999999999" classname="examples" name="example_render_tab_table.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0130000000000001" classname="examples" name="example_render_tabset_panel_content.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_select_decorators.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0129999999999999" classname="examples" name="example_set_chunk_attrs.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_set_chunk_dims.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0130000000000001" classname="examples" name="example_shared_params.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0149999999999999" classname="examples" name="example_srv_decorate_teal_data.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0129999999999999" classname="examples" name="example_teal.modules.general.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_tm_a_pca.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0130000000000001" classname="examples" name="example_tm_a_regression.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_tm_data_table.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_tm_file_viewer.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0149999999999999" classname="examples" name="example_tm_front_page.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0130000000000001" classname="examples" name="example_tm_g_association.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_tm_g_bivariate.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0129999999999999" classname="examples" name="example_tm_g_distribution.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_tm_g_response.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0129999999999999" classname="examples" name="example_tm_g_scatterplot.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0150000000000001" classname="examples" name="example_tm_g_scatterplotmatrix.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_tm_missing_data.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0129999999999999" classname="examples" name="example_tm_outliers.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_tm_rmarkdown.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0130000000000001" classname="examples" name="example_tm_t_crosstable.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_tm_variable_browser.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0149999999999999" classname="examples" name="example_validate_input.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0130000000000001" classname="examples" name="example_var_missings_info.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0119999999999998" classname="examples" name="example_var_summary_table.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.0130000000000001" classname="examples" name="example_variable_type_icons.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
+    <testcase time="0.012" classname="examples" name="example_varname_w_label.Rd">
+      <skipped message="Reason: On CRAN ('test-examples.R:143:7')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_a_pca" timestamp="2026-01-16T09:52:40Z" hostname="54192b0b19e0" tests="49" skipped="0" failures="0" errors="0" time="207.171">
-    <testcase time="9.726" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Module_is_initialised_with_the_specified_defaults_in_function_call."/>
-    <testcase time="0.0970000000000013" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Module_is_initialised_with_the_specified_defaults_in_function_call."/>
-    <testcase time="0.0109999999999992" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Module_is_initialised_with_the_specified_defaults_in_function_call."/>
-    <testcase time="0.00400000000000134" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Module_is_initialised_with_the_specified_defaults_in_function_call."/>
-    <testcase time="0.0519999999999996" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Module_is_initialised_with_the_specified_defaults_in_function_call."/>
-    <testcase time="0.0500000000000007" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Module_is_initialised_with_the_specified_defaults_in_function_call."/>
-    <testcase time="0.0509999999999984" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Module_is_initialised_with_the_specified_defaults_in_function_call."/>
-    <testcase time="8.939" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_Assault_on_header."/>
-    <testcase time="0.134" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_Assault_on_header."/>
-    <testcase time="0.0970000000000013" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_Assault_on_header."/>
-    <testcase time="0.0960000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_Assault_on_header."/>
-    <testcase time="12.248" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_UrbanPop_on_header."/>
-    <testcase time="0.146000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_UrbanPop_on_header."/>
-    <testcase time="0.097999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_UrbanPop_on_header."/>
-    <testcase time="0.0970000000000013" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_UrbanPop_on_header."/>
-    <testcase time="12.257" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Color_by_columns_data_extract_must_be_from_non_selected_variable_set."/>
-    <testcase time="0.790999999999997" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Color_by_columns_data_extract_must_be_from_non_selected_variable_set."/>
-    <testcase time="8.69" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_tables_display_does_not_generate_errors."/>
-    <testcase time="0.555" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_tables_display_does_not_generate_errors."/>
-    <testcase time="0.088000000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_tables_display_does_not_generate_errors."/>
-    <testcase time="0.0489999999999995" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_tables_display_does_not_generate_errors."/>
-    <testcase time="0.0479999999999947" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_tables_display_does_not_generate_errors."/>
-    <testcase time="0.0480000000000018" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_tables_display_does_not_generate_errors."/>
-    <testcase time="10.691" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_for_plot_type_does_not_generate_errors."/>
-    <testcase time="1.52300000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_for_plot_type_does_not_generate_errors."/>
-    <testcase time="1.20400000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_for_plot_type_does_not_generate_errors."/>
-    <testcase time="1.526" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_for_plot_type_does_not_generate_errors."/>
-    <testcase time="8.813" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_standardization_does_not_generate_errors."/>
-    <testcase time="1.624" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_standardization_does_not_generate_errors."/>
-    <testcase time="1.589" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_standardization_does_not_generate_errors."/>
-    <testcase time="1.584" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_standardization_does_not_generate_errors."/>
-    <testcase time="8.78" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_NA_action_does_not_generate_errors."/>
-    <testcase time="11.986" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options."/>
-    <testcase time="2.687" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options."/>
-    <testcase time="2.185" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options."/>
-    <testcase time="2.179" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options."/>
-    <testcase time="3.42099999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options."/>
-    <testcase time="2.178" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options."/>
-    <testcase time="3.57600000000001" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options."/>
-    <testcase time="2.182" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options."/>
-    <testcase time="2.18899999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options."/>
-    <testcase time="8.904" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_theme_does_not_generate_errors."/>
-    <testcase time="0.533000000000015" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_theme_does_not_generate_errors."/>
-    <testcase time="0.538999999999987" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_theme_does_not_generate_errors."/>
-    <testcase time="0.533000000000015" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_theme_does_not_generate_errors."/>
-    <testcase time="9.084" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_font_size_does_not_generate_errors."/>
-    <testcase time="1.375" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_font_size_does_not_generate_errors."/>
-    <testcase time="1.381" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_font_size_does_not_generate_errors."/>
-    <testcase time="60.533" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_font_size_does_not_generate_errors."/>
+  <testsuite name="shinytest2-tm_a_pca" timestamp="2026-01-16T10:50:57Z" hostname="aca9f2323b5a" tests="11" skipped="11" failures="0" errors="0" time="1.045">
+    <testcase time="0.203" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Module_is_initialised_with_the_specified_defaults_in_function_call.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:40:3')"/>
+    </testcase>
+    <testcase time="0.109" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_Assault_on_header.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:69:3')"/>
+    </testcase>
+    <testcase time="0.081" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Eigenvector_table_should_have_data_extract_selection_Murder_UrbanPop_on_header.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:86:3')"/>
+    </testcase>
+    <testcase time="0.081" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Color_by_columns_data_extract_must_be_from_non_selected_variable_set.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:103:3')"/>
+    </testcase>
+    <testcase time="0.081" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_tables_display_does_not_generate_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:120:3')"/>
+    </testcase>
+    <testcase time="0.0819999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_for_plot_type_does_not_generate_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:141:3')"/>
+    </testcase>
+    <testcase time="0.0810000000000004" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_standardization_does_not_generate_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:164:3')"/>
+    </testcase>
+    <testcase time="0.0819999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_NA_action_does_not_generate_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:182:3')"/>
+    </testcase>
+    <testcase time="0.0819999999999999" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_plot_type_hides_and_shows_options.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:196:3')"/>
+    </testcase>
+    <testcase time="0.0820000000000003" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_theme_does_not_generate_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:224:3')"/>
+    </testcase>
+    <testcase time="0.081" classname="shinytest2_tm_a_pca" name="e2e_tm_a_pca_Changing_output_encodings_of_font_size_does_not_generate_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_pca.R:242:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_a_regression" timestamp="2026-01-16T09:56:07Z" hostname="54192b0b19e0" tests="31" skipped="0" failures="0" errors="0" time="76.008">
-    <testcase time="7.59999999999999" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_parameter_and_module_label_is_passed_properly."/>
-    <testcase time="0.00499999999999545" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_parameter_and_module_label_is_passed_properly."/>
-    <testcase time="0.0040000000000191" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_parameter_and_module_label_is_passed_properly."/>
-    <testcase time="7.32499999999999" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_response_and_regressor_arg."/>
-    <testcase time="0.00399999999999068" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_response_and_regressor_arg."/>
-    <testcase time="9.63600000000002" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_is_set_properly."/>
-    <testcase time="7.53699999999998" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="2.28800000000001" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="0.00200000000000955" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="1.483" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="0.00199999999998113" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="1.744" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="0.00200000000000955" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="1.41899999999998" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="0.00100000000000477" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="1.49200000000002" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="0.00199999999998113" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="1.59100000000004" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="0.00199999999995271" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="1.577" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors."/>
-    <testcase time="7.21899999999999" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_are_visible_by_default."/>
-    <testcase time="2.17600000000004" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_are_visible_by_default."/>
-    <testcase time="2.173" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_are_visible_by_default."/>
-    <testcase time="7.43799999999999" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_have_default_values_and_label_text."/>
-    <testcase time="0.00499999999999545" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_have_default_values_and_label_text."/>
-    <testcase time="0.000999999999976353" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_have_default_values_and_label_text."/>
-    <testcase time="0.111000000000047" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_have_default_values_and_label_text."/>
-    <testcase time="0.0499999999999545" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_have_default_values_and_label_text."/>
-    <testcase time="10.942" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Unchecking_display_outlier_hides_outlier_label_and_definition."/>
-    <testcase time="2.17099999999999" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Unchecking_display_outlier_hides_outlier_label_and_definition."/>
-    <testcase time="0.00600000000002865" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Unchecking_display_outlier_hides_outlier_label_and_definition."/>
+  <testsuite name="shinytest2-tm_a_regression" timestamp="2026-01-16T10:50:58Z" hostname="aca9f2323b5a" tests="7" skipped="7" failures="0" errors="0" time="0.623">
+    <testcase time="0.115" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_parameter_and_module_label_is_passed_properly.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_regression.R:54:3')"/>
+    </testcase>
+    <testcase time="0.0910000000000002" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_response_and_regressor_arg.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_regression.R:71:3')"/>
+    </testcase>
+    <testcase time="0.0819999999999999" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_is_set_properly.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_regression.R:94:3')"/>
+    </testcase>
+    <testcase time="0.085" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Plot_type_has_7_specific_choices_changing_choices_does_not_throw_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_regression.R:107:3')"/>
+    </testcase>
+    <testcase time="0.085" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_are_visible_by_default.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_regression.R:134:3')"/>
+    </testcase>
+    <testcase time="0.0830000000000002" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Outlier_definition_and_label_have_default_values_and_label_text.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_regression.R:146:3')"/>
+    </testcase>
+    <testcase time="0.0819999999999999" classname="shinytest2_tm_a_regression" name="e2e_tm_a_regression_Unchecking_display_outlier_hides_outlier_label_and_definition.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_a_regression.R:174:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_data_table" timestamp="2026-01-16T09:57:23Z" hostname="54192b0b19e0" tests="10" skipped="0" failures="0" errors="0" time="30.174">
-    <testcase time="6.47399999999999" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Initializes_without_errors"/>
-    <testcase time="0.0040000000000191" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Initializes_without_errors"/>
-    <testcase time="6.59899999999999" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_checkbox_displayed_over_data_table"/>
-    <testcase time="6.71199999999999" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_module_displays_data_table"/>
-    <testcase time="2.07999999999998" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_module_displays_data_table"/>
-    <testcase time="0.0200000000000387" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_module_displays_data_table"/>
-    <testcase time="0.885999999999967" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_module_displays_data_table"/>
-    <testcase time="6.54900000000004" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_default_variable_selection_and_set_new_selection"/>
-    <testcase time="0.841000000000008" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_default_variable_selection_and_set_new_selection"/>
-    <testcase time="0.00899999999995771" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_default_variable_selection_and_set_new_selection"/>
+  <testsuite name="shinytest2-tm_data_table" timestamp="2026-01-16T10:50:59Z" hostname="aca9f2323b5a" tests="4" skipped="4" failures="0" errors="0" time="0.366">
+    <testcase time="0.0990000000000002" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Initializes_without_errors">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_data_table.R:27:3')"/>
+    </testcase>
+    <testcase time="0.093" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_checkbox_displayed_over_data_table">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_data_table.R:39:3')"/>
+    </testcase>
+    <testcase time="0.0869999999999997" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_module_displays_data_table">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_data_table.R:48:3')"/>
+    </testcase>
+    <testcase time="0.0870000000000002" classname="shinytest2_tm_data_table" name="e2e_tm_data_table_Verify_default_variable_selection_and_set_new_selection">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_data_table.R:84:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_file_viewer" timestamp="2026-01-16T09:57:54Z" hostname="54192b0b19e0" tests="13" skipped="0" failures="0" errors="0" time="34.691">
-    <testcase time="4.92000000000002" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument"/>
-    <testcase time="0.00599999999997181" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument"/>
-    <testcase time="2.06" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument"/>
-    <testcase time="0.0040000000000191" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument"/>
-    <testcase time="0.0040000000000191" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument"/>
-    <testcase time="9.13200000000001" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_image_file"/>
-    <testcase time="0.00599999999997181" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_image_file"/>
-    <testcase time="9.18000000000001" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_text_file"/>
-    <testcase time="0.00600000000002865" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_text_file"/>
-    <testcase time="0.0029999999999859" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_text_file"/>
-    <testcase time="0.149000000000001" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_text_file"/>
-    <testcase time="9.12400000000002" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_url"/>
-    <testcase time="0.09699999999998" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_url"/>
+  <testsuite name="shinytest2-tm_file_viewer" timestamp="2026-01-16T10:50:59Z" hostname="aca9f2323b5a" tests="4" skipped="4" failures="0" errors="0" time="0.645">
+    <testcase time="0.27" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Initializes_without_errors_and_shows_files_tree_specified_in_input_path_argument">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_file_viewer.R:23:3')"/>
+    </testcase>
+    <testcase time="0.123" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_image_file">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_file_viewer.R:46:3')"/>
+    </testcase>
+    <testcase time="0.125" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_text_file">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_file_viewer.R:67:3')"/>
+    </testcase>
+    <testcase time="0.127" classname="shinytest2_tm_file_viewer" name="e2e_tm_file_viewer_Shows_selected_url">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_file_viewer.R:94:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_front_page" timestamp="2026-01-16T09:58:28Z" hostname="54192b0b19e0" tests="9" skipped="0" failures="0" errors="0" time="27.914">
-    <testcase time="6.08699999999999" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Initializes_without_errors_and_check_html_elements"/>
-    <testcase time="0.0040000000000191" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Initializes_without_errors_and_check_html_elements"/>
-    <testcase time="0.00600000000002865" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Initializes_without_errors_and_check_html_elements"/>
-    <testcase time="0.00699999999994816" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Initializes_without_errors_and_check_html_elements"/>
-    <testcase time="6.24800000000005" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_tables"/>
-    <testcase time="2.07499999999999" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_tables"/>
-    <testcase time="0.0550000000000068" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_tables"/>
-    <testcase time="2.07999999999998" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_tables"/>
-    <testcase time="11.352" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_metadata"/>
+  <testsuite name="shinytest2-tm_front_page" timestamp="2026-01-16T10:51:00Z" hostname="aca9f2323b5a" tests="3" skipped="3" failures="0" errors="0" time="0.528">
+    <testcase time="0.152" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Initializes_without_errors_and_check_html_elements">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_front_page.R:28:3')"/>
+    </testcase>
+    <testcase time="0.139" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_tables">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_front_page.R:49:3')"/>
+    </testcase>
+    <testcase time="0.236999999999999" classname="shinytest2_tm_front_page" name="e2e_tm_front_page_Verify_the_module_displays_metadata">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_front_page.R:61:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_g_association" timestamp="2026-01-16T09:58:56Z" hostname="54192b0b19e0" tests="4" skipped="4" failures="0" errors="0" time="0.158">
-    <testcase time="0.0990000000000464" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Data_parameter_and_module_label_is_passed_properly.">
+  <testsuite name="shinytest2-tm_g_association" timestamp="2026-01-16T10:51:00Z" hostname="aca9f2323b5a" tests="4" skipped="4" failures="0" errors="0" time="0.061">
+    <testcase time="0.016" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Data_parameter_and_module_label_is_passed_properly.">
       <skipped message="Reason: ggmosaic issue: will be resumed via the issue #925 in tmg ('test-shinytest2-tm_g_association.R:52:3')"/>
     </testcase>
-    <testcase time="0.0219999999999914" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_ref_and_vars_arguments.">
+    <testcase time="0.0150000000000006" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_ref_and_vars_arguments.">
       <skipped message="Reason: ggmosaic issue: will be resumed via the issue  ('test-shinytest2-tm_g_association.R:69:3')"/>
     </testcase>
-    <testcase time="0.0229999999999677" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Module_plot_is_visible.">
+    <testcase time="0.0149999999999997" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Module_plot_is_visible.">
       <skipped message="Reason: ggmosaic issue: will be resumed via the issue  ('test-shinytest2-tm_g_association.R:91:3')"/>
     </testcase>
-    <testcase time="0.01400000000001" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Check_and_set_default_values_for_radio_buttons.">
+    <testcase time="0.0150000000000006" classname="shinytest2_tm_g_association" name="e2e_tm_g_association_Check_and_set_default_values_for_radio_buttons.">
       <skipped message="Reason: ggmosaic issue: will be resumed via the issue  ('test-shinytest2-tm_g_association.R:101:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_g_bivariate" timestamp="2026-01-16T09:58:56Z" hostname="54192b0b19e0" tests="44" skipped="0" failures="0" errors="0" time="97.803">
-    <testcase time="7.86099999999999" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.104000000000042" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0509999999999877" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0519999999999641" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0510000000000446" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0519999999999641" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0519999999999641" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0519999999999641" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0529999999999973" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0530000000000541" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0529999999999973" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0509999999999877" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0519999999999641" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0529999999999973" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0529999999999973" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="10.438" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Coloring_options_are_hidden_when_coloring_is_toggled_off."/>
-    <testcase time="2.202" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Coloring_options_are_hidden_when_coloring_is_toggled_off."/>
-    <testcase time="2.20699999999999" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Coloring_options_are_hidden_when_coloring_is_toggled_off."/>
-    <testcase time="3.661" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Coloring_options_are_hidden_when_coloring_is_toggled_off."/>
-    <testcase time="2.19499999999999" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Coloring_options_are_hidden_when_coloring_is_toggled_off."/>
-    <testcase time="2.19200000000001" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Coloring_options_are_hidden_when_coloring_is_toggled_off."/>
-    <testcase time="10.291" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off."/>
-    <testcase time="2.202" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off."/>
-    <testcase time="2.20799999999997" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off."/>
-    <testcase time="2.21100000000001" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off."/>
-    <testcase time="3.42500000000001" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off."/>
-    <testcase time="2.19299999999998" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off."/>
-    <testcase time="2.19100000000003" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off."/>
-    <testcase time="2.19099999999997" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off."/>
-    <testcase time="9.637" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="0.52600000000001" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="1.56400000000002" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="3.15299999999996" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="1.81800000000004" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="3.03299999999996" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="3.04300000000001" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="3.12400000000002" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="3.21299999999997" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="3.375" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="3.57800000000003" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-    <testcase time="3.13299999999998" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors."/>
-  </testsuite>
-  <testsuite name="shinytest2-tm_g_distribution" timestamp="2026-01-16T10:01:42Z" hostname="54192b0b19e0" tests="20" skipped="0" failures="0" errors="0" time="113.768">
-    <testcase time="75.412" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0879999999999654" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0510000000000446" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.05499999999995" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0510000000000446" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0499999999999545" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0499999999999545" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.701000000000022" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="9.28399999999999" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="3.24200000000008" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="2.36699999999996" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="1.26699999999994" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="2.53600000000006" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="2.24400000000003" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="1.38299999999992" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="1.31600000000003" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="8.803" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_QQ_plot_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="4.76400000000001" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_QQ_plot_encoding_inputs_produce_output_without_validation_errors."/>
-  </testsuite>
-  <testsuite name="shinytest2-tm_g_response" timestamp="2026-01-16T10:02:28Z" hostname="54192b0b19e0" tests="17" skipped="0" failures="0" errors="0" time="43.153">
-    <testcase time="7.63900000000001" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.162000000000035" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0519999999999072" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0510000000000446" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.278999999999996" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="9.61599999999999" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="1.85000000000002" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="1.452" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="1.24299999999994" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="1.31600000000003" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="1.27999999999997" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="1.34199999999998" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_encoding_inputs_produce_output_without_validation_errors."/>
-    <testcase time="8.30799999999999" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_deselecting_response_produces_validation_error."/>
-    <testcase time="8.40700000000004" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_deselecting_x_produces_validation_error."/>
-  </testsuite>
-  <testsuite name="shinytest2-tm_g_scatterplot" timestamp="2026-01-16T10:03:11Z" hostname="54192b0b19e0" tests="35" skipped="0" failures="0" errors="0" time="134.609">
-    <testcase time="7.87099999999998" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0610000000000355" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0509999999999309" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0529999999999973" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.05499999999995" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0529999999999973" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0529999999999973" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0529999999999973" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0539999999999736" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="0.0510000000000446" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults."/>
-    <testcase time="9.096" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Base_for_the_log_transformation_can_be_applied."/>
-    <testcase time="1.0569999999999" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Base_for_the_log_transformation_can_be_applied."/>
-    <testcase time="1.346" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Base_for_the_log_transformation_can_be_applied."/>
-    <testcase time="1.07800000000009" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Base_for_the_log_transformation_can_be_applied."/>
-    <testcase time="9.93899999999996" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_log_transform_is_only_possible_for_positive_numeric_vars."/>
-    <testcase time="1.46699999999998" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_log_transform_is_only_possible_for_positive_numeric_vars."/>
-    <testcase time="1.75999999999999" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_log_transform_is_only_possible_for_positive_numeric_vars."/>
-    <testcase time="10.39" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Get_validation_error_when_facetting_with_the_same_row_col_variable."/>
-    <testcase time="9.20800000000008" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-    <testcase time="1.53899999999999" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-    <testcase time="1.64299999999992" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-    <testcase time="1.952" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-    <testcase time="1.827" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-    <testcase time="1.83600000000001" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-    <testcase time="1.84500000000003" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-    <testcase time="60.5410000000001" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-    <testcase time="1.97299999999996" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-    <testcase time="4.27499999999998" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-    <testcase time="3.17000000000007" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors."/>
-  </testsuite>
-  <testsuite name="shinytest2-tm_g_scatterplotmatrix" timestamp="2026-01-16T10:05:26Z" hostname="54192b0b19e0" tests="9" skipped="0" failures="0" errors="0" time="38.885">
-    <testcase time="7.9079999999999" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Initializes_without_errors"/>
-    <testcase time="0.0040000000000191" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Initializes_without_errors"/>
-    <testcase time="0.0040000000000191" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Initializes_without_errors"/>
-    <testcase time="10.001" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Verify_module_displays_data_table"/>
-    <testcase time="7.61000000000001" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Verify_default_values_and_settings_data_extracts_for_data_selection"/>
-    <testcase time="0.000999999999976353" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Verify_default_values_and_settings_data_extracts_for_data_selection"/>
-    <testcase time="1.45399999999995" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Verify_default_values_and_settings_data_extracts_for_data_selection"/>
-    <testcase time="9.24900000000002" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Change_plot_settings"/>
-    <testcase time="2.654" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Change_plot_settings"/>
-  </testsuite>
-  <testsuite name="shinytest2-tm_missing_data" timestamp="2026-01-16T10:06:05Z" hostname="54192b0b19e0" tests="17" skipped="0" failures="0" errors="3" time="52.425">
-    <testcase time="8.92899999999997" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Initializes_without_errors"/>
-    <testcase time="0.0040000000000191" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Initializes_without_errors"/>
-    <testcase time="0.00499999999999545" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Initializes_without_errors"/>
-    <testcase time="9.01300000000003" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Default_settings_and_visibility_of_the_summary_graph"/>
-    <testcase time="0.0610000000000355" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Default_settings_and_visibility_of_the_summary_graph"/>
-    <testcase time="3.24399999999991" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Default_settings_and_visibility_of_the_summary_graph"/>
-    <testcase time="3.25" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Default_settings_and_visibility_of_the_summary_graph"/>
-    <testcase time="0.535000000000082" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Default_settings_and_visibility_of_the_summary_graph">
-      <error type="error" message="Error in `eval(code, test_env)`: attempt to apply non-function ('test-shinytest2-tm_missing_data.R:75:3')">Error in `eval(code, test_env)`: attempt to apply non-function</error>
+  <testsuite name="shinytest2-tm_g_bivariate" timestamp="2026-01-16T10:51:00Z" hostname="aca9f2323b5a" tests="4" skipped="4" failures="0" errors="0" time="0.372">
+    <testcase time="0.103999999999999" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Module_is_initialised_with_the_specified_defaults.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_bivariate.R:93:3')"/>
     </testcase>
-    <testcase time="8.74399999999991" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Check_default_settings_and_visibility_of_the_combinations_graph_and_encodings"/>
-    <testcase time="2.58699999999999" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Check_default_settings_and_visibility_of_the_combinations_graph_and_encodings"/>
-    <testcase time="0.5150000000001" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Check_default_settings_and_visibility_of_the_combinations_graph_and_encodings">
-      <error type="error" message="Error in `eval(code, test_env)`: attempt to apply non-function ('test-shinytest2-tm_missing_data.R:94:3')">Error in `eval(code, test_env)`: attempt to apply non-function</error>
+    <testcase time="0.0970000000000004" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Coloring_options_are_hidden_when_coloring_is_toggled_off.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_bivariate.R:120:3')"/>
     </testcase>
-    <testcase time="10.713" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_"/>
-    <testcase time="0.591999999999985" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_"/>
-    <testcase time="0.0510000000000446" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_"/>
-    <testcase time="1.55099999999993" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_"/>
-    <testcase time="0.516000000000076" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_"/>
-    <testcase time="2.11500000000001" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_">
-      <error type="error" message="Error in `eval(code, test_env)`: attempt to apply non-function ('test-shinytest2-tm_missing_data.R:139:3')">Error in `eval(code, test_env)`: attempt to apply non-function</error>
+    <testcase time="0.085" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Facetting_options_are_hidden_when_facet_is_toggled_off.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_bivariate.R:162:3')"/>
+    </testcase>
+    <testcase time="0.0859999999999994" classname="shinytest2_tm_g_bivariate" name="e2e_tm_g_bivariate_Setting_encoding_inputs_produces_outputs_without_validation_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_bivariate.R:198:3')"/>
     </testcase>
   </testsuite>
-  <testsuite name="shinytest2-tm_outliers" timestamp="2026-01-16T10:06:57Z" hostname="54192b0b19e0" tests="61" skipped="0" failures="0" errors="0" time="160.866">
-    <testcase time="10.497" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_parameter_and_module_label_is_passed_properly."/>
-    <testcase time="0.00499999999999545" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_parameter_and_module_label_is_passed_properly."/>
-    <testcase time="0.0040000000000191" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_parameter_and_module_label_is_passed_properly."/>
-    <testcase time="0.00199999999995271" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_parameter_and_module_label_is_passed_properly."/>
-    <testcase time="10.547" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument."/>
-    <testcase time="0.0510000000000446" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument."/>
-    <testcase time="2.36099999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument."/>
-    <testcase time="0.0109999999999673" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument."/>
-    <testcase time="0.0499999999999545" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument."/>
-    <testcase time="1.56700000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument."/>
-    <testcase time="0.830000000000041" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument."/>
-    <testcase time="10.396" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_correctly_set_by_default_and_has_appropriate_possible_options."/>
-    <testcase time="0.0500000000000682" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_correctly_set_by_default_and_has_appropriate_possible_options."/>
-    <testcase time="0.0040000000000191" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_correctly_set_by_default_and_has_appropriate_possible_options."/>
-    <testcase time="2.13" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_correctly_set_by_default_and_has_appropriate_possible_options."/>
-    <testcase time="9.92999999999995" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Module_is_divided_into_3_tabs."/>
-    <testcase time="0.0529999999999973" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Module_is_divided_into_3_tabs."/>
-    <testcase time="0.0080000000000382" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Module_is_divided_into_3_tabs."/>
-    <testcase time="10.048" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_hidden_when_Boxplot_tab_is_not_selected."/>
-    <testcase time="2.21699999999998" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_hidden_when_Boxplot_tab_is_not_selected."/>
-    <testcase time="4.75300000000004" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_hidden_when_Boxplot_tab_is_not_selected."/>
-    <testcase time="4.69100000000003" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_hidden_when_Boxplot_tab_is_not_selected."/>
-    <testcase time="10.3729999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Default_radio_buttons_are_set_properly."/>
-    <testcase time="0.0520000000000209" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Default_radio_buttons_are_set_properly."/>
-    <testcase time="0.0529999999999973" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Default_radio_buttons_are_set_properly."/>
-    <testcase time="4.74099999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Default_radio_buttons_are_set_properly."/>
-    <testcase time="10.138" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Method_parameters_are_set_properly."/>
-    <testcase time="0.0480000000000018" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Method_parameters_are_set_properly."/>
-    <testcase time="0.00499999999999545" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Method_parameters_are_set_properly."/>
-    <testcase time="0.00199999999995271" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Method_parameters_are_set_properly."/>
-    <testcase time="10.374" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="2.21299999999997" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="2.21000000000004" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="2.21100000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="0.0499999999999545" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="0.0149999999999864" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="0.0500000000000682" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="2.20399999999995" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="2.005" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="2.65600000000006" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="0.0119999999999436" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="0.00999999999999091" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="2.16000000000008" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="2.46100000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="2.43499999999995" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="0.0120000000000573" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="0.0109999999999673" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="2.245" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method."/>
-    <testcase time="10.403" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content."/>
-    <testcase time="0.00499999999999545" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content."/>
-    <testcase time="0.00399999999990541" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content."/>
-    <testcase time="0.0490000000000919" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content."/>
-    <testcase time="4.60799999999995" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content."/>
-    <testcase time="0.00499999999999545" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content."/>
-    <testcase time="2.25900000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content."/>
-    <testcase time="0.00499999999999545" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content."/>
-    <testcase time="10.241" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_table_is_displayed_with_proper_content."/>
-    <testcase time="4.33299999999997" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_table_is_displayed_with_proper_content."/>
-    <testcase time="0.000999999999976353" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_table_is_displayed_with_proper_content."/>
-    <testcase time="0.00100000000020373" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_table_is_displayed_with_proper_content."/>
-    <testcase time="0.000999999999976353" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_table_is_displayed_with_proper_content."/>
-  </testsuite>
-  <testsuite name="shinytest2-tm_t_crosstable" timestamp="2026-01-16T10:09:38Z" hostname="54192b0b19e0" tests="9" skipped="0" failures="0" errors="0" time="41.814">
-    <testcase time="7.846" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Initializes_without_errors"/>
-    <testcase time="0.00399999999990541" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Initializes_without_errors"/>
-    <testcase time="0.00399999999990541" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Initializes_without_errors"/>
-    <testcase time="9.90700000000015" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Verify_module_displays_data_table"/>
-    <testcase time="8.00299999999993" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Verify_default_values_and_settings_data_extracts_for_data_selection"/>
-    <testcase time="0.0499999999999545" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Verify_default_values_and_settings_data_extracts_for_data_selection"/>
-    <testcase time="2.73400000000015" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Verify_default_values_and_settings_data_extracts_for_data_selection"/>
-    <testcase time="10.4639999999999" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Change_plot_settings"/>
-    <testcase time="2.80199999999991" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Change_plot_settings"/>
-  </testsuite>
-  <testsuite name="shinytest2-tm_variable_browser" timestamp="2026-01-16T10:10:20Z" hostname="54192b0b19e0" tests="19" skipped="0" failures="0" errors="2" time="80.724">
-    <testcase time="3.93500000000017" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_content_is_displayed_correctly.">
-      <error type="error" message="Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, screenshot_args = screenshot_args, check_names = check_names, name = name, variant = variant, view = view, height = height, width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, render_args = render_args, options = options)`: Shiny app did not become stable in 1e+05ms. ('test-shinytest2-tm_variable_browser.R:35:3')">Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, screenshot_args = screenshot_args, check_names = check_names, name = name, variant = variant, view = view, height = height, width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, render_args = render_args, options = options)`: Shiny app did not become stable in 1e+05ms.
-Message: An error occurred while waiting for Shiny to be stable
-Caused by error in `app_wait_for_idle()`:
-! An error occurred while waiting for Shiny to be stable
-
-
-ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
-ℹ AppDriver logs:
-{shinytest2} R  info   10:10:20.56 Start AppDriver initialization
-{shinytest2} R  info   10:10:20.64 Starting Shiny app
-{shinytest2} R  info   10:10:21.91 Creating new ChromoteSession
-{shinytest2} R  info   10:10:21.96 Navigating to Shiny app
-{shinytest2} R  info   10:10:21.97 Injecting shiny-tracer.js
-{chromote}   JS info   10:10:22.01 shinytest2; jQuery not found
-{chromote}   JS info   10:10:22.02 shinytest2; Loaded
-{shinytest2} R  info   10:10:22.02 Waiting for Shiny to become ready
-{shinytest2} R  info   10:10:23.93 Waiting for Shiny to become idle for 200ms within 1e+05ms
-{shinytest2} R  info   10:10:23.97 Error while initializing AppDriver:
-                                   Shiny app did not become stable in 1e+05ms.
-                                   Message: An error occurred while waiting for Shiny to be stable
-                                   Caused by error in `app_wait_for_idle()`:
-                                   ! An error occurred while waiting for Shiny to be stable
-{shiny}      R  stderr ----------- Loading required package: shiny
-{shiny}      R  stderr ----------- Attempting to load the environment ‘package:sparkline’
-{shiny}      R  stderr ----------- Loading required package: teal.data
-{shiny}      R  stderr ----------- Loading required package: teal.code
-{shiny}      R  stderr ----------- Loading required package: teal.slice
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- You are using teal version 1.1.0
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Attaching package: ‘teal’
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- The following objects are masked from ‘package:teal.slice’:
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr -----------     as.teal_slices, teal_slices
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Running application in test mode.
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Listening on http://127.0.0.1:6896
-
-
-Caused by error in `app_initialize_()`:
-! Shiny app did not become stable in 1e+05ms.
-Message: An error occurred while waiting for Shiny to be stable
-Caused by error in `app_wait_for_idle()`:
-! An error occurred while waiting for Shiny to be stable
-Backtrace:
-     ▆
-  1. ├─teal.modules.general (local) app_driver_tm_variable_browser() at test-shinytest2-tm_variable_browser.R:35:3
-  2. │ └─teal.modules.general:::init_teal_app_driver(...) at test-shinytest2-tm_variable_browser.R:14:3
-  3. │   ├─testthat::with_mocked_bindings(...) at ./helper-TealAppDriver.R:7:3
-  4. │   ├─base::do.call(TealAppDriver$new, dots) at ./helper-TealAppDriver.R:17:7
-  5. │   └─R6 (local) `&lt;fn&gt;`(`&lt;teal_app&gt;`, timeout = 60000)
-  6. │     └─teal (local) initialize(...)
-  7. │       ├─base::suppressWarnings(...)
-  8. │       │ └─base::withCallingHandlers(...)
-  9. │       └─super$initialize(...)
- 10. │         └─shinytest2:::app_initialize(...)
- 11. │           ├─base::withCallingHandlers(...)
- 12. │           └─shinytest2:::app_initialize_(self, private, ..., view = view)
- 13. │             ├─base::withCallingHandlers(...)
- 14. │             └─self$wait_for_idle(duration = 200, timeout = private$load_timeout)
- 15. │               └─shinytest2:::app_wait_for_idle(...)
- 16. │                 └─shinytest2:::app_abort(self, private, "An error occurred while waiting for Shiny to be stable")
- 17. │                   └─rlang::abort(..., app = self, call = call)
- 18. │                     └─rlang:::signal_abort(cnd, .file)
- 19. │                       └─base::signalCondition(cnd)
- 20. ├─shinytest2 (local) `&lt;fn&gt;`(`&lt;rlng_rrr&gt;`)
- 21. │ └─shinytest2:::app_abort(...)
- 22. │   └─rlang::abort(..., app = self, call = call)
- 23. │     └─rlang:::signal_abort(cnd, .file)
- 24. │       └─base::signalCondition(cnd)
- 25. └─shinytest2 (local) `&lt;fn&gt;`(`&lt;rlng_rrr&gt;`)
- 26.   └─shinytest2:::app_abort(...)
- 27.     └─rlang::abort(..., app = self, call = call)</error>
+  <testsuite name="shinytest2-tm_g_distribution" timestamp="2026-01-16T10:51:01Z" hostname="aca9f2323b5a" tests="3" skipped="3" failures="0" errors="0" time="0.243">
+    <testcase time="0.0810000000000004" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Module_is_initialised_with_the_specified_defaults.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_distribution.R:53:3')"/>
     </testcase>
-    <testcase time="15.415" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_Selecting_treat_variable_as_factor_changes_the_table_headers."/>
-    <testcase time="3.97499999999991" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_selection_of_categorical_variable_has_a_table_with_level_header.">
-      <error type="error" message="Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, screenshot_args = screenshot_args, check_names = check_names, name = name, variant = variant, view = view, height = height, width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, render_args = render_args, options = options)`: Shiny app did not become stable in 1e+05ms. ('test-shinytest2-tm_variable_browser.R:109:3')">Error in `app_initialize(self, private, app_dir = app_dir, ..., load_timeout = load_timeout, timeout = timeout, wait = wait, expect_values_screenshot_args = expect_values_screenshot_args, screenshot_args = screenshot_args, check_names = check_names, name = name, variant = variant, view = view, height = height, width = width, seed = seed, clean_logs = clean_logs, shiny_args = shiny_args, render_args = render_args, options = options)`: Shiny app did not become stable in 1e+05ms.
-Message: An error occurred while waiting for Shiny to be stable
-Caused by error in `app_wait_for_idle()`:
-! An error occurred while waiting for Shiny to be stable
-
-
-ℹ You can inspect the failed AppDriver object via `rlang::last_error()$app`
-ℹ AppDriver logs:
-{shinytest2} R  info   10:10:39.94 Start AppDriver initialization
-{shinytest2} R  info   10:10:40.02 Starting Shiny app
-{shinytest2} R  info   10:10:41.28 Creating new ChromoteSession
-{shinytest2} R  info   10:10:41.34 Navigating to Shiny app
-{shinytest2} R  info   10:10:41.35 Injecting shiny-tracer.js
-{chromote}   JS info   10:10:41.39 shinytest2; jQuery not found
-{chromote}   JS info   10:10:41.40 shinytest2; Loaded
-{shinytest2} R  info   10:10:41.40 Waiting for Shiny to become ready
-{shinytest2} R  info   10:10:43.32 Waiting for Shiny to become idle for 200ms within 1e+05ms
-{shinytest2} R  info   10:10:43.36 Error while initializing AppDriver:
-                                   Shiny app did not become stable in 1e+05ms.
-                                   Message: An error occurred while waiting for Shiny to be stable
-                                   Caused by error in `app_wait_for_idle()`:
-                                   ! An error occurred while waiting for Shiny to be stable
-{shiny}      R  stderr ----------- Loading required package: shiny
-{shiny}      R  stderr ----------- Attempting to load the environment ‘package:sparkline’
-{shiny}      R  stderr ----------- Loading required package: teal.data
-{shiny}      R  stderr ----------- Loading required package: teal.code
-{shiny}      R  stderr ----------- Loading required package: teal.slice
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- You are using teal version 1.1.0
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Attaching package: ‘teal’
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- The following objects are masked from ‘package:teal.slice’:
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr -----------     as.teal_slices, teal_slices
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Running application in test mode.
-{shiny}      R  stderr ----------- 
-{shiny}      R  stderr ----------- Listening on http://127.0.0.1:3267
-
-
-Caused by error in `app_initialize_()`:
-! Shiny app did not become stable in 1e+05ms.
-Message: An error occurred while waiting for Shiny to be stable
-Caused by error in `app_wait_for_idle()`:
-! An error occurred while waiting for Shiny to be stable
-Backtrace:
-     ▆
-  1. ├─teal.modules.general (local) app_driver_tm_variable_browser() at test-shinytest2-tm_variable_browser.R:109:3
-  2. │ └─teal.modules.general:::init_teal_app_driver(...) at test-shinytest2-tm_variable_browser.R:14:3
-  3. │   ├─testthat::with_mocked_bindings(...) at ./helper-TealAppDriver.R:7:3
-  4. │   ├─base::do.call(TealAppDriver$new, dots) at ./helper-TealAppDriver.R:17:7
-  5. │   └─R6 (local) `&lt;fn&gt;`(`&lt;teal_app&gt;`, timeout = 60000)
-  6. │     └─teal (local) initialize(...)
-  7. │       ├─base::suppressWarnings(...)
-  8. │       │ └─base::withCallingHandlers(...)
-  9. │       └─super$initialize(...)
- 10. │         └─shinytest2:::app_initialize(...)
- 11. │           ├─base::withCallingHandlers(...)
- 12. │           └─shinytest2:::app_initialize_(self, private, ..., view = view)
- 13. │             ├─base::withCallingHandlers(...)
- 14. │             └─self$wait_for_idle(duration = 200, timeout = private$load_timeout)
- 15. │               └─shinytest2:::app_wait_for_idle(...)
- 16. │                 └─shinytest2:::app_abort(self, private, "An error occurred while waiting for Shiny to be stable")
- 17. │                   └─rlang::abort(..., app = self, call = call)
- 18. │                     └─rlang:::signal_abort(cnd, .file)
- 19. │                       └─base::signalCondition(cnd)
- 20. ├─shinytest2 (local) `&lt;fn&gt;`(`&lt;rlng_rrr&gt;`)
- 21. │ └─shinytest2:::app_abort(...)
- 22. │   └─rlang::abort(..., app = self, call = call)
- 23. │     └─rlang:::signal_abort(cnd, .file)
- 24. │       └─base::signalCondition(cnd)
- 25. └─shinytest2 (local) `&lt;fn&gt;`(`&lt;rlng_rrr&gt;`)
- 26.   └─shinytest2:::app_abort(...)
- 27.     └─rlang::abort(..., app = self, call = call)</error>
+    <testcase time="0.0839999999999996" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_Histogram_encoding_inputs_produce_output_without_validation_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_distribution.R:77:3')"/>
     </testcase>
-    <testcase time="14.009" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_display_density_encoding_doesn_t_show_errors."/>
-    <testcase time="2.96100000000001" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_display_density_encoding_doesn_t_show_errors."/>
-    <testcase time="9.63599999999997" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_outlier_definition_encoding_doesn_t_show_errors."/>
-    <testcase time="4.13000000000011" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_outlier_definition_encoding_doesn_t_show_errors."/>
-    <testcase time="0.00399999999990541" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_outlier_definition_encoding_doesn_t_show_errors."/>
-    <testcase time="1.88100000000009" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_outlier_definition_encoding_doesn_t_show_errors."/>
-    <testcase time="3.00900000000001" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_outlier_definition_encoding_doesn_t_show_errors."/>
-    <testcase time="11.124" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors."/>
-    <testcase time="1.29599999999982" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors."/>
-    <testcase time="1.52800000000002" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors."/>
-    <testcase time="1.29999999999995" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors."/>
-    <testcase time="1.30799999999999" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors."/>
-    <testcase time="1.29700000000003" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors."/>
-    <testcase time="1.30000000000018" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors."/>
-    <testcase time="1.31899999999996" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors."/>
-    <testcase time="1.29700000000003" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors."/>
+    <testcase time="0.0780000000000003" classname="shinytest2_tm_g_distribution" name="e2e_tm_g_distribution_QQ_plot_encoding_inputs_produce_output_without_validation_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_distribution.R:114:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="tm_g_association" timestamp="2026-01-16T10:11:40Z" hostname="54192b0b19e0" tests="64" skipped="0" failures="0" errors="0" time="13.498">
-    <testcase time="0.118999999999915" classname="tm_g_association" name="tm_g_association_module_creation_creates_a_teal_module_object"/>
-    <testcase time="0.00600000000008549" classname="tm_g_association" name="tm_g_association_module_creation_creates_a_teal_module_object_with_list_of_data_extract_specs"/>
-    <testcase time="0.0109999999999673" classname="tm_g_association" name="tm_g_association_module_creation_creates_a_module_with_datanames_taken_from_data_extracts"/>
-    <testcase time="0.00699999999983447" classname="tm_g_association" name="tm_g_association_module_creation_creates_a_module_that_is_bookmarkable"/>
-    <testcase time="0.0110000000001946" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_label_is_not_a_string"/>
-    <testcase time="0.00799999999981083" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_ref_is_not_a_data_extract_spec_or_list"/>
-    <testcase time="0.0080000000000382" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_ref_allows_multiple_selection"/>
-    <testcase time="0.00900000000001455" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_vars_is_not_a_data_extract_spec_or_list"/>
-    <testcase time="0.0080000000000382" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00999999999999091" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_plot_height_has_wrong_length"/>
-    <testcase time="0.00900000000001455" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00500000000010914" classname="tm_g_association" name="tm_g_association_input_validation_accepts_NULL_plot_width"/>
-    <testcase time="0.00799999999981083" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_distribution_theme_is_invalid"/>
-    <testcase time="0.00600000000008549" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
-    <testcase time="0.00199999999995271" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
-    <testcase time="0.00300000000015643" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
-    <testcase time="0.00199999999995271" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
-    <testcase time="0.00300000000015643" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
-    <testcase time="0.0080000000000382" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_association_theme_is_invalid"/>
-    <testcase time="0.00599999999985812" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
-    <testcase time="0.00200000000018008" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
-    <testcase time="0.00300000000015643" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
-    <testcase time="0.00199999999995271" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
-    <testcase time="0.00900000000001455" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_ggplot2_args_object_uses_a_named_object_that_is_not_supported"/>
-    <testcase time="0.00600000000008549" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_ggplot2_args"/>
-    <testcase time="0.00900000000001455" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_decorators_has_invalid_object_types"/>
-    <testcase time="0.00499999999988177" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_decorators"/>
-    <testcase time="2.06700000000001" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_executes_successfully_through_module_interface_with_factor_variables"/>
-    <testcase time="0.00300000000015643" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_executes_successfully_through_module_interface_with_factor_variables"/>
-    <testcase time="0.00399999999990541" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_executes_successfully_through_module_interface_with_factor_variables"/>
-    <testcase time="1.08600000000001" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_show_dist_option_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_show_dist_option_through_module_interface"/>
-    <testcase time="0.0110000000001946" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_show_dist_option_through_module_interface"/>
-    <testcase time="0.923000000000002" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_association_toggle_through_module_interface"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_association_toggle_through_module_interface"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_association_toggle_through_module_interface"/>
-    <testcase time="1.07500000000005" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
-    <testcase time="1.23700000000008" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
-    <testcase time="1.18900000000008" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
-    <testcase time="1.01600000000008" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_rotate_xaxis_labels_option_through_module_interface"/>
-    <testcase time="0.00400000000013279" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_rotate_xaxis_labels_option_through_module_interface"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_rotate_xaxis_labels_option_through_module_interface"/>
-    <testcase time="1.0329999999999" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_swap_axes_option_through_module_interface"/>
-    <testcase time="0.00400000000013279" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_swap_axes_option_through_module_interface"/>
-    <testcase time="0.00299999999992906" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_swap_axes_option_through_module_interface"/>
-    <testcase time="1.048" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_numeric_variables_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_numeric_variables_through_module_interface"/>
-    <testcase time="0.00300000000015643" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_numeric_variables_through_module_interface"/>
-    <testcase time="1.15200000000004" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_log_transformation_for_numeric_variables_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_log_transformation_for_numeric_variables_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_log_transformation_for_numeric_variables_through_module_interface"/>
-    <testcase time="1.29000000000019" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_mixed_factor_and_numeric_variables_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_mixed_factor_and_numeric_variables_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_mixed_factor_and_numeric_variables_through_module_interface"/>
+  <testsuite name="shinytest2-tm_g_response" timestamp="2026-01-16T10:51:01Z" hostname="aca9f2323b5a" tests="4" skipped="4" failures="0" errors="0" time="0.335">
+    <testcase time="0.0839999999999996" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_module_is_initialised_with_the_specified_defaults.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_response.R:48:3')"/>
+    </testcase>
+    <testcase time="0.0880000000000001" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_encoding_inputs_produce_output_without_validation_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_response.R:66:3')"/>
+    </testcase>
+    <testcase time="0.0840000000000005" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_deselecting_response_produces_validation_error.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_response.R:96:3')"/>
+    </testcase>
+    <testcase time="0.0789999999999997" classname="shinytest2_tm_g_response" name="e2e_tm_g_response_deselecting_x_produces_validation_error.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_response.R:107:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="tm_g_bivariate" timestamp="2026-01-16T10:11:54Z" hostname="54192b0b19e0" tests="18" skipped="0" failures="0" errors="0" time="0.151">
-    <testcase time="0.0210000000001855" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
-    <testcase time="0.00499999999988177" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
-    <testcase time="0.00600000000008549" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
-    <testcase time="0.00499999999988177" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
-    <testcase time="0.0080000000000382" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
-    <testcase time="0.0080000000000382" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.0080000000000382" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.00699999999983447" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
-    <testcase time="0.0080000000000382" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.0080000000000382" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.0160000000000764" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.0080000000000382" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00799999999981083" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00700000000006185" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.0080000000000382" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
-    <testcase time="0.00700000000006185" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
-    <testcase time="0.0080000000000382" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
-    <testcase time="0.00499999999988177" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
+  <testsuite name="shinytest2-tm_g_scatterplot" timestamp="2026-01-16T10:51:01Z" hostname="aca9f2323b5a" tests="5" skipped="5" failures="0" errors="0" time="0.456">
+    <testcase time="0.0940000000000003" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Module_is_initialised_with_the_specified_defaults.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_scatterplot.R:92:3')"/>
+    </testcase>
+    <testcase time="0.101" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Base_for_the_log_transformation_can_be_applied.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_scatterplot.R:118:3')"/>
+    </testcase>
+    <testcase time="0.085" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_log_transform_is_only_possible_for_positive_numeric_vars.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_scatterplot.R:138:3')"/>
+    </testcase>
+    <testcase time="0.0889999999999995" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_Get_validation_error_when_facetting_with_the_same_row_col_variable.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_scatterplot.R:157:3')"/>
+    </testcase>
+    <testcase time="0.0870000000000006" classname="shinytest2_tm_g_scatterplot" name="e2e_tm_g_scatterplot_The_encoding_inputs_are_set_without_validation_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_scatterplot.R:169:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="tm_g_response" timestamp="2026-01-16T10:11:54Z" hostname="54192b0b19e0" tests="36" skipped="0" failures="0" errors="0" time="3.375">
-    <testcase time="0.00900000000001455" classname="tm_g_response" name="tm_g_response_module_creation_creates_a_teal_module_object"/>
-    <testcase time="0.00500000000010914" classname="tm_g_response" name="tm_g_response_module_creation_creates_a_teal_module_object_with_default_options"/>
-    <testcase time="0.00499999999988177" classname="tm_g_response" name="tm_g_response_module_creation_creates_a_teal_module_object_with_list_of_data_extract_specs"/>
-    <testcase time="0.00600000000008549" classname="tm_g_response" name="tm_g_response_module_creation_creates_a_module_with_datanames_taken_from_data_extracts"/>
-    <testcase time="0.00599999999985812" classname="tm_g_response" name="tm_g_response_module_creation_creates_a_module_that_is_bookmarkable"/>
-    <testcase time="0.0109999999999673" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_label_is_not_a_string"/>
-    <testcase time="0.0080000000000382" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_response_is_not_a_data_extract_spec_or_list"/>
-    <testcase time="0.0080000000000382" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_response_allows_multiple_selection"/>
-    <testcase time="0.00900000000001455" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_x_is_not_a_data_extract_spec_or_list"/>
-    <testcase time="0.0080000000000382" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_x_allows_multiple_selection"/>
-    <testcase time="0.00900000000001455" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00900000000001455" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_plot_height_has_wrong_length"/>
-    <testcase time="0.00900000000001455" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00499999999988177" classname="tm_g_response" name="tm_g_response_input_validation_accepts_NULL_plot_width"/>
-    <testcase time="0.00900000000001455" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_ggtheme_is_invalid"/>
-    <testcase time="0.00500000000010914" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
-    <testcase time="0.00300000000015643" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
-    <testcase time="0.00199999999995271" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
-    <testcase time="0.00299999999992906" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
-    <testcase time="0.00300000000015643" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
-    <testcase time="0.00900000000001455" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_ggplot2_args_object_does_not_inherit_from_ggplot2_args_"/>
-    <testcase time="0.00499999999988177" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggplot2_args"/>
-    <testcase time="0.00900000000001455" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_decorators_has_invalid_object_types"/>
-    <testcase time="0.00500000000010914" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_decorators"/>
-    <testcase time="1.09500000000003" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
-    <testcase time="0.00299999999992906" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
-    <testcase time="0.00299999999992906" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
-    <testcase time="1.03899999999999" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_frequency_plot_through_module_interface"/>
-    <testcase time="0.00300000000015643" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_frequency_plot_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_frequency_plot_through_module_interface"/>
-    <testcase time="1.05099999999993" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_density_plot_through_module_interface"/>
-    <testcase time="0.00400000000013279" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_density_plot_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_density_plot_through_module_interface"/>
+  <testsuite name="shinytest2-tm_g_scatterplotmatrix" timestamp="2026-01-16T10:51:02Z" hostname="aca9f2323b5a" tests="4" skipped="4" failures="0" errors="0" time="0.565">
+    <testcase time="0.146" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Initializes_without_errors">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_scatterplotmatrix.R:51:3')"/>
+    </testcase>
+    <testcase time="0.146999999999999" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Verify_module_displays_data_table">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_scatterplotmatrix.R:65:3')"/>
+    </testcase>
+    <testcase time="0.133" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Verify_default_values_and_settings_data_extracts_for_data_selection">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_scatterplotmatrix.R:79:3')"/>
+    </testcase>
+    <testcase time="0.139" classname="shinytest2_tm_g_scatterplotmatrix" name="e2e_tm_g_scatterplotmatrix_Change_plot_settings">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_g_scatterplotmatrix.R:106:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="tm_g_scatterplotmatrix" timestamp="2026-01-16T10:11:57Z" hostname="54192b0b19e0" tests="19" skipped="0" failures="0" errors="0" time="1.376">
-    <testcase time="0.0150000000001" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_creation_creates_a_teal_module_object"/>
-    <testcase time="0.00499999999988177" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_creation_creates_a_teal_module_object_with_default_options"/>
-    <testcase time="0.00500000000010914" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_creation_creates_a_teal_module_object_with_list_of_data_extract_specs"/>
-    <testcase time="0.00499999999988177" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_creation_creates_a_module_with_datanames_taken_from_data_extracts"/>
-    <testcase time="0.00600000000008549" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_creation_creates_a_module_that_is_bookmarkable"/>
-    <testcase time="0.0109999999999673" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_label_is_not_a_string"/>
-    <testcase time="0.0080000000000382" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_variables_is_not_a_data_extract_spec_or_list"/>
-    <testcase time="0.0080000000000382" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_plot_height_is_not_valid"/>
-    <testcase time="0.00900000000001455" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_plot_height_has_wrong_length"/>
-    <testcase time="0.00799999999981083" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_plot_width_is_not_valid"/>
-    <testcase time="0.00500000000010914" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_accepts_NULL_plot_width"/>
-    <testcase time="0.0080000000000382" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_decorators_has_invalid_object_types"/>
-    <testcase time="0.00499999999988177" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_accepts_valid_decorators"/>
-    <testcase time="0.658000000000129" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
-    <testcase time="0.00400000000013279" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
-    <testcase time="0.604999999999791" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_generates_scatterplot_matrix_with_two_variables"/>
-    <testcase time="0.00400000000013279" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_generates_scatterplot_matrix_with_two_variables"/>
-    <testcase time="0.00299999999992906" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_generates_scatterplot_matrix_with_two_variables"/>
+  <testsuite name="shinytest2-tm_missing_data" timestamp="2026-01-16T10:51:02Z" hostname="aca9f2323b5a" tests="4" skipped="4" failures="0" errors="0" time="0.804">
+    <testcase time="0.2" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Initializes_without_errors">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_missing_data.R:42:3')"/>
+    </testcase>
+    <testcase time="0.207" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Default_settings_and_visibility_of_the_summary_graph">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_missing_data.R:56:3')"/>
+    </testcase>
+    <testcase time="0.201000000000001" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Check_default_settings_and_visibility_of_the_combinations_graph_and_encodings">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_missing_data.R:84:3')"/>
+    </testcase>
+    <testcase time="0.196" classname="shinytest2_tm_missing_data" name="e2e_tm_missing_data_Validate_functionality_and_UI_response_for_By_Variable_Levels_">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_missing_data.R:114:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="tm_rmarkdown" timestamp="2026-01-16T10:11:59Z" hostname="54192b0b19e0" tests="4" skipped="0" failures="0" errors="0" time="0.346">
-    <testcase time="0.15300000000002" classname="tm_rmarkdown" name="srv_rmarkdown_renders_number_of_rows_of_my_data_to_markdown_file"/>
-    <testcase time="0.0160000000000764" classname="tm_rmarkdown" name="srv_rmarkdown_returns_a_teal.reporter_reactive"/>
-    <testcase time="0.0709999999999127" classname="tm_rmarkdown" name="srv_rmarkdown_returns_a_teal.reporter_reactive"/>
-    <testcase time="0.105999999999995" classname="tm_rmarkdown" name="srv_rmarkdown_renders_expected_html"/>
+  <testsuite name="shinytest2-tm_outliers" timestamp="2026-01-16T10:51:03Z" hostname="aca9f2323b5a" tests="10" skipped="10" failures="0" errors="0" time="0.967">
+    <testcase time="0.0990000000000002" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_parameter_and_module_label_is_passed_properly.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_outliers.R:57:3')"/>
+    </testcase>
+    <testcase time="0.107999999999999" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Data_extract_spec_elements_are_initialized_with_the_default_values_specified_by_outlier_var_and_categorical_var_argument.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_outliers.R:74:3')"/>
+    </testcase>
+    <testcase time="0.0930000000000017" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_correctly_set_by_default_and_has_appropriate_possible_options.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_outliers.R:110:3')"/>
+    </testcase>
+    <testcase time="0.0969999999999995" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Module_is_divided_into_3_tabs.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_outliers.R:127:3')"/>
+    </testcase>
+    <testcase time="0.0939999999999994" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Plot_type_is_hidden_when_Boxplot_tab_is_not_selected.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_outliers.R:144:3')"/>
+    </testcase>
+    <testcase time="0.0939999999999994" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Default_radio_buttons_are_set_properly.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_outliers.R:161:3')"/>
+    </testcase>
+    <testcase time="0.0980000000000008" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Method_parameters_are_set_properly.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_outliers.R:177:3')"/>
+    </testcase>
+    <testcase time="0.0939999999999994" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_definition_text_and_range_are_displayed_properly_depending_on_method.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_outliers.R:192:3')"/>
+    </testcase>
+    <testcase time="0.0960000000000001" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outliers_summary_table_is_displayed_with_proper_content.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_outliers.R:253:3')"/>
+    </testcase>
+    <testcase time="0.0940000000000012" classname="shinytest2_tm_outliers" name="e2e_tm_outliers_Outlier_table_is_displayed_with_proper_content.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_outliers.R:303:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="tm_t_crosstable" timestamp="2026-01-16T10:11:59Z" hostname="54192b0b19e0" tests="23" skipped="0" failures="0" errors="0" time="3.606">
-    <testcase time="0.0150000000001" classname="tm_t_crosstable" name="tm_t_crosstable_module_creation_creates_a_teal_module_object"/>
-    <testcase time="0.00599999999985812" classname="tm_t_crosstable" name="tm_t_crosstable_module_creation_creates_a_teal_module_object_with_default_options"/>
-    <testcase time="0.00700000000006185" classname="tm_t_crosstable" name="tm_t_crosstable_module_creation_creates_a_teal_module_object_with_list_of_data_extract_specs"/>
-    <testcase time="0.00500000000010914" classname="tm_t_crosstable" name="tm_t_crosstable_module_creation_creates_a_module_with_datanames_taken_from_data_extracts"/>
-    <testcase time="0.00699999999983447" classname="tm_t_crosstable" name="tm_t_crosstable_module_creation_creates_a_module_that_is_bookmarkable"/>
-    <testcase time="0.0110000000001946" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_label_is_not_a_string"/>
-    <testcase time="0.00900000000001455" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_x_is_not_a_data_extract_spec_or_list"/>
-    <testcase time="0.00799999999981083" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_y_is_not_a_data_extract_spec_or_list"/>
-    <testcase time="0.00900000000001455" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_y_allows_multiple_selection"/>
-    <testcase time="0.00900000000001455" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_show_percentage_is_not_logical"/>
-    <testcase time="0.00900000000001455" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_show_total_is_not_logical"/>
-    <testcase time="0.0080000000000382" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_remove_zero_columns_is_not_logical"/>
-    <testcase time="0.00999999999999091" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_decorators_has_invalid_object_types"/>
-    <testcase time="0.00500000000010914" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_accepts_valid_decorators"/>
-    <testcase time="2.09899999999993" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
-    <testcase time="0.00399999999990541" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
-    <testcase time="0.00400000000013279" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
-    <testcase time="0.725999999999885" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_percentage_enabled"/>
-    <testcase time="0.00300000000015643" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_percentage_enabled"/>
-    <testcase time="0.00399999999990541" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_percentage_enabled"/>
-    <testcase time="0.641000000000076" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_total_enabled"/>
-    <testcase time="0.00399999999990541" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_total_enabled"/>
-    <testcase time="0.00299999999992906" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_total_enabled"/>
+  <testsuite name="shinytest2-tm_t_crosstable" timestamp="2026-01-16T10:51:04Z" hostname="aca9f2323b5a" tests="4" skipped="4" failures="0" errors="0" time="0.755">
+    <testcase time="0.369" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Initializes_without_errors">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_t_crosstable.R:50:3')"/>
+    </testcase>
+    <testcase time="0.155999999999999" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Verify_module_displays_data_table">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_t_crosstable.R:64:3')"/>
+    </testcase>
+    <testcase time="0.118" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Verify_default_values_and_settings_data_extracts_for_data_selection">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_t_crosstable.R:76:3')"/>
+    </testcase>
+    <testcase time="0.112" classname="shinytest2_tm_t_crosstable" name="e2e_tm_t_crosstable_Change_plot_settings">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_t_crosstable.R:99:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="utils" timestamp="2026-01-16T10:12:03Z" hostname="54192b0b19e0" tests="12" skipped="0" failures="0" errors="0" time="0.062">
-    <testcase time="0.0140000000001237" classname="utils" name="set_chunk_attrs_changes_last_chunk_output_with_default_parameters"/>
-    <testcase time="0.00199999999995271" classname="utils" name="set_chunk_attrs_changes_last_chunk_output_with_default_parameters"/>
-    <testcase time="0.00399999999990541" classname="utils" name="set_chunk_attrs_changes_last_2_chunks"/>
-    <testcase time="0.00100000000020373" classname="utils" name="set_chunk_attrs_changes_last_2_chunks"/>
-    <testcase time="0.00399999999990541" classname="utils" name="set_chunk_attrs_only_changes_the_numeric_chunk_outputs"/>
-    <testcase time="0.00199999999995271" classname="utils" name="set_chunk_attrs_only_changes_the_numeric_chunk_outputs"/>
-    <testcase time="0.00400000000013279" classname="utils" name="set_chunk_attrs_throws_warning_when_last_chunk_is_not_chunk_output"/>
-    <testcase time="0.00499999999988177" classname="utils" name="set_chunk_attrs_throws_warning_when_second_to_last_chunk_is_not_chunk_output"/>
-    <testcase time="0.00399999999990541" classname="utils" name="set_chunk_attrs_modifies_all_elements_up_until_the_first_non_chunk_output"/>
-    <testcase time="0.00300000000015643" classname="utils" name="set_chunk_attrs_modifies_all_elements_up_until_the_first_non_chunk_output"/>
-    <testcase time="0.00199999999995271" classname="utils" name="set_chunk_attrs_modifies_all_elements_up_until_the_first_non_chunk_output"/>
-    <testcase time="0.0170000000000528" classname="utils" name="set_chunk_dims_skips_when_one_of_the_dimensions_is_auto_string"/>
+  <testsuite name="shinytest2-tm_variable_browser" timestamp="2026-01-16T10:51:05Z" hostname="aca9f2323b5a" tests="6" skipped="6" failures="0" errors="0" time="0.663">
+    <testcase time="0.111000000000001" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_content_is_displayed_correctly.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_variable_browser.R:35:3')"/>
+    </testcase>
+    <testcase time="0.105" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_Selecting_treat_variable_as_factor_changes_the_table_headers.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_variable_browser.R:73:3')"/>
+    </testcase>
+    <testcase time="0.132999999999999" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_selection_of_categorical_variable_has_a_table_with_level_header.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_variable_browser.R:109:3')"/>
+    </testcase>
+    <testcase time="0.106999999999999" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_display_density_encoding_doesn_t_show_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_variable_browser.R:167:3')"/>
+    </testcase>
+    <testcase time="0.101000000000001" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_outlier_definition_encoding_doesn_t_show_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_variable_browser.R:182:3')"/>
+    </testcase>
+    <testcase time="0.106" classname="shinytest2_tm_variable_browser" name="e2e_tm_variable_browser_changing_plot_setting_encodings_doesn_t_show_errors.">
+      <skipped message="Reason: On CRAN ('test-shinytest2-tm_variable_browser.R:213:3')"/>
+    </testcase>
   </testsuite>
-  <testsuite name="bivariate_ggplot_call" timestamp="2026-01-16T10:12:03Z" hostname="54192b0b19e0" tests="23" skipped="0" failures="0" errors="0" time="0.109">
-    <testcase time="0.00900000000001455" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00299999999992906" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00299999999992906" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.0150000000001" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
-    <testcase time="0.00600000000008549" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_factor_and_factor"/>
-    <testcase time="0.00499999999988177" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_logical_and_factor"/>
-    <testcase time="0.00500000000010914" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_character_and_factor"/>
-    <testcase time="0.00499999999988177" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_factor_and_logical"/>
-    <testcase time="0.00500000000010914" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_logical_and_logical"/>
-    <testcase time="0.00499999999988177" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_character_and_logical"/>
-    <testcase time="0.00500000000010914" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_factor_and_character"/>
-    <testcase time="0.00499999999988177" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_logical_and_character"/>
-    <testcase time="0.00500000000010914" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_character_and_character"/>
-    <testcase time="0.00699999999983447" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00200000000018008" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00299999999992906" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00299999999992906" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00300000000015643" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
-    <testcase time="0.00499999999988177" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00300000000015643" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00299999999992906" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
-    <testcase time="0.00199999999995271" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+  <testsuite name="tm_g_association" timestamp="2026-01-16T10:51:06Z" hostname="aca9f2323b5a" tests="64" skipped="0" failures="0" errors="0" time="12.854">
+    <testcase time="0.0210000000000008" classname="tm_g_association" name="tm_g_association_module_creation_creates_a_teal_module_object"/>
+    <testcase time="0.00499999999999901" classname="tm_g_association" name="tm_g_association_module_creation_creates_a_teal_module_object_with_list_of_data_extract_specs"/>
+    <testcase time="0.00600000000000023" classname="tm_g_association" name="tm_g_association_module_creation_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.00600000000000023" classname="tm_g_association" name="tm_g_association_module_creation_creates_a_module_that_is_bookmarkable"/>
+    <testcase time="0.0129999999999999" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_label_is_not_a_string"/>
+    <testcase time="0.00799999999999912" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_ref_is_not_a_data_extract_spec_or_list"/>
+    <testcase time="0.0080000000000009" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_ref_allows_multiple_selection"/>
+    <testcase time="0.00799999999999912" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_vars_is_not_a_data_extract_spec_or_list"/>
+    <testcase time="0.00900000000000034" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.0129999999999999" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_plot_height_has_wrong_length"/>
+    <testcase time="0.00999999999999979" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00500000000000078" classname="tm_g_association" name="tm_g_association_input_validation_accepts_NULL_plot_width"/>
+    <testcase time="0.00799999999999912" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_distribution_theme_is_invalid"/>
+    <testcase time="0.00500000000000078" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
+    <testcase time="0.00200000000000067" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
+    <testcase time="0.00299999999999834" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_distribution_theme_options"/>
+    <testcase time="0.0080000000000009" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_association_theme_is_invalid"/>
+    <testcase time="0.00499999999999901" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
+    <testcase time="0.00200000000000067" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
+    <testcase time="0.00199999999999889" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_association_theme_options"/>
+    <testcase time="0.00900000000000034" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_ggplot2_args_object_uses_a_named_object_that_is_not_supported"/>
+    <testcase time="0.00500000000000078" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_ggplot2_args"/>
+    <testcase time="0.00899999999999856" classname="tm_g_association" name="tm_g_association_input_validation_fails_when_decorators_has_invalid_object_types"/>
+    <testcase time="0.00500000000000078" classname="tm_g_association" name="tm_g_association_input_validation_accepts_valid_decorators"/>
+    <testcase time="2.403" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_executes_successfully_through_module_interface_with_factor_variables"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_executes_successfully_through_module_interface_with_factor_variables"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_executes_successfully_through_module_interface_with_factor_variables"/>
+    <testcase time="1.008" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_show_dist_option_through_module_interface"/>
+    <testcase time="0.00399999999999956" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_show_dist_option_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_show_dist_option_through_module_interface"/>
+    <testcase time="0.868" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_association_toggle_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_association_toggle_through_module_interface"/>
+    <testcase time="0.00399999999999956" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_association_toggle_through_module_interface"/>
+    <testcase time="0.973000000000001" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
+    <testcase time="0.824999999999999" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
+    <testcase time="0.00400000000000134" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
+    <testcase time="0.841999999999999" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_different_themes_through_module_interface"/>
+    <testcase time="1.01" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_rotate_xaxis_labels_option_through_module_interface"/>
+    <testcase time="0.00399999999999778" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_rotate_xaxis_labels_option_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_rotate_xaxis_labels_option_through_module_interface"/>
+    <testcase time="1.05" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_swap_axes_option_through_module_interface"/>
+    <testcase time="0.00400000000000134" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_swap_axes_option_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_swap_axes_option_through_module_interface"/>
+    <testcase time="1.084" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_numeric_variables_through_module_interface"/>
+    <testcase time="0.00399999999999778" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_numeric_variables_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_numeric_variables_through_module_interface"/>
+    <testcase time="1.144" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_log_transformation_for_numeric_variables_through_module_interface"/>
+    <testcase time="0.00399999999999778" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_log_transformation_for_numeric_variables_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_log_transformation_for_numeric_variables_through_module_interface"/>
+    <testcase time="1.377" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_mixed_factor_and_numeric_variables_through_module_interface"/>
+    <testcase time="0.00399999999999778" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_mixed_factor_and_numeric_variables_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_association" name="tm_g_association_module_server_behavior_server_function_handles_mixed_factor_and_numeric_variables_through_module_interface"/>
   </testsuite>
-  <testsuite name="front_page" timestamp="2026-01-16T10:12:03Z" hostname="54192b0b19e0" tests="4" skipped="0" failures="0" errors="0" time="0.021">
-    <testcase time="0.0080000000000382" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
-    <testcase time="0.00399999999990541" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
-    <testcase time="0.00500000000010914" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
-    <testcase time="0.00399999999990541" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
+  <testsuite name="tm_g_bivariate" timestamp="2026-01-16T10:51:18Z" hostname="aca9f2323b5a" tests="18" skipped="0" failures="0" errors="0" time="0.158">
+    <testcase time="0.0259999999999998" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object"/>
+    <testcase time="0.00500000000000256" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_default_options"/>
+    <testcase time="0.00600000000000023" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_teal_module_object_with_multiple_data_extract_specs"/>
+    <testcase time="0.00600000000000023" classname="tm_g_bivariate" name="tm_g_bivariate_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_a_spec_with_multiple_selection"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_x_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00800000000000267" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_y_contains_multiple_spec_with_at_least_one_multiple_selection"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00700000000000145" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00800000000000267" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_color_is_supplied"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_size_is_supplied"/>
+    <testcase time="0.00799999999999912" classname="tm_g_bivariate" name="tm_g_bivariate_fails_when_color_setting_is_FALSE_and_fill_is_supplied"/>
+    <testcase time="0.0120000000000005" classname="tm_g_bivariate" name="tm_g_bivariate_determines_color_size_and_fill_when_color_setting_is_TRUE"/>
   </testsuite>
-  <testsuite name="g_expert_cl" timestamp="2026-01-16T10:12:03Z" hostname="54192b0b19e0" tests="15" skipped="0" failures="0" errors="0" time="0.032">
-    <testcase time="0.00700000000006185" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00199999999995271" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00200000000018008" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00199999999995271" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
-    <testcase time="0.00299999999992906" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00199999999995271" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00200000000018008" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00199999999995271" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
-    <testcase time="0.00299999999992906" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.00200000000018008" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
-    <testcase time="0.000999999999976353" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+  <testsuite name="tm_g_response" timestamp="2026-01-16T10:51:19Z" hostname="aca9f2323b5a" tests="36" skipped="0" failures="0" errors="0" time="3.624">
+    <testcase time="0.0100000000000016" classname="tm_g_response" name="tm_g_response_module_creation_creates_a_teal_module_object"/>
+    <testcase time="0.00599999999999667" classname="tm_g_response" name="tm_g_response_module_creation_creates_a_teal_module_object_with_default_options"/>
+    <testcase time="0.00600000000000023" classname="tm_g_response" name="tm_g_response_module_creation_creates_a_teal_module_object_with_list_of_data_extract_specs"/>
+    <testcase time="0.00600000000000023" classname="tm_g_response" name="tm_g_response_module_creation_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.00800000000000267" classname="tm_g_response" name="tm_g_response_module_creation_creates_a_module_that_is_bookmarkable"/>
+    <testcase time="0.00999999999999801" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_label_is_not_a_string"/>
+    <testcase time="0.00799999999999912" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_response_is_not_a_data_extract_spec_or_list"/>
+    <testcase time="0.00799999999999912" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_response_allows_multiple_selection"/>
+    <testcase time="0.00800000000000267" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_x_is_not_a_data_extract_spec_or_list"/>
+    <testcase time="0.00899999999999679" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_x_allows_multiple_selection"/>
+    <testcase time="0.00800000000000267" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00900000000000034" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_plot_height_has_wrong_length"/>
+    <testcase time="0.00900000000000034" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00499999999999901" classname="tm_g_response" name="tm_g_response_input_validation_accepts_NULL_plot_width"/>
+    <testcase time="0.00799999999999912" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_ggtheme_is_invalid"/>
+    <testcase time="0.00600000000000023" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
+    <testcase time="0.00199999999999889" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
+    <testcase time="0.00300000000000011" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
+    <testcase time="0.00799999999999912" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
+    <testcase time="0.00400000000000134" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggtheme_options"/>
+    <testcase time="0.0100000000000016" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_ggplot2_args_object_does_not_inherit_from_ggplot2_args_"/>
+    <testcase time="0.00600000000000023" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_ggplot2_args"/>
+    <testcase time="0.00999999999999801" classname="tm_g_response" name="tm_g_response_input_validation_fails_when_decorators_has_invalid_object_types"/>
+    <testcase time="0.00499999999999901" classname="tm_g_response" name="tm_g_response_input_validation_accepts_valid_decorators"/>
+    <testcase time="1.083" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
+    <testcase time="0.00900000000000034" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
+    <testcase time="1.345" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_frequency_plot_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_frequency_plot_through_module_interface"/>
+    <testcase time="0.00399999999999778" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_frequency_plot_through_module_interface"/>
+    <testcase time="0.990000000000002" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_density_plot_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_density_plot_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_response" name="tm_g_response_module_server_behavior_server_function_generates_density_plot_through_module_interface"/>
   </testsuite>
-  <testsuite name="scatterplotmatrix_get_stats" timestamp="2026-01-16T10:12:03Z" hostname="54192b0b19e0" tests="6" skipped="0" failures="0" errors="0" time="0.026">
-    <testcase time="0.00900000000001455" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00299999999992906" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00299999999992906" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
-    <testcase time="0.00500000000010914" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
-    <testcase time="0.00299999999992906" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
-    <testcase time="0.00299999999992906" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+  <testsuite name="tm_g_scatterplotmatrix" timestamp="2026-01-16T10:51:22Z" hostname="aca9f2323b5a" tests="19" skipped="0" failures="0" errors="0" time="1.312">
+    <testcase time="0.014999999999997" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_creation_creates_a_teal_module_object"/>
+    <testcase time="0.00400000000000134" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_creation_creates_a_teal_module_object_with_default_options"/>
+    <testcase time="0.00499999999999901" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_creation_creates_a_teal_module_object_with_list_of_data_extract_specs"/>
+    <testcase time="0.00400000000000134" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_creation_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.00600000000000023" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_creation_creates_a_module_that_is_bookmarkable"/>
+    <testcase time="0.0100000000000016" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_label_is_not_a_string"/>
+    <testcase time="0.00799999999999912" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_variables_is_not_a_data_extract_spec_or_list"/>
+    <testcase time="0.00799999999999912" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_plot_height_is_not_valid"/>
+    <testcase time="0.00799999999999912" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_plot_height_has_wrong_length"/>
+    <testcase time="0.00800000000000267" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_plot_width_is_not_valid"/>
+    <testcase time="0.00399999999999778" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_accepts_NULL_plot_width"/>
+    <testcase time="0.00799999999999912" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_fails_when_decorators_has_invalid_object_types"/>
+    <testcase time="0.00500000000000256" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_input_validation_accepts_valid_decorators"/>
+    <testcase time="0.651" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
+    <testcase time="0.555" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_generates_scatterplot_matrix_with_two_variables"/>
+    <testcase time="0.00300000000000011" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_generates_scatterplot_matrix_with_two_variables"/>
+    <testcase time="0.00399999999999778" classname="tm_g_scatterplotmatrix" name="tm_g_scatterplotmatrix_module_server_behavior_server_function_generates_scatterplot_matrix_with_two_variables"/>
   </testsuite>
-  <testsuite name="variable_browser" timestamp="2026-01-16T10:12:03Z" hostname="54192b0b19e0" tests="3" skipped="0" failures="0" errors="0" time="0.013">
-    <testcase time="0.00600000000008549" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
-    <testcase time="0.00399999999990541" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
-    <testcase time="0.00300000000015643" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
+  <testsuite name="tm_rmarkdown" timestamp="2026-01-16T10:51:23Z" hostname="aca9f2323b5a" tests="4" skipped="0" failures="0" errors="0" time="0.295">
+    <testcase time="0.128" classname="tm_rmarkdown" name="srv_rmarkdown_renders_number_of_rows_of_my_data_to_markdown_file"/>
+    <testcase time="0.0160000000000018" classname="tm_rmarkdown" name="srv_rmarkdown_returns_a_teal.reporter_reactive"/>
+    <testcase time="0.0649999999999977" classname="tm_rmarkdown" name="srv_rmarkdown_returns_a_teal.reporter_reactive"/>
+    <testcase time="0.0860000000000021" classname="tm_rmarkdown" name="srv_rmarkdown_renders_expected_html"/>
+  </testsuite>
+  <testsuite name="tm_t_crosstable" timestamp="2026-01-16T10:51:24Z" hostname="aca9f2323b5a" tests="23" skipped="0" failures="0" errors="0" time="3.204">
+    <testcase time="0.0129999999999981" classname="tm_t_crosstable" name="tm_t_crosstable_module_creation_creates_a_teal_module_object"/>
+    <testcase time="0.00400000000000134" classname="tm_t_crosstable" name="tm_t_crosstable_module_creation_creates_a_teal_module_object_with_default_options"/>
+    <testcase time="0.00600000000000023" classname="tm_t_crosstable" name="tm_t_crosstable_module_creation_creates_a_teal_module_object_with_list_of_data_extract_specs"/>
+    <testcase time="0.00499999999999901" classname="tm_t_crosstable" name="tm_t_crosstable_module_creation_creates_a_module_with_datanames_taken_from_data_extracts"/>
+    <testcase time="0.00700000000000145" classname="tm_t_crosstable" name="tm_t_crosstable_module_creation_creates_a_module_that_is_bookmarkable"/>
+    <testcase time="0.00999999999999801" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_label_is_not_a_string"/>
+    <testcase time="0.00800000000000267" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_x_is_not_a_data_extract_spec_or_list"/>
+    <testcase time="0.00799999999999912" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_y_is_not_a_data_extract_spec_or_list"/>
+    <testcase time="0.00900000000000034" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_y_allows_multiple_selection"/>
+    <testcase time="0.00799999999999912" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_show_percentage_is_not_logical"/>
+    <testcase time="0.00799999999999912" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_show_total_is_not_logical"/>
+    <testcase time="0.00900000000000034" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_remove_zero_columns_is_not_logical"/>
+    <testcase time="0.00799999999999912" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_fails_when_decorators_has_invalid_object_types"/>
+    <testcase time="0.00500000000000256" classname="tm_t_crosstable" name="tm_t_crosstable_input_validation_accepts_valid_decorators"/>
+    <testcase time="1.458" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
+    <testcase time="0.00300000000000011" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_executes_successfully_through_module_interface"/>
+    <testcase time="0.992000000000001" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_percentage_enabled"/>
+    <testcase time="0.00300000000000011" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_percentage_enabled"/>
+    <testcase time="0.00399999999999778" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_percentage_enabled"/>
+    <testcase time="0.626000000000001" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_total_enabled"/>
+    <testcase time="0.00400000000000134" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_total_enabled"/>
+    <testcase time="0.00300000000000011" classname="tm_t_crosstable" name="tm_t_crosstable_module_server_behavior_server_function_generates_table_with_show_total_enabled"/>
+  </testsuite>
+  <testsuite name="utils" timestamp="2026-01-16T10:51:27Z" hostname="aca9f2323b5a" tests="12" skipped="0" failures="0" errors="0" time="0.062">
+    <testcase time="0.0139999999999993" classname="utils" name="set_chunk_attrs_changes_last_chunk_output_with_default_parameters"/>
+    <testcase time="0.00199999999999889" classname="utils" name="set_chunk_attrs_changes_last_chunk_output_with_default_parameters"/>
+    <testcase time="0.00400000000000134" classname="utils" name="set_chunk_attrs_changes_last_2_chunks"/>
+    <testcase time="0.000999999999997669" classname="utils" name="set_chunk_attrs_changes_last_2_chunks"/>
+    <testcase time="0.00400000000000134" classname="utils" name="set_chunk_attrs_only_changes_the_numeric_chunk_outputs"/>
+    <testcase time="0.00199999999999889" classname="utils" name="set_chunk_attrs_only_changes_the_numeric_chunk_outputs"/>
+    <testcase time="0.00400000000000134" classname="utils" name="set_chunk_attrs_throws_warning_when_last_chunk_is_not_chunk_output"/>
+    <testcase time="0.00499999999999901" classname="utils" name="set_chunk_attrs_throws_warning_when_second_to_last_chunk_is_not_chunk_output"/>
+    <testcase time="0.00400000000000134" classname="utils" name="set_chunk_attrs_modifies_all_elements_up_until_the_first_non_chunk_output"/>
+    <testcase time="0.00300000000000011" classname="utils" name="set_chunk_attrs_modifies_all_elements_up_until_the_first_non_chunk_output"/>
+    <testcase time="0.00199999999999889" classname="utils" name="set_chunk_attrs_modifies_all_elements_up_until_the_first_non_chunk_output"/>
+    <testcase time="0.0169999999999995" classname="utils" name="set_chunk_dims_skips_when_one_of_the_dimensions_is_auto_string"/>
+  </testsuite>
+  <testsuite name="bivariate_ggplot_call" timestamp="2026-01-16T10:51:27Z" hostname="aca9f2323b5a" tests="23" skipped="0" failures="0" errors="0" time="0.101">
+    <testcase time="0.0100000000000016" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_numerics"/>
+    <testcase time="0.00499999999999901" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_factor_and_factor"/>
+    <testcase time="0.00500000000000256" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_logical_and_factor"/>
+    <testcase time="0.00499999999999901" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_character_and_factor"/>
+    <testcase time="0.00499999999999901" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_factor_and_logical"/>
+    <testcase time="0.0120000000000005" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_logical_and_logical"/>
+    <testcase time="0.00499999999999901" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_character_and_logical"/>
+    <testcase time="0.00500000000000256" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_factor_and_character"/>
+    <testcase time="0.00399999999999778" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_logical_and_character"/>
+    <testcase time="0.00500000000000256" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_arguments_character_and_character"/>
+    <testcase time="0.00600000000000023" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00199999999999889" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_numeric"/>
+    <testcase time="0.00499999999999901" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00200000000000244" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+    <testcase time="0.00300000000000011" classname="bivariate_ggplot_call" name="bivariate_ggplot_call_with_single_data_factor"/>
+  </testsuite>
+  <testsuite name="front_page" timestamp="2026-01-16T10:51:27Z" hostname="aca9f2323b5a" tests="4" skipped="0" failures="0" errors="0" time="0.02">
+    <testcase time="0.0069999999999979" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_no_rows_if_no_metadata"/>
+    <testcase time="0.00400000000000134" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_more_than_one_dataset"/>
+    <testcase time="0.00399999999999778" classname="front_page" name="convert_metadata_to_dataframe_returns_a_data_frame_with_metadata_if_one_dataset"/>
+    <testcase time="0.00500000000000256" classname="front_page" name="convert_metadata_to_dataframe_converts_metadata_values_to_characters"/>
+  </testsuite>
+  <testsuite name="g_expert_cl" timestamp="2026-01-16T10:51:27Z" hostname="aca9f2323b5a" tests="15" skipped="0" failures="0" errors="0" time="0.03">
+    <testcase time="0.00600000000000023" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00200000000000244" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00200000000000244" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations"/>
+    <testcase time="0.00400000000000134" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00199999999999889" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_with_all_combinations_without_colour_var"/>
+    <testcase time="0.00400000000000134" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.00100000000000122" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+    <testcase time="0.000999999999997669" classname="g_expert_cl" name="coloring_ggplot_call_can_work_size_var"/>
+  </testsuite>
+  <testsuite name="scatterplotmatrix_get_stats" timestamp="2026-01-16T10:51:27Z" hostname="aca9f2323b5a" tests="6" skipped="0" failures="0" errors="0" time="0.026">
+    <testcase time="0.0100000000000016" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00300000000000011" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_numeric"/>
+    <testcase time="0.00499999999999901" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00200000000000244" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+    <testcase time="0.00299999999999656" classname="scatterplotmatrix_get_stats" name="get_scatterplotmatrix_stats_x_y_character"/>
+  </testsuite>
+  <testsuite name="variable_browser" timestamp="2026-01-16T10:51:27Z" hostname="aca9f2323b5a" tests="3" skipped="0" failures="0" errors="0" time="0.014">
+    <testcase time="0.00600000000000023" classname="variable_browser" name="remove_outliers_from_does_not_remove_outliers_when_outlier_definition_is_zero"/>
+    <testcase time="0.00400000000000134" classname="variable_browser" name="remove_outliers_from_removes_outliers_when_outlier_definition_is_non_zero"/>
+    <testcase time="0.00400000000000134" classname="variable_browser" name="remove_outliers_from_keeps_missing_values_unchanged"/>
   </testsuite>
 </testsuites>
