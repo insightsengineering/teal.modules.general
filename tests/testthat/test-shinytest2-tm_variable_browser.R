@@ -24,8 +24,7 @@ app_driver_tm_variable_browser <- function() {
         pre_output = shiny::tags$div("A pre-output message for tm_variable_browser"),
         post_output = shiny::tags$div("A post-output message for tm_variable_browser")
       )
-    ),
-    timeout = 10000
+    )
   )
 }
 

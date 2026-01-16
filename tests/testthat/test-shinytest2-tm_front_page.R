@@ -18,8 +18,7 @@ app_driver_tm_front_page <- function() {
         additional_tags = HTML("Additional HTML or shiny tags go here"),
         footnotes = "This is a footnote"
       )
-    ),
-    timeout = 10000
+    )
   )
 }
 
