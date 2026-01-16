@@ -453,7 +453,7 @@ testthat::describe("tm_variable_browser module server behavior", {
         )
 
         session$flushReact()
-        
+
         # Access outputs to trigger rendering and verify they don't error
         testthat::expect_no_error(output$ui_variable_browser)
         testthat::expect_no_error(output$dataset_summary_test_data)
@@ -537,7 +537,7 @@ testthat::describe("tm_variable_browser module server behavior", {
           "variable_browser_dataset2_rows_selected" = 1
         )
 
-          session$flushReact()          
+          session$flushReact()
         # Access outputs to trigger rendering and verify they don't error
           testthat::expect_no_error(output$ui_variable_browser)
           testthat::expect_no_error(output$dataset_summary_dataset2)
@@ -577,7 +577,7 @@ testthat::describe("tm_variable_browser module server behavior", {
           "variable_browser_ADSL_rows_selected" = 1
         )
 
-          session$flushReact()          
+          session$flushReact()
         # Access outputs to trigger rendering and verify they don't error
           testthat::expect_no_error(output$ui_variable_browser)
           testthat::expect_no_error(output$dataset_summary_ADSL)
@@ -969,7 +969,7 @@ testthat::describe("testServer for data exceptions", {
     data <- shiny::reactive({
       teal.data::teal_data() |>
         within({
-          `data-with-dashes` <- data.frame(var1 = 1:10, var2 = letters[1:10])
+          `data-with-dashes` <- data.frame(var1 = 1:10, var2 = letters[1:10]) # nolint: object_name_lintr
         })
     })
 
@@ -1037,7 +1037,7 @@ testthat::describe("testServer for data exceptions", {
 
   it("server function handles factors with ordered levels", {
     data <- create_test_data(data.frame(
-      ordered_factor = ordered(rep(c("Low", "Medium", "High"), length.out = 60), 
+      ordered_factor = ordered(rep(c("Low", "Medium", "High"), length.out = 60),
                                levels = c("Low", "Medium", "High"))
     ))
 
