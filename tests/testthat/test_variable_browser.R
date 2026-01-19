@@ -1011,6 +1011,14 @@ testthat::describe("testServer for data exceptions", {
 })
 
 testthat::describe("UI switches and controls", {
+  set_shared_inputs <- function(session) {
+    session$setInputs(
+      "ggplot_theme" = "grey",
+      "font_size" = 15,
+      "label_rotation" = 45
+    )
+  }
+
   it("server handles toggling display_density switch", {
     data <- create_test_data(data.frame(
       numeric_var = rnorm(100)
@@ -1027,13 +1035,8 @@ testthat::describe("UI switches and controls", {
       expr = {
         session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
-
-        session$setInputs(
-          "ggplot_theme" = "grey",
-          "font_size" = 15,
-          "label_rotation" = 45,
-          "variable_browser_test_data_rows_selected" = 1
-        )
+        set_shared_inputs(session)
+        session$setInputs("variable_browser_test_data_rows_selected" = 1)
         session$flushReact()
 
         # Toggle density display OFF
@@ -1068,13 +1071,8 @@ testthat::describe("UI switches and controls", {
       expr = {
         session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
-
-        session$setInputs(
-          "ggplot_theme" = "grey",
-          "font_size" = 15,
-          "label_rotation" = 45,
-          "variable_browser_test_data_rows_selected" = 1
-        )
+        set_shared_inputs(session)
+        session$setInputs("variable_browser_test_data_rows_selected" = 1)
         session$flushReact()
 
         # Toggle remove NA OFF
@@ -1106,13 +1104,8 @@ testthat::describe("UI switches and controls", {
       expr = {
         session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
-
-        session$setInputs(
-          "ggplot_theme" = "grey",
-          "font_size" = 15,
-          "label_rotation" = 45,
-          "variable_browser_test_data_rows_selected" = 1
-        )
+        set_shared_inputs(session)
+        session$setInputs("variable_browser_test_data_rows_selected" = 1)
         session$flushReact()
 
         # Enable outlier removal
@@ -1151,13 +1144,8 @@ testthat::describe("UI switches and controls", {
       expr = {
         session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
-
-        session$setInputs(
-          "ggplot_theme" = "grey",
-          "font_size" = 15,
-          "label_rotation" = 45,
-          "variable_browser_test_data_rows_selected" = 1
-        )
+        set_shared_inputs(session)
+        session$setInputs("variable_browser_test_data_rows_selected" = 1)
         session$flushReact()
 
         # Treat as continuous (numeric_as_factor = FALSE)
@@ -1206,11 +1194,7 @@ testthat::describe("UI switches and controls", {
         session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
 
-        session$setInputs(
-          "ggplot_theme" = "grey",
-          "font_size" = 15,
-          "label_rotation" = 45
-        )
+        set_shared_inputs(session)
 
         # Test very discrete (should default to factor)
         session$setInputs("variable_browser_test_data_rows_selected" = 1)
@@ -1248,12 +1232,8 @@ testthat::describe("UI switches and controls", {
         session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
 
-        session$setInputs(
-          "ggplot_theme" = "grey",
-          "font_size" = 15,
-          "label_rotation" = 45,
-          "variable_browser_test_data_rows_selected" = 1
-        )
+        set_shared_inputs(session)
+        session$setInputs("variable_browser_test_data_rows_selected" = 1)
         session$flushReact()
 
         # Should not show remove_NA_hist option for many levels
@@ -1285,12 +1265,8 @@ testthat::describe("UI switches and controls", {
         session$setInputs("tabset_panel" = "dataset1")
         session$flushReact()
 
-        session$setInputs(
-          "ggplot_theme" = "grey",
-          "font_size" = 15,
-          "label_rotation" = 45,
-          "variable_browser_dataset1_rows_selected" = 1
-        )
+        set_shared_inputs(session)
+        session$setInputs("variable_browser_dataset1_rows_selected" = 1)
         session$flushReact()
 
         testthat::expect_no_error(output$dataset_summary_dataset1)
@@ -1318,11 +1294,7 @@ testthat::describe("UI switches and controls", {
         session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
 
-        session$setInputs(
-          "ggplot_theme" = "grey",
-          "font_size" = 15,
-          "label_rotation" = 45
-        )
+        set_shared_inputs(session)
 
         # Test all NA numeric
         suppressWarnings({
@@ -1370,12 +1342,8 @@ testthat::describe("UI switches and controls", {
         session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
 
-        session$setInputs(
-          "ggplot_theme" = "grey",
-          "font_size" = 15,
-          "label_rotation" = 45,
-          "variable_browser_test_data_rows_selected" = 1
-        )
+        set_shared_inputs(session)
+        session$setInputs("variable_browser_test_data_rows_selected" = 1)
         session$flushReact()
 
         testthat::expect_no_error(output$variable_summary_table)
@@ -1400,12 +1368,8 @@ testthat::describe("UI switches and controls", {
         session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
 
-        session$setInputs(
-          "ggplot_theme" = "grey",
-          "font_size" = 15,
-          "label_rotation" = 45,
-          "variable_browser_test_data_rows_selected" = 1
-        )
+        set_shared_inputs(session)
+        session$setInputs("variable_browser_test_data_rows_selected" = 1)
         session$flushReact()
 
         # Enable both outlier removal and density display
