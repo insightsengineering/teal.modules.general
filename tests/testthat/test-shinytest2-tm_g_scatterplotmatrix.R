@@ -41,8 +41,7 @@ app_driver_tm_g_scatterplotmatrix <- function() { # nolint: object_length_linter
         pre_output = NULL,
         post_output = NULL
       )
-    ),
-    timeout = 10000
+    )
   )
 }
 

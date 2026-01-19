@@ -1,5 +1,3 @@
-# Unit tests for tm_g_response module
-
 testthat::describe("tm_g_response module creation", {
   it("creates a teal_module object", {
     testthat::expect_s3_class(
@@ -123,7 +121,7 @@ testthat::describe("tm_g_response input validation", {
       tm_g_response(
         response = mock_data_extract_spec(select_multiple = FALSE),
         x = mock_data_extract_spec(select_multiple = FALSE),
-        plot_height = c(100, 200, 300) # min > max
+        plot_height = c(100, 200, 300) # testing when min > max
       ),
       "Assertion on 'plot_height' failed"
     )
@@ -145,7 +143,7 @@ testthat::describe("tm_g_response input validation", {
       tm_g_response(
         response = mock_data_extract_spec(select_multiple = FALSE),
         x = mock_data_extract_spec(select_multiple = FALSE),
-        plot_width = c(100, 200, 300) # min > max
+        plot_width = c(100, 200, 300) # testing when min > max
       ),
       "Assertion on 'plot_width' failed"
     )
@@ -186,14 +184,12 @@ testthat::describe("tm_g_response input validation", {
     }
   })
 
-  it("fails when ggplot2_args is not a ggplot2_args object", {
+  it("fails when ggplot2_args object does not inherit from 'ggplot2_args'", {
     testthat::expect_error(
       tm_g_response(
         response = mock_data_extract_spec(select_multiple = FALSE),
         x = mock_data_extract_spec(select_multiple = FALSE),
-        ggplot2_args = list(
-          invalid_name = teal.widgets::ggplot2_args()
-        )
+        ggplot2_args = list(teal.widgets::ggplot2_args())
       ),
       "Assertion on 'ggplot2_args' failed"
     )
@@ -237,8 +233,6 @@ testthat::describe("tm_g_response input validation", {
   })
 })
 
-
-# Server and UI function tests removed - srv_g_response and ui_g_response are not exported
 
 testthat::describe("tm_g_response module server behavior", {
   it("server function executes successfully through module interface", {
