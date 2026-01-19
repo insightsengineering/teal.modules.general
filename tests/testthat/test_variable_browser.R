@@ -167,12 +167,14 @@ testthat::describe("tests for module creation", {
 
   it("uses non default datanames", {
     testthat::expect_s3_class(
-      tm_variable_browser(datanames = "my-dataset"), "teal_module")
+      tm_variable_browser(datanames = "my-dataset"), "teal_module"
+    )
   })
 
   it("uses non parent_datanames", {
     testthat::expect_s3_class(
-      tm_variable_browser(parent_dataname = "my-parent_dataset"), "teal_module")
+      tm_variable_browser(parent_dataname = "my-parent_dataset"), "teal_module"
+    )
   })
 
   it("creates a teal_module object with pre_output", {
@@ -1361,7 +1363,7 @@ testthat::describe("UI switches and controls", {
       numeric_var = c(rnorm(90), rep(c(100, -100), 5))
     ))
 
-    mod <- tm_variable_browser(datanames = "test_data" )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
