@@ -2,15 +2,15 @@ testthat::describe("tests for create_sparklines exported S3 methods", {
   it("creates sparkline for numeric vectors", {
     var <- c(1, 2, 3, 4, 5)
     result <- create_sparklines(var)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    checkmate::expect_class(result, c("html", "character"))
+    checkmate::expect_string(result, min.chars = 1)
   })
 
   it("creates sparkline for factor vectors", {
     var <- factor(c("A", "B", "A", "B", "C"))
     result <- create_sparklines(var)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    checkmate::expect_class(result, c("html", "character"))
+    checkmate::expect_string(result, min.chars = 1)
   })
 
   it("creates sparkline for logical vectors", {
@@ -23,29 +23,29 @@ testthat::describe("tests for create_sparklines exported S3 methods", {
   it("creates sparkline for character vectors", {
     var <- c("A", "B", "A", "B", "C")
     result <- create_sparklines(var)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    checkmate::expect_class(result, c("html", "character"))
+    checkmate::expect_string(result, min.chars = 1)
   })
 
   it("creates sparkline for Date vectors", {
     var <- as.Date(c("2020-01-01", "2020-02-01", "2020-03-01"))
     result <- create_sparklines(var)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    checkmate::expect_class(result, c("html", "character"))
+    checkmate::expect_string(result, min.chars = 1)
   })
 
   it("creates sparkline for POSIXct vectors", {
     var <- as.POSIXct(c("2020-01-01 12:00:00", "2020-02-01 12:00:00", "2020-03-01 12:00:00"))
     result <- create_sparklines(var)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    checkmate::expect_class(result, c("html", "character"))
+    checkmate::expect_string(result, min.chars = 1)
   })
 
   it("creates sparkline for POSIXlt vectors", {
     var <- as.POSIXlt(c("2020-01-01 12:00:00", "2020-02-01 12:00:00", "2020-03-01 12:00:00"))
     result <- create_sparklines(var)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    checkmate::expect_class(result, c("html", "character"))
+    checkmate::expect_string(result, min.chars = 1)
   })
 
   it("handles factors with many levels", {
@@ -236,6 +236,11 @@ testthat::describe("tests for module creation", {
   it("creates a module that is not bookmarkable", {
     mod <- tm_variable_browser()
     testthat::expect_null(attr(mod, "teal_bookmarkable"))
+  })
+
+  it("contains the expected class in the ui component", {
+    mod <- tm_variable_browser()
+    testthat::expect_s3_class(mod$ui("my-id"), "shiny.tag")
   })
 })
 
