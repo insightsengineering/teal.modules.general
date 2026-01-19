@@ -162,28 +162,17 @@ testthat::describe("tests for create_sparklines exported S3 methods", {
 
 testthat::describe("tests for module creation", {
   it("creates a teal_module object", {
-    testthat::expect_s3_class(
-      tm_variable_browser(),
-      "teal_module"
-    )
+    testthat::expect_s3_class(tm_variable_browser(), "teal_module")
   })
 
   it("uses non default datanames", {
     testthat::expect_s3_class(
-      tm_variable_browser(
-        datanames = "my-dataset"
-      ),
-      "teal_module"
-    )
+      tm_variable_browser(datanames = "my-dataset"), "teal_module")
   })
 
   it("uses non parent_datanames", {
     testthat::expect_s3_class(
-      tm_variable_browser(
-        parent_dataname = "my-parent_dataset"
-      ),
-      "teal_module"
-    )
+      tm_variable_browser(parent_dataname = "my-parent_dataset"), "teal_module")
   })
 
   it("creates a teal_module object with pre_output", {
@@ -191,9 +180,7 @@ testthat::describe("tests for module creation", {
     default_mod <- tm_variable_browser()
     testthat::expect_null(default_mod$ui_args$pre_output)
 
-    pre_output_mod <- tm_variable_browser(
-      pre_output = pre_output
-    )
+    pre_output_mod <- tm_variable_browser(pre_output = pre_output)
     testthat::expect_equal(pre_output_mod$ui_args$pre_output, pre_output)
   })
 
@@ -202,9 +189,7 @@ testthat::describe("tests for module creation", {
     default_mod <- tm_missing_data()
     testthat::expect_null(default_mod$ui_args$post_output)
 
-    post_output_mod <- tm_variable_browser(
-      post_output = post_output
-    )
+    post_output_mod <- tm_variable_browser(post_output = post_output)
     testthat::expect_equal(post_output_mod$ui_args$post_output, post_output)
   })
 
@@ -231,11 +216,7 @@ testthat::describe("tests for module creation", {
     )
 
     testthat::expect_s3_class(
-      tm_variable_browser(
-        transformators = list(
-          teal::teal_transform_module()
-        )
-      ),
+      tm_variable_browser(transformators = list(teal::teal_transform_module())),
       "teal_module"
     )
   })
@@ -267,9 +248,7 @@ testthat::describe("tests for input validation", {
   })
 
   it("errors for deprecated parameter datasets_selected", {
-    testthat::expect_error(
-      tm_variable_browser(datasets_selected = "my-dataset"),
-    )
+    testthat::expect_error(tm_variable_browser(datasets_selected = "my-dataset"))
   })
 
   it("fails if datanames is not a character", {
@@ -301,9 +280,7 @@ testthat::describe("tests for input validation", {
   })
 
   it("fails if ggplot2_args is not of the valid type", {
-    testthat::expect_error(
-      tm_variable_browser(ggplot2_args = "wrong type")
-    )
+    testthat::expect_error(tm_variable_browser(ggplot2_args = "wrong type"))
   })
 })
 
@@ -315,9 +292,7 @@ testthat::describe("tm_variable_browser module server behavior", {
       num_var3 = 1:50
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -353,9 +328,7 @@ testthat::describe("tm_variable_browser module server behavior", {
       char_var = rep(c("foo", "bar"), 30)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -389,9 +362,7 @@ testthat::describe("tm_variable_browser module server behavior", {
       posix_var = seq(as.POSIXct("2020-01-01"), as.POSIXct("2020-12-31"), length.out = 53)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -429,9 +400,7 @@ testthat::describe("tm_variable_browser module server behavior", {
       logical_var = rep(c(TRUE, FALSE), 25)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -467,9 +436,7 @@ testthat::describe("tm_variable_browser module server behavior", {
       all_na = rep(NA, 10)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -514,9 +481,7 @@ testthat::describe("tm_variable_browser module server behavior", {
         })
     })
 
-    mod <- tm_variable_browser(
-      datanames = c("dataset1", "dataset2")
-    )
+    mod <- tm_variable_browser(datanames = c("dataset1", "dataset2"))
 
     shiny::testServer(
       mod$server,
@@ -591,9 +556,7 @@ testthat::describe("tm_variable_browser module server behavior", {
       continuous = rnorm(60)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -634,9 +597,7 @@ testthat::describe("tm_variable_browser module server behavior", {
       logical_with_na = c(TRUE, FALSE, NA, TRUE, FALSE, rep(TRUE, 55))
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -721,9 +682,7 @@ testthat::describe("testServer for data exceptions", {
   it("server function handles empty dataframes", {
     data <- create_test_data(data.frame())
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -748,9 +707,7 @@ testthat::describe("testServer for data exceptions", {
       var3 = TRUE
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -786,9 +743,7 @@ testthat::describe("testServer for data exceptions", {
       single_var = rnorm(100)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -822,9 +777,7 @@ testthat::describe("testServer for data exceptions", {
       var2 = factor(rep(c("A", "B"), 25))
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -857,9 +810,7 @@ testthat::describe("testServer for data exceptions", {
       var1 = rnorm(50)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -892,9 +843,7 @@ testthat::describe("testServer for data exceptions", {
       var1 = rnorm(50)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -930,9 +879,7 @@ testthat::describe("testServer for data exceptions", {
       date_var = seq(as.Date("2020-01-01"), by = "day", length.out = 50)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -971,9 +918,7 @@ testthat::describe("testServer for data exceptions", {
         })
     })
 
-    mod <- tm_variable_browser(
-      datanames = "data-with-dashes"
-    )
+    mod <- tm_variable_browser(datanames = "data-with-dashes")
 
     shiny::testServer(
       mod$server,
@@ -1005,9 +950,7 @@ testthat::describe("testServer for data exceptions", {
       int_with_na = as.integer(c(1:50, rep(NA, 50)))
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -1040,9 +983,7 @@ testthat::describe("testServer for data exceptions", {
       )
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -1075,9 +1016,7 @@ testthat::describe("UI switches and controls", {
       numeric_var = rnorm(100)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -1118,9 +1057,7 @@ testthat::describe("UI switches and controls", {
       ))
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -1158,9 +1095,7 @@ testthat::describe("UI switches and controls", {
       numeric_var = c(rnorm(95), 50, 60, 70, -50, -60) # with outliers
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -1205,9 +1140,7 @@ testthat::describe("UI switches and controls", {
       discrete_numeric = rep(c(1, 2, 3, 4, 5), 20)
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -1261,9 +1194,7 @@ testthat::describe("UI switches and controls", {
       continuous = 1:120
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -1305,9 +1236,7 @@ testthat::describe("UI switches and controls", {
       many_categories = factor(rep(paste0("Cat", 1:40), 5))
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -1344,9 +1273,7 @@ testthat::describe("UI switches and controls", {
       td
     })
 
-    mod <- tm_variable_browser(
-      datanames = "dataset1"
-    )
+    mod <- tm_variable_browser(datanames = "dataset1")
 
     shiny::testServer(
       mod$server,
@@ -1379,9 +1306,7 @@ testthat::describe("UI switches and controls", {
       all_na_factor = factor(rep(NA, 50))
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -1433,9 +1358,7 @@ testthat::describe("UI switches and controls", {
       ) |> rep(25))
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data")
 
     shiny::testServer(
       mod$server,
@@ -1465,9 +1388,7 @@ testthat::describe("UI switches and controls", {
       numeric_var = c(rnorm(90), rep(c(100, -100), 5))
     ))
 
-    mod <- tm_variable_browser(
-      datanames = "test_data"
-    )
+    mod <- tm_variable_browser(datanames = "test_data" )
 
     shiny::testServer(
       mod$server,
