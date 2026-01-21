@@ -209,21 +209,17 @@ testthat::describe("tm_g_response module server behavior", {
 
   it("server function returns teal_report object with valid inputs", {
     mod <- default_distribution_mod()
-    testthat::expect_warning(
-      shiny::testServer(
-        mod$server,
-        args = c(
-          mod$server_args,
-          list(id = "test", data = reactive(data))
-        ),
-        expr = {
-          set_shared_inputs(session)
-          session$flushReact()
-          testthat::expect_s4_class(session$returned(), "teal_report")
-        }
+    shiny::testServer(
+      mod$server,
+      args = c(
+        mod$server_args,
+        list(id = "test", data = reactive(data))
       ),
-      "Appended `teal_card` doesn't remove some of the elements from previous",
-      fixed = TRUE
+      expr = {
+        set_shared_inputs(session)
+        session$flushReact()
+        testthat::expect_s4_class(session$returned(), "teal_report")
+      }
     )
   })
 
@@ -236,28 +232,25 @@ testthat::describe("tm_g_response module server behavior", {
     )
 
     mod <- default_distribution_mod()
-    testthat::expect_warning(
-      shiny::testServer(
-        mod$server,
-        args = c(
-          mod$server_args,
-          list(id = "test", data = reactive(data))
-        ),
-        expr = {
-          set_shared_inputs(session)
-          session$setInputs("dist_param1" = 9)
-          session$setInputs("dist_param2" = 10)
-          session$flushReact()
-          testthat::expect_equal(input$dist_param1, 9)
-          testthat::expect_equal(input$dist_param2, 10)
-          session$setInputs("params_reset" = 1)
-          session$flushReact()
-          testthat::expect_failure(testthat::expect_equal(input$dist_param1, 9))
-          testthat::expect_failure(testthat::expect_equal(input$dist_param2, 10))
-        }
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        mod$server_args,
+        list(id = "test", data = reactive(data))
       ),
-      "Appended `teal_card` doesn't remove some of the elements from previous",
-      fixed = TRUE
+      expr = {
+        set_shared_inputs(session)
+        session$setInputs("dist_param1" = 9)
+        session$setInputs("dist_param2" = 10)
+        session$flushReact()
+        testthat::expect_equal(input$dist_param1, 9)
+        testthat::expect_equal(input$dist_param2, 10)
+        session$setInputs("params_reset" = 1)
+        session$flushReact()
+        testthat::expect_failure(testthat::expect_equal(input$dist_param1, 9))
+        testthat::expect_failure(testthat::expect_equal(input$dist_param2, 10))
+      }
     )
   })
 
@@ -267,24 +260,20 @@ testthat::describe("tm_g_response module server behavior", {
       strata_var = mock_data_extract_spec("iris", "Species")
     )
 
-    testthat::expect_warning(
-      shiny::testServer(
-        mod$server,
-        args = c(mod$server_args, list(id = "test", data = reactive(data))),
-        expr = {
-          set_shared_inputs(session)
-          session$setInputs("strata_i-dataset_iris_singleextract-select" = "Species")
-          session$flushReact()
-          testthat::expect_match(
-            teal.code::get_code(session$returned()),
-            "strata_vars <- \"Species\"",
-            all = FALSE,
-            fixed = TRUE
-          )
-        }
-      ),
-      "Appended `teal_card` doesn't remove some of the elements from previous",
-      fixed = TRUE
+    shiny::testServer(
+      mod$server,
+      args = c(mod$server_args, list(id = "test", data = reactive(data))),
+      expr = {
+        set_shared_inputs(session)
+        session$setInputs("strata_i-dataset_iris_singleextract-select" = "Species")
+        session$flushReact()
+        testthat::expect_match(
+          teal.code::get_code(session$returned()),
+          "strata_vars <- \"Species\"",
+          all = FALSE,
+          fixed = TRUE
+        )
+      }
     )
   })
 
@@ -308,28 +297,24 @@ testthat::describe("tm_g_response module server behavior", {
         )
       )
     )
-    testthat::expect_warning(
-      shiny::testServer(
-        mod$server,
-        args = c(mod$server_args, list(id = "test", data = reactive(data))),
-        expr = {
-          set_shared_inputs(session)
-          session$setInputs(
-            "group_i-dataset_iris_singleextract-select" = "Species",
-            "group_i-dataset_iris_singleextract-filter1-vals" = c("setosa", "versicolor", "virginica"),
-            "scales_type" = "Fixed"
-          )
-          session$flushReact()
-          testthat::expect_match(
-            teal.code::get_code(session$returned()),
-            "strata_vars <- \"Species\"",
-            all = FALSE,
-            fixed = TRUE
-          )
-        }
-      ),
-      "Appended `teal_card` doesn't remove some of the elements from previous",
-      fixed = TRUE
+    shiny::testServer(
+      mod$server,
+      args = c(mod$server_args, list(id = "test", data = reactive(data))),
+      expr = {
+        set_shared_inputs(session)
+        session$setInputs(
+          "group_i-dataset_iris_singleextract-select" = "Species",
+          "group_i-dataset_iris_singleextract-filter1-vals" = c("setosa", "versicolor", "virginica"),
+          "scales_type" = "Fixed"
+        )
+        session$flushReact()
+        testthat::expect_match(
+          teal.code::get_code(session$returned()),
+          "strata_vars <- \"Species\"",
+          all = FALSE,
+          fixed = TRUE
+        )
+      }
     )
   })
 
@@ -360,29 +345,25 @@ testthat::describe("tm_g_response module server behavior", {
         )
       )
     )
-    testthat::expect_warning(
-      shiny::testServer(
-        mod$server,
-        args = c(mod$server_args, list(id = "test", data = reactive(data))),
-        expr = {
-          set_shared_inputs(session)
-          session$setInputs(
-            "strata_i-dataset_iris_singleextract-select" = "Species",
-            "group_i-dataset_iris_singleextract-select" = "Species",
-            "group_i-dataset_iris_singleextract-filter1-vals" = c("setosa", "versicolor", "virginica"),
-            "scales_type" = "Fixed"
-          )
-          session$flushReact()
-          testthat::expect_match(
-            teal.code::get_code(session$returned()),
-            "strata_vars <- c(\"group_i.Species\", \"dist_i.Species\")",
-            all = FALSE,
-            fixed = TRUE
-          )
-        }
-      ),
-      "Appended `teal_card` doesn't remove some of the elements from previous",
-      fixed = TRUE
+    shiny::testServer(
+      mod$server,
+      args = c(mod$server_args, list(id = "test", data = reactive(data))),
+      expr = {
+        set_shared_inputs(session)
+        session$setInputs(
+          "strata_i-dataset_iris_singleextract-select" = "Species",
+          "group_i-dataset_iris_singleextract-select" = "Species",
+          "group_i-dataset_iris_singleextract-filter1-vals" = c("setosa", "versicolor", "virginica"),
+          "scales_type" = "Fixed"
+        )
+        session$flushReact()
+        testthat::expect_match(
+          teal.code::get_code(session$returned()),
+          "strata_vars <- c(\"group_i.Species\", \"dist_i.Species\")",
+          all = FALSE,
+          fixed = TRUE
+        )
+      }
     )
   })
 })
