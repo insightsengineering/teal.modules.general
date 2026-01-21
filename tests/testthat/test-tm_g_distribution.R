@@ -225,7 +225,7 @@ testthat::describe("tm_g_response module server behavior", {
 
   it("server function resets the parameters", {
     testthat::local_mocked_bindings(
-      updateNumericInput = function(session = getDefaultReactiveDomain(), inputId, value, ...) {
+      updateNumericInput = function(session = getDefaultReactiveDomain(), inputId, value, ...) { # nolint: object_name.
         args <- stats::setNames(list(value), inputId)
         session$setInputs(!!!args)
       }
