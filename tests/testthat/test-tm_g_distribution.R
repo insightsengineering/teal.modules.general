@@ -153,17 +153,6 @@ testthat::describe("tm_g_distribution input validation", {
 
   it("fails when transformators has invalid object types", {
     testthat::expect_error(
-      tm_g_distribution(
-        dist_var = mock_data_extract_spec("iris", "Petal.Length"),
-        transformators = list("not a teal_transform_module")
-      ),
-      "May only contain the following types: \\{teal_transform_module\\}"
-    )
-  })
-
-
-  it("fails when transformators has invalid object types", {
-    testthat::expect_error(
       tm_g_distribution(dist_var = spec, transformators = list("not a teal_transform_module")),
       "May only contain the following types: \\{teal_transform_module\\}"
     )
