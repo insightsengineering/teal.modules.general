@@ -37,6 +37,16 @@ testthat::describe("tm_g_distribtuion module creation", {
     testthat::expect_setequal(mod$datanames, c("iris", "mtcars"))
   })
 
+  it("creates a module with valid transformators", {
+    testthat::expect_s3_class(
+      tm_g_distribution(
+        dist_var = mock_data_extract_spec("iris", "Petal.Length"),
+        transformators = list(teal::teal_transform_module())
+      ),
+      "teal_module"
+    )
+  })
+
   it("creates a module that is bookmarkable", {
     testthat::expect_true(
       attr(
@@ -155,13 +165,6 @@ testthat::describe("tm_g_distribution input validation", {
     testthat::expect_error(
       tm_g_distribution(dist_var = spec, transformators = list("not a teal_transform_module")),
       "May only contain the following types: \\{teal_transform_module\\}"
-    )
-  })
-
-  it("accepts valid transformators", {
-    testthat::expect_s3_class(
-      tm_g_distribution(dist_var = spec, transformators = list(teal::teal_transform_module())),
-      "teal_module"
     )
   })
 })
