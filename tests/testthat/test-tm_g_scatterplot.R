@@ -1093,4 +1093,3 @@ testthat::describe("tm_g_scatterplot module server behavior", {
     }
   })
 })
-
