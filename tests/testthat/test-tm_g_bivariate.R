@@ -72,6 +72,228 @@ testthat::describe("tm_g_bivariate module creation", {
   })
 })
 
+testthat::describe("tm_g_bivariate argument validation", {
+  it("fails when label is not a string", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        label = 123,
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE)
+      ),
+      "Assertion on 'label' failed"
+    )
+  })
+
+  it("fails when facet is not a logical", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        row_facet = mock_data_extract_spec(select_multiple = FALSE),
+        facet = "TRUE"
+      ),
+      "Assertion on 'facet' failed"
+    )
+  })
+
+  it("fails when use_density is not a logical", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        use_density = "TRUE"
+      ),
+      "Assertion on 'use_density' failed"
+    )
+  })
+
+  it("fails when free_x_scales is not a logical", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        free_x_scales = "TRUE"
+      ),
+      "Assertion on 'free_x_scales' failed"
+    )
+  })
+
+  it("fails when free_y_scales is not a logical", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        free_y_scales = "TRUE"
+      ),
+      "Assertion on 'free_y_scales' failed"
+    )
+  })
+
+  it("fails when rotate_xaxis_labels is not a logical", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        rotate_xaxis_labels = "TRUE"
+      ),
+      "Assertion on 'rotate_xaxis_labels' failed"
+    )
+  })
+
+  it("fails when swap_axes is not a logical", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        swap_axes = "TRUE"
+      ),
+      "Assertion on 'swap_axes' failed"
+    )
+  })
+
+  it("fails when ggtheme is invalid", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        ggtheme = "invalid_theme"
+      ),
+      "should be one of"
+    )
+  })
+
+  it("accepts valid ggtheme options", {
+    for (theme in c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void")) {
+      testthat::expect_s3_class(
+        tm_g_bivariate(
+          "a label",
+          mock_data_extract_spec(select_multiple = FALSE),
+          mock_data_extract_spec(select_multiple = FALSE),
+          ggtheme = theme
+        ),
+        "teal_module"
+      )
+    }
+  })
+
+  it("fails when ggplot2_args is not a ggplot2_args object", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        ggplot2_args = "not a ggplot2_args"
+      ),
+      "Assertion on 'ggplot2_args' failed"
+    )
+  })
+
+  it("accepts valid ggplot2_args", {
+    testthat::expect_s3_class(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        ggplot2_args = teal.widgets::ggplot2_args(
+          labs = list(title = "Test Plot", x = "X Variable", y = "Y Variable")
+        )
+      ),
+      "teal_module"
+    )
+  })
+
+  it("fails when pre_output is not a valid HTML object", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        pre_output = 123
+      ),
+      "Assertion on 'pre_output' failed"
+    )
+  })
+
+  it("accepts valid pre_output", {
+    testthat::expect_s3_class(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        pre_output = tags$div("Pre output")
+      ),
+      "teal_module"
+    )
+  })
+
+  it("fails when post_output is not a valid HTML object", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        post_output = 123
+      ),
+      "Assertion on 'post_output' failed"
+    )
+  })
+
+  it("accepts valid post_output", {
+    testthat::expect_s3_class(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        post_output = tags$div("Post output")
+      ),
+      "teal_module"
+    )
+  })
+
+  it("fails when decorators has invalid object types", {
+    testthat::expect_error(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        decorators = list(
+          plot = "not a teal_transform_module"
+        )
+      ),
+      "Assertion on 'decorators' failed|Make sure that the named list contains"
+    )
+  })
+
+  it("accepts valid decorators", {
+    testthat::expect_s3_class(
+      tm_g_bivariate(
+        "a label",
+        mock_data_extract_spec(select_multiple = FALSE),
+        mock_data_extract_spec(select_multiple = FALSE),
+        decorators = list(
+          plot = teal::teal_transform_module(
+            ui = function(id, ...) {
+              ns <- shiny::NS(id)
+              shiny::tagList()
+            },
+            server = function(id, ...) {
+              shiny::moduleServer(id, function(input, output, session) {})
+            }
+          )
+        )
+      ),
+      "teal_module"
+    )
+  })
+})
+
 testthat::describe("tm_g_bivariate data extract spec validation", {
   it("fails when x contains a spec with multiple selection", {
     testthat::expect_error(
@@ -320,218 +542,6 @@ testthat::describe("tm_g_bivariate color settings validation", {
         character(1)
       ),
       "data_extract_spec"
-    )
-  })
-})
-
-testthat::describe("tm_g_bivariate argument validation", {
-  it("fails when label is not a string", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        label = 123,
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE)
-      ),
-      "Assertion on 'label' failed"
-    )
-  })
-
-  it("fails when facet is not a logical", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        row_facet = mock_data_extract_spec(select_multiple = FALSE),
-        facet = "TRUE"
-      ),
-      "Assertion on 'facet' failed"
-    )
-  })
-
-  it("fails when use_density is not a logical", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        use_density = "TRUE"
-      ),
-      "Assertion on 'use_density' failed"
-    )
-  })
-
-  it("fails when free_x_scales is not a logical", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        free_x_scales = "TRUE"
-      ),
-      "Assertion on 'free_x_scales' failed"
-    )
-  })
-
-  it("fails when free_y_scales is not a logical", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        free_y_scales = "TRUE"
-      ),
-      "Assertion on 'free_y_scales' failed"
-    )
-  })
-
-  it("fails when rotate_xaxis_labels is not a logical", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        rotate_xaxis_labels = "TRUE"
-      ),
-      "Assertion on 'rotate_xaxis_labels' failed"
-    )
-  })
-
-  it("fails when swap_axes is not a logical", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        swap_axes = "TRUE"
-      ),
-      "Assertion on 'swap_axes' failed"
-    )
-  })
-
-  it("fails when ggtheme is invalid", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        ggtheme = "invalid_theme"
-      ),
-      "should be one of"
-    )
-  })
-
-  it("accepts valid ggtheme options", {
-    for (theme in c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void")) {
-      testthat::expect_s3_class(
-        tm_g_bivariate(
-          "a label",
-          mock_data_extract_spec(select_multiple = FALSE),
-          mock_data_extract_spec(select_multiple = FALSE),
-          ggtheme = theme
-        ),
-        "teal_module"
-      )
-    }
-  })
-
-  it("fails when ggplot2_args is not a ggplot2_args object", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        ggplot2_args = "not a ggplot2_args"
-      ),
-      "Assertion on 'ggplot2_args' failed"
-    )
-  })
-
-  it("accepts valid ggplot2_args", {
-    testthat::expect_s3_class(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        ggplot2_args = teal.widgets::ggplot2_args()
-      ),
-      "teal_module"
-    )
-  })
-
-  it("fails when pre_output is not a valid HTML object", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        pre_output = 123
-      ),
-      "Assertion on 'pre_output' failed"
-    )
-  })
-
-  it("accepts valid pre_output", {
-    testthat::expect_s3_class(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        pre_output = tags$div("Pre output")
-      ),
-      "teal_module"
-    )
-  })
-
-  it("fails when post_output is not a valid HTML object", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        post_output = 123
-      ),
-      "Assertion on 'post_output' failed"
-    )
-  })
-
-  it("accepts valid post_output", {
-    testthat::expect_s3_class(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        post_output = tags$div("Post output")
-      ),
-      "teal_module"
-    )
-  })
-
-  it("fails when decorators has invalid object types", {
-    testthat::expect_error(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        decorators = list(
-          plot = "not a teal_transform_module"
-        )
-      ),
-      "Assertion on 'decorators' failed|Make sure that the named list contains"
-    )
-  })
-
-  it("accepts valid decorators", {
-    testthat::expect_s3_class(
-      tm_g_bivariate(
-        "a label",
-        mock_data_extract_spec(select_multiple = FALSE),
-        mock_data_extract_spec(select_multiple = FALSE),
-        decorators = list(
-          plot = teal::teal_transform_module()
-        )
-      ),
-      "teal_module"
     )
   })
 })

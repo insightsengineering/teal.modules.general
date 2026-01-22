@@ -562,7 +562,15 @@ testthat::describe("tm_g_scatterplot argument validation", {
         mock_data_extract_spec(select_multiple = FALSE),
         mock_data_extract_spec(select_multiple = FALSE),
         decorators = list(
-          plot = teal::teal_transform_module()
+          plot = teal::teal_transform_module(
+            ui = function(id, ...) {
+              ns <- shiny::NS(id)
+              shiny::tagList()
+            },
+            server = function(id, ...) {
+              shiny::moduleServer(id, function(input, output, session) {})
+            }
+          )
         )
       ),
       "teal_module"
@@ -918,35 +926,6 @@ testthat::describe("tm_g_scatterplot module server behavior", {
       )
     )
 
-    # shiny::testServer(
-    #   mod$server,
-    #   args = c(
-    #     list(id = "test", data = data),
-    #     mod$server_args
-    #   ),
-    #   expr = {
-    #     session$setInputs(
-    #       "x-dataset_test_data_singleextract-select" = "x_var",
-    #       "y-dataset_test_data_singleextract-select" = "y_var",
-    #       "row_facet-dataset_test_data_singleextract-select" = "facet_var",
-    #       "log_x" = FALSE,
-    #       "log_y" = FALSE,
-    #       "rotate_xaxis_labels" = FALSE,
-    #       "ggtheme" = "gray",
-    #       "alpha" = 1,
-    #       "size" = 5,
-    #       "shape" = "circle",
-    #       "add_density" = FALSE,
-    #       "rug_plot" = FALSE,
-    #       "show_count" = FALSE,
-    #       "free_scales" = FALSE,
-    #       "pos" = 0.99,
-    #       "label_size" = 5,
-    #       "data_table_rows" = 10
-    #     )
-    #     output_result <- output_q()
-    #     testthat::expect_true(inherits(output_result, "teal_data"))
-    #   }
     # )
   })
 
