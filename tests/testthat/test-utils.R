@@ -77,4 +77,3 @@ testthat::describe("add_facet_labels", {
     )
   })
 })
-
