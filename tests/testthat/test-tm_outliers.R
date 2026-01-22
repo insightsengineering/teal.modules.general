@@ -2,22 +2,22 @@ testthat::describe("tm_outliers module creation", {
   data <- teal_data()
   data <- within(data, {
     CO2 <- CO2 # nolint: [object_name_linter]
-    CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: [object_name_linter] 
+    CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: [object_name_linter]
   })
   join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
   vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
   outlier_var <- list(
-          var1 = data_extract_spec(
-              dataname = "CO2",
-              select = select_spec(
-                label = "Select variable:",
-                choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-                selected = "uptake",
-                multiple = FALSE,
-                fixed = FALSE
-              )
-            )
-        )
+    var1 = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
+        selected = "uptake",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    )
+  )
 
   it("module is created with default and mandatory arguments", {
     testthat::expect_s3_class(tm_outliers(outlier_var = outlier_var), "teal_module")
@@ -84,23 +84,24 @@ testthat::describe("tm_outliers module creation", {
   it("accepts a decorator", {
     ggplot_caption_decorator <- function(default_caption = "I am a good decorator") {
       teal::teal_transform_module(
-      label = "Caption",
-      ui = function(id) {
-        shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
-      },
-      server = function(id, data) {
-        moduleServer(id, function(input, output, session) {
-          reactive({
-            data() |>
-              within(
-                {
-                  plot <- plot + ggplot2::labs(caption = footnote)
-                },
-                footnote = input$footnote
-              )
+        label = "Caption",
+        ui = function(id) {
+          shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
+        },
+        server = function(id, data) {
+          moduleServer(id, function(input, output, session) {
+            reactive({
+              data() |>
+                within(
+                  {
+                    plot <- plot + ggplot2::labs(caption = footnote)
+                  },
+                  footnote = input$footnote
+                )
+            })
           })
-        })
-      })
+        }
+      )
     }
 
     testthat::expect_s3_class(
@@ -166,35 +167,41 @@ testthat::describe("test for input validation", {
   join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
   vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
   outlier_var <- list(
-          var1 = data_extract_spec(
-              dataname = "CO2",
-              select = select_spec(
-                label = "Select variable:",
-                choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-                selected = "uptake",
-                multiple = FALSE,
-                fixed = FALSE
-              )
-            )
-        )
+    var1 = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
+        selected = "uptake",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    )
+  )
 
   it("fails if no outlier_var defined", {
     testthat::expect_error(tm_outliers(), "argument \"outlier_var\" is missing, with no default")
   })
 
   it("fails if outlier_var is not of the expected type", {
-    testthat::expect_error(tm_outliers(outlier_var = list(wrong_type = "wrong_type")),
-    "Assertion on 'outlier_var' failed")
+    testthat::expect_error(
+      tm_outliers(outlier_var = list(wrong_type = "wrong_type")),
+      "Assertion on 'outlier_var' failed"
+    )
   })
 
   it("fails if categorical_var is not of the expected type", {
-    testthat::expect_error(tm_outliers(outlier_var = outlier_var, categorical_var = list(wrong_type = "wrong_type")),
-    "Assertion on 'categorical_var' failed")
+    testthat::expect_error(
+      tm_outliers(outlier_var = outlier_var, categorical_var = list(wrong_type = "wrong_type")),
+      "Assertion on 'categorical_var' failed"
+    )
   })
 
   it("fails if ggtheme is not within expected values", {
-    testthat::expect_error(tm_outliers(outlier_var = outlier_var, ggtheme = "wrong_type"),
-    "'arg' should be one of")
+    testthat::expect_error(
+      tm_outliers(outlier_var = outlier_var, ggtheme = "wrong_type"),
+      "'arg' should be one of"
+    )
   })
 })
 
@@ -269,7 +276,7 @@ create_outliers_module <- function(data, outlier_vars, categorical_vars = NULL,
 testthat::describe("tm_outliers module server behavior", {
   it("server function executes successfully with numeric variables and IQR method", {
     data <- create_outliers_test_data(data.frame(
-      var1 = c(1:28, 100, 200),  # outliers at end
+      var1 = c(1:28, 100, 200), # outliers at end
       var2 = rnorm(30)
     ))
 
@@ -303,7 +310,7 @@ testthat::describe("tm_outliers module server behavior", {
 
   it("server function handles Z-score method through module interface", {
     data <- create_outliers_test_data(data.frame(
-      var1 = c(rnorm(28), 10, -10),  # outliers at end
+      var1 = c(rnorm(28), 10, -10), # outliers at end
       var2 = rnorm(30)
     ))
 
@@ -760,7 +767,7 @@ testthat::describe("tm_outliers module server behavior", {
 
   it("server function shows total outliers and missing data", {
     data <- create_outliers_test_data(data.frame(
-      var1 = c(1:26, 100, 200, NA, NA),  # with NAs
+      var1 = c(1:26, 100, 200, NA, NA), # with NAs
       var2 = rnorm(30)
     ))
 
@@ -895,7 +902,6 @@ testthat::describe("test for categorical_var with multiple filter specs", {
 })
 
 testthat::describe("tm_outliers edge_cases server tests", {
-
   it("server handles Cumulative Distribution tab correctly", {
     data <- create_outliers_test_data(data.frame(
       var1 = c(1:28, 100, 200),
