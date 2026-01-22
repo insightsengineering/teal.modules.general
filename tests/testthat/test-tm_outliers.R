@@ -19,23 +19,19 @@ testthat::describe("tm_outliers module creation", {
     )
   )
 
-  it("module is created with default and mandatory arguments", {
+  it("works with default and mandatory arguments", {
     testthat::expect_s3_class(tm_outliers(outlier_var = outlier_var), "teal_module")
   })
 
-  it("module is created with specific ggtheme set", {
+  it("works with specific ggtheme set", {
     testthat::expect_s3_class(tm_outliers(outlier_var = outlier_var, ggtheme = "minimal"), "teal_module")
   })
 
-  it("module is created with plot width defined", {
+  it("works with plot width defined", {
     testthat::expect_s3_class(tm_outliers(outlier_var = outlier_var, plot_width = c(200, 100, 500)), "teal_module")
   })
 
-  it("module is created with plot width defined", {
-    testthat::expect_s3_class(tm_outliers(outlier_var = outlier_var, plot_width = c(200, 100, 500)), "teal_module")
-  })
-
-  it("it creates a module with pre_output", {
+  it("works with pre_output", {
     pre_output <- shiny::actionButton("pre_output", "My pre output")
     default_mod <- tm_outliers(outlier_var = outlier_var)
     testthat::expect_null(default_mod$ui_args$pre_output)
@@ -44,7 +40,7 @@ testthat::describe("tm_outliers module creation", {
     testthat::expect_equal(pre_output_mod$ui_args$pre_output, pre_output)
   })
 
-  it("it creates a module with post_output", {
+  it("works with post_output", {
     post_output <- shiny::actionButton("pre_output", "My pre output")
     default_mod <- tm_outliers(outlier_var = outlier_var)
     testthat::expect_null(default_mod$ui_args$post_output)
@@ -84,21 +80,19 @@ testthat::describe("tm_outliers module creation", {
   it("accepts a decorator", {
     ggplot_caption_decorator <- function(default_caption = "I am a good decorator") {
       teal::teal_transform_module(
-        label = "Caption",
-        ui = function(id) {
-          shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
-        },
-        server = function(id, data) {
-          moduleServer(id, function(input, output, session) {
-            reactive({
-              data() |>
-                within(
-                  {
-                    plot <- plot + ggplot2::labs(caption = footnote)
-                  },
-                  footnote = input$footnote
-                )
-            })
+      label = "Caption",
+      ui = function(id) {
+        shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
+      },
+      server = function(id, data) {
+        moduleServer(id, function(input, output, session) {
+          reactive({
+              within(data(),
+                {
+                  plot <- plot + ggplot2::labs(caption = footnote)
+                },
+                footnote = input$footnote
+              )
           })
         }
       )
@@ -144,7 +138,7 @@ testthat::describe("tm_outliers module creation", {
     )
   })
 
-  it("creates an ui of the expected type", {
+  it("works with ui of the expected type", {
     mod <- tm_outliers(outlier_var = outlier_var)
     testthat::expect_s3_class(
       mod$ui("test", outlier_var = outlier_var),
