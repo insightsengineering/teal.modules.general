@@ -644,6 +644,329 @@ testthat::describe("tm_outliers module server behavior", {
     )
   })
 
-  
+  it("server function handles split_outliers option", {
+    data <- create_outliers_test_data(data.frame(
+      var1 = c(1:28, 100, 200),
+      cat1 = factor(rep(c("A", "B"), length.out = 30))
+    ))
+
+    mod <- create_outliers_module(
+      data = data,
+      outlier_vars = c("var1"),
+      categorical_vars = c("cat1"),
+      outlier_selected = "var1",
+      categorical_selected = c("cat1")
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs(
+          "outlier_var-dataset_test_data_singleextract-select" = "var1",
+          "categorical_var-dataset_test_data_singleextract-filter1-vals" = c("A", "B"),
+          "method" = "IQR",
+          "iqr_slider" = 1.5,
+          "boxplot_alts" = "Box plot",
+          "tabs" = "Boxplot",
+          "split_outliers" = TRUE,
+          "order_by_outlier" = FALSE
+        )
+        testthat::expect_true(iv_r()$is_valid())
+        result <- common_code_q()
+        testthat::expect_true(inherits(result, "teal_data"))
+      }
+    )
+  })
+
+  it("server function handles order_by_outlier option", {
+    data <- create_outliers_test_data(data.frame(
+      var1 = c(1:28, 100, 200),
+      cat1 = factor(rep(c("A", "B"), length.out = 30))
+    ))
+
+    mod <- create_outliers_module(
+      data = data,
+      outlier_vars = c("var1"),
+      categorical_vars = c("cat1"),
+      outlier_selected = "var1",
+      categorical_selected = c("cat1")
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs(
+          "outlier_var-dataset_test_data_singleextract-select" = "var1",
+          "categorical_var-dataset_test_data_singleextract-filter1-vals" = c("A", "B"),
+          "method" = "IQR",
+          "iqr_slider" = 1.5,
+          "boxplot_alts" = "Box plot",
+          "tabs" = "Boxplot",
+          "split_outliers" = FALSE,
+          "order_by_outlier" = TRUE
+        )
+        testthat::expect_true(iv_r()$is_valid())
+        result <- common_code_q()
+        testthat::expect_true(inherits(result, "teal_data"))
+      }
+    )
+  })
+
+  it("server function handles both split_outliers and order_by_outlier", {
+    data <- create_outliers_test_data(data.frame(
+      var1 = c(1:28, 100, 200),
+      cat1 = factor(rep(c("A", "B", "C"), length.out = 30))
+    ))
+
+    mod <- create_outliers_module(
+      data = data,
+      outlier_vars = c("var1"),
+      categorical_vars = c("cat1"),
+      outlier_selected = "var1",
+      categorical_selected = c("cat1")
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs(
+          "outlier_var-dataset_test_data_singleextract-select" = "var1",
+          "categorical_var-dataset_test_data_singleextract-filter1-vals" = c("A", "B", "C"),
+          "method" = "IQR",
+          "iqr_slider" = 1.5,
+          "boxplot_alts" = "Box plot",
+          "tabs" = "Boxplot",
+          "split_outliers" = TRUE,
+          "order_by_outlier" = TRUE
+        )
+        testthat::expect_true(iv_r()$is_valid())
+        result <- common_code_q()
+        testthat::expect_true(inherits(result, "teal_data"))
+      }
+    )
+  })
+
+  it("server function shows total outliers and missing data", {
+    data <- create_outliers_test_data(data.frame(
+      var1 = c(1:26, 100, 200, NA, NA),  # with NAs
+      var2 = rnorm(30)
+    ))
+
+    mod <- create_outliers_module(
+      data = data,
+      outlier_vars = c("var1", "var2"),
+      outlier_selected = "var1"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs(
+          "outlier_var-dataset_test_data_singleextract-select" = "var1",
+          "method" = "IQR",
+          "iqr_slider" = 1.5,
+          "boxplot_alts" = "Box plot",
+          "tabs" = "Boxplot"
+        )
+        testthat::expect_true(iv_r()$is_valid())
+        result <- common_code_q()
+        testthat::expect_true(inherits(result, "teal_data"))
+      }
+    )
+  })
 })
 
+
+testthat::describe("test for categorical_var with multiple filter specs", {
+  data <- teal_data()
+  data <- within(data, {
+    CO2 <- CO2
+    CO2[["primary_key"]] <- seq_len(nrow(CO2))
+  })
+  join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
+  vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
+  outlier_var <- list(
+    var1 = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
+        selected = "uptake",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    )
+  )
+
+  it("fails if categorical_var has more than one filter_spec", {
+    categorical_var_multiple_filters <- list(
+      data_extract_spec(
+        dataname = "CO2",
+        filter = list(
+          filter_spec(
+            vars = vars,
+            choices = value_choices(data[["CO2"]], vars$selected),
+            selected = value_choices(data[["CO2"]], vars$selected),
+            multiple = TRUE
+          ),
+          filter_spec(
+            vars = vars,
+            choices = value_choices(data[["CO2"]], vars$selected),
+            selected = value_choices(data[["CO2"]], vars$selected),
+            multiple = TRUE
+          )
+        )
+      )
+    )
+    
+    testthat::expect_error(
+      tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var_multiple_filters),
+      "categorical_var data_extract_specs may only specify one filter_spec"
+    )
+  })
+
+  it("module works with plot_width parameter", {
+    testthat::expect_s3_class(
+      tm_outliers(outlier_var = outlier_var, plot_width = c(400, 200, 800)),
+      "teal_module"
+    )
+  })
+
+  it("module works with different ggplot2_args for specific plots", {
+    testthat::expect_s3_class(
+      tm_outliers(
+        outlier_var = outlier_var,
+        ggplot2_args = teal.widgets::ggplot2_args(
+          labs = list(title = "Boxplot Title")
+        )
+      ),
+      "teal_module"
+    )
+  })
+
+  it("module handles single data_extract_spec for outlier_var", {
+    single_spec <- data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
+        selected = "uptake",
+        multiple = FALSE,
+        fixed = FALSE
+      )
+    )
+    testthat::expect_s3_class(
+      tm_outliers(outlier_var = single_spec),
+      "teal_module"
+    )
+  })
+
+  it("module handles single data_extract_spec for categorical_var", {
+    single_categorical <- data_extract_spec(
+      dataname = "CO2",
+      filter = filter_spec(
+        vars = vars,
+        choices = value_choices(data[["CO2"]], vars$selected),
+        selected = value_choices(data[["CO2"]], vars$selected),
+        multiple = TRUE
+      )
+    )
+    testthat::expect_s3_class(
+      tm_outliers(outlier_var = outlier_var, categorical_var = single_categorical),
+      "teal_module"
+    )
+  })
+})
+
+testthat::describe("tm_outliers edge_cases server tests", {
+
+  it("server handles Cumulative Distribution tab correctly", {
+    data <- create_outliers_test_data(data.frame(
+      var1 = c(1:28, 100, 200),
+      var2 = rnorm(30)
+    ))
+
+    mod <- create_outliers_module(
+      data = data,
+      outlier_vars = c("var1", "var2"),
+      outlier_selected = "var1"
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs(
+          "outlier_var-dataset_test_data_singleextract-select" = "var1",
+          "method" = "Percentile",
+          "percentile_slider" = 0.01,
+          "boxplot_alts" = "Box plot",
+          "tabs" = "Cumulative Distribution Plot"
+        )
+        testthat::expect_true(iv_r()$is_valid())
+        result <- cumulative_plot_q()
+        testthat::expect_true(inherits(result, "teal_data"))
+        testthat::expect_true("cumulative_plot" %in% names(result))
+      }
+    )
+  })
+
+  it("server handles multiple categorical values with split", {
+    data <- create_outliers_test_data(data.frame(
+      var1 = c(1:26, 100, 200, NA, NA),
+      cat1 = factor(rep(c("A", "B", "C"), length.out = 30)),
+      cat2 = factor(rep(c("X", "Y"), length.out = 30))
+    ))
+
+    mod <- create_outliers_module(
+      data = data,
+      outlier_vars = c("var1"),
+      categorical_vars = c("cat1", "cat2"),
+      outlier_selected = "var1",
+      categorical_selected = c("cat1", "cat2")
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs(
+          "outlier_var-dataset_test_data_singleextract-select" = "var1",
+          "categorical_var-dataset_test_data_singleextract-filter1-vals" = c("A", "B", "C"),
+          "method" = "Z-score",
+          "zscore_slider" = 2.5,
+          "boxplot_alts" = "Violin plot",
+          "tabs" = "Boxplot",
+          "split_outliers" = TRUE,
+          "order_by_outlier" = TRUE
+        )
+        testthat::expect_true(iv_r()$is_valid())
+        result <- box_plot_q()
+        testthat::expect_true(inherits(result, "teal_data"))
+        testthat::expect_true("box_plot" %in% names(result))
+      }
+    )
+  })
+})
