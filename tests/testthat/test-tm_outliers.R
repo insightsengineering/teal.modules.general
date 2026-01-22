@@ -1,8 +1,8 @@
 testthat::describe("tm_outliers module creation", {
   data <- teal_data()
   data <- within(data, {
-    CO2 <- CO2
-    CO2[["primary_key"]] <- seq_len(nrow(CO2))
+    CO2 <- CO2 # nolint: [object_name_linter]
+    CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: [object_name_linter] 
   })
   join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
   vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
@@ -126,7 +126,7 @@ testthat::describe("tm_outliers module creation", {
   })
 
   it("uses a categorical var", {
-    categorical_var = list(
+    categorical_var <- list(
       data_extract_spec(
         dataname = "CO2",
         filter = filter_spec(
@@ -160,8 +160,8 @@ testthat::describe("tm_outliers module creation", {
 testthat::describe("test for input validation", {
   data <- teal_data()
   data <- within(data, {
-    CO2 <- CO2
-    CO2[["primary_key"]] <- seq_len(nrow(CO2))
+    CO2 <- CO2 # nolint: [object_name_linter]
+    CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: [object_name_linter]
   })
   join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
   vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
@@ -203,7 +203,7 @@ create_outliers_test_data <- function(test_data_df) {
   # Add row_id to the dataframe before creating teal_data
   test_data_df$.row_id <- seq_len(nrow(test_data_df))
   force(test_data_df)
-  
+
   data_reactive <- shiny::reactive({
     data_obj <- eval(substitute(
       within(teal.data::teal_data(), {
@@ -217,12 +217,12 @@ create_outliers_test_data <- function(test_data_df) {
     )
     data_obj
   })
-  
+
   data_reactive
 }
 
 # Helper function for creating outliers module with test data
-create_outliers_module <- function(data, outlier_vars, categorical_vars = NULL, 
+create_outliers_module <- function(data, outlier_vars, categorical_vars = NULL,
                                    outlier_selected, categorical_selected = NULL, ...) {
   tm_outliers(
     outlier_var = list(
@@ -796,8 +796,8 @@ testthat::describe("tm_outliers module server behavior", {
 testthat::describe("test for categorical_var with multiple filter specs", {
   data <- teal_data()
   data <- within(data, {
-    CO2 <- CO2
-    CO2[["primary_key"]] <- seq_len(nrow(CO2))
+    CO2 <- CO2 # nolint: [object_name_linter]
+    CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: [object_name_linter]
   })
   join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
   vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
@@ -815,7 +815,7 @@ testthat::describe("test for categorical_var with multiple filter specs", {
   )
 
   it("fails if categorical_var has more than one filter_spec", {
-    categorical_var_multiple_filters <- list(
+    categorical_var_multiple_filters <- list( # nolint [object_length_linter]
       data_extract_spec(
         dataname = "CO2",
         filter = list(
@@ -834,7 +834,7 @@ testthat::describe("test for categorical_var with multiple filter specs", {
         )
       )
     )
-    
+
     testthat::expect_error(
       tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var_multiple_filters),
       "categorical_var data_extract_specs may only specify one filter_spec"
