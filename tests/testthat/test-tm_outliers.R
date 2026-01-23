@@ -99,15 +99,15 @@ testthat::describe("tm_outliers module creation", {
         server = function(id, data) {
           moduleServer(id, function(input, output, session) {
             reactive({
-                within(data(),
-                  {
-                    plot <- plot + ggplot2::labs(caption = footnote)
-                  },
-                  footnote = input$footnote
-                )
+              within(data(),
+                {
+                  plot <- plot + ggplot2::labs(caption = footnote)
+                },
+                footnote = input$footnote
+              )
             })
-          }
-        )}
+          })
+        }
       )
     }
 
@@ -970,7 +970,6 @@ testthat::describe("tm_outliers edge_cases server tests", {
   )
 
   it("server handles Cumulative Distribution Plot with categorical variables", {
-
     mod <- tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var)
 
     shiny::testServer(
@@ -1045,5 +1044,4 @@ testthat::describe("tm_outliers edge_cases server tests", {
       }
     )
   })
-
 })
