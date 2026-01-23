@@ -99,15 +99,15 @@ testthat::describe("tm_outliers module creation", {
         server = function(id, data) {
           moduleServer(id, function(input, output, session) {
             reactive({
-              within(data(),
-                {
-                  plot <- plot + ggplot2::labs(caption = footnote)
-                },
-                footnote = input$footnote
-              )
+                within(data(),
+                  {
+                    plot <- plot + ggplot2::labs(caption = footnote)
+                  },
+                  footnote = input$footnote
+                )
             })
-          })
-        }
+          }
+        )}
       )
     }
 
@@ -970,6 +970,7 @@ testthat::describe("tm_outliers edge_cases server tests", {
   )
 
   it("server handles Cumulative Distribution Plot with categorical variables", {
+
     mod <- tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var)
 
     shiny::testServer(
@@ -1003,7 +1004,18 @@ testthat::describe("tm_outliers edge_cases server tests", {
   })
 
   it("server handles Cumulative Distribution Plot with categorical variables and Z-score method", {
-    mod <- tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var)
+    data <- create_outliers_test_data(data.frame(
+      var1 = c(rnorm(26), 10, -10, NA, NA),
+      cat1 = factor(rep(c("Group1", "Group2", "Group3"), length.out = 30))
+    ))
+
+    mod <- create_outliers_module(
+      data = data,
+      outlier_vars = c("var1"),
+      categorical_vars = c("cat1"),
+      outlier_selected = "var1",
+      categorical_selected = c("cat1")
+    )
 
     shiny::testServer(
       mod$server,
@@ -1028,10 +1040,10 @@ testthat::describe("tm_outliers edge_cases server tests", {
         testthat::expect_true("cumulative_plot" %in% names(result))
         testthat::expect_true("outlier_points" %in% names(result))
 
-        # Verify faceting is applied correctly
         plot <- result[["cumulative_plot"]]
         testthat::expect_true(inherits(plot, "gg"))
       }
     )
   })
+
 })
