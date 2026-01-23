@@ -273,7 +273,7 @@ testthat::describe("tm_g_response module server behavior", {
       ),
       expr = {
         set_shared_inputs(session, "Circle plot")
-        session$setInputs("dat-dataset_ADSL_singleextract-select" = c("AGE"), )
+        session$setInputs("dat-dataset_ADSL_singleextract-select" = c("AGE"))
         session$flushReact()
         testthat::expect_error(session$returned(), "Please select more than 1 variable", fixed = TRUE)
       }
