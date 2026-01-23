@@ -99,15 +99,15 @@ testthat::describe("tm_outliers module creation", {
         server = function(id, data) {
           moduleServer(id, function(input, output, session) {
             reactive({
-                within(data(),
-                  {
-                    plot <- plot + ggplot2::labs(caption = footnote)
-                  },
-                  footnote = input$footnote
-                )
+              within(data(),
+                {
+                  plot <- plot + ggplot2::labs(caption = footnote)
+                },
+                footnote = input$footnote
+              )
             })
-          }
-        )}
+          })
+        }
       )
     }
 
@@ -1028,5 +1028,4 @@ testthat::describe("tm_outliers edge_cases server tests", {
       }
     )
   })
-
 })
