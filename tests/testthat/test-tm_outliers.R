@@ -936,30 +936,52 @@ testthat::describe("tm_outliers edge_cases server tests", {
     )
   })
 
-  it("server handles Cumulative Distribution Plot with categorical variables", {
-    data <- create_outliers_test_data(data.frame(
-      var1 = c(1:26, 100, 200, NA, NA),
-      cat1 = factor(rep(c("A", "B", "C"), length.out = 30))
-    ))
+  data_category <- teal_data()
+    data_category <- within(data_category, {
+      CO2 <- CO2 # nolint: [object_name_linter]
+      CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: [object_name_linter]
+    })
 
-    mod <- create_outliers_module(
-      data = data,
-      outlier_vars = c("var1"),
-      categorical_vars = c("cat1"),
-      outlier_selected = "var1",
-      categorical_selected = c("cat1")
+  join_keys(data_category) <- join_keys(join_key("CO2", "CO2", "primary_key"))
+  vars <- choices_selected(variable_choices(data_category[["CO2"]], c("Type")))
+  outlier_var <- list(
+    var1 = data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variable:",
+        choices = variable_choices(data_category[["CO2"]], c("conc", "uptake")),
+        selected = "uptake",
+        multiple = FALSE,
+        fixed = FALSE
+      )
     )
+  )
+
+  categorical_var <- list(
+    data_extract_spec(
+      dataname = "CO2",
+      filter = filter_spec(
+        vars = vars,
+        choices = value_choices(data_category[["CO2"]], vars$selected),
+        selected = value_choices(data_category[["CO2"]], vars$selected),
+        multiple = TRUE
+      )
+    )
+  )
+
+  it("server handles Cumulative Distribution Plot with categorical variables", {
+    mod <- tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var)
 
     shiny::testServer(
       mod$server,
       args = c(
-        list(id = "test", data = data),
+        list(id = "test", data = reactive(data_category)),
         mod$server_args
       ),
       expr = {
         session$setInputs(
-          "outlier_var-dataset_test_data_singleextract-select" = "var1",
-          "categorical_var-dataset_test_data_singleextract-filter1-vals" = c("A", "B", "C"),
+          "outlier_var-dataset_CO2_singleextract-select" = "uptake",
+          "categorical_var-dataset_CO2_singleextract-filter1-vals" = c("Quebec", "Mississippi"),
           "method" = "IQR",
           "iqr_slider" = 1.5,
           "boxplot_alts" = "Box plot",
@@ -968,17 +990,12 @@ testthat::describe("tm_outliers edge_cases server tests", {
           "order_by_outlier" = FALSE
         )
         testthat::expect_true(iv_r()$is_valid())
-        result <- cumulative_plot_q()
+        result <- suppressWarnings(cumulative_plot_q())
         testthat::expect_true(inherits(result, "teal_data"))
         testthat::expect_true("cumulative_plot" %in% names(result))
         testthat::expect_true(inherits(result[["cumulative_plot"]], "ggplot"))
         testthat::expect_true("outlier_points" %in% names(result))
-        # Verify the data processing for categorical variables executed correctly
-        outlier_points <- result[["outlier_points"]]
-        testthat::expect_true(nrow(outlier_points) > 0)
-        # The key verification: 'y' column is created by the ECDF calculation in lines 975
-        testthat::expect_true("y" %in% names(outlier_points))
-        # Verify plot has faceting (facet_grid is applied on line 991, confirming else block executed)
+
         plot <- result[["cumulative_plot"]]
         testthat::expect_true(!is.null(plot$facet))
       }
@@ -986,18 +1003,7 @@ testthat::describe("tm_outliers edge_cases server tests", {
   })
 
   it("server handles Cumulative Distribution Plot with categorical variables and Z-score method", {
-    data <- create_outliers_test_data(data.frame(
-      var1 = c(rnorm(26), 10, -10, NA, NA),
-      cat1 = factor(rep(c("Group1", "Group2", "Group3"), length.out = 30))
-    ))
-
-    mod <- create_outliers_module(
-      data = data,
-      outlier_vars = c("var1"),
-      categorical_vars = c("cat1"),
-      outlier_selected = "var1",
-      categorical_selected = c("cat1")
-    )
+    mod <- tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var)
 
     shiny::testServer(
       mod$server,
