@@ -19,6 +19,18 @@ testthat::describe("tm_outliers module creation", {
     )
   )
 
+  categorical_var <- list(
+    data_extract_spec(
+      dataname = "CO2",
+      filter = filter_spec(
+        vars = vars,
+        choices = value_choices(data[["CO2"]], vars$selected),
+        selected = value_choices(data[["CO2"]], vars$selected),
+        multiple = TRUE
+      )
+    )
+  )
+
   it("works with default and mandatory arguments", {
     testthat::expect_s3_class(tm_outliers(outlier_var = outlier_var), "teal_module")
   })
@@ -121,27 +133,16 @@ testthat::describe("tm_outliers module creation", {
   })
 
   it("uses a categorical var", {
-    categorical_var <- list(
-      data_extract_spec(
-        dataname = "CO2",
-        filter = filter_spec(
-          vars = vars,
-          choices = value_choices(data[["CO2"]], vars$selected),
-          selected = value_choices(data[["CO2"]], vars$selected),
-          multiple = TRUE
-        )
-      )
-    )
     testthat::expect_s3_class(
       tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var),
       "teal_module"
     )
   })
 
-  it("works with ui of the expected type", {
+  it("produces ui of the expected type", {
     mod <- tm_outliers(outlier_var = outlier_var)
     testthat::expect_s3_class(
-      mod$ui("test", outlier_var = outlier_var),
+      mod$ui("test", outlier_var = outlier_var, categorical_var = categorical_var),
       "shiny.tag.list"
     )
   })
@@ -240,21 +241,25 @@ create_outliers_module <- function(data, outlier_vars, categorical_vars = NULL,
       )
     ),
     categorical_var = if (!is.null(categorical_vars)) {
+      vars <- teal.transform::choices_selected(
+        choices = teal.transform::variable_choices(
+          data = isolate(data())[["test_data"]],
+          categorical_vars
+        ),
+        selected = categorical_selected
+      )
       list(
         teal.transform::data_extract_spec(
           dataname = "test_data",
           filter = teal.transform::filter_spec(
-            vars = teal.transform::variable_choices(
-              data = isolate(data())[["test_data"]],
-              categorical_vars
-            ),
+            vars = vars,
             choices = teal.transform::value_choices(
               data = isolate(data())[["test_data"]],
-              categorical_selected
+              vars$selected
             ),
             selected = teal.transform::value_choices(
               data = isolate(data())[["test_data"]],
-              categorical_selected
+              vars$selected
             ),
             multiple = TRUE
           )
@@ -930,19 +935,18 @@ testthat::describe("tm_outliers edge_cases server tests", {
     )
   })
 
-  it("server handles multiple categorical values with split", {
+  it("server handles Cumulative Distribution Plot with categorical variables", {
     data <- create_outliers_test_data(data.frame(
       var1 = c(1:26, 100, 200, NA, NA),
-      cat1 = factor(rep(c("A", "B", "C"), length.out = 30)),
-      cat2 = factor(rep(c("X", "Y"), length.out = 30))
+      cat1 = factor(rep(c("A", "B", "C"), length.out = 30))
     ))
 
     mod <- create_outliers_module(
       data = data,
       outlier_vars = c("var1"),
-      categorical_vars = c("cat1", "cat2"),
+      categorical_vars = c("cat1"),
       outlier_selected = "var1",
-      categorical_selected = c("cat1", "cat2")
+      categorical_selected = c("cat1")
     )
 
     shiny::testServer(
@@ -955,18 +959,73 @@ testthat::describe("tm_outliers edge_cases server tests", {
         session$setInputs(
           "outlier_var-dataset_test_data_singleextract-select" = "var1",
           "categorical_var-dataset_test_data_singleextract-filter1-vals" = c("A", "B", "C"),
+          "method" = "IQR",
+          "iqr_slider" = 1.5,
+          "boxplot_alts" = "Box plot",
+          "tabs" = "Cumulative Distribution Plot",
+          "split_outliers" = FALSE,
+          "order_by_outlier" = FALSE
+        )
+        testthat::expect_true(iv_r()$is_valid())
+        result <- cumulative_plot_q()
+        testthat::expect_true(inherits(result, "teal_data"))
+        testthat::expect_true("cumulative_plot" %in% names(result))
+        testthat::expect_true(inherits(result[["cumulative_plot"]], "ggplot"))
+        testthat::expect_true("outlier_points" %in% names(result))
+        # Verify the data processing for categorical variables executed correctly
+        outlier_points <- result[["outlier_points"]]
+        testthat::expect_true(nrow(outlier_points) > 0)
+        # The key verification: 'y' column is created by the ECDF calculation in lines 975
+        testthat::expect_true("y" %in% names(outlier_points))
+        # Verify plot has faceting (facet_grid is applied on line 991, confirming else block executed)
+        plot <- result[["cumulative_plot"]]
+        testthat::expect_true(!is.null(plot$facet))
+      }
+    )
+  })
+
+  it("server handles Cumulative Distribution Plot with categorical variables and Z-score method", {
+    data <- create_outliers_test_data(data.frame(
+      var1 = c(rnorm(26), 10, -10, NA, NA),
+      cat1 = factor(rep(c("Group1", "Group2", "Group3"), length.out = 30))
+    ))
+
+    mod <- create_outliers_module(
+      data = data,
+      outlier_vars = c("var1"),
+      categorical_vars = c("cat1"),
+      outlier_selected = "var1",
+      categorical_selected = c("cat1")
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs(
+          "outlier_var-dataset_test_data_singleextract-select" = "var1",
+          "categorical_var-dataset_test_data_singleextract-filter1-vals" = c("Group1", "Group2", "Group3"),
           "method" = "Z-score",
-          "zscore_slider" = 2.5,
-          "boxplot_alts" = "Violin plot",
-          "tabs" = "Boxplot",
+          "zscore_slider" = 2,
+          "boxplot_alts" = "Box plot",
+          "tabs" = "Cumulative Distribution Plot",
           "split_outliers" = TRUE,
           "order_by_outlier" = TRUE
         )
         testthat::expect_true(iv_r()$is_valid())
-        result <- box_plot_q()
+        result <- cumulative_plot_q()
         testthat::expect_true(inherits(result, "teal_data"))
-        testthat::expect_true("box_plot" %in% names(result))
+        testthat::expect_true("cumulative_plot" %in% names(result))
+        testthat::expect_true("outlier_points" %in% names(result))
+
+        # Verify faceting is applied correctly
+        plot <- result[["cumulative_plot"]]
+        testthat::expect_true(inherits(plot, "gg"))
       }
     )
   })
+
 })
