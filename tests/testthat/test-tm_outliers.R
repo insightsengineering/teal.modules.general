@@ -92,21 +92,22 @@ testthat::describe("tm_outliers module creation", {
   it("accepts a decorator", {
     ggplot_caption_decorator <- function(default_caption = "I am a good decorator") {
       teal::teal_transform_module(
-      label = "Caption",
-      ui = function(id) {
-        shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
-      },
-      server = function(id, data) {
-        moduleServer(id, function(input, output, session) {
-          reactive({
-              within(data(),
-                {
-                  plot <- plot + ggplot2::labs(caption = footnote)
-                },
-                footnote = input$footnote
-              )
-          })
-        }
+        label = "Caption",
+        ui = function(id) {
+          shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption)
+        },
+        server = function(id, data) {
+          moduleServer(id, function(input, output, session) {
+            reactive({
+                within(data(),
+                  {
+                    plot <- plot + ggplot2::labs(caption = footnote)
+                  },
+                  footnote = input$footnote
+                )
+            })
+          }
+        )}
       )
     }
 
