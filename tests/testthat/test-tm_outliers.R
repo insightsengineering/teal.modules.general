@@ -937,10 +937,10 @@ testthat::describe("tm_outliers edge_cases server tests", {
   })
 
   data_category <- teal_data()
-    data_category <- within(data_category, {
-      CO2 <- CO2 # nolint: [object_name_linter]
-      CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: [object_name_linter]
-    })
+  data_category <- within(data_category, {
+    CO2 <- CO2 # nolint: [object_name_linter]
+    CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: [object_name_linter]
+  })
 
   join_keys(data_category) <- join_keys(join_key("CO2", "CO2", "primary_key"))
   vars <- choices_selected(variable_choices(data_category[["CO2"]], c("Type")))
