@@ -137,7 +137,7 @@ testthat::describe("tm_a_pca input validation", {
 
   it("fails when `font_size` is not below 20", {
     testthat::expect_error(tm_a_pca(dat = spec, font_size = 100), "font_size")
-      testthat::expect_error(tm_a_pca(dat = spec, font_size = -1), "font_size")
+    testthat::expect_error(tm_a_pca(dat = spec, font_size = -1), "font_size")
   })
 
   it("fails when `font_size` is not numeric of length 3 or NULL", {
@@ -263,7 +263,7 @@ testthat::describe("tm_g_response module server behavior", {
     )
   })
 
-   it("fails with only 1 variable (Circle plot)", {
+  it("fails with only 1 variable (Circle plot)", {
     mod <- tm_a_pca(dat = spec)
     shiny::testServer(
       mod$server,
@@ -273,7 +273,7 @@ testthat::describe("tm_g_response module server behavior", {
       ),
       expr = {
         set_shared_inputs(session, "Circle plot")
-        session$setInputs("dat-dataset_ADSL_singleextract-select" = c("AGE"),)
+        session$setInputs("dat-dataset_ADSL_singleextract-select" = c("AGE"), )
         session$flushReact()
         testthat::expect_error(session$returned(), "Please select more than 1 variable", fixed = TRUE)
       }
