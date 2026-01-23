@@ -98,7 +98,6 @@ testthat::describe("srv_rmarkdown", {
       }
     )
   })
-
 })
 
 testthat::describe("tm_rmarkdown module ui behavior returns a htmltools tag or taglist", {
