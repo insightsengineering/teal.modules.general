@@ -834,10 +834,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
             )
             quote(ggplot2::scale_color_brewer(palette = "Dark2"))
           } else if (inherits(response, "Date")) {
-            qenv <- teal.code::eval_code(
-              qenv,
-              quote(pca_rot$response <- numeric(response))
-            )
+            qenv <- within(qenv, pca_rot$response <- as.numeric(response))
 
             quote(
               ggplot2::scale_color_gradient(
