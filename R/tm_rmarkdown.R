@@ -247,7 +247,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
     # Can only clean on sessionEnded as temporary files are needed for the reporter
     # during session
     onSessionEnded(function() {
-      logger::log_debug("srv_rmarkdown: cleaning up temporary folders.")
+      logger::log_debug("srv_rmarkdown: cleaning up temporary folders.", namespace = "teal.modules.general")
       lapply(shiny::isolate(clean_up_r()), function(f) f())
     }, session)
 
@@ -259,6 +259,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
       temp_dir <- tempfile(pattern = "rmd_")
       dir.create(temp_dir, showWarnings = FALSE, recursive = TRUE)
       temp_rmd <- tempfile(pattern = "rmarkdown_module-", tmpdir = temp_dir, fileext = ".Rmd")
+
       # Schedule cleanup of temp files when reactive is re-executed
       shiny::isolate({
         old_clean_up <- clean_up_r()
@@ -268,7 +269,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
 
       tryCatch(
         {
-          rmarkdown::render(
+          result <- rmarkdown::render(
             temp_rmd,
             output_format = rmarkdown::md_document(
               variant = "markdown",
@@ -279,6 +280,11 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
             quiet = TRUE,
             runtime = "static"
           )
+          temp_rmd_files <- sprintf("%s_files", tools::file_path_sans_ext(temp_rmd))
+          if (!dir.exists(temp_rmd_files)) {
+            dir.create(temp_rmd_files, showWarnings = FALSE, recursive = TRUE) # Create anyway as it is expected
+          }
+          result
         },
         error = function(e) {
           warning("Error rendering RMD file: ", e$message) # verbose error in logs
