@@ -235,3 +235,138 @@ describe("Test for invalidation of arguments", {
         "Assertion on 'label_segment_threshold' failed")
     })
 })
+
+describe("Test for server function", {
+  data <- teal_data()
+  data <- within(data, {
+    require(nestcolor)
+    CO2 <- CO2
+  })
+
+  response <- data_extract_spec(
+         dataname = "CO2",
+         select = select_spec(
+           label = "Select variable:",
+           choices = "uptake",
+           selected = "uptake",
+           multiple = FALSE,
+           fixed = TRUE
+         )
+      )
+  regressor <- data_extract_spec(
+        dataname = "CO2",
+        select = select_spec(
+            label = "Select variables:",
+            choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
+            selected = "conc",
+            multiple = TRUE,
+            fixed = FALSE
+        )
+      )
+
+  it("server executes without error with default arguments", {
+    mod <- tm_a_regression(response = response, regressor = regressor)
+    shiny::testServer(
+      mod$server,
+      args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
+      expr = {
+        session$setInputs(
+          "response-dataset_CO2_singleextract-select" = "uptake",
+          "regressor-dataset_CO2_singleextract-select" = "conc",
+          "plot_type" = "Response vs Regressor",
+          "show_outlier" = FALSE,
+          "ggtheme" = "gray"
+        )
+        testthat::expect_true(iv_r()$is_valid())
+        output_result <- output_q()
+        testthat::expect_true(inherits(output_result, "teal_data"))
+        plot_result <- plot_r()
+        testthat::expect_true(inherits(plot_result, "ggplot"))
+      }
+    )
+  })
+
+  it("server has an error if data is not reactive", {
+    mod <- tm_a_regression(response = response, regressor = regressor)
+    non_reactive_data <- within(teal_data(), {
+      require(nestcolor)
+      CO2 <- CO2
+    })
+    testthat::expect_error(
+      shiny::testServer(
+        mod$server,
+        args = c(list(id = "test", data = non_reactive_data), mod$server_args),
+        expr = {
+          session$setInputs(
+            "response-dataset_CO2_singleextract-select" = "uptake",
+            "regressor-dataset_CO2_singleextract-select" = "conc",
+            "plot_type" = "Response vs Regressor",
+            "show_outlier" = FALSE,
+            "ggtheme" = "gray"
+          )
+        }
+      ),
+      "Assertion on 'data' failed"
+    )
+  })
+
+  it("server works if data has outliers", {
+    CO2_outliers <- CO2
+    CO2_outliers$uptake[1:3] <- c(110, 105, 109)
+
+    outliers_data <- within(teal_data(), {
+      require(nestcolor)
+      CO2 <- CO2_outliers
+      CO2 <- CO2 |> dplyr::mutate(
+        USUBJID = seq_len(nrow(CO2))
+      )
+    },
+      CO2_outliers = CO2_outliers)
+
+    response <- data_extract_spec(
+         dataname = "CO2",
+         select = select_spec(
+           label = "Select variable:",
+           choices = "uptake",
+           selected = "uptake",
+           multiple = FALSE,
+           fixed = TRUE
+         )
+      )
+
+    regressor_outliers <- data_extract_spec(
+      dataname = "CO2",
+      select = select_spec(
+        label = "Select variables:",
+        choices = variable_choices(outliers_data[["CO2"]], c("conc", "Treatment")),
+        selected = "conc",
+        multiple = TRUE,
+        fixed = FALSE
+      )
+    )
+
+    mod <- tm_a_regression(response = response, regressor = regressor_outliers)
+    shiny::testServer(
+      mod$server,
+      args = c(list(id = "test", data = shiny::reactive(outliers_data)), mod$server_args),
+      expr = {
+        session$setInputs(
+          "response-dataset_CO2_singleextract-select" = "uptake",
+          "regressor-dataset_CO2_singleextract-select" = "conc",
+          "plot_type" = "Normal Q-Q",
+          "show_outlier" = FALSE,
+          "ggtheme" = "gray",
+          "alpha" = 1,
+          "size" = 2,
+          "label_min_segment" = 0.5
+        )
+        testthat::expect_true(iv_r()$is_valid())
+        # Enable show_outlier to trigger fit_r() reactive dependency
+        session$setInputs("show_outlier" = TRUE, label_var = "uptake")
+        session$flushReact()
+        testthat::expect_true(iv_out$is_valid())
+      }
+    )
+  })
+
+})
