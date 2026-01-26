@@ -264,19 +264,103 @@ describe("Test for server function", {
         )
       )
 
+  set_default_args <- function(session, plot_type) {
+    session$setInputs(
+          "response-dataset_CO2_singleextract-select" = "uptake",
+          "regressor-dataset_CO2_singleextract-select" = "conc",
+          "plot_type" = plot_type,
+          "show_outlier" = FALSE,
+          "ggtheme" = "gray"
+        )
+  }
+
   it("server executes without error with default arguments", {
     mod <- tm_a_regression(response = response, regressor = regressor)
     shiny::testServer(
       mod$server,
       args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
       expr = {
-        session$setInputs(
-          "response-dataset_CO2_singleextract-select" = "uptake",
-          "regressor-dataset_CO2_singleextract-select" = "conc",
-          "plot_type" = "Response vs Regressor",
-          "show_outlier" = FALSE,
-          "ggtheme" = "gray"
-        )
+        set_default_args(session, "Response vs Regressor")
+        testthat::expect_true(iv_r()$is_valid())
+        output_result <- output_q()
+        testthat::expect_true(inherits(output_result, "teal_data"))
+        plot_result <- plot_r()
+        testthat::expect_true(inherits(plot_result, "ggplot"))
+      }
+    )
+  })
+
+  it("server executes without error with for Residuals vs Leverage", {
+    mod <- tm_a_regression(response = response, regressor = regressor)
+    shiny::testServer(
+      mod$server,
+      args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
+      expr = {
+        set_default_args(session, "Residuals vs Leverage")
+        testthat::expect_true(iv_r()$is_valid())
+        output_result <- output_q()
+        testthat::expect_true(inherits(output_result, "teal_data"))
+        plot_result <- plot_r()
+        testthat::expect_true(inherits(plot_result, "ggplot"))
+      }
+    )
+  })
+
+  it("server executes without error with for Scale-Location", {
+    mod <- tm_a_regression(response = response, regressor = regressor)
+    shiny::testServer(
+      mod$server,
+      args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
+      expr = {
+        set_default_args(session, "Scale-Location")
+        testthat::expect_true(iv_r()$is_valid())
+        output_result <- output_q()
+        testthat::expect_true(inherits(output_result, "teal_data"))
+        plot_result <- plot_r()
+        testthat::expect_true(inherits(plot_result, "ggplot"))
+      }
+    )
+  })
+
+  it("server executes without error with for Cook's distance", {
+    mod <- tm_a_regression(response = response, regressor = regressor)
+    shiny::testServer(
+      mod$server,
+      args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
+      expr = {
+        set_default_args(session, "Cook's distance")
+        testthat::expect_true(iv_r()$is_valid())
+        output_result <- output_q()
+        testthat::expect_true(inherits(output_result, "teal_data"))
+        plot_result <- plot_r()
+        testthat::expect_true(inherits(plot_result, "ggplot"))
+      }
+    )
+  })
+
+  it("server executes without error with for Normal Q-Q", {
+    mod <- tm_a_regression(response = response, regressor = regressor)
+    shiny::testServer(
+      mod$server,
+      args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
+      expr = {
+        set_default_args(session, "Normal Q-Q")
+        testthat::expect_true(iv_r()$is_valid())
+        output_result <- output_q()
+        testthat::expect_true(inherits(output_result, "teal_data"))
+        plot_result <- plot_r()
+        testthat::expect_true(inherits(plot_result, "ggplot"))
+      }
+    )
+  })
+
+  it("server executes without error with for Cook's dist vs Leverage", {
+    mod <- tm_a_regression(response = response, regressor = regressor)
+    shiny::testServer(
+      mod$server,
+      args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
+      expr = {
+        set_default_args(session, "Cook's dist vs Leverage")
         testthat::expect_true(iv_r()$is_valid())
         output_result <- output_q()
         testthat::expect_true(inherits(output_result, "teal_data"))
@@ -310,7 +394,56 @@ describe("Test for server function", {
     )
   })
 
-  it("server works if data has outliers", {
+  it("server throws error if response and regressor are the same variable", {
+    mod <- tm_a_regression(response = response, regressor = regressor)
+    testthat::expect_error(
+      shiny::testServer(
+        mod$server,
+        args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
+        expr = {
+          session$setInputs(
+            "response-dataset_CO2_singleextract-select" = "uptake",
+            "regressor-dataset_CO2_singleextract-select" = "uptake",
+            "plot_type" = "Response vs Regressor",
+            "show_outlier" = FALSE,
+            "ggtheme" = "gray"
+          )
+          testthat::expect_true(iv_r()$is_valid())
+          output_result <- output_q()
+          testthat::expect_true(inherits(output_result, "teal_data"))
+          plot_result <- plot_r()
+          testthat::expect_true(inherits(plot_result, "ggplot"))
+        }
+      )
+    )
+  })
+
+  it("server throws error if regressor has two choices for Response vs Regressor", {
+    mod <- tm_a_regression(response = response, regressor = regressor)
+    testthat::expect_error(
+      shiny::testServer(
+        mod$server,
+        args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
+        expr = {
+          session$setInputs(
+            "response-dataset_CO2_singleextract-select" = c("uptake",),
+            "regressor-dataset_CO2_singleextract-select" = c("conc", "Treatment") ,
+            "plot_type" = "Response vs Regressor",
+            "show_outlier" = FALSE,
+            "ggtheme" = "gray"
+          )
+          testthat::expect_true(iv_r()$is_valid())
+          output_result <- output_q()
+          testthat::expect_true(inherits(output_result, "teal_data"))
+          plot_result <- plot_r()
+          testthat::expect_true(inherits(plot_result, "ggplot"))
+        }
+      )
+    )
+  })
+})
+
+describe("Test for server function in case of outliers", {
     CO2_outliers <- CO2
     CO2_outliers$uptake[1:3] <- c(110, 105, 109)
 
@@ -345,6 +478,7 @@ describe("Test for server function", {
       )
     )
 
+  it("server works if data has outliers in Normal Q-Q", {
     mod <- tm_a_regression(response = response, regressor = regressor_outliers)
     shiny::testServer(
       mod$server,
