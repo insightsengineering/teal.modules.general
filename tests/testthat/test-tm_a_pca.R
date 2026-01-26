@@ -198,7 +198,7 @@ testthat::describe("tm_g_response module server behavior", {
     )
   }
 
-  it("fails to execute with missing test", {
+  it("fails to execute with missing 'test' inputs", {
     mod <- tm_a_pca(dat = spec)
     shiny::testServer(
       mod$server,
