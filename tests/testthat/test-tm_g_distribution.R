@@ -196,7 +196,7 @@ testthat::describe("tm_g_response module server behavior", {
     )
   }
 
-  it("server function fails to execute with missing test", {
+  it("server function returns an error object as 'test' input is missing", {
     mod <- default_distribution_mod()
     shiny::testServer(
       mod$server,
