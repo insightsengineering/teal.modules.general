@@ -548,4 +548,3 @@ testthat::describe("tm_file_viewer edge cases", {
     )
   })
 })
-
