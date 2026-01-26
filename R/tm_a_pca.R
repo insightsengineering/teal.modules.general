@@ -514,23 +514,14 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
 
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Principal Components Table")
 
-      qenv <- teal.code::eval_code(
-        qenv,
-        quote({
-          tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
-          tbl_importance
-        })
-      )
+      qenv <- within(
+        qenv, tbl_importance <- dplyr::as_tibble(pca$importance, rownames = "Metric")
+      ) %>% within(tbl_importance) # Edge case with covr when this expression is joined with previous
 
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Eigenvectors Table")
 
-      teal.code::eval_code(
-        qenv,
-        quote({
-          tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")
-          tbl_eigenvector
-        })
-      )
+      within(qenv, tbl_eigenvector <- dplyr::as_tibble(pca$rotation, rownames = "Variable")) %>%
+        within(tbl_eigenvector) # Edge case with covr when this expression is joined with previous
     })
 
     # plot args ----
