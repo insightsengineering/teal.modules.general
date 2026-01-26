@@ -25,13 +25,13 @@ Source:
 
 Kaledkowski D, Rucki P, Hallal M, Nasinski M, Pagacz K, Burkoff N
 (2026). *teal.modules.general: General Modules for 'teal' Applications*.
-R package version 0.6.0.9003,
+R package version 0.6.0.9008,
 <https://insightsengineering.github.io/teal.modules.general/>.
 
     @Manual{,
       title = {teal.modules.general: General Modules for 'teal' Applications},
       author = {Dawid Kaledkowski and Pawel Rucki and Mahmoud Hallal and Maciej Nasinski and Konrad Pagacz and Nikolas Burkoff},
       year = {2026},
-      note = {R package version 0.6.0.9003},
+      note = {R package version 0.6.0.9008},
       url = {https://insightsengineering.github.io/teal.modules.general/},
     }
