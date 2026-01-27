@@ -2,7 +2,7 @@ describe("tests for module creation", {
   data <- teal_data()
   data <- within(data, {
     require(nestcolor)
-    CO2 <- CO2
+    CO2 <- CO2 # nolint: [object_name_linter]
   })
 
   response <- data_extract_spec(
@@ -180,7 +180,7 @@ describe("Test for invalidation of arguments", {
   data <- teal_data()
   data <- within(data, {
     require(nestcolor)
-    CO2 <- CO2
+    CO2 <- CO2  # nolint: [object_name_linter]
   })
 
   response <- data_extract_spec(
@@ -240,7 +240,7 @@ describe("Test for server function", {
   data <- teal_data()
   data <- within(data, {
     require(nestcolor)
-    CO2 <- CO2
+    CO2 <- CO2  # nolint: [object_name_linter]
   })
 
   response <- data_extract_spec(
@@ -391,7 +391,7 @@ describe("Test for server function", {
     mod <- tm_a_regression(response = response, regressor = regressor)
     non_reactive_data <- within(teal_data(), {
       require(nestcolor)
-      CO2 <- CO2
+      CO2 <- CO2 # nolint: [object_name_linter]
     })
     testthat::expect_error(
       shiny::testServer(
@@ -443,8 +443,8 @@ describe("Test for server function", {
         args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
         expr = {
           session$setInputs(
-            "response-dataset_CO2_singleextract-select" = c("uptake",),
-            "regressor-dataset_CO2_singleextract-select" = c("conc", "Treatment") ,
+            "response-dataset_CO2_singleextract-select" = c("uptake"),
+            "regressor-dataset_CO2_singleextract-select" = c("conc", "Treatment"),
             "plot_type" = "Response vs Regressor",
             "show_outlier" = FALSE,
             "ggtheme" = "gray"
@@ -458,4 +458,4 @@ describe("Test for server function", {
       )
     )
   })
-})  
+})
