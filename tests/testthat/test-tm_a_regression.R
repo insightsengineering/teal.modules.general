@@ -6,25 +6,25 @@ describe("tests for module creation", {
   })
 
   response <- data_extract_spec(
-         dataname = "CO2",
-         select = select_spec(
-           label = "Select variable:",
-           choices = "uptake",
-           selected = "uptake",
-           multiple = FALSE,
-           fixed = TRUE
-         )
-      )
+    dataname = "CO2",
+    select = select_spec(
+      label = "Select variable:",
+      choices = "uptake",
+      selected = "uptake",
+      multiple = FALSE,
+      fixed = TRUE
+    )
+  )
   regressor <- data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
-            selected = "conc",
-            multiple = TRUE,
-            fixed = FALSE
-        )
-      )
+    dataname = "CO2",
+    select = select_spec(
+      label = "Select variables:",
+      choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
+      selected = "conc",
+      multiple = TRUE,
+      fixed = FALSE
+    )
+  )
 
   it("works with default arguments", {
     mod <- tm_a_regression(
@@ -51,8 +51,8 @@ describe("tests for module creation", {
       response = response,
       regressor = regressor,
       ggplot2_args = teal.widgets::ggplot2_args(
-          labs = list(title = "User default title"),
-          theme = list(legend.position = "right", legend.direction = "vertical")
+        labs = list(title = "User default title"),
+        theme = list(legend.position = "right", legend.direction = "vertical")
       )
     )
 
@@ -161,7 +161,6 @@ describe("tests for module creation", {
     )
 
     testthat::expect_s3_class(mod, "teal_module")
-
   })
 
   it("ui is of the expected type", {
@@ -173,96 +172,108 @@ describe("tests for module creation", {
 
     testthat::expect_s3_class(ui_regression, "shiny.tag.list")
   })
-
 })
 
 describe("Test for invalidation of arguments", {
   data <- teal_data()
   data <- within(data, {
     require(nestcolor)
-    CO2 <- CO2  # nolint: [object_name_linter]
+    CO2 <- CO2 # nolint: [object_name_linter]
   })
 
   response <- data_extract_spec(
-         dataname = "CO2",
-         select = select_spec(
-           label = "Select variable:",
-           choices = "uptake",
-           selected = "uptake",
-           multiple = FALSE,
-           fixed = TRUE
-         )
-      )
+    dataname = "CO2",
+    select = select_spec(
+      label = "Select variable:",
+      choices = "uptake",
+      selected = "uptake",
+      multiple = FALSE,
+      fixed = TRUE
+    )
+  )
   regressor <- data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
-            selected = "conc",
-            multiple = TRUE,
-            fixed = FALSE
-        )
-      )
+    dataname = "CO2",
+    select = select_spec(
+      label = "Select variables:",
+      choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
+      selected = "conc",
+      multiple = TRUE,
+      fixed = FALSE
+    )
+  )
 
-    it("fails if label is not the expected type", {
-      testthat::expect_error(tm_a_regression(response = response, regressor = regressor, label = 123),
-        "Assertion on 'label' failed")
-    })
+  it("fails if label is not the expected type", {
+    testthat::expect_error(
+      tm_a_regression(response = response, regressor = regressor, label = 123),
+      "Assertion on 'label' failed"
+    )
+  })
 
-    it("fails if regressor is not the expected type", {
-      testthat::expect_error(tm_a_regression(response = response, regressor = list(my_data_spec = character())),
-        "Assertion on 'regressor' failed")
-    })
+  it("fails if regressor is not the expected type", {
+    testthat::expect_error(
+      tm_a_regression(response = response, regressor = list(my_data_spec = character())),
+      "Assertion on 'regressor' failed"
+    )
+  })
 
-    it("fails if response is not the expected type", {
-      testthat::expect_error(tm_a_regression(response = list(my_data_spec = character()), regressor = regressor),
-        "Assertion on 'response' failed")
-    })
+  it("fails if response is not the expected type", {
+    testthat::expect_error(
+      tm_a_regression(response = list(my_data_spec = character()), regressor = regressor),
+      "Assertion on 'response' failed"
+    )
+  })
 
-    it("fails if alpha is not the expected type", {
-      testthat::expect_error(tm_a_regression(response = response, regressor = regressor, alpha = "wrong type"),
-        "Assertion on 'alpha' failed")
-    })
+  it("fails if alpha is not the expected type", {
+    testthat::expect_error(
+      tm_a_regression(response = response, regressor = regressor, alpha = "wrong type"),
+      "Assertion on 'alpha' failed"
+    )
+  })
 
-    it("fails if size is not the expected type", {
-      testthat::expect_error(tm_a_regression(response = response, regressor = regressor, size = "wrong type"),
-        "Assertion on 'size' failed")
-    })
+  it("fails if size is not the expected type", {
+    testthat::expect_error(
+      tm_a_regression(response = response, regressor = regressor, size = "wrong type"),
+      "Assertion on 'size' failed"
+    )
+  })
 
-    it("fails if label_segment_threshold is not the expected type", {
-      testthat::expect_error(tm_a_regression(
-        response = response, regressor = regressor, label_segment_threshold = "wrong type"),
-        "Assertion on 'label_segment_threshold' failed")
-    })
+  it("fails if label_segment_threshold is not the expected type", {
+    testthat::expect_error(
+      tm_a_regression(
+        response = response, regressor = regressor, label_segment_threshold = "wrong type"
+      ),
+      "Assertion on 'label_segment_threshold' failed"
+    )
+  })
 })
 
 describe("Test for server function", {
   data <- teal_data()
   data <- within(data, {
     require(nestcolor)
-    CO2 <- CO2  # nolint: [object_name_linter]
+    CO2 <- CO2 # nolint: [object_name_linter]
   })
 
   response <- data_extract_spec(
-         dataname = "CO2",
-         select = select_spec(
-           label = "Select variable:",
-           choices = "uptake",
-           selected = "uptake",
-           multiple = FALSE,
-           fixed = TRUE
-         )
-      )
+    dataname = "CO2",
+    select = select_spec(
+      label = "Select variable:",
+      choices = "uptake",
+      selected = "uptake",
+      multiple = FALSE,
+      fixed = TRUE
+    )
+  )
   regressor <- data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
-            selected = "conc",
-            multiple = TRUE,
-            fixed = FALSE
-        )
-      )
+    dataname = "CO2",
+    select = select_spec(
+      label = "Select variables:",
+      choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
+      selected = "conc",
+      multiple = TRUE,
+      fixed = FALSE
+    )
+  )
 
   set_default_args <- function(session, plot_type) {
     session$setInputs(
