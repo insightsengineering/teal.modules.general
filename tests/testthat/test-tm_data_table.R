@@ -147,6 +147,4 @@ testthat::describe("tm_g_response module server behavior", {
       }
     )
   })
-
-
 })
