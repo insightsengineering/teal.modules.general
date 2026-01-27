@@ -214,7 +214,7 @@ testthat::describe("tm_g_response module server behavior", {
     )
   })
 
-  it("returns teal_report object with valid inputs (elbow plot)", {
+  it("fails if the plot type is not from the valid plots", {
     mod <- tm_a_pca(dat = spec)
     shiny::testServer(
       mod$server,
