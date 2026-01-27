@@ -125,6 +125,7 @@ tm_gt_summary <- function(
 ui_gt_summary <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
+
   teal.widgets::standard_layout(
     output = gt::gt_output(ns("table")),
     encoding = tags$div(
@@ -182,6 +183,9 @@ srv_gt_summary <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
+    selector_list <- teal.transform::data_extract_multiple_srv(
+      data_extract = list(by = by, include = include),
+      datasets = data)
 
     qenv <- reactive({
       obj <- req(data())
@@ -194,7 +198,6 @@ srv_gt_summary <- function(id,
     })
 
     summary_args <- reactive({
-      req(qenv())
 
       # table
       if (!is.null(by) || !is.null(include)) {
@@ -215,11 +218,10 @@ srv_gt_summary <- function(id,
              "Input from multiple tables: this module doesn't accept that.")
       )
 
-      nam_input <- names(input)
-
-      # by: input + corner cases
-      by_variable <- input[[nam_input[startsWith(nam_input, "by") & endsWith(nam_input, "select")]]]
-      include_variables <- input[[nam_input[startsWith(nam_input, "include") & endsWith(nam_input, "select")]]]
+      # by: input + all variables (default on gtsummary)
+      sl <- req(selector_list())
+      by_variable <- req(sl$by()$select)
+      include_variables <- sl$include()$select
 
       tbl_summary_args <- list(...)
       tbl_summary_args$by <- by_variable
@@ -236,7 +238,7 @@ srv_gt_summary <- function(id,
           data = as.name(dataset)),
           tbl_summary_args)
       )
-    })
+    }) |> bindCache(selector_list()$by(), selector_list()$include())
 
     output_q <- reactive({
       q <- req(qenv())
@@ -262,10 +264,11 @@ srv_gt_summary <- function(id,
     output_data_decorated <- Reduce(function(f, ...) f(...), decorations, init = output_q, right = TRUE)
     print_output_decorated <- reactive({
       q <- req(output_data_decorated())
+      cat("m")
       within(q, {
         table
       })
-    })
+    }) #|> bindCache(output_data_decorated())
 
     table_r <- reactive({
       out <- req(output_data_decorated())
