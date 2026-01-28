@@ -221,10 +221,16 @@ srv_gt_summary <- function(id,
       sl <- req(selector_list())
       by_variable <- req(sl$by()$select)
       include_variables <- sl$include()$select
+      if (length(include_variables) != 0L) {
+        validate(
+          need(by_variable != include_variables,
+               "Variables to stratify with and variables to include should be different"),
+        )
+      }
 
       tbl_summary_args <- list(...)
       tbl_summary_args$by <- by_variable
-      if (!is.null(include_variables)) {
+      if (length(include_variables)) {
         tbl_summary_args$include <- include_variables
       }
       tbl_summary_args <- c(tbl_summary_args,
