@@ -198,7 +198,6 @@ srv_gt_summary <- function(id,
     })
 
     summary_args <- reactive({
-
       # table
       if (!is.null(by) || !is.null(include)) {
         validate(need(teal.transform::is_single_dataset(list(by = by, include = include)),
@@ -238,7 +237,7 @@ srv_gt_summary <- function(id,
           data = as.name(dataset)),
           tbl_summary_args)
       )
-    }) |> bindCache(selector_list()$by(), selector_list()$include())
+    })
 
     output_q <- reactive({
       q <- req(qenv())
@@ -264,11 +263,10 @@ srv_gt_summary <- function(id,
     output_data_decorated <- Reduce(function(f, ...) f(...), decorations, init = output_q, right = TRUE)
     print_output_decorated <- reactive({
       q <- req(output_data_decorated())
-      cat("m")
       within(q, {
         table
       })
-    }) #|> bindCache(output_data_decorated())
+    })
 
     table_r <- reactive({
       out <- req(output_data_decorated())
