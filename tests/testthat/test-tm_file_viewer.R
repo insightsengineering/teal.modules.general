@@ -68,16 +68,19 @@ testthat::describe("tm_file_viewer input validation", {
   it("handles empty label by converting to space", {
     mod <- tm_file_viewer(label = "")
     testthat::expect_s3_class(mod, "teal_module")
+    testthat::expect_equal(mod$ui_args[["label"]], " ")
   })
 
   it("handles empty input_path by converting to empty list", {
     mod <- tm_file_viewer(input_path = "")
     testthat::expect_s3_class(mod, "teal_module")
+    testthat::expect_equal(mod$ui_args[["input_path"]], list())
   })
 
   it("handles empty list input_path", {
     mod <- tm_file_viewer(input_path = list())
     testthat::expect_s3_class(mod, "teal_module")
+    testthat::expect_equal(mod$ui_args[["input_path"]], list())
   })
 
   it("warns when input_path contains non-existent files", {
@@ -118,7 +121,7 @@ testthat::describe("tm_file_viewer module ui behavior", {
 })
 
 testthat::describe("tm_file_viewer module server behavior", {
-  it("server function executes successfully with valid file path", {
+  it("server function requires file selection before displaying output", {
     test_path <- system.file("sample_files/sample_file.txt", package = "teal.modules.general")
     mod <- tm_file_viewer(input_path = list(txt = test_path))
 
@@ -134,13 +137,15 @@ testthat::describe("tm_file_viewer module server behavior", {
     )
   })
 
-  it("server function handles empty input_path", {
+  it("server function initializes with empty input_path and renders empty tree", {
     mod <- suppressWarnings(tm_file_viewer(input_path = list()))
 
     shiny::testServer(
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
+        tree_output <- output$tree()
+        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -149,7 +154,7 @@ testthat::describe("tm_file_viewer module server behavior", {
     )
   })
 
-  it("server function handles directory path", {
+  it("server function initializes with directory path and renders tree", {
     test_path <- system.file("sample_files", package = "teal.modules.general")
     mod <- tm_file_viewer(input_path = list(folder = test_path))
 
@@ -157,6 +162,8 @@ testthat::describe("tm_file_viewer module server behavior", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
+        tree_output <- output$tree()
+        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -165,7 +172,7 @@ testthat::describe("tm_file_viewer module server behavior", {
     )
   })
 
-  it("server function handles image file paths", {
+  it("server function initializes with image file path and renders tree", {
     test_path <- system.file("sample_files/sample_file.png", package = "teal.modules.general")
     mod <- tm_file_viewer(input_path = list(png = test_path))
 
@@ -173,6 +180,8 @@ testthat::describe("tm_file_viewer module server behavior", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
+        tree_output <- output$tree()
+        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -181,23 +190,7 @@ testthat::describe("tm_file_viewer module server behavior", {
     )
   })
 
-  it("server function validates file selection", {
-    test_path <- system.file("sample_files/sample_file.txt", package = "teal.modules.general")
-    mod <- tm_file_viewer(input_path = list(txt = test_path))
-
-    shiny::testServer(
-      app = mod$server,
-      args = c(list(id = "test"), mod$server_args),
-      expr = {
-        testthat::expect_error(
-          output$output(),
-          "Please select a file"
-        )
-      }
-    )
-  })
-
-  it("server function handles Rmd file", {
+  it("server function initializes with Rmd file and renders tree", {
     test_path <- system.file("sample_files/co2_example.Rmd", package = "teal.modules.general")
     if (file.exists(test_path)) {
       mod <- tm_file_viewer(input_path = list(rmd = test_path))
@@ -206,6 +199,8 @@ testthat::describe("tm_file_viewer module server behavior", {
         app = mod$server,
         args = c(list(id = "test"), mod$server_args),
         expr = {
+          tree_output <- output$tree()
+          testthat::expect_type(tree_output, "list")
           testthat::expect_error(
             output$output(),
             "Please select a file"
@@ -213,22 +208,6 @@ testthat::describe("tm_file_viewer module server behavior", {
         }
       )
     }
-  })
-
-  it("server function handles multiple file types in directory", {
-    test_path <- system.file("sample_files", package = "teal.modules.general")
-    mod <- tm_file_viewer(input_path = list(folder = test_path))
-
-    shiny::testServer(
-      app = mod$server,
-      args = c(list(id = "test"), mod$server_args),
-      expr = {
-        testthat::expect_error(
-          output$output(),
-          "Please select a file"
-        )
-      }
-    )
   })
 })
 
@@ -249,11 +228,7 @@ testthat::describe("tm_file_viewer input_path validation", {
   it("handles zero-length character input_path", {
     mod <- suppressWarnings(tm_file_viewer(input_path = character(0)))
     testthat::expect_s3_class(mod, "teal_module")
-  })
-
-  it("handles NULL label by converting to space", {
-    mod <- tm_file_viewer(label = character(0))
-    testthat::expect_s3_class(mod, "teal_module")
+    testthat::expect_equal(mod$ui_args[["input_path"]], list())
   })
 
   it("filters out non-existent paths and keeps valid ones", {
@@ -353,7 +328,7 @@ testthat::describe("tm_file_viewer server file selection and display", {
 })
 
 testthat::describe("tm_file_viewer tree structure", {
-  it("server initializes successfully with directory containing files", {
+  it("server renders tree structure for directory containing files", {
     test_path <- system.file("sample_files", package = "teal.modules.general")
     mod <- tm_file_viewer(input_path = list(folder = test_path))
 
@@ -361,6 +336,8 @@ testthat::describe("tm_file_viewer tree structure", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
+        tree_output <- output$tree()
+        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -369,13 +346,15 @@ testthat::describe("tm_file_viewer tree structure", {
     )
   })
 
-  it("server initializes successfully with empty input_path", {
+  it("server renders empty tree structure for empty input_path", {
     mod <- suppressWarnings(tm_file_viewer(input_path = list()))
 
     shiny::testServer(
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
+        tree_output <- output$tree()
+        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -384,7 +363,7 @@ testthat::describe("tm_file_viewer tree structure", {
     )
   })
 
-  it("server initializes successfully with single file", {
+  it("server renders tree structure for single file", {
     test_path <- system.file("sample_files/sample_file.txt", package = "teal.modules.general")
     mod <- tm_file_viewer(input_path = list(txt = test_path))
 
@@ -392,6 +371,8 @@ testthat::describe("tm_file_viewer tree structure", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
+        tree_output <- output$tree()
+        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -400,7 +381,7 @@ testthat::describe("tm_file_viewer tree structure", {
     )
   })
 
-  it("server initializes successfully with multiple files", {
+  it("server renders tree structure for multiple files", {
     test_path <- system.file("sample_files", package = "teal.modules.general")
     txt_path <- system.file("sample_files/sample_file.txt", package = "teal.modules.general")
     png_path <- system.file("sample_files/sample_file.png", package = "teal.modules.general")
@@ -410,6 +391,8 @@ testthat::describe("tm_file_viewer tree structure", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
+        tree_output <- output$tree()
+        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
