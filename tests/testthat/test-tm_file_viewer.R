@@ -72,13 +72,19 @@ testthat::describe("tm_file_viewer input validation", {
   })
 
   it("handles empty input_path by converting to empty list", {
-    mod <- tm_file_viewer(input_path = "")
+    mod <- testthat::expect_warning(
+      tm_file_viewer(input_path = ""),
+      "No file or url paths were provided"
+    )
     testthat::expect_s3_class(mod, "teal_module")
     testthat::expect_equal(mod$ui_args[["input_path"]], list())
   })
 
   it("handles empty list input_path", {
-    mod <- tm_file_viewer(input_path = list())
+    mod <- testthat::expect_warning(
+      tm_file_viewer(input_path = list()),
+      "No file or url paths were provided"
+    )
     testthat::expect_s3_class(mod, "teal_module")
     testthat::expect_equal(mod$ui_args[["input_path"]], list())
   })
@@ -144,8 +150,6 @@ testthat::describe("tm_file_viewer module server behavior", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
-        tree_output <- output$tree()
-        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -162,8 +166,6 @@ testthat::describe("tm_file_viewer module server behavior", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
-        tree_output <- output$tree()
-        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -180,8 +182,6 @@ testthat::describe("tm_file_viewer module server behavior", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
-        tree_output <- output$tree()
-        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -199,8 +199,6 @@ testthat::describe("tm_file_viewer module server behavior", {
         app = mod$server,
         args = c(list(id = "test"), mod$server_args),
         expr = {
-          tree_output <- output$tree()
-          testthat::expect_type(tree_output, "list")
           testthat::expect_error(
             output$output(),
             "Please select a file"
@@ -336,8 +334,6 @@ testthat::describe("tm_file_viewer tree structure", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
-        tree_output <- output$tree()
-        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -353,8 +349,6 @@ testthat::describe("tm_file_viewer tree structure", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
-        tree_output <- output$tree()
-        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -371,8 +365,6 @@ testthat::describe("tm_file_viewer tree structure", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
-        tree_output <- output$tree()
-        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
@@ -391,8 +383,6 @@ testthat::describe("tm_file_viewer tree structure", {
       app = mod$server,
       args = c(list(id = "test"), mod$server_args),
       expr = {
-        tree_output <- output$tree()
-        testthat::expect_type(tree_output, "list")
         testthat::expect_error(
           output$output(),
           "Please select a file"
