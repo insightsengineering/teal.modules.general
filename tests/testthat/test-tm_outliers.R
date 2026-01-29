@@ -43,6 +43,13 @@ testthat::describe("tm_outliers module creation", {
     testthat::expect_s3_class(tm_outliers(outlier_var = outlier_var, plot_width = c(200, 100, 500)), "teal_module")
   })
 
+  it("module works with plot_height parameter", {
+  testthat::expect_s3_class(
+    tm_outliers(outlier_var = outlier_var, plot_height = c(800, 400, 1200)),
+    "teal_module"
+  )
+})
+
   it("works with pre_output", {
     pre_output <- shiny::actionButton("pre_output", "My pre output")
     default_mod <- tm_outliers(outlier_var = outlier_var)
@@ -992,7 +999,7 @@ testthat::describe("tm_outliers edge_cases server tests", {
           "order_by_outlier" = FALSE
         )
         testthat::expect_true(iv_r()$is_valid())
-        result <- suppressWarnings(cumulative_plot_q())
+        result <- cumulative_plot_q()
         testthat::expect_true(inherits(result, "teal_data"))
         testthat::expect_true("cumulative_plot" %in% names(result))
         testthat::expect_true(inherits(result[["cumulative_plot"]], "ggplot"))
@@ -1033,6 +1040,39 @@ testthat::describe("tm_outliers edge_cases server tests", {
 
         plot <- result[["cumulative_plot"]]
         testthat::expect_true(inherits(plot, "gg"))
+      }
+    )
+  })
+
+  it("server handles Cumulative Distribution Plot with categorical variables and Percentile method", {
+    mod <- tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var)
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = shiny::reactive(app_data)),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs(
+          "outlier_var-dataset_rADSL_singleextract-select" = "BMRKR1",
+          "categorical_var-dataset_rADSL_singleextract-filter1-vals" = c("F", "M"),
+          "method" = "Percentile",
+          "percentile_slider" = 0.05,
+          "boxplot_alts" = "Box plot",
+          "tabs" = "Cumulative Distribution Plot",
+          "split_outliers" = TRUE,
+          "order_by_outlier" = TRUE
+        )
+        testthat::expect_true(iv_r()$is_valid())
+        result <- cumulative_plot_q()
+        testthat::expect_true(inherits(result, "teal_data"))
+        testthat::expect_true("cumulative_plot" %in% names(result))
+        testthat::expect_true("outlier_points" %in% names(result))
+        testthat::expect_true(inherits(result[["cumulative_plot"]], "ggplot"))
+
+        plot <- result[["cumulative_plot"]]
+        testthat::expect_true(!is.null(plot$facet))
       }
     )
   })
