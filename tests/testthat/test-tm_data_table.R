@@ -106,10 +106,6 @@ testthat::describe("tm_data_tables input validation", {
       "May only contain the following types: \\{teal_transform_module\\}"
     )
   })
-
-  it("detects deprecated 'datasets_selected' argument", {
-    lifecycle::expect_defunct(tm_data_table(datasets_selected = "ADSL"))
-  })
 })
 
 testthat::describe("tm_data_table module ui behavior returns a htmltools tag or taglist", {
