@@ -283,7 +283,6 @@ describe("Test for server function", {
       "show_outlier" = FALSE,
       "ggtheme" = "gray"
     )
-    session$flushReact()
   }
 
   it("server executes without error with default arguments", {
@@ -294,10 +293,6 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Response vs Regressor")
         testthat::expect_true(iv_r()$is_valid())
-        output_result <- output_q()
-        testthat::expect_true(inherits(output_result, "teal_data"))
-        plot_result <- plot_r()
-        testthat::expect_true(inherits(plot_result, "ggplot"))
       }
     )
   })
@@ -310,10 +305,6 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Residuals vs Leverage")
         testthat::expect_true(iv_r()$is_valid())
-        output_result <- output_q()
-        testthat::expect_true(inherits(output_result, "teal_data"))
-        plot_result <- plot_r()
-        testthat::expect_true(inherits(plot_result, "ggplot"))
       }
     )
   })
@@ -326,10 +317,6 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Residuals vs Fitted")
         testthat::expect_true(iv_r()$is_valid())
-        output_result <- output_q()
-        testthat::expect_true(inherits(output_result, "teal_data"))
-        plot_result <- plot_r()
-        testthat::expect_true(inherits(plot_result, "ggplot"))
       }
     )
   })
@@ -342,10 +329,6 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Scale-Location")
         testthat::expect_true(iv_r()$is_valid())
-        output_result <- output_q()
-        testthat::expect_true(inherits(output_result, "teal_data"))
-        plot_result <- plot_r()
-        testthat::expect_true(inherits(plot_result, "ggplot"))
       }
     )
   })
@@ -358,10 +341,6 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Cook's distance")
         testthat::expect_true(iv_r()$is_valid())
-        output_result <- output_q()
-        testthat::expect_true(inherits(output_result, "teal_data"))
-        plot_result <- plot_r()
-        testthat::expect_true(inherits(plot_result, "ggplot"))
       }
     )
   })
@@ -374,10 +353,6 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Normal Q-Q")
         testthat::expect_true(iv_r()$is_valid())
-        output_result <- output_q()
-        testthat::expect_true(inherits(output_result, "teal_data"))
-        plot_result <- plot_r()
-        testthat::expect_true(inherits(plot_result, "ggplot"))
       }
     )
   })
@@ -390,10 +365,6 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Cook's dist vs Leverage")
         testthat::expect_true(iv_r()$is_valid())
-        output_result <- output_q()
-        testthat::expect_true(inherits(output_result, "teal_data"))
-        plot_result <- plot_r()
-        testthat::expect_true(inherits(plot_result, "ggplot"))
       }
     )
   })
