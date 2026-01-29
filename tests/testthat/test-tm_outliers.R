@@ -936,21 +936,23 @@ testthat::describe("tm_outliers edge_cases server tests", {
     )
   })
 
-  data_category <- teal_data()
-  data_category <- within(data_category, {
-    CO2 <- CO2 # nolint: [object_name_linter]
-    CO2[["primary_key"]] <- seq_len(nrow(CO2)) # nolint: [object_name_linter]
-  })
+  app_data <- teal_data("rADSL" = teal.data::rADSL)
+    join_keys(app_data) <- join_keys(join_key("rADSL", "rADSL", "USUBJID"))
 
-  join_keys(data_category) <- join_keys(join_key("CO2", "CO2", "primary_key"))
-  vars <- choices_selected(variable_choices(data_category[["CO2"]], c("Type")))
+  vars <- teal.transform::choices_selected(
+    variable_choices(app_data[["rADSL"]], subset = function(data) {
+      names(data)[sapply(data, function(x) is.factor(x) || is.character(x))]
+    }),
+    selected = "SEX"
+  )
+
   outlier_var <- list(
-    var1 = data_extract_spec(
-      dataname = "CO2",
+    data_extract_spec(
+      dataname = "rADSL",
       select = select_spec(
         label = "Select variable:",
-        choices = variable_choices(data_category[["CO2"]], c("conc", "uptake")),
-        selected = "uptake",
+        choices = variable_choices(app_data[["rADSL"]], c("BMRKR1", "BMRKR2")),
+        selected = "BMRKR1",
         multiple = FALSE,
         fixed = FALSE
       )
@@ -959,11 +961,11 @@ testthat::describe("tm_outliers edge_cases server tests", {
 
   categorical_var <- list(
     data_extract_spec(
-      dataname = "CO2",
+      dataname = "rADSL",
       filter = filter_spec(
         vars = vars,
-        choices = value_choices(data_category[["CO2"]], vars$selected),
-        selected = value_choices(data_category[["CO2"]], vars$selected),
+        choices = value_choices(app_data[["rADSL"]], vars$selected),
+        selected = value_choices(app_data[["rADSL"]], vars$selected),
         multiple = TRUE
       )
     )
@@ -975,13 +977,13 @@ testthat::describe("tm_outliers edge_cases server tests", {
     shiny::testServer(
       mod$server,
       args = c(
-        list(id = "test", data = reactive(data_category)),
+        list(id = "test", data = shiny::reactive(app_data)),
         mod$server_args
       ),
       expr = {
         session$setInputs(
-          "outlier_var-dataset_CO2_singleextract-select" = "uptake",
-          "categorical_var-dataset_CO2_singleextract-filter1-vals" = c("Quebec", "Mississippi"),
+          "outlier_var-dataset_rADSL_singleextract-select" = "BMRKR1",
+          "categorical_var-dataset_rADSL_singleextract-filter1-vals" = c("F", "M"),
           "method" = "IQR",
           "iqr_slider" = 1.5,
           "boxplot_alts" = "Box plot",
@@ -1003,29 +1005,19 @@ testthat::describe("tm_outliers edge_cases server tests", {
   })
 
   it("server handles Cumulative Distribution Plot with categorical variables and Z-score method", {
-    data <- create_outliers_test_data(data.frame(
-      var1 = c(rnorm(26), 10, -10, NA, NA),
-      cat1 = factor(rep(c("Group1", "Group2", "Group3"), length.out = 30))
-    ))
 
-    mod <- create_outliers_module(
-      data = data,
-      outlier_vars = c("var1"),
-      categorical_vars = c("cat1"),
-      outlier_selected = "var1",
-      categorical_selected = c("cat1")
-    )
+    mod <- tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var)
 
     shiny::testServer(
       mod$server,
       args = c(
-        list(id = "test", data = data),
+        list(id = "test", data = shiny::reactive(app_data)),
         mod$server_args
       ),
       expr = {
         session$setInputs(
-          "outlier_var-dataset_test_data_singleextract-select" = "var1",
-          "categorical_var-dataset_test_data_singleextract-filter1-vals" = c("Group1", "Group2", "Group3"),
+          "outlier_var-dataset_rADSL_singleextract-select" = "BMRKR1",
+          "categorical_var-dataset_rADSL_singleextract-filter1-vals" = c("F", "M"),
           "method" = "Z-score",
           "zscore_slider" = 2,
           "boxplot_alts" = "Box plot",
