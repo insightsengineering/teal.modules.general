@@ -17,7 +17,10 @@ testthat::describe("srv_rmarkdown", {
   )
 
   it("fails to render invalid contents", {
-    mod <- tm_rmarkdown(rmd_content = c("```{r}", "var_does_not_exist", "```"), extra_transform = list(), allow_download = TRUE)
+    mod <- tm_rmarkdown(
+      rmd_content = c("```{r}", "var_does_not_exist", "```"),
+      extra_transform = list(), allow_download = TRUE
+    )
     shiny::testServer(
       srv_rmarkdown,
       args = c(list(id = "test", data = data), mod$server_args),
