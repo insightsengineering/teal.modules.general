@@ -44,11 +44,11 @@ testthat::describe("tm_outliers module creation", {
   })
 
   it("module works with plot_height parameter", {
-  testthat::expect_s3_class(
-    tm_outliers(outlier_var = outlier_var, plot_height = c(800, 400, 1200)),
-    "teal_module"
-  )
-})
+    testthat::expect_s3_class(
+      tm_outliers(outlier_var = outlier_var, plot_height = c(800, 400, 1200)),
+      "teal_module"
+    )
+  })
 
   it("works with pre_output", {
     pre_output <- shiny::actionButton("pre_output", "My pre output")
@@ -944,7 +944,7 @@ testthat::describe("tm_outliers edge_cases server tests", {
   })
 
   app_data <- teal_data("rADSL" = teal.data::rADSL)
-    join_keys(app_data) <- join_keys(join_key("rADSL", "rADSL", "USUBJID"))
+  join_keys(app_data) <- join_keys(join_key("rADSL", "rADSL", "USUBJID"))
 
   vars <- teal.transform::choices_selected(
     variable_choices(app_data[["rADSL"]], subset = function(data) {
@@ -1012,7 +1012,6 @@ testthat::describe("tm_outliers edge_cases server tests", {
   })
 
   it("server handles Cumulative Distribution Plot with categorical variables and Z-score method", {
-
     mod <- tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var)
 
     shiny::testServer(
