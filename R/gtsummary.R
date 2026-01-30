@@ -48,6 +48,10 @@
 #' @inheritSection teal::example_module Reporting
 #' @export
 #' @importFrom methods is
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
 #' @examples
 #' data <- within(teal.data::teal_data(), {
 #'   ADSL <- teal.data::rADSL

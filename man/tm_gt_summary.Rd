@@ -235,3 +235,13 @@ if (interactive()) {
   shinyApp(app$ui, app$server)
 }
 }
+\section{Examples in Shinylive}{
+\describe{
+  \item{example-1}{
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQVKAL6KEABWRCpxANZwrKLsibZGuvxwJlDCpHEE-LSiBHFNLe2dwNDwXT0AukpoqEUqAezp-WW6ALwHXrj7fEIiose6l8JiexAZGaQwcRKjooIwMCwc+xeunorFuJVIzAgohMREYMGiiTicAAHhD1F9UHACE8gUDEks9CcFGAqvliednriMqI4CINGCwjw0VCYXDojS6RisTiqS8CIFmgQxLdscTcs4ABrk3TEgDCAHlHAA5BwATWlYoAknZnJrshqSbK7JksABZYlyCm8l4crHkfi3MWS8mA3kwEa0VAiW4AMUy+XFrqB9SplqDuhUBGoggGDPCzOhsPhiERKLRGjiokxospVPxsEJMpJeTJeHD1NpdrjTMhibZiFtGaz3PLfIFtCFNxOorAuW1uv1eCLCuVaoNmSNJvNYDDud5jftjt7-b1LrnVPd1E0XsLDhcVutployLgDpOfoDrnXLxDuNvGVv9XqtBMunYKnIzEsOhstjSlNEYIIFYTJ0HYTYABJBFoFJIJpRgdEYeoajAGpViAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQVKAL6KEABWRCpxANZwrKLsibZGuvxwJlDCpHEE-LSiBHFNLe2dwNDwXT0AukpoqEUqAezp-WW6ALwHXrj7fEIiose6l8JiexAZGaQwcRKjooIwMCwc+xeunorFuJVIzAgohMREYMGiiTicAAHhD1F9UHACE8gUDEks9CcFGAqvliednriMqI4CINGCwjw0VCYXDojS6RisTiqS8CIFmgQxLdscTcs4ABrk3TEgDCAHlHAA5BwATWlYoAknZnJrshqSbK7JksABZYlyCm8l4crHkfi3MWS8mA3kwEa0VAiW4AMUy+XFrqB9SplqDuhUBGoggGDPCzOhsPhiERKLRGjiokxospVPxsEJMpJeTJeHD1NpdrjTMhibZiFtGaz3PLfIFtCFNxOorAuW1uv1eCLCuVaoNmSNJvNYDDud5jftjt7-b1LrnVPd1E0XsLDhcVutployLgDpOfoDrnXLxDuNvGVv9XqtBMunYKnIzEsOhstjSlNEYIIFYTJ0HYTYABJBFoFJIJpRgdEYeoajAGpViAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
+  }
+}
+}
+
