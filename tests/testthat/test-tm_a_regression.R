@@ -293,7 +293,7 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Response vs Regressor")
         testthat::expect_true(iv_r()$is_valid())
-         if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
+        if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
           testthat::expect_true(inherits(output_result, "teal_data"))
           plot_result <- plot_r()
