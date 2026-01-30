@@ -248,7 +248,6 @@ describe("Test for invalidation of arguments", {
 describe("Test for server function", {
   data <- teal_data()
   data <- within(data, {
-    require(nestcolor)
     CO2 <- CO2 # nolint: object_name_linter.
   })
 
