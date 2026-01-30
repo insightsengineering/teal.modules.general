@@ -85,24 +85,28 @@
 #'   shinyApp(app$ui, app$server)
 #' }
 tm_gt_summary <- function(
-    label = "Table summary",
-    by,
-    ...,
-    col_label = NULL,
-    include,
-    transformators = list(),
-    decorators = list()
+  label = "Table summary",
+  by,
+  ...,
+  col_label = NULL,
+  include,
+  transformators = list(),
+  decorators = list()
 ) {
   message("Initializing tm_gt_summary")
   checkmate::assert_string(label)
   if (inherits(by, "data_extract_spec")) {
-    checkmate::assert_list(list(by), types = "data_extract_spec", null.ok = TRUE,
-                           any.missing = FALSE, all.missing = FALSE)
+    checkmate::assert_list(list(by),
+      types = "data_extract_spec", null.ok = TRUE,
+      any.missing = FALSE, all.missing = FALSE
+    )
     assert_single_selection(list(by))
   }
   if (inherits(include, "data_extract_spec")) {
-    checkmate::assert_list(list(include), types = "data_extract_spec",
-                           any.missing = FALSE, all.missing = FALSE)
+    checkmate::assert_list(list(include),
+      types = "data_extract_spec",
+      any.missing = FALSE, all.missing = FALSE
+    )
   }
   assert_decorators(decorators, "table")
 
@@ -136,12 +140,12 @@ ui_gt_summary <- function(id, ...) {
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("by", "include")]),
       teal.transform::data_extract_ui(ns("by"),
-                                      label = "Variable(s) to stratify with",
-                                      data_extract_spec = args$by
+        label = "Variable(s) to stratify with",
+        data_extract_spec = args$by
       ),
       teal.transform::data_extract_ui(ns("include"),
-                                      label = "Variable(s) to include",
-                                      data_extract_spec = args$include
+        label = "Variable(s) to include",
+        data_extract_spec = args$include
       ),
       radioButtons(
         ns("nonmissing"),
@@ -189,7 +193,8 @@ srv_gt_summary <- function(id,
 
     selector_list <- teal.transform::data_extract_multiple_srv(
       data_extract = list(by = by, include = include),
-      datasets = data)
+      datasets = data
+    )
 
     qenv <- reactive({
       obj <- req(data())
@@ -204,8 +209,10 @@ srv_gt_summary <- function(id,
     summary_args <- reactive({
       # table
       if (!is.null(by) || !is.null(include)) {
-        validate(need(teal.transform::is_single_dataset(list(by = by, include = include)),
-                      "Variables should come from the same dataset."))
+        validate(need(
+          teal.transform::is_single_dataset(list(by = by, include = include)),
+          "Variables should come from the same dataset."
+        ))
       }
 
       dataset <- if (!is.null(by)) {
@@ -215,10 +222,14 @@ srv_gt_summary <- function(id,
       }
 
       validate(
-        need(!is.null(dataset),
-             "Specify variables to stratify or to include on the summary table."),
-        need(teal.transform::is_single_dataset(by, include),
-             "Input from multiple tables: this module doesn't accept that.")
+        need(
+          !is.null(dataset),
+          "Specify variables to stratify or to include on the summary table."
+        ),
+        need(
+          teal.transform::is_single_dataset(by, include),
+          "Input from multiple tables: this module doesn't accept that."
+        )
       )
 
       # by: input + all variables (default on gtsummary)
@@ -227,8 +238,10 @@ srv_gt_summary <- function(id,
       include_variables <- sl$include()$select
       if (length(include_variables) != 0L) {
         validate(
-          need(by_variable != include_variables,
-               "Variables to stratify with and variables to include should be different"),
+          need(
+            by_variable != include_variables,
+            "Variables to stratify with and variables to include should be different"
+          ),
         )
       }
 
@@ -238,14 +251,17 @@ srv_gt_summary <- function(id,
         tbl_summary_args$include <- include_variables
       }
       tbl_summary_args <- c(tbl_summary_args,
-                            nonmissing = input$nonmissing,
-                            percent = input$percent
+        nonmissing = input$nonmissing,
+        percent = input$percent
       )
       as.call(
-        c(list(
-          quote(crane::tbl_roche_summary),
-          data = as.name(dataset)),
-          tbl_summary_args)
+        c(
+          list(
+            quote(crane::tbl_roche_summary),
+            data = as.name(dataset)
+          ),
+          tbl_summary_args
+        )
       )
     })
 
@@ -253,10 +269,10 @@ srv_gt_summary <- function(id,
       q <- req(qenv())
       table_call <- req(summary_args())
       qq <- within(q,
-                   expr = {
-                     table <- table_crane
-                   },
-                   table_crane = table_call
+        expr = {
+          table <- table_crane
+        },
+        table_crane = table_call
       )
       qq
     })
