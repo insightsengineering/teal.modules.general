@@ -1,8 +1,7 @@
 describe("tests for module creation", {
   data <- teal_data()
   data <- within(data, {
-    require(nestcolor)
-    CO2 <- CO2 # nolint: object_name_linter
+    CO2 <- CO2 # nolint: object_name_linter.
   })
 
   response <- data_extract_spec(
@@ -177,8 +176,7 @@ describe("tests for module creation", {
 describe("Test for invalidation of arguments", {
   data <- teal_data()
   data <- within(data, {
-    require(nestcolor)
-    CO2 <- CO2 # nolint: object_name_linter
+    CO2 <- CO2 # nolint: object_name_linter.
   })
 
   response <- data_extract_spec(
@@ -251,7 +249,7 @@ describe("Test for server function", {
   data <- teal_data()
   data <- within(data, {
     require(nestcolor)
-    CO2 <- CO2 # nolint: object_name_linter
+    CO2 <- CO2 # nolint: object_name_linter.
   })
 
   response <- data_extract_spec(
@@ -295,7 +293,7 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Response vs Regressor")
         testthat::expect_true(iv_r()$is_valid())
-        if (isFALSE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
+         if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
           testthat::expect_true(inherits(output_result, "teal_data"))
           plot_result <- plot_r()
@@ -313,7 +311,7 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Residuals vs Leverage")
         testthat::expect_true(iv_r()$is_valid())
-        if (isFALSE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
+        if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
           testthat::expect_true(inherits(output_result, "teal_data"))
           plot_result <- plot_r()
@@ -331,7 +329,7 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Residuals vs Fitted")
         testthat::expect_true(iv_r()$is_valid())
-        if (isFALSE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
+        if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
           testthat::expect_true(inherits(output_result, "teal_data"))
           plot_result <- plot_r()
@@ -349,7 +347,7 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Scale-Location")
         testthat::expect_true(iv_r()$is_valid())
-        if (isFALSE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
+        if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
           testthat::expect_true(inherits(output_result, "teal_data"))
           plot_result <- plot_r()
@@ -367,7 +365,7 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Cook's distance")
         testthat::expect_true(iv_r()$is_valid())
-        if (isFALSE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
+        if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
           testthat::expect_true(inherits(output_result, "teal_data"))
           plot_result <- plot_r()
@@ -385,7 +383,7 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Normal Q-Q")
         testthat::expect_true(iv_r()$is_valid())
-        if (isFALSE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
+        if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
           testthat::expect_true(inherits(output_result, "teal_data"))
           plot_result <- plot_r()
@@ -403,7 +401,7 @@ describe("Test for server function", {
       expr = {
         set_default_args(session, "Cook's dist vs Leverage")
         testthat::expect_true(iv_r()$is_valid())
-        if (isFALSE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
+        if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
           testthat::expect_true(inherits(output_result, "teal_data"))
           plot_result <- plot_r()
@@ -416,7 +414,7 @@ describe("Test for server function", {
   it("server has an error if data is not reactive", {
     mod <- tm_a_regression(response = response, regressor = regressor)
     non_reactive_data <- within(teal_data(), {
-      CO2 <- CO2 # nolint: object_name_linter
+      CO2 <- CO2 # nolint: object_name_linter.
     })
     testthat::expect_error(
       shiny::testServer(
