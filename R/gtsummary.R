@@ -87,9 +87,9 @@
 tm_gt_summary <- function(
   label = "Table summary",
   by,
+  include,
   ...,
   col_label = NULL,
-  include,
   pre_output = NULL,
   post_output = NULL,
   transformators = list(),
@@ -99,7 +99,7 @@ tm_gt_summary <- function(
   checkmate::assert_string(label)
   if (inherits(by, "data_extract_spec")) {
     checkmate::assert_list(list(by),
-      types = "data_extract_spec", null.ok = TRUE,
+      types = "data_extract_spec",
       any.missing = FALSE, all.missing = FALSE
     )
     assert_single_selection(list(by))
@@ -195,8 +195,9 @@ srv_gt_summary <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
+    de <- list(by = by, include = include)
     selector_list <- teal.transform::data_extract_multiple_srv(
-      data_extract = list(by = by, include = include),
+      data_extract = de,
       datasets = data
     )
 
@@ -214,7 +215,7 @@ srv_gt_summary <- function(id,
       # table
       if (!is.null(by) || !is.null(include)) {
         validate(need(
-          teal.transform::is_single_dataset(list(by = by, include = include)),
+          teal.transform::is_single_dataset(de),
           "Variables should come from the same dataset."
         ))
       }
@@ -231,7 +232,7 @@ srv_gt_summary <- function(id,
           "Specify variables to stratify or to include on the summary table."
         ),
         need(
-          teal.transform::is_single_dataset(by, include),
+          teal.transform::is_single_dataset(de),
           "Input from multiple tables: this module doesn't accept that."
         )
       )

@@ -7,9 +7,9 @@
 tm_gt_summary(
   label = "Table summary",
   by,
+  include,
   ...,
   col_label = NULL,
-  include,
   pre_output = NULL,
   post_output = NULL,
   transformators = list(),
@@ -24,6 +24,11 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 Object with all available choices with pre-selected option for how to split the rows
 
 \code{data_extract_spec} must not allow multiple selection.}
+
+\item{include}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+Object with all available choices with pre-selected option for which columns to include as rows.
+
+\code{data_extract_spec} can allow multiple selection in this case.}
 
 \item{...}{
   Arguments passed on to \code{\link[crane:tbl_roche_summary]{crane::tbl_roche_summary}}
@@ -61,11 +66,6 @@ Default is \code{all_categorical(FALSE) ~ "alphanumeric"}.}
 \item{col_label}{Used to override default labels in summary table, e.g. \code{list(age = "Age, years")}.
 The default for each variable is the column label attribute, \code{attr(., 'label')}.
 If no label has been set, the column name is used.}
-
-\item{include}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Object with all available choices with pre-selected option for which columns to include as rows.
-
-\code{data_extract_spec} can allow multiple selection in this case.}
 
 \item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
 providing context or a title.
