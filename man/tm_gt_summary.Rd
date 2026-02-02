@@ -10,6 +10,8 @@ tm_gt_summary(
   ...,
   col_label = NULL,
   include,
+  pre_output = NULL,
+  post_output = NULL,
   transformators = list(),
   decorators = list()
 )
@@ -64,6 +66,13 @@ If no label has been set, the column name is used.}
 Object with all available choices with pre-selected option for which columns to include as rows.
 
 \code{data_extract_spec} can allow multiple selection in this case.}
+
+\item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
+providing context or a title.
+with text placed before the output to put the output into context. For example a title.}
+
+\item{post_output}{(\code{shiny.tag}) optional, text or UI element to be displayed after the module's output,
+adding context or further instructions. Elements like \code{shiny::helpText()} are useful.}
 
 \item{transformators}{(\code{list} of \code{teal_transform_module}) that will be applied to transform module's data input.
 To learn more check \code{vignette("transform-input-data", package = "teal")}.}
