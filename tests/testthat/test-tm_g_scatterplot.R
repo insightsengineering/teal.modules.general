@@ -648,7 +648,8 @@ testthat::describe("tm_g_scatterplot module server behavior", {
           "free_scales" = FALSE,
           "pos" = 0.99,
           "label_size" = 5,
-          "data_table_rows" = 10
+          "data_table_rows" = 10,
+          color = "#000000"
         )
         testthat::expect_true(iv_r()$is_valid())
         output_result <- output_q()
@@ -698,7 +699,8 @@ testthat::describe("tm_g_scatterplot module server behavior", {
           "free_scales" = FALSE,
           "pos" = 0.99,
           "label_size" = 5,
-          "data_table_rows" = 10
+          "data_table_rows" = 10,
+          color = "#000000"
         )
         testthat::expect_true(iv_r()$is_valid())
         output_result <- output_q()
@@ -782,7 +784,8 @@ testthat::describe("tm_g_scatterplot module server behavior", {
           "free_scales" = FALSE,
           "pos" = 0.99,
           "label_size" = 5,
-          "data_table_rows" = 10
+          "data_table_rows" = 10,
+          color = "#000000"
         )
         testthat::expect_true(iv_r()$is_valid())
         output_result <- output_q()
@@ -866,7 +869,8 @@ testthat::describe("tm_g_scatterplot module server behavior", {
           "free_scales" = FALSE,
           "pos" = 0.99,
           "label_size" = 5,
-          "data_table_rows" = 10
+          "data_table_rows" = 10,
+          color = "#000000"
         )
         testthat::expect_true(iv_r()$is_valid())
         output_result <- output_q()
@@ -875,58 +879,6 @@ testthat::describe("tm_g_scatterplot module server behavior", {
         testthat::expect_true(inherits(plot_result, "ggplot"))
       }
     )
-  })
-
-  it("server function handles facetting options", {
-    data <- create_test_data(data.frame(
-      x_var = 1:30,
-      y_var = 1:30 + rnorm(30),
-      facet_var = factor(rep(c("A", "B"), 15))
-    ))
-
-    mod <- tm_g_scatterplot(
-      x = list(
-        teal.transform::data_extract_spec(
-          dataname = "test_data",
-          select = teal.transform::select_spec(
-            choices = teal.transform::variable_choices(
-              data = isolate(data())[["test_data"]],
-              c("x_var", "y_var", "facet_var")
-            ),
-            selected = "x_var",
-            multiple = FALSE
-          )
-        )
-      ),
-      y = list(
-        teal.transform::data_extract_spec(
-          dataname = "test_data",
-          select = teal.transform::select_spec(
-            choices = teal.transform::variable_choices(
-              data = isolate(data())[["test_data"]],
-              c("x_var", "y_var", "facet_var")
-            ),
-            selected = "y_var",
-            multiple = FALSE
-          )
-        )
-      ),
-      row_facet = list(
-        teal.transform::data_extract_spec(
-          dataname = "test_data",
-          select = teal.transform::select_spec(
-            choices = teal.transform::variable_choices(
-              data = isolate(data())[["test_data"]],
-              c("x_var", "y_var", "facet_var")
-            ),
-            selected = "facet_var",
-            multiple = FALSE
-          )
-        )
-      )
-    )
-
-    # )
   })
 
   it("server function handles rotate_xaxis_labels option", {
@@ -966,7 +918,8 @@ testthat::describe("tm_g_scatterplot module server behavior", {
           "free_scales" = FALSE,
           "pos" = 0.99,
           "label_size" = 5,
-          "data_table_rows" = 10
+          "data_table_rows" = 10,
+          color = "#000000"
         )
         testthat::expect_true(iv_r()$is_valid())
         output_result <- output_q()
@@ -1018,7 +971,8 @@ testthat::describe("tm_g_scatterplot module server behavior", {
           "free_scales" = FALSE,
           "pos" = 0.99,
           "label_size" = 5,
-          "data_table_rows" = 10
+          "data_table_rows" = 10,
+          color = "#000000"
         )
         testthat::expect_true(iv_r()$is_valid())
         output_result <- output_q()
@@ -1062,7 +1016,8 @@ testthat::describe("tm_g_scatterplot module server behavior", {
             "add_density" = FALSE,
             "rug_plot" = FALSE,
             "show_count" = FALSE,
-            "free_scales" = FALSE
+            "free_scales" = FALSE,
+            "color" = "#000000"
           )
           testthat::expect_true(iv_r()$is_valid())
           output_result <- output_q()
