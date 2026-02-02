@@ -90,6 +90,8 @@ tm_gt_summary <- function(
   ...,
   col_label = NULL,
   include,
+  pre_output = NULL,
+  post_output = NULL,
   transformators = list(),
   decorators = list()
 ) {
@@ -108,6 +110,8 @@ tm_gt_summary <- function(
       any.missing = FALSE, all.missing = FALSE
     )
   }
+  checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
+  checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   assert_decorators(decorators, "table")
 
   # Make UI args
