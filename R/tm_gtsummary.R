@@ -96,29 +96,21 @@ tm_gtsummary <- function(
   decorators = list()
 ) {
   message("Initializing tm_gtsummary")
-  checkmate::assert_string(label)
-
 
   # Normalize the parameters
   if (inherits(by, "data_extract_spec")) by <- list(by)
   if (inherits(include, "data_extract_spec")) include <- list(include)
 
-  if (inherits(by, "data_extract_spec")) {
-    checkmate::assert_list(by,
-      types = "data_extract_spec",
-      any.missing = FALSE, all.missing = FALSE
-    )
-    assert_single_selection(by)
-  }
-  if (inherits(include, "data_extract_spec")) {
-    checkmate::assert_list(include,
-      types = "data_extract_spec",
-      any.missing = FALSE, all.missing = FALSE
-    )
-  }
+  checkmate::assert_string(label)
+  checkmate::assert_string(col_label, null.ok = TRUE)
+  checkmate::assert_list(by, types = "data_extract_spec")
+  assert_single_selection(by)
+  checkmate::assert_list(include, types = "data_extract_spec")
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   assert_decorators(decorators, "table")
+  datanames <- teal.transform::get_extract_datanames(list(by = by, include = include))
+  checkmate::assert_character(datanames, len = 1L, any.missing = FALSE, all.missing = FALSE)
 
   # Make UI args
   ui_args <- as.list(environment())
@@ -134,7 +126,7 @@ tm_gtsummary <- function(
     ui_args = ui_args,
     server_args = srv_args,
     transformators = transformators,
-    datanames = teal.transform::get_extract_datanames(list(by = by, include = include))
+    datanames = datanames
   )
   attr(module, "teal_bookmarkable") <- TRUE
   module

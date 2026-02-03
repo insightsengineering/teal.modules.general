@@ -83,7 +83,7 @@ testthat::describe("tm_gtsummary input validation", {
         by = "not a spec",
         include = mock_data_extract_spec(select_multiple = FALSE)
       ),
-      "is not TRUE"
+      "Assertion on 'by' failed"
     )
   })
 
@@ -103,7 +103,7 @@ testthat::describe("tm_gtsummary input validation", {
         by = mock_data_extract_spec(select_multiple = FALSE),
         include = "not a spec"
       ),
-      "is not TRUE"
+      "Assertion on 'include' failed"
     )
   })
 
@@ -113,6 +113,57 @@ testthat::describe("tm_gtsummary input validation", {
         by = mock_data_extract_spec(select_multiple = FALSE),
         include = mock_data_extract_spec(select_multiple = TRUE)
       )
+    )
+  })
+
+  it("fails when col_label is not character", {
+    testthat::expect_error(
+      tm_gtsummary(
+        by = mock_data_extract_spec(select_multiple = FALSE),
+        include = mock_data_extract_spec(select_multiple = TRUE),
+        col_label = 1213
+      ),
+      "Assertion on 'col_label' failed"
+    )
+  })
+
+
+  it("fails when decorators has invalid object types", {
+    testthat::expect_error(
+      tm_gtsummary(
+        by = mock_data_extract_spec(select_multiple = FALSE),
+        include = mock_data_extract_spec(select_multiple = TRUE),
+        decorators = list(
+          table = "not a teal_transform_module"
+        )
+      ),
+      "Assertion on 'decorators' failed|Make sure that the named list contains"
+    )
+  })
+
+  it("fails when decorators is to a different object", {
+    testthat::expect_error(
+      tm_gtsummary(
+        by = mock_data_extract_spec(select_multiple = FALSE),
+        include = mock_data_extract_spec(select_multiple = TRUE),
+        decorators = list(
+          plot = teal::teal_transform_module()
+        )
+      ),
+      "Assertion on 'decorators' failed|Make sure that the named list contains"
+    )
+  })
+
+  it("accepts valid decorators", {
+    testthat::expect_s3_class(
+      tm_gtsummary(
+        by = mock_data_extract_spec(select_multiple = FALSE),
+        include = mock_data_extract_spec(select_multiple = TRUE),
+        decorators = list(
+          table = teal::teal_transform_module()
+        )
+      ),
+      "teal_module"
     )
   })
 })
