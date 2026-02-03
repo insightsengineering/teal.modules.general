@@ -30,9 +30,12 @@ create_test_data <- function(test_data_df) {
   # Use force to ensure the parameter is evaluated
   force(test_data_df)
   shiny::reactive(
-    within(teal.data::teal_data(), {
-      require(nestcolor)
-      test_data <- df
-    }, df = test_data_df)
+    within(teal.data::teal_data(),
+      {
+        require(nestcolor)
+        test_data <- df
+      },
+      df = test_data_df
+    )
   )
 }

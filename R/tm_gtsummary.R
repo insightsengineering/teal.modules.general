@@ -211,7 +211,6 @@ srv_gt_summary <- function(id,
     })
 
     summary_args <- reactive({
-
       sl <- req(selector_list())
       dataset <- sl$by()$dataname
 
