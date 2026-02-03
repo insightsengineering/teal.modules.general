@@ -32,7 +32,7 @@
 #' See code snippet below:
 #'
 #' ```
-#' tm_gt_summary(
+#' tm_gtsummary(
 #'    ..., # arguments for module
 #'    decorators = list(
 #'      table = teal_transform_module(...) # applied to the `table` output
@@ -60,7 +60,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_gt_summary(
+#'     tm_gtsummary(
 #'       by = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(
@@ -84,7 +84,7 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-tm_gt_summary <- function(
+tm_gtsummary <- function(
   label = "Table summary",
   by,
   include,
@@ -95,7 +95,7 @@ tm_gt_summary <- function(
   transformators = list(),
   decorators = list()
 ) {
-  message("Initializing tm_gt_summary")
+  message("Initializing tm_gtsummary")
   checkmate::assert_string(label)
   if (inherits(by, "data_extract_spec")) {
     checkmate::assert_list(list(by),
