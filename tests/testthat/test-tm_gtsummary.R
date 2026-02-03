@@ -15,11 +15,11 @@ testthat::describe("tm_gtsummary module creation", {
       tm_gtsummary(
         by = list(
           mock_data_extract_spec(dataname = "A", select_multiple = FALSE),
-          mock_data_extract_spec(dataname = "B", select_multiple = FALSE)
+          mock_data_extract_spec(dataname = "A", select_multiple = FALSE)
         ),
         include = list(
           mock_data_extract_spec(dataname = "A", select_multiple = FALSE),
-          mock_data_extract_spec(dataname = "B", select_multiple = FALSE)
+          mock_data_extract_spec(dataname = "A", select_multiple = FALSE)
         )
       ),
       "teal_module"
@@ -29,19 +29,16 @@ testthat::describe("tm_gtsummary module creation", {
   it("creates a module with datanames taken from data extracts", {
     mod <- tm_gtsummary(
       by = list(
-        mock_data_extract_spec(dataname = "B", select_multiple = FALSE),
+        mock_data_extract_spec(dataname = "A", select_multiple = FALSE),
         mock_data_extract_spec(dataname = "A", select_multiple = FALSE)
       ),
       include = list(
         mock_data_extract_spec(dataname = "A", select_multiple = FALSE),
-        mock_data_extract_spec(dataname = "B", select_multiple = FALSE)
+        mock_data_extract_spec(dataname = "A", select_multiple = FALSE)
       )
     )
 
-    testthat::expect_setequal(
-      mod$datanames,
-      c("A", "B")
-    )
+    testthat::expect_setequal(mod$datanames, "A")
   })
 
   it("creates a module that is bookmarkable", {
@@ -94,6 +91,22 @@ testthat::describe("tm_gtsummary input validation", {
         include = mock_data_extract_spec(select_multiple = TRUE)
       ),
       "'by' should not allow multiple selection"
+    )
+  })
+
+  it("creates a teal_module object with list of data extract specs", {
+    testthat::expect_error(
+      tm_gtsummary(
+        by = list(
+          mock_data_extract_spec(dataname = "A", select_multiple = FALSE),
+          mock_data_extract_spec(dataname = "B", select_multiple = FALSE)
+        ),
+        include = list(
+          mock_data_extract_spec(dataname = "A", select_multiple = FALSE),
+          mock_data_extract_spec(dataname = "B", select_multiple = FALSE)
+        )
+      ),
+      "Must have length 1, but has length 2"
     )
   })
 
@@ -150,7 +163,7 @@ testthat::describe("tm_gtsummary input validation", {
           plot = teal::teal_transform_module()
         )
       ),
-      "Assertion on 'decorators' failed|Make sure that the named list contains"
+      "must be a named list from these names: table"
     )
   })
 
