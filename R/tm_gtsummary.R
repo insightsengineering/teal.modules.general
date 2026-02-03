@@ -211,19 +211,9 @@ srv_gt_summary <- function(id,
     })
 
     summary_args <- reactive({
-      # table
-      if (!is.null(by) || !is.null(include)) {
-        validate(need(
-          teal.transform::is_single_dataset(de),
-          "Variables should come from the same dataset."
-        ))
-      }
 
-      dataset <- if (!is.null(by)) {
-        by$dataname
-      } else {
-        include$dataname
-      }
+      sl <- req(selector_list())
+      dataset <- sl$by()$dataname
 
       validate(
         need(
@@ -237,7 +227,6 @@ srv_gt_summary <- function(id,
       )
 
       # by: input + all variables (default on gtsummary)
-      sl <- req(selector_list())
       by_variable <- req(sl$by()$select)
       include_variables <- sl$include()$select
       if (length(include_variables) != 0L) {
