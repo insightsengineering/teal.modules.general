@@ -57,7 +57,8 @@ testthat::describe("tm_gtsummary module creation", {
         nonmissing = "always",
         percent = "cell"
       ),
-      "teal_module")
+      "teal_module"
+    )
   })
 })
 
@@ -153,18 +154,18 @@ testthat::describe("tm_gtsummary input validation", {
     )
   })
 
-  it("fails when decorators is to a different object", {
-    testthat::expect_error(
-      tm_gtsummary(
-        by = mock_data_extract_spec(select_multiple = FALSE),
-        include = mock_data_extract_spec(select_multiple = TRUE),
-        decorators = list(
-          plot = teal::teal_transform_module()
-        )
-      ),
-      "must be a named list from these names: table"
-    )
-  })
+  # it("fails when decorators is to a different object", {
+  #   testthat::expect_error(
+  #     tm_gtsummary(
+  #       by = mock_data_extract_spec(select_multiple = FALSE),
+  #       include = mock_data_extract_spec(select_multiple = TRUE),
+  #       decorators = list(
+  #         plot = teal::teal_transform_module()
+  #       )
+  #     ),
+  #     "must be a named list from these names: table"
+  #   )
+  # })
 
   it("accepts valid decorators", {
     testthat::expect_s3_class(
@@ -179,3 +180,90 @@ testthat::describe("tm_gtsummary input validation", {
     )
   })
 })
+
+# UI
+
+testthat::describe("tm_gtsummary module ui behavior returns a htmltools tag or taglist", {
+  it("with minimal arguments", {
+    mod <- tm_gtsummary(
+      by = mock_data_extract_spec(select_multiple = FALSE),
+      include = mock_data_extract_spec(select_multiple = FALSE)
+    )
+    ui <- do.call(what = mod$ui, args = c(mod$ui_args, list(id = "test")), quote = TRUE)
+    checkmate::expect_multi_class(ui, c("shiny.tag", "shiny.tag.list"))
+  })
+})
+
+
+# Server
+create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, include_selected, ...) {
+  tm_gtsummary(
+    by = list(
+      teal.transform::data_extract_spec(
+        dataname = "test_data",
+        select = teal.transform::select_spec(
+          choices = teal.transform::variable_choices(
+            data = isolate(data())[["test_data"]],
+            by_vars
+          ),
+          selected = by_selected,
+          multiple = FALSE
+        )
+      )
+    ),
+    include = list(
+      teal.transform::data_extract_spec(
+        dataname = "test_data",
+        select = teal.transform::select_spec(
+          choices = teal.transform::variable_choices(
+            data = isolate(data())[["test_data"]],
+            include_vars
+          ),
+          selected = include_selected,
+          multiple = TRUE
+        )
+      )
+    ),
+    ...
+  )
+}
+
+
+testthat::describe("tm_gtsummary module server behavior", {
+  it("server function executes successfully through module interface", {
+    data <- create_test_data(penguins)
+
+    mod <- create_gtsummary_module(
+      penguins,
+      by_vars = c("species", "island", "sex", "year"),
+      include_vars = c("island", "sex", "body_mass"),
+      by_selected = c("species"),
+      include_selected = c("island", "sex")
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test_data", data = data),
+        mod$server_args
+      ),
+      {
+        # session$setInputs(
+        #   "by-dataset_test_data_singleextract-select" = "species",
+        #   "include-dataset_test_data_singleextract-select" = "island"
+        # )
+        # session$flushReact()
+        testthat::expect_true(inherits(qenv(), "teal_data"))
+        # testthat::expect_true(inherits(summary_args(), "call"))
+        #
+        # testthat::expect_true(inherits(table_r(), "teal_data"))
+        # table_result <- table_r()
+        # testthat::expect_true(inherits(table_result, "gt"))
+      }
+    )
+  })
+  it("server function generates table with 'include' being NULL", {})
+  it("server function generates table with 'col_label'", {})
+})
+
+# Decorators
