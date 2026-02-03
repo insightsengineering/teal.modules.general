@@ -97,15 +97,21 @@ tm_gtsummary <- function(
 ) {
   message("Initializing tm_gtsummary")
   checkmate::assert_string(label)
+
+
+  # Normalize the parameters
+  if (inherits(by, "data_extract_spec")) by <- list(by)
+  if (inherits(include, "data_extract_spec")) include <- list(include)
+
   if (inherits(by, "data_extract_spec")) {
-    checkmate::assert_list(list(by),
+    checkmate::assert_list(by,
       types = "data_extract_spec",
       any.missing = FALSE, all.missing = FALSE
     )
-    assert_single_selection(list(by))
+    assert_single_selection(by)
   }
   if (inherits(include, "data_extract_spec")) {
-    checkmate::assert_list(list(include),
+    checkmate::assert_list(include,
       types = "data_extract_spec",
       any.missing = FALSE, all.missing = FALSE
     )
@@ -127,7 +133,8 @@ tm_gtsummary <- function(
     ui = ui_gt_summary,
     ui_args = ui_args,
     server_args = srv_args,
-    transformators = transformators
+    transformators = transformators,
+    datanames = teal.transform::get_extract_datanames(list(by = by, include = include))
   )
   attr(module, "teal_bookmarkable") <- TRUE
   module
