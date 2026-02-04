@@ -66,7 +66,7 @@ Imports:
     teal.data (>= 0.8.0),
     teal.logger (>= 0.4.0),
     teal.reporter (>= 0.6.0.9001),
-    teal.widgets (>= 0.5.0),
+    teal.widgets (>= 0.5.1.9006),
     tern (>= 0.9.7),
     tibble (>= 2.0.0),
     tidyr (>= 0.8.3),
@@ -89,6 +89,7 @@ VignetteBuilder:
 Remotes:
     insightsengineering/teal,
     insightsengineering/teal.reporter
+    insightsengineering/teal.widgets
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,

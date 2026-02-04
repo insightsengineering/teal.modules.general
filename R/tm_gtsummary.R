@@ -139,7 +139,7 @@ ui_gt_summary <- function(id, ...) {
   args <- list(...)
 
   teal.widgets::standard_layout(
-    output = gt::gt_output(ns("table")),
+    output = teal.widgets::table_with_settings_ui(ns("table")),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
       teal.transform::datanames_input(args[c("by", "include")]),
@@ -304,9 +304,10 @@ srv_gt_summary <- function(id,
       gtsummary::as_gt(out[["table"]])
     })
 
-    output$table <- gt::render_gt({
-      table_r()
-    })
+    teal.widgets::table_with_settings_srv(
+      id = "table",
+      table_r = table_r
+    )
     print_output_decorated
   })
 }
