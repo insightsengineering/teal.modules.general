@@ -287,8 +287,7 @@ srv_gt_summary <- function(id,
     })
 
     table_r <- reactive({
-      out <- req(output_data_decorated())
-      gtsummary::as_gt(out[["table"]])
+      req(output_data_decorated())[["table"]]
     })
 
     teal.widgets::table_with_settings_srv(
