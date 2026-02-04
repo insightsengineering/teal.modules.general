@@ -220,7 +220,7 @@ srv_gt_summary <- function(id,
           "Specify variables to stratify or to include on the summary table."
         ),
         need(
-          teal.transform::is_single_dataset(de),
+          do.call(teal.transform::is_single_dataset, de),
           "Input from multiple tables: this module doesn't accept that."
         )
       )
