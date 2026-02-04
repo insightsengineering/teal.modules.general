@@ -31,6 +31,8 @@
 #' This module generates the following objects, which can be modified in place using decorators::
 #' - `histogram_plot` (`ggplot`)
 #' - `qq_plot` (`ggplot`)
+#' - `summary_table` (`datatables`)
+#' - `test_table` (`datatables`)
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -42,6 +44,9 @@
 #'    decorators = list(
 #'      histogram_plot = teal_transform_module(...), # applied only to `histogram_plot` output
 #'      qq_plot = teal_transform_module(...) # applied only to `qq_plot` output
+#'      summary_table = teal_transform_module(...) # applied only to `summary_table` output
+#'      test_table = teal_transform_module(...) # applied only to `test_table` output
+#'
 #'    )
 #' )
 #' ```
@@ -194,7 +199,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  assert_decorators(decorators, names = c("histogram_plot", "qq_plot"))
+  assert_decorators(decorators, names = c("histogram_plot", "qq_plot", "summary_table", "test_table"))
 
   # End of assertions
 
