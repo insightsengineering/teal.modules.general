@@ -1,17 +1,17 @@
-#' `teal` module: Summary table
+#' `teal` module: GT Summary table
 #'
-#' Generates a table summary from a dataset using gtsummary.
+#' Summary table from a given dataset, using `gtsummary`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param by (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Object with all available choices with pre-selected option for how to split the rows
+#' An object with all available choices and with a pre-selected option on how to split rows.
 #'
-#' `data_extract_spec` must not allow multiple selection.
+#' `data_extract_spec` multiple selection: not allowed
 #' @param include  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' Object with all available choices with pre-selected option for which columns to include as rows.
+#' An object with all available choices and with a pre-selected option that picks columns to include as rows.
 #'
-#' `data_extract_spec` can allow multiple selection in this case.
+#' `data_extract_spec` multiple selection: allowed
 #' @param col_label Used to override default labels in summary table, e.g. `list(age = "Age, years")`.
 #' The default for each variable is the column label attribute, `attr(., 'label')`.
 #' If no label has been set, the column name is used.
