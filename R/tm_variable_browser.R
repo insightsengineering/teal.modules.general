@@ -834,8 +834,8 @@ plot_var_summary <- function(qenv,
     ggplot2_args,
     module_plot = dev_ggplot2_args
   )
-
-  if (is.ggplot(qenv_plot$plot)) {
+  is_gg <- if (packageVersion("ggplot2") > "3.5.2") is_ggplot(qenv_plot$plot) else {is.ggplot(qenv_plot$plot)}
+  if (is_gg) {
     qenv_plot <- within(qenv_plot,
       {
         plot <- plot +
