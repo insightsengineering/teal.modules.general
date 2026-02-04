@@ -319,9 +319,11 @@ check_decorators <- function(x, names = NULL) { # nolint: object_name.
       )
     } else if (!all(unique(names(x)) %in% c("default", names))) {
       check_message <- sprintf(
-        paste0("The `decorators` must be a named list with:\n",
-        " * 'default' for decorating all objects and/or\n",
-        " * A name from these: %s"),
+        paste0(
+          "The `decorators` must be a named list with:\n",
+          " * 'default' for decorating all objects and/or\n",
+          " * A name from these: %s"
+        ),
         paste(sQuote(names), collapse = ", ")
       )
     }
