@@ -136,10 +136,12 @@ testthat::describe("tm_front_page module server behavior", {
 
   it("server function table from argument", {
     mod <- tm_front_page(tables = list(t1 = data.frame(Info = c("A", "B"), Text = c("A", "B"))))
-    shiny::testServer(
-      mod$server,
-      args = c(list(id = "test", data = shiny::reactive(teal.data::teal_data())), mod$server_args),
-      expr = checkmate::check_string(output$table_1)
+    testthat::expect_no_error(
+      shiny::testServer(
+        mod$server,
+        args = c(list(id = "test", data = shiny::reactive(teal.data::teal_data())), mod$server_args),
+        expr = checkmate::check_string(output$table_1)
+      )
     )
   })
 })

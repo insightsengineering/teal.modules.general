@@ -221,7 +221,6 @@ create_outliers_test_data <- function(test_data_df) {
       }),
       list(df = test_data_df)
     ))
-    datanames(data_obj) <- "test_data"
     teal.data::join_keys(data_obj) <- teal.data::join_keys(
       teal.data::join_key("test_data", "test_data", ".row_id")
     )
