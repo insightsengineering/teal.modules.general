@@ -31,8 +31,8 @@
 #' This module generates the following objects, which can be modified in place using decorators::
 #' - `histogram_plot` (`ggplot`)
 #' - `qq_plot` (`ggplot`)
-#' - `summary_table` (`datatables`)
-#' - `test_table` (`datatables`)
+#' - `summary_table` (`DT::datatable`)
+#' - `test_table` (`DT::datatable`)
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
