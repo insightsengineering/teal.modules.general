@@ -85,7 +85,7 @@
 #'   shinyApp(app$ui, app$server)
 #' }
 tm_gtsummary <- function(
-  label = "Table summary",
+  label = "Summary table",
   by,
   include,
   ...,
