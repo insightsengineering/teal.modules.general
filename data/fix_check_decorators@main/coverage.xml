@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE coverage SYSTEM "https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd">
-<coverage line-rate="0.818133047210301" branch-rate="0" lines-covered="7625" lines-valid="9320" branches-covered="0" branches-valid="0" complexity="0" version="3.6.5" timestamp="2026-02-05 10:08:35.254707">
+<coverage line-rate="0.818133047210301" branch-rate="0" lines-covered="7625" lines-valid="9320" branches-covered="0" branches-valid="0" complexity="0" version="3.6.5" timestamp="2026-02-05 10:31:41.614693">
   <sources>
     <source>/__w/teal.modules.general/teal.modules.general/teal.modules.general</source>
   </sources>
@@ -18866,11 +18866,11 @@
                 <line number="285" hits="210" branch="false"/>
                 <line number="287" hits="210" branch="false"/>
                 <line number="289" hits="210" branch="false"/>
-                <line number="290" hits="189" branch="false"/>
-                <line number="291" hits="147" branch="false"/>
+                <line number="290" hits="193" branch="false"/>
+                <line number="291" hits="151" branch="false"/>
                 <line number="292" hits="0" branch="false"/>
                 <line number="293" hits="210" branch="false"/>
-                <line number="294" hits="147" branch="false"/>
+                <line number="294" hits="151" branch="false"/>
                 <line number="295" hits="210" branch="false"/>
                 <line number="296" hits="210" branch="false"/>
                 <line number="297" hits="210" branch="false"/>
@@ -19079,11 +19079,11 @@
             <line number="285" hits="210" branch="false"/>
             <line number="287" hits="210" branch="false"/>
             <line number="289" hits="210" branch="false"/>
-            <line number="290" hits="189" branch="false"/>
-            <line number="291" hits="147" branch="false"/>
+            <line number="290" hits="193" branch="false"/>
+            <line number="291" hits="151" branch="false"/>
             <line number="292" hits="0" branch="false"/>
             <line number="293" hits="210" branch="false"/>
-            <line number="294" hits="147" branch="false"/>
+            <line number="294" hits="151" branch="false"/>
             <line number="295" hits="210" branch="false"/>
             <line number="296" hits="210" branch="false"/>
             <line number="297" hits="210" branch="false"/>
