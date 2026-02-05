@@ -101,7 +101,7 @@ tm_gtsummary <- function(
   if (inherits(include, "data_extract_spec")) include <- list(include)
 
   checkmate::assert_string(label)
-  checkmate::assert_string(col_label, null.ok = TRUE)
+  checkmate::assert_list(col_label, null.ok = TRUE, types = "character")
   checkmate::assert_list(by, types = "data_extract_spec")
   assert_single_selection(by)
   checkmate::assert_list(include, types = "data_extract_spec")

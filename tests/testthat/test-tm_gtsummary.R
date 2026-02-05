@@ -248,22 +248,76 @@ testthat::describe("tm_gtsummary module server behavior", {
         mod$server_args
       ),
       {
-        # session$setInputs(
-        #   "by-dataset_test_data_singleextract-select" = "species",
-        #   "include-dataset_test_data_singleextract-select" = "island"
-        # )
-        # session$flushReact()
-        testthat::expect_true(inherits(qenv(), "teal_data"))
-        # testthat::expect_true(inherits(summary_args(), "call"))
-        #
-        # testthat::expect_true(inherits(table_r(), "teal_data"))
-        # table_result <- table_r()
-        # testthat::expect_true(inherits(table_result, "gt"))
+        session$setInputs(
+          "by-dataset_test_data_singleextract-select" = "species",
+          "include-dataset_test_data_singleextract-select" = c("island", "sex")
+        )
+
+        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(inherits(table_r(), "gtsummary"))
       }
     )
   })
-  it("server function generates table with 'include' being NULL", {})
-  it("server function generates table with 'col_label'", {})
+  it("server function generates table with 'include' being NULL", {
+    data <- create_test_data(penguins)
+
+    mod <- create_gtsummary_module(
+      penguins,
+      by_vars = c("species", "island", "sex", "year"),
+      include_vars = c("island", "sex", "body_mass"),
+      by_selected = c("species"),
+      include_selected = c("island", "sex")
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test_data", data = data),
+        mod$server_args
+      ),
+      {
+        session$setInputs(
+          "by-dataset_test_data_singleextract-select" = "species",
+          "include-dataset_test_data_singleextract-select" = NULL
+        )
+
+        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(inherits(table_r(), "gtsummary"))
+      }
+    )
+  })
+  it("server function generates table with 'col_label'", {
+    data <- create_test_data(penguins)
+
+    col_label <- list(island = "Island", sex = "Sex")
+    mod <- create_gtsummary_module(
+      penguins,
+      by_vars = c("species", "island", "sex", "year"),
+      include_vars = c("island", "sex", "body_mass"),
+      by_selected = c("species"),
+      include_selected = c("island", "sex"),
+      col_label = col_label
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test_data", data = data),
+        mod$server_args
+      ),
+      {
+        session$setInputs(
+          "by-dataset_test_data_singleextract-select" = "species",
+          "include-dataset_test_data_singleextract-select" = c("island", "sex"),
+          col_label = col_label
+        )
+        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        table <- table_r()
+        testthat::expect_equal(table$inputs$label, col_label)
+        testthat::expect_true(all(table$table_body$var_label %in% unlist(col_label)))
+      }
+    )
+  })
 })
 
 # Decorators
