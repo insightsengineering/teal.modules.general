@@ -410,6 +410,7 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
         table <- table_r()
         testthat::expect_equal(as.character(table$table_styling$caption), cap)
-      })
+      }
+    )
   })
 })
