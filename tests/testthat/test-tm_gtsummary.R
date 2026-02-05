@@ -196,41 +196,42 @@ testthat::describe("tm_gtsummary module ui behavior returns a htmltools tag or t
 
 
 # Server
-testthat::describe("tm_gtsummary module server behavior", {
-  create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, include_selected, ...) {
-    tm_gtsummary(
-      by = teal.transform::data_extract_spec(
+create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, include_selected, ...) {
+  tm_gtsummary(
+    by = teal.transform::data_extract_spec(
+      dataname = "test_data",
+      select = teal.transform::select_spec(
+        choices = teal.transform::variable_choices(
+          data = isolate(data())[["test_data"]],
+          by_vars
+        ),
+        selected = by_selected,
+        multiple = FALSE
+      )
+    ),
+    include = list(
+      teal.transform::data_extract_spec(
         dataname = "test_data",
         select = teal.transform::select_spec(
           choices = teal.transform::variable_choices(
             data = isolate(data())[["test_data"]],
-            by_vars
+            include_vars
           ),
-          selected = by_selected,
-          multiple = FALSE
+          selected = include_selected,
+          multiple = TRUE
         )
-      ),
-      include = list(
-        teal.transform::data_extract_spec(
-          dataname = "test_data",
-          select = teal.transform::select_spec(
-            choices = teal.transform::variable_choices(
-              data = isolate(data())[["test_data"]],
-              include_vars
-            ),
-            selected = include_selected,
-            multiple = TRUE
-          )
-        )
-      ),
-      ...
-    )
-  }
+      )
+    ),
+    ...
+  )
+}
+
+testthat::describe("tm_gtsummary module server behavior", {
   it("server function executes successfully through module interface", {
     data <- create_test_data(mtcars)
 
     mod <- create_gtsummary_module(
-      mtcars,
+      data,
       by_vars = c("am", "gear"),
       include_vars = c("carb", "cyl"),
       by_selected = c("am"),
@@ -258,7 +259,7 @@ testthat::describe("tm_gtsummary module server behavior", {
     data <- create_test_data(mtcars)
 
     mod <- create_gtsummary_module(
-      mtcars,
+      data,
       by_vars = c("am", "gear"),
       include_vars = c("carb", "cyl"),
       by_selected = c("am"),
@@ -288,7 +289,7 @@ testthat::describe("tm_gtsummary module server behavior", {
 
     col_label <- list(carb = "Carb", cyl = "Cyl")
     mod <- create_gtsummary_module(
-      mtcars,
+      data,
       by_vars = c("am", "gear"),
       include_vars = c("carb", "cyl"),
       by_selected = c("am"),
@@ -317,76 +318,48 @@ testthat::describe("tm_gtsummary module server behavior", {
 })
 
 # Decorators
-testthat::describe("tm_gtsummary module server behavior with decorators", {
-  create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, include_selected, ...) {
-    tm_gtsummary(
-      by = teal.transform::data_extract_spec(
-        dataname = "test_data",
-        select = teal.transform::select_spec(
-          choices = teal.transform::variable_choices(
-            data = isolate(data())[["test_data"]],
-            by_vars
-          ),
-          selected = by_selected,
-          multiple = FALSE
-        )
-      ),
-      include = list(
-        teal.transform::data_extract_spec(
-          dataname = "test_data",
-          select = teal.transform::select_spec(
-            choices = teal.transform::variable_choices(
-              data = isolate(data())[["test_data"]],
-              include_vars
-            ),
-            selected = include_selected,
-            multiple = TRUE
-          )
-        )
-      ),
-      ...
-    )
-  }
 
-  table_caption_decorator <- function(default_caption = "Summary Table") {
-    teal::teal_transform_module(
-      label = "Table Caption",
-      ui = function(id) {
-        ns <- shiny::NS(id)
-        shiny::tagList(
-          shiny::textInput(
-            ns("caption"),
-            "Table Caption",
-            value = default_caption
-          )
+table_caption_decorator <- function(default_caption = "Summary Table") {
+  teal::teal_transform_module(
+    label = "Table Caption",
+    ui = function(id) {
+      ns <- shiny::NS(id)
+      shiny::tagList(
+        shiny::textInput(
+          ns("caption"),
+          "Table Caption",
+          value = default_caption
         )
-      },
-      server = function(id, data) {
-        shiny::moduleServer(id, function(input, output, session) {
-          shiny::reactive({
-            req(data())
-            within(
-              data(),
-              {
-                if (inherits(table, "gtsummary")) {
-                  if (nchar(caption) > 0) {
-                    table <- gtsummary::modify_caption(table, caption)
-                  }
+      )
+    },
+    server = function(id, data) {
+      shiny::moduleServer(id, function(input, output, session) {
+        shiny::reactive({
+          req(data())
+          within(
+            data(),
+            {
+              if (inherits(table, "gtsummary")) {
+                if (nchar(caption) > 0) {
+                  table <- gtsummary::modify_caption(table, caption)
                 }
-              },
-              caption = input$caption
-            )
-          })
+              }
+            },
+            caption = input$caption
+          )
         })
-      }
-    )
-  }
+      })
+    }
+  )
+}
+
+testthat::describe("tm_gtsummary module server behavior with decorators", {
 
   it("one decorator executes successfully", {
     data <- create_test_data(mtcars)
     cap <- "Caption 1"
     mod <- create_gtsummary_module(
-      mtcars,
+      data,
       by_vars = c("am", "gear"),
       include_vars = c("carb", "cyl"),
       by_selected = c("am"),
