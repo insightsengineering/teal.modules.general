@@ -1393,7 +1393,7 @@ srv_distribution <- function(id,
         QQplot = decorated_output_qq_dims_q()
       )
       withCallingHandlers(
-        c(out_q, output_summary_q(), test_q_out),
+        c(out_q, decorated_output_summary_q(), test_q_out),
         warning = function(w) {
           if (grepl("Restoring original content and adding only", conditionMessage(w))) {
             invokeRestart("muffleWarning")
