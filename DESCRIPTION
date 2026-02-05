@@ -44,8 +44,6 @@ Imports:
     goftest (>= 1.2-3),
     grid,
     gridExtra (>= 2.3),
-    gt (>= 1.3.0),
-    gtsummary (>= 2.5.0),
     htmlwidgets (>= 1.6.4),
     jsonlite (>= 1.8.9),
     lattice (>= 0.18-4),
