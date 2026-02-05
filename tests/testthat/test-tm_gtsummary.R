@@ -154,6 +154,7 @@ testthat::describe("tm_gtsummary input validation", {
     )
   })
 
+  # FIXME: depends on fix_check_decorators@main branch
   # it("fails when decorators is to a different object", {
   #   testthat::expect_error(
   #     tm_gtsummary(
@@ -283,6 +284,7 @@ testthat::describe("tm_gtsummary module server behavior", {
 
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
         testthat::expect_true(inherits(table_r(), "gtsummary"))
+        testthat::expect_gt(length(unique(table_r()$table_body$variable)), 3L)
       }
     )
   })
