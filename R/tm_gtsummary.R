@@ -47,7 +47,6 @@
 #'
 #' @inheritSection teal::example_module Reporting
 #' @export
-#' @importFrom methods is
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
