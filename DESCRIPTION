@@ -87,7 +87,7 @@ VignetteBuilder:
     rmarkdown
 Remotes:
     insightsengineering/teal,
-    insightsengineering/teal.reporter
+    insightsengineering/teal.reporter,
     insightsengineering/teal.widgets
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
