@@ -228,14 +228,14 @@ testthat::describe("tm_gtsummary module server behavior", {
     )
   }
   it("server function executes successfully through module interface", {
-    data <- create_test_data(penguins)
+    data <- create_test_data(mtcars)
 
     mod <- create_gtsummary_module(
-      penguins,
-      by_vars = c("species", "island", "sex", "year"),
-      include_vars = c("island", "sex", "body_mass"),
-      by_selected = c("species"),
-      include_selected = c("island", "sex")
+      mtcars,
+      by_vars = c("am", "gear"),
+      include_vars = c("carb", "cyl"),
+      by_selected = c("am"),
+      include_selected = c("carb", "cyl")
     )
 
     shiny::testServer(
@@ -246,8 +246,8 @@ testthat::describe("tm_gtsummary module server behavior", {
       ),
       {
         session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "species",
-          "include-dataset_test_data_singleextract-select" = c("island", "sex")
+          "by-dataset_test_data_singleextract-select" = "am",
+          "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
 
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
@@ -256,14 +256,14 @@ testthat::describe("tm_gtsummary module server behavior", {
     )
   })
   it("server function generates table with 'include' being NULL", {
-    data <- create_test_data(penguins)
+    data <- create_test_data(mtcars)
 
     mod <- create_gtsummary_module(
-      penguins,
-      by_vars = c("species", "island", "sex", "year"),
-      include_vars = c("island", "sex", "body_mass"),
-      by_selected = c("species"),
-      include_selected = c("island", "sex")
+      mtcars,
+      by_vars = c("am", "gear"),
+      include_vars = c("carb", "cyl"),
+      by_selected = c("am"),
+      include_selected = c("carb", "cyl")
     )
 
     shiny::testServer(
@@ -274,7 +274,7 @@ testthat::describe("tm_gtsummary module server behavior", {
       ),
       {
         session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "species",
+          "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = NULL
         )
 
@@ -285,15 +285,15 @@ testthat::describe("tm_gtsummary module server behavior", {
     )
   })
   it("server function generates table with 'col_label'", {
-    data <- create_test_data(penguins)
+    data <- create_test_data(mtcars)
 
-    col_label <- list(island = "Island", sex = "Sex")
+    col_label <- list(carb = "Carb", cyl = "Cyl")
     mod <- create_gtsummary_module(
-      penguins,
-      by_vars = c("species", "island", "sex", "year"),
-      include_vars = c("island", "sex", "body_mass"),
-      by_selected = c("species"),
-      include_selected = c("island", "sex"),
+      mtcars,
+      by_vars = c("am", "gear"),
+      include_vars = c("carb", "cyl"),
+      by_selected = c("am"),
+      include_selected = c("carb", "cyl"),
       col_label = col_label
     )
 
@@ -305,9 +305,8 @@ testthat::describe("tm_gtsummary module server behavior", {
       ),
       {
         session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "species",
-          "include-dataset_test_data_singleextract-select" = c("island", "sex"),
-          col_label = col_label
+          "by-dataset_test_data_singleextract-select" = "am",
+          "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
         table <- table_r()
@@ -385,15 +384,15 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
   }
 
   it("one decorator executes successfully", {
-    data <- create_test_data(penguins)
-
+    data <- create_test_data(mtcars)
+    cap <- "Caption 1"
     mod <- create_gtsummary_module(
-      penguins,
-      by_vars = c("species", "island", "sex", "year"),
-      include_vars = c("island", "sex", "body_mass"),
-      by_selected = c("species"),
-      include_selected = c("island", "sex"),
-      decorators = list(table = list(table_caption_decorator("caption1")))
+      mtcars,
+      by_vars = c("am", "gear"),
+      include_vars = c("carb", "cyl"),
+      by_selected = c("am"),
+      include_selected = c("carb", "cyl"),
+      decorators = list(table = table_caption_decorator(cap))
     )
 
     shiny::testServer(
@@ -403,10 +402,9 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
         mod$server_args
       ),
       {
-        cap <- "Caption 1"
         session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "species",
-          "include-dataset_test_data_singleextract-select" = c("island", "sex"),
+          "by-dataset_test_data_singleextract-select" = "am",
+          "include-dataset_test_data_singleextract-select" = c("carb", "cyl"),
           "decorate_table-transform_1-transform-caption" = cap
         )
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
