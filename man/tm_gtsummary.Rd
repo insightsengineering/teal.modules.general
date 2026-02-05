@@ -2,7 +2,7 @@
 % Please edit documentation in R/tm_gtsummary.R
 \name{tm_gtsummary}
 \alias{tm_gtsummary}
-\title{\code{teal} module: Summary table}
+\title{\code{teal} module: GT Summary table}
 \usage{
 tm_gtsummary(
   label = "Summary table",
@@ -21,14 +21,14 @@ tm_gtsummary(
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \item{by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Object with all available choices with pre-selected option for how to split the rows
+An object with all available choices and with a pre-selected option on how to split rows.
 
-\code{data_extract_spec} must not allow multiple selection.}
+\code{data_extract_spec} multiple selection: not allowed}
 
 \item{include}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
-Object with all available choices with pre-selected option for which columns to include as rows.
+An object with all available choices and with a pre-selected option that picks columns to include as rows.
 
-\code{data_extract_spec} can allow multiple selection in this case.}
+\code{data_extract_spec} multiple selection: allowed}
 
 \item{...}{
   Arguments passed on to \code{\link[crane:tbl_roche_summary]{crane::tbl_roche_summary}}
@@ -88,7 +88,7 @@ See section "Decorating Module" below for more details.}
 Object of class \code{teal_module} to be used in \code{teal} applications.
 }
 \description{
-Generates a table summary from a dataset using gtsummary.
+Summary table from a given dataset, using \code{gtsummary}.
 }
 \section{Decorating Module}{
 
