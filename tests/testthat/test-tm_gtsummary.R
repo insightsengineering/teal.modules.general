@@ -197,10 +197,10 @@ testthat::describe("tm_gtsummary module ui behavior returns a htmltools tag or t
 
 
 # Server
-create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, include_selected, ...) {
-  tm_gtsummary(
-    by = list(
-      teal.transform::data_extract_spec(
+testthat::describe("tm_gtsummary module server behavior", {
+  create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, include_selected, ...) {
+    tm_gtsummary(
+      by = teal.transform::data_extract_spec(
         dataname = "test_data",
         select = teal.transform::select_spec(
           choices = teal.transform::variable_choices(
@@ -210,27 +210,23 @@ create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, in
           selected = by_selected,
           multiple = FALSE
         )
-      )
-    ),
-    include = list(
-      teal.transform::data_extract_spec(
-        dataname = "test_data",
-        select = teal.transform::select_spec(
-          choices = teal.transform::variable_choices(
-            data = isolate(data())[["test_data"]],
-            include_vars
-          ),
-          selected = include_selected,
-          multiple = TRUE
+      ),
+      include = list(
+        teal.transform::data_extract_spec(
+          dataname = "test_data",
+          select = teal.transform::select_spec(
+            choices = teal.transform::variable_choices(
+              data = isolate(data())[["test_data"]],
+              include_vars
+            ),
+            selected = include_selected,
+            multiple = TRUE
+          )
         )
-      )
-    ),
-    ...
-  )
-}
-
-
-testthat::describe("tm_gtsummary module server behavior", {
+      ),
+      ...
+    )
+  }
   it("server function executes successfully through module interface", {
     data <- create_test_data(penguins)
 
@@ -323,3 +319,99 @@ testthat::describe("tm_gtsummary module server behavior", {
 })
 
 # Decorators
+testthat::describe("tm_gtsummary module server behavior with decorators", {
+  create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, include_selected, ...) {
+    tm_gtsummary(
+      by = teal.transform::data_extract_spec(
+        dataname = "test_data",
+        select = teal.transform::select_spec(
+          choices = teal.transform::variable_choices(
+            data = isolate(data())[["test_data"]],
+            by_vars
+          ),
+          selected = by_selected,
+          multiple = FALSE
+        )
+      ),
+      include = list(
+        teal.transform::data_extract_spec(
+          dataname = "test_data",
+          select = teal.transform::select_spec(
+            choices = teal.transform::variable_choices(
+              data = isolate(data())[["test_data"]],
+              include_vars
+            ),
+            selected = include_selected,
+            multiple = TRUE
+          )
+        )
+      ),
+      ...
+    )
+  }
+
+  table_caption_decorator <- function(default_caption = "Summary Table") {
+    teal::teal_transform_module(
+      label = "Table Caption",
+      ui = function(id) {
+        ns <- shiny::NS(id)
+        shiny::tagList(
+          shiny::textInput(
+            ns("caption"),
+            "Table Caption",
+            value = default_caption
+          )
+        )
+      },
+      server = function(id, data) {
+        shiny::moduleServer(id, function(input, output, session) {
+          shiny::reactive({
+            req(data())
+            within(
+              data(),
+              {
+                if (inherits(table, "gtsummary")) {
+                  if (nchar(caption) > 0) {
+                    table <- gtsummary::modify_caption(table, caption)
+                  }
+                }
+              },
+              caption = input$caption
+            )
+          })
+        })
+      }
+    )
+  }
+
+  it("one decorator executes successfully", {
+    data <- create_test_data(penguins)
+
+    mod <- create_gtsummary_module(
+      penguins,
+      by_vars = c("species", "island", "sex", "year"),
+      include_vars = c("island", "sex", "body_mass"),
+      by_selected = c("species"),
+      include_selected = c("island", "sex"),
+      decorators = list(table = list(table_caption_decorator("caption1")))
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test_data", data = data),
+        mod$server_args
+      ),
+      {
+        cap <- "Caption 1"
+        session$setInputs(
+          "by-dataset_test_data_singleextract-select" = "species",
+          "include-dataset_test_data_singleextract-select" = c("island", "sex"),
+          "decorate_table-transform_1-transform-caption" = cap
+        )
+        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        table <- table_r()
+        testthat::expect_equal(as.character(table$table_styling$caption), cap)
+      })
+  })
+})
