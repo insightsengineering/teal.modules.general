@@ -137,6 +137,12 @@ place using decorators::
 
 - `qq_plot` (`ggplot`)
 
+- `summary_table`
+  ([`DT::datatable`](https://rdrr.io/pkg/DT/man/datatable.html))
+
+- `test_table`
+  ([`DT::datatable`](https://rdrr.io/pkg/DT/man/datatable.html))
+
 A Decorator is applied to the specific output using a named list of
 `teal_transform_module` objects. The name of this list corresponds to
 the name of the output to which the decorator is applied. See code
@@ -147,6 +153,9 @@ snippet below:
        decorators = list(
          histogram_plot = teal_transform_module(...), # applied only to `histogram_plot` output
          qq_plot = teal_transform_module(...) # applied only to `qq_plot` output
+         summary_table = teal_transform_module(...) # applied only to `summary_table` output
+         test_table = teal_transform_module(...) # applied only to `test_table` output
+
        )
     )
 
