@@ -154,19 +154,18 @@ testthat::describe("tm_gtsummary input validation", {
     )
   })
 
-  # FIXME: depends on fix_check_decorators@main branch
-  # it("fails when decorators is to a different object", {
-  #   testthat::expect_error(
-  #     tm_gtsummary(
-  #       by = mock_data_extract_spec(select_multiple = FALSE),
-  #       include = mock_data_extract_spec(select_multiple = TRUE),
-  #       decorators = list(
-  #         plot = teal::teal_transform_module()
-  #       )
-  #     ),
-  #     "must be a named list from these names: table"
-  #   )
-  # })
+  it("fails when decorators is to a different object", {
+    testthat::expect_error(
+      tm_gtsummary(
+        by = mock_data_extract_spec(select_multiple = FALSE),
+        include = mock_data_extract_spec(select_multiple = TRUE),
+        decorators = list(
+          plot = teal::teal_transform_module()
+        )
+      ),
+      "The `decorators` must be a named list with:"
+    )
+  })
 
   it("accepts valid decorators", {
     testthat::expect_s3_class(
