@@ -354,7 +354,6 @@ table_caption_decorator <- function(default_caption = "Summary Table") {
 }
 
 testthat::describe("tm_gtsummary module server behavior with decorators", {
-
   it("one decorator executes successfully", {
     data <- create_test_data(mtcars)
     cap <- "Caption 1"
