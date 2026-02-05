@@ -311,18 +311,20 @@ check_decorators <- function(x, names = NULL) { # nolint: object_name.
 
   check_message <- checkmate::check_list(x, names = "named")
 
-  if (!is.null(names)) {
-    if (isTRUE(check_message)) {
-      if (length(names(x)) != length(unique(names(x)))) {
-        check_message <- sprintf(
-          "The `decorators` must contain unique names from these names: %s.",
-          paste(names, collapse = ", ")
-        )
-      }
-    } else {
+  if (!is.null(names) && isTRUE(check_message)) {
+    if (length(names(x)) != length(unique(names(x)))) {
       check_message <- sprintf(
-        "The `decorators` must be a named list from these names: %s.",
-        paste(names, collapse = ", ")
+        "The `decorators` must contain unique names from these names: %s",
+        paste(sQuote(names), collapse = ", ")
+      )
+    } else if (!all(unique(names(x)) %in% c("default", names))) {
+      check_message <- sprintf(
+        paste0(
+          "The `decorators` must be a named list with:\n",
+          " * 'default' for decorating all objects and/or\n",
+          " * A name from these: %s"
+        ),
+        paste(sQuote(names), collapse = ", ")
       )
     }
   }
@@ -391,7 +393,7 @@ set_chunk_attrs <- function(teal_card,
     return(teal_card)
   }
 
-  for (ix in seq_len(length(teal_card))) {
+  for (ix in seq_along(teal_card)) {
     if (ix > n) {
       break
     }
