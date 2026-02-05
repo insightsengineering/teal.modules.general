@@ -835,7 +835,7 @@ plot_var_summary <- function(qenv,
     module_plot = dev_ggplot2_args
   )
 
-  if (is.ggplot(qenv_plot$plot)) {
+  if (inherits(qenv_plot$plot, "ggplot")) {
     qenv_plot <- within(qenv_plot,
       {
         plot <- plot +
