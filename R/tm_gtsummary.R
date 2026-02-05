@@ -113,6 +113,7 @@ tm_gtsummary <- function(
 
   # Make UI args
   ui_args <- as.list(environment())
+  ui_args <- c(ui_args, list(...))
   srv_args <- list(...)
   srv_args$by <- by
   srv_args$include <- include
