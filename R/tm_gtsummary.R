@@ -47,7 +47,6 @@
 #'
 #' @inheritSection teal::example_module Reporting
 #' @export
-#' @importFrom methods is
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
@@ -85,7 +84,7 @@
 #'   shinyApp(app$ui, app$server)
 #' }
 tm_gtsummary <- function(
-  label = "Table summary",
+  label = "Summary table",
   by,
   include,
   ...,
@@ -96,26 +95,25 @@ tm_gtsummary <- function(
   decorators = list()
 ) {
   message("Initializing tm_gtsummary")
+
+  # Normalize the parameters
+  if (inherits(by, "data_extract_spec")) by <- list(by)
+  if (inherits(include, "data_extract_spec")) include <- list(include)
+
   checkmate::assert_string(label)
-  if (inherits(by, "data_extract_spec")) {
-    checkmate::assert_list(list(by),
-      types = "data_extract_spec",
-      any.missing = FALSE, all.missing = FALSE
-    )
-    assert_single_selection(list(by))
-  }
-  if (inherits(include, "data_extract_spec")) {
-    checkmate::assert_list(list(include),
-      types = "data_extract_spec",
-      any.missing = FALSE, all.missing = FALSE
-    )
-  }
+  checkmate::assert_list(col_label, null.ok = TRUE, types = "character")
+  checkmate::assert_list(by, types = "data_extract_spec")
+  assert_single_selection(by)
+  checkmate::assert_list(include, types = "data_extract_spec")
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   assert_decorators(decorators, "table")
+  datanames <- teal.transform::get_extract_datanames(list(by = by, include = include))
+  checkmate::assert_character(datanames, len = 1L, any.missing = FALSE, all.missing = FALSE)
 
   # Make UI args
   ui_args <- as.list(environment())
+  ui_args <- c(ui_args, list(...))
   srv_args <- list(...)
   srv_args$by <- by
   srv_args$include <- include
@@ -127,7 +125,8 @@ tm_gtsummary <- function(
     ui = ui_gt_summary,
     ui_args = ui_args,
     server_args = srv_args,
-    transformators = transformators
+    transformators = transformators,
+    datanames = datanames
   )
   attr(module, "teal_bookmarkable") <- TRUE
   module
@@ -212,19 +211,8 @@ srv_gt_summary <- function(id,
     })
 
     summary_args <- reactive({
-      # table
-      if (!is.null(by) || !is.null(include)) {
-        validate(need(
-          teal.transform::is_single_dataset(de),
-          "Variables should come from the same dataset."
-        ))
-      }
-
-      dataset <- if (!is.null(by)) {
-        by$dataname
-      } else {
-        include$dataname
-      }
+      sl <- req(selector_list())
+      dataset <- sl$by()$dataname
 
       validate(
         need(
@@ -232,13 +220,12 @@ srv_gt_summary <- function(id,
           "Specify variables to stratify or to include on the summary table."
         ),
         need(
-          teal.transform::is_single_dataset(de),
+          do.call(teal.transform::is_single_dataset, de),
           "Input from multiple tables: this module doesn't accept that."
         )
       )
 
       # by: input + all variables (default on gtsummary)
-      sl <- req(selector_list())
       by_variable <- req(sl$by()$select)
       include_variables <- sl$include()$select
       if (length(include_variables) != 0L) {
@@ -300,8 +287,7 @@ srv_gt_summary <- function(id,
     })
 
     table_r <- reactive({
-      out <- req(output_data_decorated())
-      gtsummary::as_gt(out[["table"]])
+      req(output_data_decorated())[["table"]]
     })
 
     teal.widgets::table_with_settings_srv(

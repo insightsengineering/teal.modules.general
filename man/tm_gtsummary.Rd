@@ -5,7 +5,7 @@
 \title{\code{teal} module: Summary table}
 \usage{
 tm_gtsummary(
-  label = "Table summary",
+  label = "Summary table",
   by,
   include,
   ...,
