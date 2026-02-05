@@ -318,8 +318,8 @@ testthat::describe("tm_gtsummary module server behavior", {
 })
 
 # Decorators
-
 table_caption_decorator <- function(default_caption = "Summary Table") {
+  testthat::skip_if_not_installed("gtsummary")
   teal::teal_transform_module(
     label = "Table Caption",
     ui = function(id) {
