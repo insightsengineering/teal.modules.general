@@ -835,13 +835,7 @@ plot_var_summary <- function(qenv,
     module_plot = dev_ggplot2_args
   )
 
-  # Uses the right function to avoid deprecation messages
-  is_gg <- if (packageVersion("ggplot2") <= "3.5.2") {
-    is.ggplot(qenv_plot$plot)
-  } else {
-    is_ggplot(qenv_plot$plot)
-  }
-  if (is_gg) {
+  if (inherits(qenv_plot$plot, "ggplot")) {
     qenv_plot <- within(qenv_plot,
       {
         plot <- plot +
