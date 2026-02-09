@@ -23,6 +23,11 @@
 
   `teal` module: Front page
 
+- [`tm_gtsummary()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_gtsummary.md)
+  :
+
+  `teal` module: GT Summary table
+
 - [`tm_missing_data()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_missing_data.md)
   :
 
