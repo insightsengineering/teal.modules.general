@@ -5,9 +5,10 @@ linters: linters_with_defaults(
     styles = c("snake_case", "symbols"),
     regexes = c(
       ANL = "^ANL_?[0-9A-Z_]*$",
-      ADaM = "^r?AD[A-Z]{2,5}_?[0-9]*$"),
-      column_names = "AVAL|USUBJID|PARAM",
-    ),
+      ADaM = "^r?AD[A-Z]{2,5}_?[0-9]*$",
+      column_names = "AVAL|USUBJID|PARAM"
+    )
+  ),
   indentation_linter = NULL,
   pipe_consistency_linter = NULL
   )
