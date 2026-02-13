@@ -183,11 +183,11 @@ ui_gtsummary <- function(id, ...) {
 }
 
 srv_gtsummary <- function(id,
-                           data,
-                           by,
-                           include,
-                           ...,
-                           decorators) {
+                          data,
+                          by,
+                          include,
+                          ...,
+                          decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
 

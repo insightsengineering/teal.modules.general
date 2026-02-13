@@ -421,7 +421,8 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
       include_selected = c("carb", "cyl"),
       decorators = list(
         default = teal_transform_module(),
-        table = list(teal_transform_module(), teal_transform_module()))
+        table = list(teal_transform_module(), teal_transform_module())
+      )
     )
 
     shiny::testServer(
@@ -449,7 +450,8 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
       include_selected = c("carb", "cyl"),
       decorators = list(
         default = teal_transform_module(),
-        table = teal_transform_module())
+        table = teal_transform_module()
+      )
     )
 
     shiny::testServer(
@@ -476,7 +478,8 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module())
+        default = teal_transform_module()
+      )
     )
 
     shiny::testServer(

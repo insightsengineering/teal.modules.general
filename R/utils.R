@@ -346,7 +346,7 @@ check_decorators <- function(x, names = NULL) { # nolint: object_name.
       x[!valid_elements], function(subdecorators) {
         checks <- vapply(subdecorators,
           checkmate::test_class,
-          classes = "teal_transform_module", |>
+          classes = "teal_transform_module",
           logical(1L)
         )
         all(checks)
