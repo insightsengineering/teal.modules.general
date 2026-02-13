@@ -384,4 +384,31 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
       }
     )
   })
+  it("Multiple decorators execute successfully", {
+    data <- create_test_data(mtcars)
+    cap <- "Caption 1"
+    mod <- create_gtsummary_module(
+      data,
+      by_vars = c("am", "gear"),
+      include_vars = c("carb", "cyl"),
+      by_selected = c("am"),
+      include_selected = c("carb", "cyl"),
+      decorators = list(table = list(teal_transform_module(), teal_transform_module()))
+    )
+
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test_data", data = data),
+        mod$server_args
+      ),
+      {
+        session$setInputs(
+          "by-dataset_test_data_singleextract-select" = "am",
+          "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
+        )
+        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+      }
+    )
+  })
 })
