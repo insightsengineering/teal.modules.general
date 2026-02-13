@@ -121,8 +121,8 @@ tm_gtsummary <- function(
   srv_args$label <- col_label
   module <- module(
     label = label,
-    server = srv_gt_summary,
-    ui = ui_gt_summary,
+    server = srv_gtsummary,
+    ui = ui_gtsummary,
     ui_args = ui_args,
     server_args = srv_args,
     transformators = transformators,
@@ -133,7 +133,7 @@ tm_gtsummary <- function(
 }
 
 
-ui_gt_summary <- function(id, ...) {
+ui_gtsummary <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
 
@@ -182,12 +182,12 @@ ui_gt_summary <- function(id, ...) {
   )
 }
 
-srv_gt_summary <- function(id,
-                           data,
-                           by,
-                           include,
-                           ...,
-                           decorators) {
+srv_gtsummary <- function(id,
+                          data,
+                          by,
+                          include,
+                          ...,
+                          decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
 
