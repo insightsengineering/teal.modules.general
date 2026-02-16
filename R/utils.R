@@ -376,11 +376,7 @@ assert_decorators <- checkmate::makeAssertionFunction(check_decorators)
 #' @keywords internal
 select_decorators <- function(decorators, scope) {
   checkmate::assert_character(scope, null.ok = TRUE)
-  if (scope %in% names(decorators)) {
-    decorators[scope]
-  } else {
-    list()
-  }
+  decorators[names(decorators) %in% scope]
 }
 
 #' Set the attributes of the last chunk outputs
