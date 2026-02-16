@@ -360,7 +360,7 @@ check_decorators <- function(x, names = NULL) { # nolint: object_name.
     return(TRUE)
   }
 
-  "Make sure that the named list contains 'teal_transform_module' objects created using `teal_transform_module()`."
+  "The named list can contain a list of 'teal_transform_module' objects created using `teal_transform_module()` or be a `teal_transform_module` object."
 }
 #' Internal assertion on decorators
 #' @noRd
