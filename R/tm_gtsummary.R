@@ -242,10 +242,8 @@ srv_gt_summary <- function(id,
       if (length(include_variables)) {
         tbl_summary_args$include <- include_variables
       }
-      tbl_summary_args <- c(tbl_summary_args,
-        nonmissing = input$nonmissing,
-        percent = input$percent
-      )
+      tbl_summary_args$nonmissing <- input$nonmissing
+      tbl_summary_args$percent <- input$percent
       as.call(
         c(
           list(
@@ -266,7 +264,12 @@ srv_gt_summary <- function(id,
         },
         table_crane = table_call
       )
+      if (!is(qq, "qenv.error")){
+        stop(as.character(qq))
+      }
+      validate(need(!is(qq, "qenv.error"), if (is(qq, "qenv.error")) as.character(qq)))
       qq
+
     })
 
     decorations <- lapply(names(decorators), function(decorator_name) {
