@@ -265,7 +265,7 @@ srv_gt_summary <- function(id,
         table_crane = table_call
       )
 
-      validate(need(!is(qq, "qenv.error"), if (is(qq, "qenv.error")) as.character(qq)))
+      validate(need(!isa(qq, "qenv.error"), if (isa(qq, "qenv.error")) as.character(qq)))
       qq
     })
 
