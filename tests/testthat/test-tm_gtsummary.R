@@ -249,6 +249,7 @@ testthat::describe("tm_gtsummary module server behavior", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
+        session$flushReact()
 
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
         testthat::expect_true(inherits(table_r(), "gtsummary"))
@@ -277,6 +278,7 @@ testthat::describe("tm_gtsummary module server behavior", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = NULL
         )
+        session$flushReact()
 
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
         testthat::expect_true(inherits(table_r(), "gtsummary"))
@@ -308,6 +310,8 @@ testthat::describe("tm_gtsummary module server behavior", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
+        session$flushReact()
+
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
         table <- table_r()
         testthat::expect_equal(table$inputs$label, col_label)
@@ -378,6 +382,8 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl"),
           "decorate_table-transform_1-transform-caption" = cap
         )
+        session$flushReact()
+
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
         table <- table_r()
         testthat::expect_equal(as.character(table$table_styling$caption), cap)
