@@ -320,7 +320,7 @@ srv_data_table <- function(id,
           expr = {
             variables <- vars
             dataframe_selected <- if (if_distinct) {
-              dplyr::count(dataname, dplyr::across(dplyr::all_of(variables)))
+              dplyr::distinct(dataname, dplyr::across(dplyr::all_of(variables)), .keep_all = TRUE)
             } else {
               dataname[variables]
             }
