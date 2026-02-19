@@ -242,10 +242,8 @@ srv_gtsummary <- function(id,
       if (length(include_variables)) {
         tbl_summary_args$include <- include_variables
       }
-      tbl_summary_args <- c(tbl_summary_args,
-        nonmissing = input$nonmissing,
-        percent = input$percent
-      )
+      tbl_summary_args$nonmissing <- input$nonmissing
+      tbl_summary_args$percent <- input$percent
       as.call(
         c(
           list(
@@ -266,6 +264,8 @@ srv_gtsummary <- function(id,
         },
         table_crane = table_call
       )
+
+      validate(need(!isa(qq, "qenv.error"), if (isa(qq, "qenv.error")) as.character(qq)))
       qq
     })
 
