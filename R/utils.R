@@ -340,11 +340,30 @@ check_decorators <- function(x, names = NULL) { # nolint: object_name.
     FUN.VALUE = logical(1L)
   )
 
+  # Nested list
+  if (any(!valid_elements)) {
+    valid_nested <- vapply(
+      x[!valid_elements], function(subdecorators) {
+        checks <- vapply(subdecorators,
+          checkmate::test_class,
+          classes = "teal_transform_module",
+          logical(1L)
+        )
+        all(checks)
+      },
+      FUN.VALUE = logical(1L)
+    )
+    valid_elements[!valid_elements] <- valid_nested
+  }
+
   if (all(valid_elements)) {
     return(TRUE)
   }
 
-  "Make sure that the named list contains 'teal_transform_module' objects created using `teal_transform_module()`."
+  paste0(
+    "The named list can contain a list of 'teal_transform_module' objects created ",
+    "using `teal_transform_module()` or be a `teal_transform_module` object."
+  )
 }
 #' Internal assertion on decorators
 #' @noRd
@@ -360,11 +379,7 @@ assert_decorators <- checkmate::makeAssertionFunction(check_decorators)
 #' @keywords internal
 select_decorators <- function(decorators, scope) {
   checkmate::assert_character(scope, null.ok = TRUE)
-  if (scope %in% names(decorators)) {
-    decorators[scope]
-  } else {
-    list()
-  }
+  decorators[names(decorators) %in% scope]
 }
 
 #' Set the attributes of the last chunk outputs

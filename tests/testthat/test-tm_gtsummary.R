@@ -318,42 +318,42 @@ testthat::describe("tm_gtsummary module server behavior", {
 })
 
 # Decorators
-table_caption_decorator <- function(default_caption = "Summary Table") {
-  testthat::skip_if_not_installed("gtsummary")
-  teal::teal_transform_module(
-    label = "Table Caption",
-    ui = function(id) {
-      ns <- shiny::NS(id)
-      shiny::tagList(
-        shiny::textInput(
-          ns("caption"),
-          "Table Caption",
-          value = default_caption
-        )
-      )
-    },
-    server = function(id, data) {
-      shiny::moduleServer(id, function(input, output, session) {
-        shiny::reactive({
-          req(data())
-          within(
-            data(),
-            {
-              if (inherits(table, "gtsummary")) {
-                if (nchar(caption) > 0) {
-                  table <- gtsummary::modify_caption(table, caption)
-                }
-              }
-            },
-            caption = input$caption
-          )
-        })
-      })
-    }
-  )
-}
-
 testthat::describe("tm_gtsummary module server behavior with decorators", {
+  table_caption_decorator <- function(default_caption = "Summary Table") {
+    testthat::skip_if_not_installed("gtsummary")
+    teal::teal_transform_module(
+      label = "Table Caption",
+      ui = function(id) {
+        ns <- shiny::NS(id)
+        shiny::tagList(
+          shiny::textInput(
+            ns("caption"),
+            "Table Caption",
+            value = default_caption
+          )
+        )
+      },
+      server = function(id, data) {
+        shiny::moduleServer(id, function(input, output, session) {
+          shiny::reactive({
+            req(data())
+            within(
+              data(),
+              {
+                if (inherits(table, "gtsummary")) {
+                  if (nchar(caption) > 0) {
+                    table <- gtsummary::modify_caption(table, caption)
+                  }
+                }
+              },
+              caption = input$caption
+            )
+          })
+        })
+      }
+    )
+  }
+
   it("one decorator executes successfully", {
     data <- create_test_data(mtcars)
     cap <- "Caption 1"
