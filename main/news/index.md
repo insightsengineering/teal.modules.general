@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.6.0.9017
+## teal.modules.general 0.6.0.9019
 
 #### Enhancements
 
@@ -11,6 +11,8 @@
   bivariate plots.
 - Improve `tm_missing_data` visualization
   ([\#495](https://github.com/insightsengineering/teal.modules.general/issues/495)).
+- Multiple decorators can be applied to the same output object
+  ([\#978](https://github.com/insightsengineering/teal.modules.general/issues/978)).
 
 ## teal.modules.general 0.5.1
 
