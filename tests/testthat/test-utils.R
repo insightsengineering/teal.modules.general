@@ -197,70 +197,50 @@ testthat::describe("Module with decorators:", {
     )
   })
 
-  # it("2 decorator objects execute successfully", {
-  #   data <- create_test_data(mtcars)
-  #   mod <- tm_g_distribution(
-  #     dist_var = data_extract_spec(
-  #       dataname = "test_data",
-  #       select = select_spec(variable_choices("test_data"), "mpg")
-  #     ),
-  #     decorators = list(
-  #       test_table = teal_transform_module(
-  #         server = function(id, data) {
-  #           reactive({
-  #             within(data(), 1 + 1)
-  #           })
-  #         }
-  #       )
-  #     )
-  #   )
+  it("2 decorated objects execute successfully and modify returned reactive", {
+    data <- create_test_data(mtcars)
+    mod <- tm_g_distribution(
+      dist_var = data_extract_spec(
+        dataname = "test_data",
+        select = select_spec(variable_choices("test_data"), "mpg")
+      ),
+      decorators = list(
+        test_table = list(
+          teal_transform_module(
+            server = function(id, data) {
+              reactive(within(data(), test_ncols <- ncol(test_table)))
+            }
+          ),
+          teal_transform_module(
+            server = function(id, data) {
+              reactive(within(data(), test_ncols <- test_ncols + 1))
+            }
+          )
+        ),
+        summary_table = teal_transform_module(
+          server = function(id, data) {
+            reactive(within(data(), summary_ncols <- ncol(summary_table)))
+          }
+        )
+      )
+    )
 
-  #   shiny::testServer(
-  #     mod$server,
-  #     args = c(list(id = "test_data", data = data), mod$server_args),
-  #     {
-  #       session$setInputs(
-  #         "dist_i-dataset_test_data_singleextract-select" = "mpg",
-  #         dist_tests = "Shapiro-Wilk",
-  #         bins = 10,
-  #         main_type = "Density",
-  #         add_dens = TRUE,
-  #         tabs = "Histogram",
-  #         roundn = 2
-
-  #       )
-  #       testthat::expect_match(get_code(session$returned()), "\ntest_table$")
-  #     }
-  #   )
-  # })
-
-  # it("Default and one decorator to one object executes successfully", {
-  #   data <- create_test_data(mtcars)
-  #   mod <- create_gtsummary_module(
-  #     data,
-  #     by_vars = c("am", "gear"),
-  #     include_vars = c("carb", "cyl"),
-  #     by_selected = c("am"),
-  #     include_selected = c("carb", "cyl"),
-  #     decorators = list(
-  #       default = teal_transform_module(),
-  #       table = teal_transform_module()
-  #     )
-  #   )
-
-  #   shiny::testServer(
-  #     mod$server,
-  #     args = c(
-  #       list(id = "test_data", data = data),
-  #       mod$server_args
-  #     ),
-  #     {
-  #       session$setInputs(
-  #         "by-dataset_test_data_singleextract-select" = "am",
-  #         "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
-  #       )
-  #       testthat::expect_true(endsWith(get_code(session$returned()), "table"))
-  #     }
-  #   )
-  # })
+    shiny::testServer(
+      mod$server,
+      args = c(list(id = "test_data", data = data), mod$server_args),
+      {
+        session$setInputs(
+          "dist_i-dataset_test_data_singleextract-select" = "mpg",
+          dist_tests = "Shapiro-Wilk",
+          bins = 10,
+          main_type = "Density",
+          add_dens = TRUE,
+          tabs = "Histogram",
+          roundn = 2
+        )
+        testthat::expect_equal(session$returned()$test_ncols, 3 + 1)
+        testthat::expect_equal(session$returned()$summary_ncols, 6)
+      }
+    )
+  })
 })
