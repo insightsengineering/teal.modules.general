@@ -284,14 +284,19 @@ srv_decorate_teal_data <- function(id, data, decorators, expr) {
   moduleServer(id, function(input, output, session) {
     decorated_output <- srv_transform_teal_data("inner", data = data, transformators = decorators)
 
-    expr_r <- if (is.reactive(expr)) expr else reactive(expr)
-
     reactive({
-      req(decorated_output())
-      if (no_expr) {
-        decorated_output()
+      data_out <- try(data(), silent = TRUE)
+      if (inherits(data_out, "qenv.error")) {
+        data()
       } else {
-        teal.code::eval_code(decorated_output(), expr_r())
+        # ensure original errors are displayed and `eval_code` is never executed with NULL
+        req(data(), decorated_output())
+        if (no_expr) {
+          decorated_output()
+        } else {
+          expr_r <- if (is.reactive(expr)) expr else reactive(expr)
+          teal.code::eval_code(decorated_output(), expr_r())
+        }
       }
     })
   })
@@ -317,13 +322,9 @@ check_decorators <- function(x, names = NULL) { # nolint: object_name.
         "The `decorators` must contain unique names from these names: %s",
         paste(sQuote(names), collapse = ", ")
       )
-    } else if (!all(unique(names(x)) %in% c("default", names))) {
+    } else if (!all(unique(names(x)) %in% c(names))) {
       check_message <- sprintf(
-        paste0(
-          "The `decorators` must be a named list with:\n",
-          " * 'default' for decorating all objects and/or\n",
-          " * A name from these: %s"
-        ),
+        "The `decorators` must be a named list with any of the following names: %s",
         paste(sQuote(names), collapse = ", ")
       )
     }
@@ -378,8 +379,16 @@ assert_decorators <- checkmate::makeAssertionFunction(check_decorators)
 #' It can be an empty list if none of the scope exists in `decorators` argument.
 #' @keywords internal
 select_decorators <- function(decorators, scope) {
-  checkmate::assert_character(scope, null.ok = TRUE)
-  decorators[names(decorators) %in% scope]
+  checkmate::assert_string(scope, null.ok = FALSE)
+  if (scope %in% names(decorators)) {
+    result <- decorators[[scope]]
+    if (inherits(result, "teal_transform_module")) {
+      result <- list(result)
+    }
+    result
+  } else {
+    list()
+  }
 }
 
 #' Set the attributes of the last chunk outputs
