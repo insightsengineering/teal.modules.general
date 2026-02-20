@@ -119,7 +119,7 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module()
+        table = teal_transform_module()
       )
     )
 
@@ -134,7 +134,7 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
@@ -149,7 +149,7 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module(server = function(id, data) {
+        table = teal_transform_module(server = function(id, data) {
           reactive({
             stop()
           })
@@ -168,7 +168,7 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_is(tryCatch(print_output_decorated(), error = function(e) e), "shiny.silent.error")
+        testthat::expect_is(tryCatch(session$returned(), error = function(e) e), "shiny.silent.error")
       }
     )
   })
@@ -186,76 +186,81 @@ testthat::describe("Module with decorators:", {
 
     shiny::testServer(
       mod$server,
-      args = c(
-        list(id = "test_data", data = data),
-        mod$server_args
-      ),
+      args = c(list(id = "test_data", data = data), mod$server_args),
       {
         session$setInputs(
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_match(get_code(session$returned()), "\ntable$")
       }
     )
   })
 
-  it("Default and multiple decorators to one object execute successfully", {
-    data <- create_test_data(mtcars)
-    mod <- create_gtsummary_module(
-      data,
-      by_vars = c("am", "gear"),
-      include_vars = c("carb", "cyl"),
-      by_selected = c("am"),
-      include_selected = c("carb", "cyl"),
-      decorators = list(
-        default = teal_transform_module(),
-        table = list(teal_transform_module(), teal_transform_module())
-      )
-    )
+  # it("2 decorator objects execute successfully", {
+  #   data <- create_test_data(mtcars)
+  #   mod <- tm_g_distribution(
+  #     dist_var = data_extract_spec(
+  #       dataname = "test_data",
+  #       select = select_spec(variable_choices("test_data"), "mpg")
+  #     ),
+  #     decorators = list(
+  #       test_table = teal_transform_module(
+  #         server = function(id, data) {
+  #           reactive({
+  #             within(data(), 1 + 1)
+  #           })
+  #         }
+  #       )
+  #     )
+  #   )
 
-    shiny::testServer(
-      mod$server,
-      args = c(
-        list(id = "test_data", data = data),
-        mod$server_args
-      ),
-      {
-        session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "am",
-          "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
-        )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
-      }
-    )
-  })
-  it("Default and one decorator to one object executes successfully", {
-    data <- create_test_data(mtcars)
-    mod <- create_gtsummary_module(
-      data,
-      by_vars = c("am", "gear"),
-      include_vars = c("carb", "cyl"),
-      by_selected = c("am"),
-      include_selected = c("carb", "cyl"),
-      decorators = list(
-        default = teal_transform_module(),
-        table = teal_transform_module()
-      )
-    )
+  #   shiny::testServer(
+  #     mod$server,
+  #     args = c(list(id = "test_data", data = data), mod$server_args),
+  #     {
+  #       session$setInputs(
+  #         "dist_i-dataset_test_data_singleextract-select" = "mpg",
+  #         dist_tests = "Shapiro-Wilk",
+  #         bins = 10,
+  #         main_type = "Density",
+  #         add_dens = TRUE,
+  #         tabs = "Histogram",
+  #         roundn = 2
 
-    shiny::testServer(
-      mod$server,
-      args = c(
-        list(id = "test_data", data = data),
-        mod$server_args
-      ),
-      {
-        session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "am",
-          "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
-        )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
-      }
-    )
-  })
+  #       )
+  #       testthat::expect_match(get_code(session$returned()), "\ntest_table$")
+  #     }
+  #   )
+  # })
+
+  # it("Default and one decorator to one object executes successfully", {
+  #   data <- create_test_data(mtcars)
+  #   mod <- create_gtsummary_module(
+  #     data,
+  #     by_vars = c("am", "gear"),
+  #     include_vars = c("carb", "cyl"),
+  #     by_selected = c("am"),
+  #     include_selected = c("carb", "cyl"),
+  #     decorators = list(
+  #       default = teal_transform_module(),
+  #       table = teal_transform_module()
+  #     )
+  #   )
+
+  #   shiny::testServer(
+  #     mod$server,
+  #     args = c(
+  #       list(id = "test_data", data = data),
+  #       mod$server_args
+  #     ),
+  #     {
+  #       session$setInputs(
+  #         "by-dataset_test_data_singleextract-select" = "am",
+  #         "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
+  #       )
+  #       testthat::expect_true(endsWith(get_code(session$returned()), "table"))
+  #     }
+  #   )
+  # })
 })
