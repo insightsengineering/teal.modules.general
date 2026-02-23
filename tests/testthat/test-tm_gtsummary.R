@@ -251,7 +251,7 @@ testthat::describe("tm_gtsummary module server behavior", {
         )
         session$flushReact()
 
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
         testthat::expect_true(inherits(table_r(), "gtsummary"))
       }
     )
@@ -280,7 +280,7 @@ testthat::describe("tm_gtsummary module server behavior", {
         )
         session$flushReact()
 
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
         testthat::expect_true(inherits(table_r(), "gtsummary"))
         testthat::expect_gt(length(unique(table_r()$table_body$variable)), 3L)
       }
@@ -312,7 +312,7 @@ testthat::describe("tm_gtsummary module server behavior", {
         )
         session$flushReact()
 
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
         table <- table_r()
         testthat::expect_equal(table$inputs$label, col_label)
         testthat::expect_true(all(table$table_body$var_label %in% unlist(col_label)))
@@ -384,7 +384,7 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
         )
         session$flushReact()
 
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
         table <- table_r()
         testthat::expect_equal(as.character(table$table_styling$caption), cap)
       }
