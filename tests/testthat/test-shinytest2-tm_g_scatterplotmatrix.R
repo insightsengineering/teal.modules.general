@@ -105,7 +105,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Change plot settings", {
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
   app_driver$set_active_module_input("alpha", 0.7)
-  app_driver$set_active_module_input("cex", 2)
+  app_driver$set_active_module_input("size", 2)
 
   app_driver$expect_no_validation_error()
 

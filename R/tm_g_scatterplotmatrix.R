@@ -21,7 +21,7 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot` (`trellis` - output of `lattice::splom`)
+#' - `plot` (`ggmatrix` - output of `GGally::ggpairs`)
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -273,9 +273,9 @@ ui_g_scatterplotmatrix <- function(id, ...) {
             step = .05, value = .5, ticks = FALSE
           ),
           sliderInput(
-            ns("cex"), "Points size:",
-            min = 0.2, max = 3,
-            step = .05, value = .65, ticks = FALSE
+            ns("size"), "Points size:",
+            min = 0.5, max = 5,
+            step = .25, value = 1.5, ticks = FALSE
           ),
           checkboxInput(ns("cor"), "Add Correlation", value = FALSE),
           radioButtons(
@@ -330,7 +330,7 @@ srv_g_scatterplotmatrix <- function(id,
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's output(s)")
       )
-      qenv <- teal.code::eval_code(obj, "library(dplyr);library(lattice)")
+      qenv <- teal.code::eval_code(obj, "library(dplyr)")
       teal.code::eval_code(qenv, as.expression(anl_merged_input()$expr))
     })
 
@@ -347,16 +347,16 @@ srv_g_scatterplotmatrix <- function(id,
       ANL <- qenv[["ANL"]]
 
       cols_names <- merged$anl_input_r()$columns_source$variables
-      alpha <- input$alpha
-      cex <- input$cex
+      alpha_val <- input$alpha
+      size_val <- input$size
       add_cor <- input$cor
       cor_method <- input$cor_method
       cor_na_omit <- input$cor_na_omit
 
-      cor_na_action <- if (isTruthy(cor_na_omit)) {
-        "na.omit"
+      cor_use <- if (isTruthy(cor_na_omit)) {
+        "pairwise.complete.obs"
       } else {
-        "na.fail"
+        "everything"
       }
 
       teal::validate_has_data(ANL, 10)
@@ -394,64 +394,61 @@ srv_g_scatterplotmatrix <- function(id,
 
       if (add_cor) {
         shinyjs::show("cor_method")
-        shinyjs::show("cor_use")
         shinyjs::show("cor_na_omit")
 
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
             expr = {
-              plot <- lattice::splom(
+              plot <- GGally::ggpairs(
                 ANL,
-                varnames = varnames_value,
-                panel = function(x, y, ...) {
-                  lattice::panel.splom(x = x, y = y, ...)
-                  cpl <- lattice::current.panel.limits()
-                  lattice::panel.text(
-                    mean(cpl$xlim),
-                    mean(cpl$ylim),
-                    get_scatterplotmatrix_stats(
-                      x,
-                      y,
-                      .f = stats::cor.test,
-                      .f_args = list(method = cor_method, na.action = cor_na_action)
-                    ),
-                    alpha = 0.6,
-                    fontsize = 18,
-                    fontface = "bold"
-                  )
-                },
-                pch = 16,
-                alpha = alpha_value,
-                cex = cex_value
+                columnLabels = varnames_value,
+                upper = list(
+                  continuous = GGally::wrap("cor", method = cor_method_value, use = cor_use_value)
+                ),
+                lower = list(
+                  continuous = GGally::wrap("points", alpha = alpha_value, size = size_value)
+                ),
+                diag = list(
+                  continuous = GGally::wrap("densityDiag", alpha = 0.5)
+                )
               )
             },
             env = list(
               varnames_value = varnames,
-              cor_method = cor_method,
-              cor_na_action = cor_na_action,
-              alpha_value = alpha,
-              cex_value = cex
+              cor_method_value = cor_method,
+              cor_use_value = cor_use,
+              alpha_value = alpha_val,
+              size_value = size_val
             )
           )
         )
       } else {
         shinyjs::hide("cor_method")
-        shinyjs::hide("cor_use")
         shinyjs::hide("cor_na_omit")
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
             expr = {
-              plot <- lattice::splom(
+              plot <- GGally::ggpairs(
                 ANL,
-                varnames = varnames_value,
-                pch = 16,
-                alpha = alpha_value,
-                cex = cex_value
+                columnLabels = varnames_value,
+                upper = list(
+                  continuous = GGally::wrap("points", alpha = alpha_value, size = size_value)
+                ),
+                lower = list(
+                  continuous = GGally::wrap("points", alpha = alpha_value, size = size_value)
+                ),
+                diag = list(
+                  continuous = GGally::wrap("densityDiag", alpha = 0.5)
+                )
               )
             },
-            env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
+            env = list(
+              varnames_value = varnames,
+              alpha_value = alpha_val,
+              size_value = size_val
+            )
           )
         )
       }
@@ -503,10 +500,14 @@ srv_g_scatterplotmatrix <- function(id,
 
 #' Get stats for x-y pairs in scatterplot matrix
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function is no longer used internally. The scatterplot matrix module now uses
+#' [GGally::ggpairs()] which handles correlation display natively via `GGally::wrap("cor", ...)`.
+#'
 #' Uses [stats::cor.test()] per default for all numerical input variables and converts results
 #' to character vector.
 #' Could be extended if different stats for different variable types are needed.
-#' Meant to be called from [lattice::panel.text()].
 #'
 #' Presently we need to use a formula input for `stats::cor.test` because
 #' `na.fail` only gets evaluated when a formula is passed (see below).
@@ -545,6 +546,11 @@ get_scatterplotmatrix_stats <- function(x, y,
                                         .f_args = list(),
                                         round_stat = 2,
                                         round_pval = 4) {
+  lifecycle::deprecate_warn(
+    "0.6.1",
+    "get_scatterplotmatrix_stats()",
+    details = "The scatterplot matrix module now uses GGally::ggpairs() which handles correlation display natively."
+  )
   if (is.numeric(x) && is.numeric(y)) {
     stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)), error = function(e) NA)
 

@@ -183,13 +183,13 @@ testthat::describe("tm_g_scatterplotmatrix module server behavior", {
           "variables-dataset_test_data_singleextract-select" = c("var1", "var2", "var3"),
           "cor" = FALSE,
           "alpha" = 0.5,
-          "cex" = 1
+          "size" = 1.5
         )
         testthat::expect_true(iv_r()$is_valid())
         output_result <- output_q()
         testthat::expect_true(inherits(output_result, "teal_data"))
         plot_result <- plot_r()
-        testthat::expect_true(inherits(plot_result, "trellis"))
+        testthat::expect_s3_class(plot_result, "ggmatrix")
       }
     )
   })
@@ -219,13 +219,13 @@ testthat::describe("tm_g_scatterplotmatrix module server behavior", {
           "variables-dataset_test_data_singleextract-select" = c("var1", "var2"),
           "cor" = FALSE,
           "alpha" = 0.5,
-          "cex" = 1
+          "size" = 1.5
         )
         testthat::expect_true(iv_r()$is_valid())
         output_result <- output_q()
         testthat::expect_true(inherits(output_result, "teal_data"))
         plot_result <- plot_r()
-        testthat::expect_true(inherits(plot_result, "trellis"))
+        testthat::expect_s3_class(plot_result, "ggmatrix")
       }
     )
   })
