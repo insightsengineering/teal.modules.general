@@ -64,7 +64,7 @@ For more examples, please see the vignette "Using scatterplot matrix" via
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{plot} (\code{trellis} - output of \code{lattice::splom})
+\item \code{plot} (\code{ggmatrix} - output of \code{GGally::ggpairs})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.

@@ -29,12 +29,16 @@ Default \code{stats::cor.test}.}
 Character with stats. For \code{\link[stats:cor.test]{stats::cor.test()}} correlation coefficient and p-value.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+}
+\details{
+This function is no longer used internally. The scatterplot matrix module now uses
+\code{\link[GGally:ggpairs]{GGally::ggpairs()}} which handles correlation display natively via \code{GGally::wrap("cor", ...)}.
+
 Uses \code{\link[stats:cor.test]{stats::cor.test()}} per default for all numerical input variables and converts results
 to character vector.
 Could be extended if different stats for different variable types are needed.
-Meant to be called from \code{\link[lattice:llines]{lattice::panel.text()}}.
-}
-\details{
+
 Presently we need to use a formula input for \code{stats::cor.test} because
 \code{na.fail} only gets evaluated when a formula is passed (see below).
 
