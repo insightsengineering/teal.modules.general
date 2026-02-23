@@ -163,7 +163,7 @@ testthat::describe("tm_gtsummary input validation", {
           plot = teal::teal_transform_module()
         )
       ),
-      "The `decorators` must be a named list with:"
+      "The `decorators` must be a named list with any of the following names:"
     )
   })
 
@@ -250,7 +250,7 @@ testthat::describe("tm_gtsummary module server behavior", {
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
 
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         testthat::expect_true(inherits(table_r(), "gtsummary"))
       }
     )
@@ -278,7 +278,7 @@ testthat::describe("tm_gtsummary module server behavior", {
           "include-dataset_test_data_singleextract-select" = NULL
         )
 
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         testthat::expect_true(inherits(table_r(), "gtsummary"))
         testthat::expect_gt(length(unique(table_r()$table_body$variable)), 3L)
       }
@@ -308,7 +308,7 @@ testthat::describe("tm_gtsummary module server behavior", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         table <- table_r()
         testthat::expect_equal(table$inputs$label, col_label)
         testthat::expect_true(all(table$table_body$var_label %in% unlist(col_label)))
@@ -376,9 +376,12 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
         session$setInputs(
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl"),
-          "decorate_table-transform_1-transform-caption" = cap
+          "decorate_table-inner-transform_1-transform-caption" = cap,
+          nonmissing = "no",
+          percent = "column"
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         table <- table_r()
         testthat::expect_equal(as.character(table$table_styling$caption), cap)
       }
