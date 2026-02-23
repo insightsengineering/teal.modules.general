@@ -277,7 +277,7 @@ assert_single_selection <- function(x,
 #' @keywords internal
 srv_decorate_teal_data <- function(id, data, decorators, expr) {
   checkmate::assert_class(data, classes = "reactive")
-  checkmate::assert_list(decorators, "teal_transform_module")
+  assert_decorators(decorators)
 
   no_expr <- missing(expr)
 
@@ -287,11 +287,11 @@ srv_decorate_teal_data <- function(id, data, decorators, expr) {
     expr_r <- if (is.reactive(expr)) expr else reactive(expr)
 
     reactive({
-      req(decorated_output())
+      do <- req(decorated_output())
       if (no_expr) {
-        decorated_output()
+        do
       } else {
-        teal.code::eval_code(decorated_output(), expr_r())
+        teal.code::eval_code(do, expr_r())
       }
     })
   })

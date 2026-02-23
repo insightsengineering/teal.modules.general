@@ -190,6 +190,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 
   available_decorators <- c("elbow_plot", "circle_plot", "biplot", "eigenvector_plot")
   assert_decorators(decorators, available_decorators)
+  assert_decorators(transformators, available_decorators)
 
   # Make UI args
   args <- as.list(environment())

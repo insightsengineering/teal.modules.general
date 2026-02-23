@@ -212,7 +212,7 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module(),
+        default = list(teal_transform_module()),
         table = list(teal_transform_module(), teal_transform_module())
       )
     )
