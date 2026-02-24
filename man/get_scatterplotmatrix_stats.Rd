@@ -29,20 +29,11 @@ Default \code{stats::cor.test}.}
 Character with stats. For \code{\link[stats:cor.test]{stats::cor.test()}} correlation coefficient and p-value.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
 Uses \code{\link[stats:cor.test]{stats::cor.test()}} per default for all numerical input variables and converts results
 to character vector.
 Could be extended if different stats for different variable types are needed.
-Meant to be called from \code{\link[lattice:llines]{lattice::panel.text()}}.
-}
-\details{
-Presently we need to use a formula input for \code{stats::cor.test} because
-\code{na.fail} only gets evaluated when a formula is passed (see below).
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{x = c(1,3,5,7,NA)
-y = c(3,6,7,8,1)
-stats::cor.test(x, y, na.action = "na.fail")
-stats::cor.test(~ x + y,  na.action = "na.fail")
-}\if{html}{\out{</div>}}
 }
 \examples{
 set.seed(1)
