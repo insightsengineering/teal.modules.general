@@ -460,7 +460,8 @@ srv_g_scatterplotmatrix <- function(id,
                         fontface = "bold",
                         color = cor_color
                       ) +
-                      ggplot2::xlim(0, 1) + ggplot2::ylim(0, 1) +
+                      ggplot2::xlim(0, 1) +
+                      ggplot2::ylim(0, 1) +
                       ggplot2::theme_void()
                   } else {
                     # lower triangle: scatter/box plot
