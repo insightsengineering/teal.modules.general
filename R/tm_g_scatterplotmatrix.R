@@ -549,15 +549,15 @@ get_scatterplotmatrix_stats <- function(x, y,
     stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)), error = function(e) NA)
 
     if (anyNA(stat)) {
-      return("NA")
+      "NA"
     } else if (all(c("estimate", "p.value") %in% names(stat))) {
-      return(paste(
+      paste(
         c(
           paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
           paste0("P:", round(stat$p.value, round_pval))
         ),
         collapse = "\n"
-      ))
+      )
     } else {
       stop("function not supported")
     }
@@ -573,6 +573,6 @@ get_scatterplotmatrix_stats <- function(x, y,
         return("rho:-")
       }
     }
-    return("-")
+    "-"
   }
 }

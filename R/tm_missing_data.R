@@ -402,7 +402,10 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Combinations"),
       uiOutput(ns("cutoff")),
-      ui_transform_teal_data(ns("dec_combination_plot"), transformators = select_decorators(decorators, "combination_plot"))
+      ui_transform_teal_data(
+        ns("dec_combination_plot"),
+        transformators = select_decorators(decorators, "combination_plot")
+      )
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Grouped by Subject"),
