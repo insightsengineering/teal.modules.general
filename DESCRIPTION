@@ -26,7 +26,7 @@ Depends:
     ggplot2 (>= 3.5.0),
     R (>= 4.1),
     shiny (>= 1.8.1),
-    teal (>= 1.1.0),
+    teal (>= 1.1.0.9021),
     teal.transform (>= 0.7.0)
 Imports:
     bslib (>= 0.8.0),
