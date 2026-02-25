@@ -189,7 +189,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
   available_decorators <- c("elbow_plot", "circle_plot", "biplot", "eigenvector_plot")
-  assert_decorators(decorators, available_decorators)
+  teal::assert_decorators(decorators, available_decorators)
 
   # Make UI args
   args <- as.list(environment())
@@ -262,30 +262,30 @@ ui_a_pca <- function(id, ...) {
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
-              ui_decorate_teal_data(
+              ui_transform_teal_data(
                 ns("d_elbow_plot"),
-                decorators = select_decorators(args$decorators, "elbow_plot")
+                transformators = select_decorators(args$decorators, "elbow_plot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Circle plot'", ns("plot_type")),
-              ui_decorate_teal_data(
+              ui_transform_teal_data(
                 ns("d_circle_plot"),
-                decorators = select_decorators(args$decorators, "circle_plot")
+                transformators = select_decorators(args$decorators, "circle_plot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
-              ui_decorate_teal_data(
+              ui_transform_teal_data(
                 ns("d_biplot"),
-                decorators = select_decorators(args$decorators, "biplot")
+                transformators = select_decorators(args$decorators, "biplot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Eigenvector plot'", ns("plot_type")),
-              ui_decorate_teal_data(
+              ui_transform_teal_data(
                 ns("d_eigenvector_plot"),
-                decorators = select_decorators(args$decorators, "eigenvector_plot")
+                transformators = select_decorators(args$decorators, "eigenvector_plot")
               )
             )
           ),
@@ -1026,10 +1026,10 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
 
     decorated_q <- mapply(
       function(obj_name, q) {
-        srv_decorate_teal_data(
+        teal::srv_transform_teal_data(
           id = sprintf("d_%s", obj_name),
           data = q,
-          decorators = select_decorators(decorators, obj_name),
+          transformators = select_decorators(decorators, obj_name),
           expr = reactive({
             substitute(.plot, env = list(.plot = as.name(obj_name)))
           })
