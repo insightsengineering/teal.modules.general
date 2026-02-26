@@ -243,7 +243,7 @@ tm_a_regression <- function(label = "Regression Analysis",
       .var.name = "label_segment_threshold"
     )
   }
-  assert_decorators(decorators, "plot")
+  teal::assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -334,7 +334,7 @@ ui_a_regression <- function(id, ...) {
           label = "Outlier label"
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
+      ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
@@ -993,10 +993,10 @@ srv_a_regression <- function(id,
       )
     })
 
-    decorated_output_q <- srv_decorate_teal_data(
+    decorated_output_q <- teal::srv_transform_teal_data(
       "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = quote(plot)
     )
 

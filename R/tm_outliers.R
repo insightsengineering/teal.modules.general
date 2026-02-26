@@ -196,7 +196,7 @@ tm_outliers <- function(label = "Outliers Module",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  assert_decorators(decorators, names = c("box_plot", "density_plot", "cumulative_plot"))
+  teal::assert_decorators(decorators, names = c("box_plot", "density_plot", "cumulative_plot"))
   # End of assertions
 
   # Make UI args
@@ -342,23 +342,23 @@ ui_outliers <- function(id, ...) {
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Boxplot'"),
-        ui_decorate_teal_data(
+        ui_transform_teal_data(
           ns("d_box_plot"),
-          decorators = select_decorators(args$decorators, "box_plot")
+          transformators = select_decorators(args$decorators, "box_plot")
         )
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Density Plot'"),
-        ui_decorate_teal_data(
+        ui_transform_teal_data(
           ns("d_density_plot"),
-          decorators = select_decorators(args$decorators, "density_plot")
+          transformators = select_decorators(args$decorators, "density_plot")
         )
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Cumulative Distribution Plot'"),
-        ui_decorate_teal_data(
+        ui_transform_teal_data(
           ns("d_cumulative_plot"),
-          decorators = select_decorators(args$decorators, "cumulative_plot")
+          transformators = select_decorators(args$decorators, "cumulative_plot")
         )
       ),
       bslib::accordion(
@@ -1040,10 +1040,10 @@ srv_outliers <- function(id, data, outlier_var,
 
     decorated_q <- mapply(
       function(obj_name, q) {
-        srv_decorate_teal_data(
+        teal::srv_transform_teal_data(
           id = sprintf("d_%s", obj_name),
           data = q,
-          decorators = select_decorators(decorators, obj_name),
+          transformators = select_decorators(decorators, obj_name),
           expr = reactive({
             substitute(
               expr = {

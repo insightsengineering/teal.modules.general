@@ -107,7 +107,7 @@ tm_gtsummary <- function(
   checkmate::assert_list(include, types = "data_extract_spec")
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
-  assert_decorators(decorators, "table")
+  teal::assert_decorators(decorators, "table")
   datanames <- teal.transform::get_extract_datanames(list(by = by, include = include))
   checkmate::assert_character(datanames, len = 1L, any.missing = FALSE, all.missing = FALSE)
 
@@ -269,31 +269,21 @@ srv_gtsummary <- function(id,
       qq
     })
 
-    decorations <- lapply(names(decorators), function(decorator_name) {
-      function(data) {
-        srv_transform_teal_data(
-          paste0("decorate_", decorator_name),
-          data = data,
-          transformators = decorators[[decorator_name]]
-        )
-      }
-    })
-    output_data_decorated <- Reduce(function(f, ...) f(...), decorations, init = output_q, right = TRUE)
-    print_output_decorated <- reactive({
-      q <- req(output_data_decorated())
-      within(q, {
-        table
-      })
-    })
+    decorated_output_q <- teal::srv_transform_teal_data(
+      "d_table",
+      data = output_q,
+      transformators = select_decorators(decorators, "table"),
+      expr = quote(table)
+    )
 
     table_r <- reactive({
-      req(output_data_decorated())[["table"]]
+      req(decorated_output_q())[["table"]]
     })
 
     teal.widgets::table_with_settings_srv(
       id = "table",
       table_r = table_r
     )
-    print_output_decorated
+    decorated_output_q
   })
 }

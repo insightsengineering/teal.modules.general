@@ -199,7 +199,7 @@ tm_g_distribution <- function(label = "Distribution Module",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  assert_decorators(decorators, names = c("histogram_plot", "qq_plot", "summary_table", "test_table"))
+  teal::assert_decorators(decorators, names = c("histogram_plot", "qq_plot", "summary_table", "test_table"))
 
   # End of assertions
 
@@ -304,9 +304,9 @@ ui_distribution <- function(id, ...) {
               inline = TRUE
             ),
             checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
-            ui_decorate_teal_data(
+            ui_transform_teal_data(
               ns("d_density"),
-              decorators = select_decorators(args$decorators, "histogram_plot")
+              transformators = select_decorators(args$decorators, "histogram_plot")
             )
           )
         ),
@@ -315,9 +315,9 @@ ui_distribution <- function(id, ...) {
           bslib::accordion_panel(
             "QQ Plot",
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
-            ui_decorate_teal_data(
+            ui_transform_teal_data(
               ns("d_qq"),
-              decorators = select_decorators(args$decorators, "qq_plot")
+              transformators = select_decorators(args$decorators, "qq_plot")
             ),
             collapsed = FALSE
           )
@@ -1313,31 +1313,31 @@ srv_distribution <- function(id,
       }
     })
 
-    decorated_output_dist_q <- srv_decorate_teal_data(
+    decorated_output_dist_q <- teal::srv_transform_teal_data(
       "d_density",
       data = output_dist_q,
-      decorators = select_decorators(decorators, "histogram_plot"),
+      transformators = select_decorators(decorators, "histogram_plot"),
       expr = quote(histogram_plot)
     )
 
-    decorated_output_qq_q <- srv_decorate_teal_data(
+    decorated_output_qq_q <- teal::srv_transform_teal_data(
       "d_qq",
       data = output_qq_q,
-      decorators = select_decorators(decorators, "qq_plot"),
+      transformators = select_decorators(decorators, "qq_plot"),
       expr = quote(qq_plot)
     )
 
-    decorated_output_summary_q <- srv_decorate_teal_data(
+    decorated_output_summary_q <- teal::srv_transform_teal_data(
       "d_summary",
       data = output_summary_q,
-      decorators = select_decorators(decorators, "summary_table"),
+      transformators = select_decorators(decorators, "summary_table"),
       expr = quote(summary_table)
     )
 
-    decorated_output_test_q <- srv_decorate_teal_data(
+    decorated_output_test_q <- teal::srv_transform_teal_data(
       "d_test",
       data = output_test_q,
-      decorators = select_decorators(decorators, "test_table"),
+      transformators = select_decorators(decorators, "test_table"),
       expr = quote(test_table)
     )
 
