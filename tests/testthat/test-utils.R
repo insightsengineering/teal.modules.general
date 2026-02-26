@@ -134,7 +134,7 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
       }
     )
   })
@@ -168,7 +168,7 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_is(tryCatch(print_output_decorated(), error = function(e) e), "shiny.silent.error")
+        testthat::expect_is(tryCatch(decorated_output_q(), error = function(e) e), "shiny.silent.error")
       }
     )
   })
@@ -195,7 +195,7 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
       }
     )
   })
@@ -225,7 +225,7 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
       }
     )
   })
@@ -254,7 +254,7 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
       }
     )
   })
