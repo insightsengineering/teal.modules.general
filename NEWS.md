@@ -7,6 +7,9 @@
 - Improve `tm_missing_data` visualization (#495).
 - Multiple decorators can be applied to the same output object (#978).
 
+### Bug fixes
+- `Show only distinct rows` in `tm_data_table` does no longer show an extra count column `n` (#983).
+
 # teal.modules.general 0.5.1
 
 - Removed ggmosaic package dependency to avoid being archived on CRAN (#932).
