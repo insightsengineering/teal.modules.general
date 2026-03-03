@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.6.0.9019
+## teal.modules.general 0.6.0.9020
 
 #### Enhancements
 
