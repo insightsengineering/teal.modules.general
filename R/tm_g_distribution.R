@@ -304,7 +304,7 @@ ui_distribution <- function(id, ...) {
               inline = TRUE
             ),
             checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
-            ui_transform_teal_data(
+            teal::ui_transform_teal_data(
               ns("d_density"),
               transformators = select_decorators(args$decorators, "histogram_plot")
             )
@@ -315,7 +315,7 @@ ui_distribution <- function(id, ...) {
           bslib::accordion_panel(
             "QQ Plot",
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
-            ui_transform_teal_data(
+            teal::ui_transform_teal_data(
               ns("d_qq"),
               transformators = select_decorators(args$decorators, "qq_plot")
             ),

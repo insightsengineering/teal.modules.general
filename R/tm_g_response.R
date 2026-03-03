@@ -302,7 +302,7 @@ ui_g_response <- function(id, ...) {
         selected = ifelse(args$freq, "frequency", "density"),
         justified = TRUE
       ),
-      ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(

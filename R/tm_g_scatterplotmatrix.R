@@ -262,7 +262,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         is_single_dataset = is_single_dataset_value
       ),
       tags$hr(),
-      ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(

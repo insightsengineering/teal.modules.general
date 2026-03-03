@@ -263,7 +263,7 @@ ui_tm_g_association <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(

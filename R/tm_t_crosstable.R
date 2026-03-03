@@ -262,7 +262,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, remove_zero_c
           checkboxInput(ns("remove_zero_columns"), "Remove zero-only columns", value = remove_zero_columns)
         )
       ),
-      ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "table"))
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "table"))
     ),
     pre_output = pre_output,
     post_output = post_output

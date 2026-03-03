@@ -342,21 +342,21 @@ ui_outliers <- function(id, ...) {
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Boxplot'"),
-        ui_transform_teal_data(
+        teal::ui_transform_teal_data(
           ns("d_box_plot"),
           transformators = select_decorators(args$decorators, "box_plot")
         )
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Density Plot'"),
-        ui_transform_teal_data(
+        teal::ui_transform_teal_data(
           ns("d_density_plot"),
           transformators = select_decorators(args$decorators, "density_plot")
         )
       ),
       conditionalPanel(
         condition = paste0("input['", ns("tabs"), "'] == 'Cumulative Distribution Plot'"),
-        ui_transform_teal_data(
+        teal::ui_transform_teal_data(
           ns("d_cumulative_plot"),
           transformators = select_decorators(args$decorators, "cumulative_plot")
         )

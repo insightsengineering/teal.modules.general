@@ -262,28 +262,28 @@ ui_a_pca <- function(id, ...) {
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
-              ui_transform_teal_data(
+              teal::ui_transform_teal_data(
                 ns("d_elbow_plot"),
                 transformators = select_decorators(args$decorators, "elbow_plot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Circle plot'", ns("plot_type")),
-              ui_transform_teal_data(
+              teal::ui_transform_teal_data(
                 ns("d_circle_plot"),
                 transformators = select_decorators(args$decorators, "circle_plot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
-              ui_transform_teal_data(
+              teal::ui_transform_teal_data(
                 ns("d_biplot"),
                 transformators = select_decorators(args$decorators, "biplot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Eigenvector plot'", ns("plot_type")),
-              ui_transform_teal_data(
+              teal::ui_transform_teal_data(
                 ns("d_eigenvector_plot"),
                 transformators = select_decorators(args$decorators, "eigenvector_plot")
               )

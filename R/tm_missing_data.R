@@ -397,19 +397,21 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
           value = FALSE
         )
       },
-      ui_transform_teal_data(ns("dec_summary_plot"), transformators = select_decorators(decorators, "summary_plot"))
+      teal::ui_transform_teal_data(ns("dec_summary_plot"),
+        transformators = select_decorators(decorators, "summary_plot")
+      )
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Combinations"),
       uiOutput(ns("cutoff")),
-      ui_transform_teal_data(
+      teal::ui_transform_teal_data(
         ns("dec_combination_plot"),
         transformators = select_decorators(decorators, "combination_plot")
       )
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Grouped by Subject"),
-      ui_transform_teal_data(
+      teal::ui_transform_teal_data(
         ns("dec_by_subject_plot"),
         transformators = select_decorators(decorators, "by_subject_plot")
       )

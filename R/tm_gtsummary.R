@@ -169,7 +169,7 @@ ui_gtsummary <- function(id, ...) {
           name_decorator <- names(args$decorators)[i]
           div(
             id = ns(paste0("decorate_", name_decorator)),
-            ui_transform_teal_data(
+            teal::ui_transform_teal_data(
               ns(paste0("decorate_", name_decorator)),
               transformators = args$decorators[[i]]
             )

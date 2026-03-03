@@ -366,7 +366,7 @@ ui_g_bivariate <- function(id, ...) {
           justified = TRUE
         )
       ),
-      ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",

@@ -334,7 +334,7 @@ ui_a_regression <- function(id, ...) {
           label = "Outlier label"
         )
       ),
-      ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
