@@ -185,7 +185,7 @@ ui_rmarkdown <- function(id, rmd_content, allow_download, extra_transform, ...) 
             class = "btn-primary btn-sm"
           )
         },
-        ui_transform_teal_data(ns("extra_transform"), transformators = extra_transform)
+        teal::ui_transform_teal_data(ns("extra_transform"), transformators = extra_transform)
       ),
       tags$hr(),
       uiOutput(ns("rmd_output"))
