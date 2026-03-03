@@ -156,7 +156,7 @@ describe("tests for module creation", {
     mod <- tm_a_regression(
       response = response,
       regressor = regressor,
-      decorators = list(default = ggplot_caption_decorator())
+      decorators = list(all = ggplot_caption_decorator())
     )
 
     testthat::expect_s3_class(mod, "teal_module")

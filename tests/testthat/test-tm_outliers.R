@@ -148,9 +148,9 @@ testthat::describe("tm_outliers module creation", {
   })
 
   it("produces ui of the expected type", {
-    mod <- tm_outliers(outlier_var = outlier_var)
+    mod <- tm_outliers(outlier_var = outlier_var, categorical_var = categorical_var)
     testthat::expect_s3_class(
-      mod$ui("test", outlier_var = outlier_var, categorical_var = categorical_var),
+      do.call(mod$ui, c(mod$ui_args, id = "test"), quote = TRUE),
       "shiny.tag.list"
     )
   })
