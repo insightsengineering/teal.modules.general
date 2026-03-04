@@ -1,38 +1,38 @@
 #' @export
 tm_g_bivariate.picks <- function(label = "Bivariate Plots",
-                                 x = teal.transform::picks(
-                                   teal.transform::datasets(),
-                                   teal.transform::variables(
+                                 x = teal.picks::picks(
+                                   teal.picks::datasets(),
+                                   teal.picks::variables(
                                      choices = is.numeric |
-                                       teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                       teal.picks::is_categorical(min.len = 2, max.len = 10),
                                      selected = 1L
                                    ),
-                                   teal.transform::values()
+                                   teal.picks::values()
                                  ),
-                                 y = teal.transform::picks(
-                                   teal.transform::datasets(),
-                                   teal.transform::variables(
+                                 y = teal.picks::picks(
+                                   teal.picks::datasets(),
+                                   teal.picks::variables(
                                      choices = is.numeric |
-                                       teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                       teal.picks::is_categorical(min.len = 2, max.len = 10),
                                      selected = 2L
                                    ),
-                                   teal.transform::values()
+                                   teal.picks::values()
                                  ),
-                                 row_facet = teal.transform::picks(
-                                   teal.transform::datasets(),
-                                   teal.transform::variables(
-                                     choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                 row_facet = teal.picks::picks(
+                                   teal.picks::datasets(),
+                                   teal.picks::variables(
+                                     choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                      selected = NULL
                                    ),
-                                   teal.transform::values()
+                                   teal.picks::values()
                                  ),
-                                 col_facet = teal.transform::picks(
-                                   teal.transform::datasets(),
-                                   teal.transform::variables(
-                                     choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                 col_facet = teal.picks::picks(
+                                   teal.picks::datasets(),
+                                   teal.picks::variables(
+                                     choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                      selected = NULL
                                    ),
-                                   teal.transform::values()
+                                   teal.picks::values()
                                  ),
                                  facet = !is.null(row_facet) || !is.null(col_facet),
                                  color = NULL,
@@ -162,11 +162,11 @@ ui_g_bivariate.picks <- function(id,
     encoding = shiny::tagList(
       tags$div(
         tags$strong("X variable"),
-        teal.transform::picks_ui(id = ns("x"), picks = x)
+        teal.picks::picks_ui(id = ns("x"), picks = x)
       ),
       tags$div(
         tags$strong("Y variable"),
-        teal.transform::picks_ui(id = ns("y"), picks = y)
+        teal.picks::picks_ui(id = ns("y"), picks = y)
       ),
       conditionalPanel(
         condition =
@@ -186,7 +186,7 @@ ui_g_bivariate.picks <- function(id,
         tags$div(
           tags$div(
             tags$strong("Row facetting variable"),
-            teal.transform::picks_ui(id = ns("row_facet"), picks = row_facet),
+            teal.picks::picks_ui(id = ns("row_facet"), picks = row_facet),
             checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales)
           )
         )
@@ -195,7 +195,7 @@ ui_g_bivariate.picks <- function(id,
         tags$div(
           tags$div(
             tags$strong("Column facetting variable"),
-            teal.transform::picks_ui(id = ns("col_facet"), picks = col_facet),
+            teal.picks::picks_ui(id = ns("col_facet"), picks = col_facet),
             checkboxInput(ns("free_y_scales"), "free y scales", value = free_y_scales)
           )
         )
@@ -209,11 +209,11 @@ ui_g_bivariate.picks <- function(id,
             conditionalPanel(
               condition = paste0("input['", ns("coloring"), "']"),
               tags$div(
-                teal.transform::picks_ui(id = ns("color"), picks = color), # label = "Outline color by variable"
-                teal.transform::picks_ui(id = ns("fill"), picks = fill), # label = "Outline color by variable"
+                teal.picks::picks_ui(id = ns("color"), picks = color), # label = "Outline color by variable"
+                teal.picks::picks_ui(id = ns("fill"), picks = fill), # label = "Outline color by variable"
                 tags$div(
                   id = ns("size_settings"),
-                  teal.transform::picks_ui(id = ns("size"), picks = size) # label = "Size of points by variable (only if x and y are numeric)"
+                  teal.picks::picks_ui(id = ns("size"), picks = size) # label = "Size of points by variable (only if x and y are numeric)"
                 )
               )
             )
@@ -280,7 +280,7 @@ srv_g_bivariate.picks <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     ns <- session$ns
-    selectors <- teal.transform::picks_srv(
+    selectors <- teal.picks::picks_srv(
       picks = list(
         x = x,
         y = y,
@@ -318,7 +318,7 @@ srv_g_bivariate.picks <- function(id,
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")')
     })
 
-    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+    merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
 
     output_q <- reactive(label = "make bivariateplot", {
       req(merged$data())

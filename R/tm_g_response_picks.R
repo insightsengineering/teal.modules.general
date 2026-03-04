@@ -1,35 +1,35 @@
 #' @export
 tm_g_response.picks <- function(label = "Response Plot",
-                                response = teal.transform::picks(
-                                  teal.transform::datasets(),
-                                  teal.transform::variables(
-                                    choices = teal.transform::is_categorical(min.len = 2, max.len = 10)
+                                response = teal.picks::picks(
+                                  teal.picks::datasets(),
+                                  teal.picks::variables(
+                                    choices = teal.picks::is_categorical(min.len = 2, max.len = 10)
                                   ),
-                                  teal.transform::values()
+                                  teal.picks::values()
                                 ),
-                                x = teal.transform::picks(
-                                  teal.transform::datasets(),
-                                  teal.transform::variables(
-                                    choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                x = teal.picks::picks(
+                                  teal.picks::datasets(),
+                                  teal.picks::variables(
+                                    choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                     selected = 2L
                                   ),
-                                  teal.transform::values()
+                                  teal.picks::values()
                                 ),
-                                row_facet = teal.transform::picks(
-                                  teal.transform::datasets(),
-                                  teal.transform::variables(
-                                    choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                row_facet = teal.picks::picks(
+                                  teal.picks::datasets(),
+                                  teal.picks::variables(
+                                    choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                     selected = NULL
                                   ),
-                                  teal.transform::values()
+                                  teal.picks::values()
                                 ),
-                                col_facet = teal.transform::picks(
-                                  teal.transform::datasets(),
-                                  teal.transform::variables(
-                                    choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                col_facet = teal.picks::picks(
+                                  teal.picks::datasets(),
+                                  teal.picks::variables(
+                                    choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                     selected = NULL
                                   ),
-                                  teal.transform::values()
+                                  teal.picks::values()
                                 ),
                                 coord_flip = FALSE,
                                 count_labels = TRUE,
@@ -50,13 +50,13 @@ tm_g_response.picks <- function(label = "Response Plot",
 
   checkmate::assert_class(response, "picks")
   if (isTRUE(attr(response$variables, "multiple"))) {
-    warning("`response` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
+    warning("`response` accepts only a single variable selection. Forcing `teal.picks::variables(multiple) to FALSE`")
     attr(response$variables, "multiple") <- FALSE
   }
 
   checkmate::assert_class(x, "picks")
   if (isTRUE(attr(x$variables, "multiple"))) {
-    warning("`x` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
+    warning("`x` accepts only a single variable selection. Forcing `teal.picks::variables(multiple) to FALSE`")
     attr(x$variables, "multiple") <- FALSE
   }
 
@@ -122,22 +122,22 @@ ui_g_response.picks <- function(id,
       tags$label("Encodings", class = "text-primary"),
       tags$div(
         tags$strong("Response variable"),
-        teal.transform::picks_ui(id = ns("response"), picks = response)
+        teal.picks::picks_ui(id = ns("response"), picks = response)
       ),
       tags$div(
         tags$strong("X variable"),
-        teal.transform::picks_ui(id = ns("x"), picks = x)
+        teal.picks::picks_ui(id = ns("x"), picks = x)
       ),
       if (!is.null(row_facet)) {
         tags$div(
           tags$strong("Row facetting"),
-          teal.transform::picks_ui(id = ns("row_facet"), picks = row_facet)
+          teal.picks::picks_ui(id = ns("row_facet"), picks = row_facet)
         )
       },
       if (!is.null(col_facet)) {
         tags$div(
           tags$strong("Column facetting"),
-          teal.transform::picks_ui(id = ns("col_facet"), picks = col_facet)
+          teal.picks::picks_ui(id = ns("col_facet"), picks = col_facet)
         )
       },
       shinyWidgets::radioGroupButtons(
@@ -186,7 +186,7 @@ srv_g_response.picks <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::picks_srv(
+    selectors <- teal.picks::picks_srv(
       picks = list(
         response = response,
         x = x,
@@ -239,7 +239,7 @@ srv_g_response.picks <- function(id,
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");')
     })
 
-    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+    merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
 
 
     output_q <- reactive({

@@ -1,8 +1,8 @@
 #' @export
 tm_a_pca.picks <- function(label = "Principal Component Analysis",
-                           dat = teal.transform::picks(
-                             teal.transform::datasets(),
-                             teal.transform::variables(
+                           dat = teal.picks::picks(
+                             teal.picks::datasets(),
+                             teal.picks::variables(
                                choices = tidyselect::where(~ is.numeric(.x) && all(!is.na(.x))),
                                selected = tidyselect::everything(),
                                multiple = TRUE
@@ -124,7 +124,7 @@ ui_a_pca.picks <- function(id,
         tags$label("Encodings", class = "text-primary"),
         tags$div(
           tags$strong("Data selection"),
-          teal.transform::picks_ui(id = ns("dat"), picks = dat)
+          teal.picks::picks_ui(id = ns("dat"), picks = dat)
         ),
         bslib::accordion(
           open = TRUE,
@@ -229,7 +229,7 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::picks_srv(picks = list(dat = dat), data = data)
+    selectors <- teal.picks::picks_srv(picks = list(dat = dat), data = data)
 
     qenv <- reactive({
       validate_input(

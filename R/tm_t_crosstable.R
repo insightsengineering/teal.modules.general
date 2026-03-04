@@ -7,7 +7,7 @@
 #' @inheritParams shared_params
 #' @param x (`picks` or `list` of `picks`)
 #' Object with all available choices with pre-selected option for variable X - row values.
-#' In case of `picks` use `teal.transform::variables(..., ordered = TRUE)` if table elements should be
+#' In case of `picks` use `teal.picks::variables(..., ordered = TRUE)` if table elements should be
 #' rendered according to selection order.
 #' @param y (`picks` or `list` of multiple `picks`)
 #' Object with all available choices with pre-selected option for variable Y - column values.
@@ -82,26 +82,26 @@
 #'   modules = modules(
 #'     tm_t_crosstable(
 #'       label = "Cross Table",
-#'       x = teal.transform::picks(
+#'       x = teal.picks::picks(
 #'         datasets("mtcars"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = variable_choices(data[["mtcars"]], c("cyl", "vs", "am", "gear")),
 #'           selected = c("cyl", "gear"),
 #'           multiple = TRUE,
 #'           ordered = TRUE,
 #'           fixed = FALSE
 #'         ),
-#'         teal.transform::values()
+#'         teal.picks::values()
 #'       ),
-#'       y = teal.transform::picks(
+#'       y = teal.picks::picks(
 #'         datasets("mtcars"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = variable_choices(data[["mtcars"]], c("cyl", "vs", "am", "gear")),
 #'           selected = "vs",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
-#'         teal.transform::values()
+#'         teal.picks::values()
 #'       )
 #'     )
 #'   )
@@ -127,9 +127,9 @@
 #'   modules = modules(
 #'     tm_t_crosstable(
 #'       label = "Cross Table",
-#'       x = teal.transform::picks(
+#'       x = teal.picks::picks(
 #'         datasets("ADSL"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = variable_choices(data[["ADSL"]], subset = function(data) {
 #'             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
 #'             return(names(data)[idx])
@@ -139,11 +139,11 @@
 #'           ordered = TRUE,
 #'           fixed = FALSE
 #'         ),
-#'         teal.transform::values()
+#'         teal.picks::values()
 #'       ),
-#'       y = teal.transform::picks(
+#'       y = teal.picks::picks(
 #'         datasets("ADSL"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = variable_choices(data[["ADSL"]], subset = function(data) {
 #'             idx <- vapply(data, is.factor, logical(1))
 #'             return(names(data)[idx])
@@ -152,7 +152,7 @@
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
-#'         teal.transform::values()
+#'         teal.picks::values()
 #'       )
 #'     )
 #'   )
@@ -164,10 +164,10 @@
 #' @export
 #'
 tm_t_crosstable <- function(label = "Cross Table",
-                            x = teal.transform::picks(
-                              teal.transform::datasets(),
-                              teal.transform::variables(
-                                choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                            x = teal.picks::picks(
+                              teal.picks::datasets(),
+                              teal.picks::variables(
+                                choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                 selected = 1L, multiple = TRUE, ordered = TRUE
                               )
                             ),

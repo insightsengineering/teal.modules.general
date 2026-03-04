@@ -11,16 +11,16 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param x (`picks`) Variable specification for the x-axis. Created using [teal.transform::picks()].
+#' @param x (`picks`) Variable specification for the x-axis. Created using [teal.picks::picks()].
 #' Can be numeric, factor or character. No empty selections are allowed.
-#' @param y (`picks`) Variable specification for the y-axis. Created using [teal.transform::picks()].
+#' @param y (`picks`) Variable specification for the y-axis. Created using [teal.picks::picks()].
 #' Can be numeric, factor or character.
 #' @param use_density (`logical`) optional, indicates whether to plot density (`TRUE`) or frequency (`FALSE`).
 #' Defaults to frequency (`FALSE`).
 #' @param row_facet (`picks`) optional, specification of the data variable(s) to use for faceting rows.
-#' Created using [teal.transform::picks()].
+#' Created using [teal.picks::picks()].
 #' @param col_facet (`picks`) optional, specification of the data variable(s) to use for faceting columns.
-#' Created using [teal.transform::picks()].
+#' Created using [teal.picks::picks()].
 #' @param facet (`logical`) optional, specifies whether the facet encodings `ui` elements are toggled
 #' on and shown to the user by default. Defaults to `TRUE` if either `row_facet` or `column_facet`
 #' are supplied.
@@ -28,13 +28,13 @@
 #' and `UI` tool offered to the user.
 #' @param color (`picks`) optional, specification of the data variable(s) selected for the outline color
 #' inside the coloring settings. It will be applied when `color_settings` is set to `TRUE`.
-#' Created using [teal.transform::picks()].
+#' Created using [teal.picks::picks()].
 #' @param fill (`picks`) optional, specification of the data variable(s) selected for the fill color
 #' inside the coloring settings. It will be applied when `color_settings` is set to `TRUE`.
-#' Created using [teal.transform::picks()].
+#' Created using [teal.picks::picks()].
 #' @param size (`picks`) optional, specification of the data variable(s) selected for the size of
 #' `geom_point` plots inside the coloring settings. It will be applied when `color_settings` is set to `TRUE`.
-#' Created using [teal.transform::picks()].
+#' Created using [teal.picks::picks()].
 #' @param free_x_scales (`logical`) optional, whether X scaling shall be changeable.
 #' Does not allow scaling to be changed by default (`FALSE`).
 #' @param free_y_scales (`logical`) optional, whether Y scaling shall be changeable.
@@ -85,21 +85,21 @@
 #'   data = data,
 #'   modules = tm_g_bivariate(
 #'     label = "Bivariate Plots",
-#'     x = teal.transform::picks(
+#'     x = teal.picks::picks(
 #'       datasets("CO2"),
-#'       teal.transform::variables(selected = "conc")
+#'       teal.picks::variables(selected = "conc")
 #'     ),
-#'     y = teal.transform::picks(
+#'     y = teal.picks::picks(
 #'       datasets("CO2"),
-#'       teal.transform::variables(selected = "uptake")
+#'       teal.picks::variables(selected = "uptake")
 #'     ),
-#'     row_facet = teal.transform::picks(
+#'     row_facet = teal.picks::picks(
 #'       datasets("CO2"),
-#'       teal.transform::variables(selected = "Type")
+#'       teal.picks::variables(selected = "Type")
 #'     ),
-#'     col_facet = teal.transform::picks(
+#'     col_facet = teal.picks::picks(
 #'       datasets("CO2"),
-#'       teal.transform::variables(selected = "Treatment")
+#'       teal.picks::variables(selected = "Treatment")
 #'     )
 #'   )
 #' )
@@ -124,21 +124,21 @@
 #'   data = data,
 #'   modules = tm_g_bivariate(
 #'     label = "Bivariate Plots",
-#'     x = teal.transform::picks(
+#'     x = teal.picks::picks(
 #'       datasets("ADSL"),
-#'       teal.transform::variables(selected = "AGE")
+#'       teal.picks::variables(selected = "AGE")
 #'     ),
-#'     y = teal.transform::picks(
+#'     y = teal.picks::picks(
 #'       datasets("ADSL"),
-#'       teal.transform::variables(selected = "SEX")
+#'       teal.picks::variables(selected = "SEX")
 #'     ),
-#'     row_facet = teal.transform::picks(
+#'     row_facet = teal.picks::picks(
 #'       datasets("ADSL"),
-#'       teal.transform::variables(selected = "ARM")
+#'       teal.picks::variables(selected = "ARM")
 #'     ),
-#'     col_facet = teal.transform::picks(
+#'     col_facet = teal.picks::picks(
 #'       datasets("ADSL"),
-#'       teal.transform::variables(selected = "COUNTRY")
+#'       teal.picks::variables(selected = "COUNTRY")
 #'     )
 #'   )
 #' )
@@ -149,14 +149,14 @@
 #' @export
 #'
 tm_g_bivariate <- function(label = "Bivariate Plots",
-                           x = teal.transform::picks(
-                             teal.transform::datasets(),
-                             teal.transform::variables(
+                           x = teal.picks::picks(
+                             teal.picks::datasets(),
+                             teal.picks::variables(
                                choices = is.numeric |
-                                 teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                 teal.picks::is_categorical(min.len = 2, max.len = 10),
                                selected = 1L
                              ),
-                             teal.transform::values()
+                             teal.picks::values()
                            ),
                            y,
                            row_facet,

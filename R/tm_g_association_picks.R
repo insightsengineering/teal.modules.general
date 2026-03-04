@@ -1,19 +1,19 @@
 #' @export
 tm_g_association.picks <- function(label = "Association",
-                                   ref = teal.transform::picks(
-                                     teal.transform::datasets(),
-                                     teal.transform::variables(
+                                   ref = teal.picks::picks(
+                                     teal.picks::datasets(),
+                                     teal.picks::variables(
                                        choices = is.numeric |
-                                         teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                         teal.picks::is_categorical(min.len = 2, max.len = 10),
                                        selected = 1L
                                      ),
-                                     teal.transform::values()
+                                     teal.picks::values()
                                    ),
-                                   vars = teal.transform::picks(
-                                     teal.transform::datasets(),
-                                     teal.transform::variables(
+                                   vars = teal.picks::picks(
+                                     teal.picks::datasets(),
+                                     teal.picks::variables(
                                        choices = is.numeric |
-                                         teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                         teal.picks::is_categorical(min.len = 2, max.len = 10),
                                        selected = 2L,
                                        multiple = TRUE
                                      )
@@ -37,7 +37,7 @@ tm_g_association.picks <- function(label = "Association",
   checkmate::assert_string(label)
   checkmate::assert_class(ref, "picks")
   if (isTRUE(attr(ref$variables, "multiple"))) {
-    warning("`ref` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
+    warning("`ref` accepts only a single variable selection. Forcing `teal.picks::variables(multiple) to FALSE`")
     attr(ref$variables, "multiple") <- FALSE
   }
   checkmate::assert_class(vars, "picks")
@@ -99,11 +99,11 @@ ui_g_association.picks <- function(id,
       tags$label("Encodings", class = "text-primary"),
       tags$div(
         tags$strong("Reference variable"),
-        teal.transform::picks_ui(id = ns("ref"), picks = ref)
+        teal.picks::picks_ui(id = ns("ref"), picks = ref)
       ),
       tags$div(
         tags$strong("Associated variables"),
-        teal.transform::picks_ui(id = ns("vars"), picks = vars)
+        teal.picks::picks_ui(id = ns("vars"), picks = vars)
       ),
       checkboxInput(ns("association"), "Association with reference variable", value = show_association),
       checkboxInput(ns("show_dist"), "Scaled frequencies", value = FALSE),
@@ -154,7 +154,7 @@ srv_g_association.picks <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::picks_srv(picks = list(ref = ref, vars = vars), data = data)
+    selectors <- teal.picks::picks_srv(picks = list(ref = ref, vars = vars), data = data)
 
     validated_q <- reactive({
       obj <- req(data())
@@ -182,7 +182,7 @@ srv_g_association.picks <- function(id,
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")')
     })
 
-    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+    merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
 
     output_q <- reactive({
       req(merged$data())

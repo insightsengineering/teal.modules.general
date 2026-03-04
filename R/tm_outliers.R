@@ -66,21 +66,21 @@
 #'   modules = modules(
 #'     tm_outliers(
 #'       outlier_var = list(
-#'         teal.transform::picks(
+#'         teal.picks::picks(
 #'           datasets("CO2"),
-#'           teal.transform::variables(
+#'           teal.picks::variables(
 #'             choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
 #'             selected = "uptake",
 #'             multiple = FALSE,
 #'             fixed = FALSE
 #'           ),
-#'           teal.transform::values()
+#'           teal.picks::values()
 #'         )
 #'       ),
 #'       categorical_var = list(
-#'         teal.transform::picks(
+#'         teal.picks::picks(
 #'           datasets("CO2"),
-#'           teal.transform::variables(),
+#'           teal.picks::variables(),
 #'           values(
 #'             vars = vars,
 #'             choices = value_choices(data[["CO2"]], vars$selected),
@@ -118,21 +118,21 @@
 #'   modules = modules(
 #'     tm_outliers(
 #'       outlier_var = list(
-#'         teal.transform::picks(
+#'         teal.picks::picks(
 #'           datasets("ADSL"),
-#'           teal.transform::variables(
+#'           teal.picks::variables(
 #'             choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
 #'             selected = "AGE",
 #'             multiple = FALSE,
 #'             fixed = FALSE
 #'           ),
-#'           teal.transform::values()
+#'           teal.picks::values()
 #'         )
 #'       ),
 #'       categorical_var = list(
-#'         teal.transform::picks(
+#'         teal.picks::picks(
 #'           datasets("ADSL"),
-#'           teal.transform::variables(),
+#'           teal.picks::variables(),
 #'           values(
 #'             vars = vars,
 #'             choices = value_choices(data[["ADSL"]], vars$selected),

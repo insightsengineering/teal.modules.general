@@ -11,9 +11,9 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #' @param ref (`picks`)
-#' Reference variable specification created using `teal.transform::picks()`.
+#' Reference variable specification created using `teal.picks::picks()`.
 #' @param vars (`picks`)
-#' Variables to be associated with the reference variable, specified using `teal.transform::picks()`.
+#' Variables to be associated with the reference variable, specified using `teal.picks::picks()`.
 #' @param show_association (`logical`) optional, whether show association of `vars`
 #' with reference variable. Defaults to `TRUE`.
 #' @param distribution_theme,association_theme (`character`) optional, `ggplot2` themes to be used by default.
@@ -67,16 +67,16 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_g_association(
-#'       ref = teal.transform::picks(
+#'       ref = teal.picks::picks(
 #'         datasets("CO2"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = c("Plant", "Type", "Treatment"),
 #'           selected = "Plant"
 #'         )
 #'       ),
-#'       vars = teal.transform::picks(
+#'       vars = teal.picks::picks(
 #'         datasets("CO2"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = c("Plant", "Type", "Treatment"),
 #'           selected = "Treatment",
 #'           multiple = TRUE
@@ -106,16 +106,16 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_g_association(
-#'       ref = teal.transform::picks(
+#'       ref = teal.picks::picks(
 #'         datasets("ADSL"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2"),
 #'           selected = "RACE"
 #'         )
 #'       ),
-#'       vars = teal.transform::picks(
+#'       vars = teal.picks::picks(
 #'         datasets("ADSL"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2"),
 #'           selected = "BMRKR2",
 #'           multiple = TRUE
@@ -130,14 +130,14 @@
 #'
 #' @export
 tm_g_association <- function(label = "Association",
-                             ref = teal.transform::picks(
-                               teal.transform::datasets(),
-                               teal.transform::variables(
+                             ref = teal.picks::picks(
+                               teal.picks::datasets(),
+                               teal.picks::variables(
                                  choices = is.numeric |
-                                   teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                   teal.picks::is_categorical(min.len = 2, max.len = 10),
                                  selected = 1L
                                ),
-                               teal.transform::values()
+                               teal.picks::values()
                              ),
                              vars,
                              show_association = TRUE,

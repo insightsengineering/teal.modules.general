@@ -89,17 +89,17 @@
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
-#'         teal.transform::values()
+#'         teal.picks::values()
 #'       ),
-#'       x = teal.transform::picks(
+#'       x = teal.picks::picks(
 #'         datasets("mtcars"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = c("vs", "am"),
 #'           selected = "vs",
 #'           multiple = FALSE,
 #'           fixed = FALSE
 #'         ),
-#'         teal.transform::values()
+#'         teal.picks::values()
 #'       )
 #'     )
 #'   )
@@ -126,21 +126,21 @@
 #'   modules = modules(
 #'     tm_g_response(
 #'       label = "Response Plots",
-#'       response = teal.transform::picks(
+#'       response = teal.picks::picks(
 #'         datasets("ADSL"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = c("BMRKR2", "COUNTRY"),
 #'           selected = "BMRKR2"
 #'         ),
-#'         teal.transform::values()
+#'         teal.picks::values()
 #'       ),
-#'       x = teal.transform::picks(
+#'       x = teal.picks::picks(
 #'         datasets("ADSL"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = c("SEX", "RACE"),
 #'           selected = "RACE"
 #'         ),
-#'         teal.transform::values()
+#'         teal.picks::values()
 #'       )
 #'     )
 #'   )
@@ -152,10 +152,10 @@
 #' @export
 #'
 tm_g_response <- function(label = "Response Plot",
-                          response = teal.transform::picks(
-                            teal.transform::datasets(),
-                            teal.transform::variables(choices = teal.transform::is_categorical(min.len = 2, max.len = 10)),
-                            teal.transform::values()
+                          response = teal.picks::picks(
+                            teal.picks::datasets(),
+                            teal.picks::variables(choices = teal.picks::is_categorical(min.len = 2, max.len = 10)),
+                            teal.picks::values()
                           ),
                           x,
                           row_facet = NULL,

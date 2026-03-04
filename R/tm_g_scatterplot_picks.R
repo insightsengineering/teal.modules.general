@@ -1,46 +1,46 @@
 #' @export
 tm_g_scatterplot.picks <- function(label = "Scatterplot",
-                                   x = teal.transform::picks(
-                                     teal.transform::datasets(),
-                                     teal.transform::variables(is.numeric),
-                                     teal.transform::values()
+                                   x = teal.picks::picks(
+                                     teal.picks::datasets(),
+                                     teal.picks::variables(is.numeric),
+                                     teal.picks::values()
                                    ),
-                                   y = teal.transform::picks(
-                                     teal.transform::datasets(),
-                                     teal.transform::variables(is.numeric, selected = 2L),
-                                     teal.transform::values()
+                                   y = teal.picks::picks(
+                                     teal.picks::datasets(),
+                                     teal.picks::variables(is.numeric, selected = 2L),
+                                     teal.picks::values()
                                    ),
-                                   color_by = teal.transform::picks(
-                                     teal.transform::datasets(),
-                                     teal.transform::variables(
-                                       choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                   color_by = teal.picks::picks(
+                                     teal.picks::datasets(),
+                                     teal.picks::variables(
+                                       choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                        selected = NULL,
                                        multiple = TRUE
                                      )
                                    ),
-                                   size_by = teal.transform::picks(
-                                     teal.transform::datasets(),
-                                     teal.transform::variables(
+                                   size_by = teal.picks::picks(
+                                     teal.picks::datasets(),
+                                     teal.picks::variables(
                                        choices = is.numeric,
                                        selected = NULL,
                                        multiple = TRUE
                                      )
                                    ),
-                                   row_facet = teal.transform::picks(
-                                     teal.transform::datasets(),
-                                     teal.transform::variables(
-                                       choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                   row_facet = teal.picks::picks(
+                                     teal.picks::datasets(),
+                                     teal.picks::variables(
+                                       choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                        selected = NULL
                                      ),
-                                     teal.transform::values()
+                                     teal.picks::values()
                                    ),
-                                   col_facet = teal.transform::picks(
-                                     teal.transform::datasets(),
-                                     teal.transform::variables(
-                                       choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                   col_facet = teal.picks::picks(
+                                     teal.picks::datasets(),
+                                     teal.picks::variables(
+                                       choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                        selected = NULL
                                      ),
-                                     teal.transform::values()
+                                     teal.picks::values()
                                    ),
                                    plot_height = c(600, 200, 2000),
                                    plot_width = NULL,
@@ -67,13 +67,13 @@ tm_g_scatterplot.picks <- function(label = "Scatterplot",
 
   checkmate::assert_class(row_facet, "picks", null.ok = TRUE)
   if (isTRUE(attr(row_facet$variables, "multiple"))) {
-    warning("`row_facet` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
+    warning("`row_facet` accepts only a single variable selection. Forcing `teal.picks::variables(multiple) to FALSE`")
     attr(row_facet$variables, "multiple") <- FALSE
   }
 
   checkmate::assert_class(col_facet, "picks", null.ok = TRUE)
   if (isTRUE(attr(col_facet$variables, "multiple"))) {
-    warning("`col_facet` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
+    warning("`col_facet` accepts only a single variable selection. Forcing `teal.picks::variables(multiple) to FALSE`")
     attr(col_facet$variables, "multiple") <- FALSE
   }
 
@@ -162,7 +162,7 @@ ui_g_scatterplot.picks <- function(id,
         tags$label("Encodings", class = "text-primary"),
         tags$div(
           tags$strong("X variable"),
-          teal.transform::picks_ui(id = ns("x"), picks = x),
+          teal.picks::picks_ui(id = ns("x"), picks = x),
           checkboxInput(ns("log_x"), "Use log transformation", value = FALSE),
           conditionalPanel(
             condition = paste0("input['", ns("log_x"), "'] == true"),
@@ -176,7 +176,7 @@ ui_g_scatterplot.picks <- function(id,
         ),
         tags$div(
           tags$strong("Y variable"),
-          teal.transform::picks_ui(id = ns("y"), picks = y),
+          teal.picks::picks_ui(id = ns("y"), picks = y),
           checkboxInput(ns("log_y"), "Use log transformation", value = FALSE),
           conditionalPanel(
             condition = paste0("input['", ns("log_y"), "'] == true"),
@@ -191,25 +191,25 @@ ui_g_scatterplot.picks <- function(id,
         if (!is.null(color_by)) {
           tags$div(
             tags$strong("Color by:"),
-            teal.transform::picks_ui(id = ns("color_by"), picks = color_by)
+            teal.picks::picks_ui(id = ns("color_by"), picks = color_by)
           )
         },
         if (!is.null(size_by)) {
           tags$div(
             tags$strong("Size by:"),
-            teal.transform::picks_ui(id = ns("size_by"), picks = size_by)
+            teal.picks::picks_ui(id = ns("size_by"), picks = size_by)
           )
         },
         if (!is.null(row_facet)) {
           tags$div(
             tags$strong("Row facetting"),
-            teal.transform::picks_ui(id = ns("row_facet"), picks = row_facet)
+            teal.picks::picks_ui(id = ns("row_facet"), picks = row_facet)
           )
         },
         if (!is.null(col_facet)) {
           tags$div(
             tags$strong("Column facetting"),
-            teal.transform::picks_ui(id = ns("col_facet"), picks = col_facet)
+            teal.picks::picks_ui(id = ns("col_facet"), picks = col_facet)
           )
         },
         ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
@@ -295,7 +295,7 @@ srv_g_scatterplot.picks <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
 
-    selectors <- teal.transform::picks_srv(
+    selectors <- teal.picks::picks_srv(
       picks = list(x = x, y = y, color_by = color_by, size_by = size_by, row_facet = row_facet, col_facet = col_facet),
       data = data
     )
@@ -350,7 +350,7 @@ srv_g_scatterplot.picks <- function(id,
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");')
     })
 
-    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+    merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
 
     trend_line_is_applicable <- reactive({
       anl <- merged$data()[["anl"]]

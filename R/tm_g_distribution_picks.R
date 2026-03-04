@@ -1,25 +1,25 @@
 #' @export
 tm_g_distribution.picks <- function(label = "Distribution Module",
-                                    dist_var = teal.transform::picks(
-                                      teal.transform::datasets(),
-                                      teal.transform::variables(is.numeric),
-                                      teal.transform::values()
+                                    dist_var = teal.picks::picks(
+                                      teal.picks::datasets(),
+                                      teal.picks::variables(is.numeric),
+                                      teal.picks::values()
                                     ),
-                                    strata_var = teal.transform::picks(
-                                      teal.transform::datasets(),
-                                      teal.transform::variables(
-                                        choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                    strata_var = teal.picks::picks(
+                                      teal.picks::datasets(),
+                                      teal.picks::variables(
+                                        choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                         selected = NULL
                                       ),
-                                      teal.transform::values()
+                                      teal.picks::values()
                                     ),
-                                    group_var = teal.transform::picks(
-                                      teal.transform::datasets(),
-                                      teal.transform::variables(
-                                        choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                    group_var = teal.picks::picks(
+                                      teal.picks::datasets(),
+                                      teal.picks::variables(
+                                        choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                         selected = NULL
                                       ),
-                                      teal.transform::values()
+                                      teal.picks::values()
                                     ),
                                     freq = FALSE,
                                     ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
@@ -38,7 +38,7 @@ tm_g_distribution.picks <- function(label = "Distribution Module",
 
   checkmate::assert_class(dist_var, "picks")
   if (isTRUE(attr(dist_var$variables, "multiple"))) {
-    warning("dist_var accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
+    warning("dist_var accepts only a single variable selection. Forcing `teal.picks::variables(multiple) to FALSE`")
     attr(dist_var$variables, "multiple") <- FALSE
   }
   checkmate::assert_class(strata_var, "picks", null.ok = TRUE)
@@ -132,13 +132,13 @@ ui_g_distribution.picks <- function(id,
       tags$label("Encodings", class = "text-primary"),
       tags$div(
         tags$strong("Variable"),
-        teal.transform::picks_ui(id = ns("dist_var"), picks = dist_var)
+        teal.picks::picks_ui(id = ns("dist_var"), picks = dist_var)
       ),
       if (!is.null(group_var)) {
         tagList(
           tags$div(
             tags$strong("Group by:"),
-            teal.transform::picks_ui(id = ns("group_var"), picks = group_var)
+            teal.picks::picks_ui(id = ns("group_var"), picks = group_var)
           ),
           uiOutput(ns("scales_types_ui"))
         )
@@ -147,7 +147,7 @@ ui_g_distribution.picks <- function(id,
         tagList(
           tags$div(
             tags$strong("Stratify by:"),
-            teal.transform::picks_ui(id = ns("strata_var"), picks = strata_var)
+            teal.picks::picks_ui(id = ns("strata_var"), picks = strata_var)
           )
         )
       },
@@ -223,7 +223,7 @@ srv_g_distribution.picks <- function(id,
     ns <- session$ns
 
 
-    selectors <- teal.transform::picks_srv(
+    selectors <- teal.picks::picks_srv(
       picks = list(dist_var = dist_var, strata_var = strata_var, group_var = group_var),
       data = data
     )
@@ -244,7 +244,7 @@ srv_g_distribution.picks <- function(id,
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")')
     })
 
-    merged <- teal.transform::merge_srv("merge", data = qenv, selectors = selectors, output_name = "anl")
+    merged <- teal.picks::merge_srv("merge", data = qenv, selectors = selectors, output_name = "anl")
 
     validate_merged <- reactive({
       obj <- merged$data()

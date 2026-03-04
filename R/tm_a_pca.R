@@ -66,9 +66,9 @@
 #'   modules = modules(
 #'     tm_a_pca(
 #'       "PCA",
-#'       dat = teal.transform::picks(
+#'       dat = teal.picks::picks(
 #'         datasets("USArrests"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = c("Murder", "Assault", "UrbanPop", "Rape"),
 #'           selected = c("Murder", "Assault"),
 #'           multiple = TRUE
@@ -99,9 +99,9 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_a_pca(
-#'       dat = teal.transform::picks(
+#'       dat = teal.picks::picks(
 #'         datasets("ADSL"),
-#'         teal.transform::variables(
+#'         teal.picks::variables(
 #'           choices = c("BMRKR1", "AGE", "EOSDY"),
 #'           selected = c("BMRKR1", "AGE"),
 #'           multiple = TRUE
@@ -117,9 +117,9 @@
 #' @export
 #'
 tm_a_pca <- function(label = "Principal Component Analysis",
-                     dat = teal.transform::picks(
-                       teal.transform::datasets(),
-                       teal.transform::variables(
+                     dat = teal.picks::picks(
+                       teal.picks::datasets(),
+                       teal.picks::variables(
                          choices = tidyselect::where(~ is.numeric(.x) && all(!is.na(.x))),
                          selected = tidyselect::everything(),
                          multiple = TRUE

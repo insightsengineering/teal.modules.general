@@ -13,7 +13,7 @@
 #'
 #' @param variables (`picks` or `list` of `picks`)
 #' Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
-#' `picks` use `teal.transform::variables(..., ordered = TRUE)` if plot elements should be
+#' `picks` use `teal.picks::variables(..., ordered = TRUE)` if plot elements should be
 #' rendered according to selection order.
 #'
 #' @inherit shared_params return
@@ -94,19 +94,19 @@
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       variables = list(
-#'         teal.transform::picks(
+#'         teal.picks::picks(
 #'           datasets("countries"),
-#'           teal.transform::variables(
+#'           teal.picks::variables(
 #'             choices = tidyselect::everything(),
 #'             selected = c("area", "gdp", "debt"),
 #'             multiple = TRUE,
 #'             ordered = TRUE
 #'           ),
-#'           teal.transform::values()
+#'           teal.picks::values()
 #'         ),
-#'         teal.transform::picks(
+#'         teal.picks::picks(
 #'           datasets("sales"),
-#'           teal.transform::variables(
+#'           teal.picks::variables(
 #'             choices = c("quantity", "costs", "profit"),
 #'             selected = c("quantity", "costs", "profit"),
 #'             multiple = TRUE,
@@ -116,10 +116,10 @@
 #'       ),
 #'       transformators = list(
 #'         teal_transform_filter(
-#'           teal.transform::picks(
+#'           teal.picks::picks(
 #'             datasets("sales"),
-#'             teal.transform::variables("country_id"),
-#'             teal.transform::values()
+#'             teal.picks::variables("country_id"),
+#'             teal.picks::values()
 #'           )
 #'         )
 #'       )
@@ -149,20 +149,20 @@
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       variables = list(
-#'         teal.transform::picks(
+#'         teal.picks::picks(
 #'           datasets("ADSL"),
-#'           teal.transform::variables(
+#'           teal.picks::variables(
 #'             choices = tidyselect::everything(),
 #'             selected = c("AGE", "RACE", "SEX"),
 #'             multiple = TRUE,
 #'             ordered = TRUE,
 #'             fixed = FALSE
 #'           ),
-#'           teal.transform::values()
+#'           teal.picks::values()
 #'         ),
-#'         teal.transform::picks(
+#'         teal.picks::picks(
 #'           datasets("ADRS"),
-#'           teal.transform::variables(
+#'           teal.picks::variables(
 #'             choices = tidyselect::everything(),
 #'             selected = c("AGE", "AVAL", "ADY"),
 #'             multiple = TRUE,
@@ -172,7 +172,7 @@
 #'         )
 #'       ),
 #'       transformators = list(
-#'         teal_transform_filter(teal.transform::picks(datasets("ADRS"), teal.transform::variables("PARAMCD"), values(selected = "BESRSPI")))
+#'         teal_transform_filter(teal.picks::picks(datasets("ADRS"), teal.picks::variables("PARAMCD"), values(selected = "BESRSPI")))
 #'       )
 #'     )
 #'   )
@@ -184,9 +184,9 @@
 #' @export
 tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    variables = list(
-                                     teal.transform::picks(
-                                       teal.transform::datasets(),
-                                       teal.transform::variables(selected = seq(1L, 5L), multiple = TRUE)
+                                     teal.picks::picks(
+                                       teal.picks::datasets(),
+                                       teal.picks::variables(selected = seq(1L, 5L), multiple = TRUE)
                                      )
                                    ),
                                    plot_height = c(600, 200, 2000),

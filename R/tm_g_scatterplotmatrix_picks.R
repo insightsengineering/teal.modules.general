@@ -1,9 +1,9 @@
 #' @export
 tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
                                          variables = list(
-                                           teal.transform::picks(
-                                             teal.transform::datasets(),
-                                             teal.transform::variables(selected = seq(1L, 5L), multiple = TRUE)
+                                           teal.picks::picks(
+                                             teal.picks::datasets(),
+                                             teal.picks::variables(selected = seq(1L, 5L), multiple = TRUE)
                                            )
                                          ),
                                          plot_height = c(600, 200, 2000),
@@ -68,7 +68,7 @@ ui_g_scatterplotmatrix.picks <- function(id,
       tagList(
         lapply(names(variables), function(id) {
           tags$div(
-            teal.transform::picks_ui(id = ns(id), picks = variables[[id]])
+            teal.picks::picks_ui(id = ns(id), picks = variables[[id]])
           )
         })
       ),
@@ -118,7 +118,7 @@ srv_g_scatterplotmatrix.picks <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::picks_srv(
+    selectors <- teal.picks::picks_srv(
       picks = variables,
       data = data
     )
@@ -141,7 +141,7 @@ srv_g_scatterplotmatrix.picks <- function(id,
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");')
     })
 
-    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+    merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
 
     # plot
     output_q <- reactive({

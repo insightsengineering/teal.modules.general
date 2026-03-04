@@ -71,10 +71,10 @@
 #'   data = data,
 #'   modules = list(
 #'     tm_g_distribution(
-#'       dist_var = teal.transform::picks(
+#'       dist_var = teal.picks::picks(
 #'         datasets("iris"),
-#'         teal.transform::variables(is.numeric),
-#'         teal.transform::values()
+#'         teal.picks::variables(is.numeric),
+#'         teal.picks::values()
 #'       )
 #'     )
 #'   )
@@ -101,18 +101,18 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_g_distribution(
-#'       dist_var = teal.transform::picks(
+#'       dist_var = teal.picks::picks(
 #'         datasets("ADSL"),
-#'         teal.transform::variables(c("BMRKR1", "AGE")),
+#'         teal.picks::variables(c("BMRKR1", "AGE")),
 #'         values(multiple = FALSE)
 #'       ),
-#'       strata_var = teal.transform::picks(
+#'       strata_var = teal.picks::picks(
 #'         datasets("ADSL"),
-#'         teal.transform::variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
+#'         teal.picks::variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
 #'       ),
-#'       group_var = teal.transform::picks(
+#'       group_var = teal.picks::picks(
 #'         datasets("ADSL"),
-#'         teal.transform::variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
+#'         teal.picks::variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
 #'       )
 #'     )
 #'   )
@@ -124,10 +124,10 @@
 #' @export
 #'
 tm_g_distribution <- function(label = "Distribution Module",
-                              dist_var = teal.transform::picks(
-                                teal.transform::datasets(),
-                                teal.transform::variables(is.numeric),
-                                teal.transform::values()
+                              dist_var = teal.picks::picks(
+                                teal.picks::datasets(),
+                                teal.picks::variables(is.numeric),
+                                teal.picks::values()
                               ),
                               strata_var = NULL,
                               group_var = NULL,

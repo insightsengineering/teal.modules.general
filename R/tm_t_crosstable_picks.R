@@ -1,19 +1,19 @@
 #' @export
 tm_t_crosstable.picks <- function(label = "Cross Table",
-                                  x = teal.transform::picks(
-                                    teal.transform::datasets(),
-                                    teal.transform::variables(
-                                      choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                  x = teal.picks::picks(
+                                    teal.picks::datasets(),
+                                    teal.picks::variables(
+                                      choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                       selected = 1L, multiple = TRUE, ordered = TRUE
                                     )
                                   ),
-                                  y = teal.transform::picks(
-                                    teal.transform::datasets(),
-                                    teal.transform::variables(
-                                      choices = teal.transform::is_categorical(min.len = 2, max.len = 10),
+                                  y = teal.picks::picks(
+                                    teal.picks::datasets(),
+                                    teal.picks::variables(
+                                      choices = teal.picks::is_categorical(min.len = 2, max.len = 10),
                                       selected = 2L, ordered = TRUE
                                     ),
-                                    teal.transform::values()
+                                    teal.picks::values()
                                   ),
                                   show_percentage = TRUE,
                                   show_total = TRUE,
@@ -31,7 +31,7 @@ tm_t_crosstable.picks <- function(label = "Cross Table",
 
   checkmate::assert_class(y, "picks")
   if (isTRUE(attr(y$variables, "multiple"))) {
-    warning("`y` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
+    warning("`y` accepts only a single variable selection. Forcing `teal.picks::variables(multiple) to FALSE`")
     attr(y$variables, "multiple") <- FALSE
   }
 
@@ -80,11 +80,11 @@ ui_t_crosstable.picks <- function(id, x, y, show_percentage, show_total, remove_
       tags$label("Encodings", class = "text-primary"),
       tags$div(
         tags$strong("Row values"),
-        teal.transform::picks_ui(id = ns("x"), picks = x)
+        teal.picks::picks_ui(id = ns("x"), picks = x)
       ),
       tags$div(
         tags$strong("Column values"),
-        teal.transform::picks_ui(id = ns("y"), picks = y)
+        teal.picks::picks_ui(id = ns("y"), picks = y)
       ),
       shinyWidgets::pickerInput(
         ns("join_fun"),
@@ -116,7 +116,7 @@ srv_t_crosstable.picks <- function(id, data, label, x, y, remove_zero_columns, b
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selectors <- teal.transform::picks_srv(picks = list(x = x, y = y), data = data)
+    selectors <- teal.picks::picks_srv(picks = list(x = x, y = y), data = data)
 
     validated_q <- reactive({
       validate_input(
@@ -154,7 +154,7 @@ srv_t_crosstable.picks <- function(id, data, label, x, y, remove_zero_columns, b
       }
     )
 
-    merged <- teal.transform::merge_srv(
+    merged <- teal.picks::merge_srv(
       "merge",
       data = validated_q,
       selectors = selectors,

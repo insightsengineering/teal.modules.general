@@ -1,23 +1,23 @@
 #' @export
 tm_a_regression.picks <- function(label = "Regression Analysis",
-                                  regressor = teal.transform::picks(
-                                    teal.transform::datasets(),
-                                    teal.transform::variables(
+                                  regressor = teal.picks::picks(
+                                    teal.picks::datasets(),
+                                    teal.picks::variables(
                                       choices = is.numeric,
                                       selected = tidyselect::last_col(),
                                       multiple = TRUE
                                     )
                                   ),
-                                  response = teal.transform::picks(
-                                    teal.transform::datasets(),
-                                    teal.transform::variables(choices = is.numeric),
-                                    teal.transform::values()
+                                  response = teal.picks::picks(
+                                    teal.picks::datasets(),
+                                    teal.picks::variables(choices = is.numeric),
+                                    teal.picks::values()
                                   ),
-                                  outlier = teal.transform::picks(
+                                  outlier = teal.picks::picks(
                                     regressor$datasets,
-                                    teal.transform::variables(choices = tidyselect::where(~ is.factor(.) || is.character(.))),
-                                    teal.transform::values()
-                                  ), # default should be teal.transform::picks(datasets(), teal.transform::variables(primary_keys())
+                                    teal.picks::variables(choices = tidyselect::where(~ is.factor(.) || is.character(.))),
+                                    teal.picks::values()
+                                  ), # default should be teal.picks::picks(datasets(), teal.picks::variables(primary_keys())
                                   plot_height = c(600, 200, 2000),
                                   plot_width = NULL,
                                   alpha = c(1, 0, 1),
@@ -39,12 +39,12 @@ tm_a_regression.picks <- function(label = "Regression Analysis",
 
   checkmate::assert_class(response, "picks")
   if (isTRUE(attr(response$variables, "multiple"))) {
-    warning("`response` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
+    warning("`response` accepts only a single variable selection. Forcing `teal.picks::variables(multiple) to FALSE`")
     attr(response$variables, "multiple") <- FALSE
   }
   checkmate::assert_class(outlier, "picks", null.ok = TRUE)
   if (isTRUE(attr(outlier$variables, "multiple"))) {
-    warning("`outlier` accepts only a single variable selection. Forcing `teal.transform::variables(multiple) to FALSE`")
+    warning("`outlier` accepts only a single variable selection. Forcing `teal.picks::variables(multiple) to FALSE`")
     attr(outlier$variables, "multiple") <- FALSE
   }
 
@@ -146,11 +146,11 @@ ui_a_regression.picks <- function(id,
       tags$label("Encodings", class = "text-primary"), tags$br(),
       tags$div(
         tags$strong("Response variable"),
-        teal.transform::picks_ui(id = ns("response"), picks = response)
+        teal.picks::picks_ui(id = ns("response"), picks = response)
       ),
       tags$div(
         tags$strong("Regressor variables"),
-        teal.transform::picks_ui(id = ns("regressor"), picks = regressor)
+        teal.picks::picks_ui(id = ns("regressor"), picks = regressor)
       ),
       radioButtons(
         ns("plot_type"),
@@ -179,7 +179,7 @@ ui_a_regression.picks <- function(id,
           ),
           min = 1, max = 10, value = 9, ticks = FALSE, step = .1
         ),
-        teal.transform::picks_ui(id = ns("outlier"), picks = outlier)
+        teal.picks::picks_ui(id = ns("outlier"), picks = outlier)
       ),
       ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
       bslib::accordion(
@@ -242,7 +242,7 @@ srv_a_regression.picks <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
     ns <- session$ns
 
-    selectors <- teal.transform::picks_srv(
+    selectors <- teal.picks::picks_srv(
       picks = list(response = response, regressor = regressor, outlier = outlier),
       data = data
     )
@@ -281,7 +281,7 @@ srv_a_regression.picks <- function(id,
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")')
     })
 
-    merged <- teal.transform::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+    merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
 
     # sets qenv object and populates it with data merge call and fit expression
     fit_r <- reactive({
