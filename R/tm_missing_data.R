@@ -150,7 +150,7 @@ tm_missing_data <- function(label = "Missing data",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  assert_decorators(decorators, names = c("summary_plot", "combination_plot", "by_subject_plot"))
+  teal::assert_decorators(decorators, names = c("summary_plot", "combination_plot", "by_subject_plot"))
   # End of assertions
 
   datanames_module <- if (identical(datanames, "all") || is.null(datanames)) {
@@ -397,16 +397,24 @@ encoding_missing_data <- function(id, summary_per_patient = FALSE, ggtheme, data
           value = FALSE
         )
       },
-      ui_decorate_teal_data(ns("dec_summary_plot"), decorators = select_decorators(decorators, "summary_plot"))
+      teal::ui_transform_teal_data(ns("dec_summary_plot"),
+        transformators = select_decorators(decorators, "summary_plot")
+      )
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Combinations"),
       uiOutput(ns("cutoff")),
-      ui_decorate_teal_data(ns("dec_combination_plot"), decorators = select_decorators(decorators, "combination_plot"))
+      teal::ui_transform_teal_data(
+        ns("dec_combination_plot"),
+        transformators = select_decorators(decorators, "combination_plot")
+      )
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "Grouped by Subject"),
-      ui_decorate_teal_data(ns("dec_by_subject_plot"), decorators = select_decorators(decorators, "by_subject_plot"))
+      teal::ui_transform_teal_data(
+        ns("dec_by_subject_plot"),
+        transformators = select_decorators(decorators, "by_subject_plot")
+      )
     ),
     conditionalPanel(
       is_tab_active_js(ns("summary_type"), "By Variable Levels"),
@@ -1367,36 +1375,36 @@ srv_missing_data <- function(id,
     # Decorated outputs
 
     # Summary_plot_q
-    decorated_summary_plot_q <- srv_decorate_teal_data(
+    decorated_summary_plot_q <- teal::srv_transform_teal_data(
       id = "dec_summary_plot",
       data = summary_plot_q,
-      decorators = select_decorators(decorators, "summary_plot"),
+      transformators = select_decorators(decorators, "summary_plot"),
       expr = quote({
         summary_plot
       })
     )
 
-    decorated_combination_plot_q <- srv_decorate_teal_data(
+    decorated_combination_plot_q <- teal::srv_transform_teal_data(
       id = "dec_combination_plot",
       data = combination_plot_q,
-      decorators = select_decorators(decorators, "combination_plot"),
+      transformators = select_decorators(decorators, "combination_plot"),
       expr = quote({
         grid::grid.newpage()
         grid::grid.draw(combination_plot)
       })
     )
 
-    decorated_by_variable_plot_q <- srv_decorate_teal_data(
+    decorated_by_variable_plot_q <- teal::srv_transform_teal_data(
       id = "dec_by_variable_plot",
       data = by_variable_plot_q,
-      decorators = select_decorators(decorators, "by_variable_plot"),
+      transformators = select_decorators(decorators, "by_variable_plot"),
       expr = quote(by_variable_plot)
     )
 
-    decorated_by_subject_plot_q <- srv_decorate_teal_data(
+    decorated_by_subject_plot_q <- teal::srv_transform_teal_data(
       id = "dec_by_subject_plot",
       data = by_subject_plot_q,
-      decorators = select_decorators(decorators, "by_subject_plot"),
+      transformators = select_decorators(decorators, "by_subject_plot"),
       expr = quote(by_subject_plot)
     )
 

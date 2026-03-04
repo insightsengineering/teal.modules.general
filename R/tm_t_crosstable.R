@@ -194,7 +194,7 @@ tm_t_crosstable <- function(label = "Cross Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
-  assert_decorators(decorators, "table")
+  teal::assert_decorators(decorators, "table")
   # End of assertions
 
   # Make UI args
@@ -262,7 +262,7 @@ ui_t_crosstable <- function(id, x, y, show_percentage, show_total, remove_zero_c
           checkboxInput(ns("remove_zero_columns"), "Remove zero-only columns", value = remove_zero_columns)
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "table"))
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "table"))
     ),
     pre_output = pre_output,
     post_output = post_output
@@ -459,10 +459,10 @@ srv_t_crosstable <- function(id, data, label, x, y, remove_zero_columns, basic_t
       obj
     })
 
-    decorated_output_q <- srv_decorate_teal_data(
+    decorated_output_q <- teal::srv_transform_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "table"),
+      transformators = select_decorators(decorators, "table"),
       expr = quote(table)
     )
 

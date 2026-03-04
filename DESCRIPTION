@@ -1,8 +1,8 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.6.0.9019
-Date: 2026-02-19
+Version: 0.6.0.9021
+Date: 2026-03-04
 Authors@R: c(
     person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
@@ -26,7 +26,7 @@ Depends:
     ggplot2 (>= 3.5.0),
     R (>= 4.1),
     shiny (>= 1.8.1),
-    teal (>= 1.1.0),
+    teal (>= 1.1.0.9021),
     teal.transform (>= 0.7.0)
 Imports:
     bslib (>= 0.8.0),
