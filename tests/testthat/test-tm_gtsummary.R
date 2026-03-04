@@ -319,7 +319,6 @@ testthat::describe("tm_gtsummary module server behavior", {
 
 # Decorators
 testthat::describe("tm_gtsummary module server behavior with decorators", {
-
   it("one decorator executes successfully", {
     data <- create_test_data(mtcars)
     cap <- "Caption 1"
@@ -360,14 +359,14 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(table = teal::teal_transform_module(
-        server = function(id, data){
+        server = function(id, data) {
           reactive({
             within(data(), {
               table2 <- table
             })
           })
-        })
-      )
+        }
+      ))
     )
 
     shiny::testServer(
@@ -382,7 +381,7 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
-        testthat::expect_true(grepl( "table2 <-", get_code(print_output_decorated()), fixed = TRUE))
+        testthat::expect_true(grepl("table2 <-", get_code(print_output_decorated()), fixed = TRUE))
         testthat::expect_s3_class(print_output_decorated()$table2, "gtsummary")
       }
     )
