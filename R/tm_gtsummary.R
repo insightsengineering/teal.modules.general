@@ -163,19 +163,7 @@ ui_gtsummary <- function(id, ...) {
         selected = args$percent
       ),
       # Allow multiple decorators for a single object (table)
-      div(
-        id = ns("decorator_container"),
-        lapply(seq_along(args$decorators), function(i) {
-          name_decorator <- names(args$decorators)[i]
-          div(
-            id = ns(paste0("decorate_", name_decorator)),
-            teal::ui_transform_teal_data(
-              ns(paste0("decorate_", name_decorator)),
-              transformators = args$decorators[[i]]
-            )
-          )
-        })
-      )
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "table")),
     ),
     pre_output = args$pre_output,
     post_output = args$post_output
