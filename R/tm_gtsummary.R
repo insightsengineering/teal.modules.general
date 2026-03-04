@@ -257,25 +257,16 @@ srv_gtsummary <- function(id,
       qq
     })
 
-    decorations <- lapply(names(decorators), function(decorator_name) {
-      function(data) {
-        teal::srv_transform_teal_data(
-          paste0("decorate_", decorator_name),
-          data = data,
-          transformators = decorators[[decorator_name]]
-        )
-      }
-    })
-    output_data_decorated <- Reduce(function(f, ...) f(...), decorations, init = output_q, right = TRUE)
-    print_output_decorated <- reactive({
-      q <- req(output_data_decorated())
-      within(q, {
-        table
-      })
-    })
+    print_output_decorated <- teal::srv_transform_teal_data(
+      id = "decorator",
+      data = output_q,
+      transformators = select_decorators(decorators, "table"),
+      expr = quote(table)
+    )
+
 
     table_r <- reactive({
-      req(output_data_decorated())[["table"]]
+      req(print_output_decorated())[["table"]]
     })
 
     teal.widgets::table_with_settings_srv(
