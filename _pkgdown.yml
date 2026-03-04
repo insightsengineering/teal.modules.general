@@ -20,6 +20,7 @@ navbar:
     github:
       icon: fa-github
       href: https://github.com/insightsengineering/teal.modules.general
+      aria-label: View on Github
 
 reference:
   - title:
