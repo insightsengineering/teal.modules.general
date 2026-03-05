@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.6.0.9020
+## teal.modules.general 0.6.0.9022
 
 #### Enhancements
 
@@ -13,6 +13,11 @@
   ([\#495](https://github.com/insightsengineering/teal.modules.general/issues/495)).
 - Multiple decorators can be applied to the same output object
   ([\#978](https://github.com/insightsengineering/teal.modules.general/issues/978)).
+- Introduced
+  [`tm_gtsummary()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_gtsummary.md),
+  a new module for generating tables using the
+  [gtsummary](https://cran.r-project.org/package=gtsummary) package
+  ([\#973](https://github.com/insightsengineering/teal.modules.general/issues/973)).
 
 ## teal.modules.general 0.5.1
 
