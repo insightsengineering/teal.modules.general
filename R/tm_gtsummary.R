@@ -163,19 +163,7 @@ ui_gtsummary <- function(id, ...) {
         selected = args$percent
       ),
       # Allow multiple decorators for a single object (table)
-      div(
-        id = ns("decorator_container"),
-        lapply(seq_along(args$decorators), function(i) {
-          name_decorator <- names(args$decorators)[i]
-          div(
-            id = ns(paste0("decorate_", name_decorator)),
-            teal::ui_transform_teal_data(
-              ns(paste0("decorate_", name_decorator)),
-              transformators = args$decorators[[i]]
-            )
-          )
-        })
-      )
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "table")),
     ),
     pre_output = args$pre_output,
     post_output = args$post_output
@@ -266,28 +254,22 @@ srv_gtsummary <- function(id,
         },
         table_crane = table_call
       )
+      if (inherits(qq, "qenv.error")) {
+        validate(as.character(qq))
+      }
       qq
     })
 
-    decorations <- lapply(names(decorators), function(decorator_name) {
-      function(data) {
-        teal::srv_transform_teal_data(
-          paste0("decorate_", decorator_name),
-          data = data,
-          transformators = decorators[[decorator_name]]
-        )
-      }
-    })
-    output_data_decorated <- Reduce(function(f, ...) f(...), decorations, init = output_q, right = TRUE)
-    print_output_decorated <- reactive({
-      q <- req(output_data_decorated())
-      within(q, {
-        table
-      })
-    })
+    print_output_decorated <- teal::srv_transform_teal_data(
+      id = "decorator",
+      data = output_q,
+      transformators = select_decorators(decorators, "table"),
+      expr = quote(table)
+    )
+
 
     table_r <- reactive({
-      req(output_data_decorated())[["table"]]
+      req(print_output_decorated())[["table"]]
     })
 
     teal.widgets::table_with_settings_srv(
