@@ -254,9 +254,7 @@ srv_gtsummary <- function(id,
         },
         table_crane = table_call
       )
-      if (inherits(qq, "qenv.error")) {
-        validate(as.character(qq))
-      }
+      validate(inherits(qq, "qenv"), qq$message)
       qq
     })
 
