@@ -383,17 +383,10 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-<<<<<<< HEAD
-        session$flushReact()
 
-        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
-        table <- table_r()
-        testthat::expect_equal(as.character(table$table_styling$caption), cap)
-=======
         testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
         testthat::expect_true(grepl("table2 <-", get_code(print_output_decorated()), fixed = TRUE))
         testthat::expect_s3_class(print_output_decorated()$table2, "gtsummary")
->>>>>>> c72a145ea1a15869d27266314e80e0de7a66dbf2
       }
     )
   })
