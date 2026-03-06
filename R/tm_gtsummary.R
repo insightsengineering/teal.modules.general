@@ -272,6 +272,6 @@ srv_gtsummary <- function(id,
       id = "table",
       table_r = table_r
     )
-    decorated_output_q
+    print_output_decorated
   })
 }
