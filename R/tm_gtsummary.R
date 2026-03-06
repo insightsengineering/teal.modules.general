@@ -107,7 +107,7 @@ tm_gtsummary <- function(
   checkmate::assert_list(include, types = "data_extract_spec")
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
-  assert_decorators(decorators, "table")
+  teal::assert_decorators(decorators, "table")
   datanames <- teal.transform::get_extract_datanames(list(by = by, include = include))
   checkmate::assert_character(datanames, len = 1L, any.missing = FALSE, all.missing = FALSE)
 
@@ -163,19 +163,7 @@ ui_gtsummary <- function(id, ...) {
         selected = args$percent
       ),
       # Allow multiple decorators for a single object (table)
-      div(
-        id = ns("decorator_container"),
-        lapply(seq_along(args$decorators), function(i) {
-          name_decorator <- names(args$decorators)[i]
-          div(
-            id = ns(paste0("decorate_", name_decorator)),
-            ui_transform_teal_data(
-              ns(paste0("decorate_", name_decorator)),
-              transformators = args$decorators[[i]]
-            )
-          )
-        })
-      )
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "table")),
     ),
     pre_output = args$pre_output,
     post_output = args$post_output
@@ -264,20 +252,20 @@ srv_gtsummary <- function(id,
         },
         table_crane = table_call
       )
-
-      validate(need(!isa(qq, "qenv.error"), if (isa(qq, "qenv.error")) as.character(qq)))
+      validate_qenv(qq)
       qq
     })
 
-    decorated_output_q <- srv_decorate_teal_data(
+    print_output_decorated <- teal::srv_transform_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "table"),
+      transformators = select_decorators(decorators, "table"),
       expr = quote(table)
     )
 
+
     table_r <- reactive({
-      req(decorated_output_q())[["table"]]
+      req(print_output_decorated())[["table"]]
     })
 
     teal.widgets::table_with_settings_srv(

@@ -262,125 +262,8 @@ assert_single_selection <- function(x,
   invisible(TRUE)
 }
 
-#' Wrappers around `srv_transform_teal_data` that allows to decorate the data
-#' @inheritParams teal::srv_transform_teal_data
-#' @inheritParams teal.reporter::`eval_code,teal_report-method`
-#' @param expr (`reactive`) with expression to evaluate on the output of the
-#' decoration. It must be compatible with `code` argument of [teal.code::eval_code()].
-#' Default is `NULL` which won't evaluate any appending code.
-#' @details
-#' `srv_decorate_teal_data` is a wrapper around `srv_transform_teal_data` that
-#' allows to decorate the data with additional expressions.
-#' When original `teal_data` object is in error state, it will show that error
-#' first.
-#'
-#' @keywords internal
-srv_decorate_teal_data <- function(id, data, decorators, expr) {
-  checkmate::assert_class(data, classes = "reactive")
-  assert_decorators(decorators)
-
-  no_expr <- missing(expr)
-
-  moduleServer(id, function(input, output, session) {
-    decorated_output <- srv_transform_teal_data("inner", data = data, transformators = decorators)
-
-    expr_r <- if (is.reactive(expr)) expr else reactive(expr)
-
-    reactive({
-      do <- req(decorated_output())
-      if (no_expr) {
-        do
-      } else {
-        teal.code::eval_code(do, expr_r())
-      }
-    })
-  })
-}
-
-#' @rdname srv_decorate_teal_data
-#' @details
-#' `ui_decorate_teal_data` is a wrapper around `ui_transform_teal_data`.
-#' @keywords internal
-ui_decorate_teal_data <- function(id, decorators, ...) {
-  teal::ui_transform_teal_data(NS(id, "inner"), transformators = decorators, ...)
-}
-
-#' Internal function to check if decorators is a valid object
 #' @noRd
-check_decorators <- function(x, names = NULL) { # nolint: object_name.
-
-  check_message <- checkmate::check_list(x, names = "named")
-
-  if (!is.null(names) && isTRUE(check_message)) {
-    if (length(names(x)) != length(unique(names(x)))) {
-      check_message <- sprintf(
-        "The `decorators` must contain unique names from these names: %s",
-        paste(sQuote(names), collapse = ", ")
-      )
-    } else if (!all(unique(names(x)) %in% c("default", names))) {
-      check_message <- sprintf(
-        paste0(
-          "The `decorators` must be a named list with:\n",
-          " * 'default' for decorating all objects and/or\n",
-          " * A name from these: %s"
-        ),
-        paste(sQuote(names), collapse = ", ")
-      )
-    }
-  }
-
-  if (!isTRUE(check_message)) {
-    return(check_message)
-  }
-
-  valid_elements <- vapply(
-    x,
-    checkmate::test_class,
-    classes = "teal_transform_module",
-    FUN.VALUE = logical(1L)
-  )
-
-  # Nested list
-  if (any(!valid_elements)) {
-    valid_nested <- vapply(
-      x[!valid_elements], function(subdecorators) {
-        checks <- vapply(subdecorators,
-          checkmate::test_class,
-          classes = "teal_transform_module",
-          logical(1L)
-        )
-        all(checks)
-      },
-      FUN.VALUE = logical(1L)
-    )
-    valid_elements[!valid_elements] <- valid_nested
-  }
-
-  if (all(valid_elements)) {
-    return(TRUE)
-  }
-
-  paste0(
-    "The named list can contain a list of 'teal_transform_module' objects created ",
-    "using `teal_transform_module()` or be a `teal_transform_module` object."
-  )
-}
-#' Internal assertion on decorators
-#' @noRd
-assert_decorators <- checkmate::makeAssertionFunction(check_decorators)
-
-#' Subset decorators based on the scope
-#'
-#' @param scope (`character`) a character vector of decorator names to include.
-#' @param decorators (named `list`) of list decorators to subset.
-#'
-#' @return Subsetted list with all decorators to include.
-#' It can be an empty list if none of the scope exists in `decorators` argument.
-#' @keywords internal
-select_decorators <- function(decorators, scope) {
-  checkmate::assert_character(scope, null.ok = TRUE)
-  decorators[names(decorators) %in% scope]
-}
+select_decorators <- utils::getFromNamespace("select_decorators", "teal")
 
 #' Set the attributes of the last chunk outputs
 #' @param teal_card (`teal_card`) object to modify.
@@ -477,4 +360,14 @@ set_chunk_dims <- function(pws, q_r, inner_classes = NULL) {
     )
     q
   })
+}
+
+
+validate_qenv <- function(qenv) {
+  validate(
+    need(
+      inherits(qenv, "qenv"),
+      sub("when evaluating qenv", "when evaluating:", qenv$message, fixed = TRUE)
+    )
+  )
 }

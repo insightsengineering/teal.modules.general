@@ -217,7 +217,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  assert_decorators(decorators, "plot")
+  teal::assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -262,7 +262,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
         is_single_dataset = is_single_dataset_value
       ),
       tags$hr(),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
@@ -458,10 +458,10 @@ srv_g_scatterplotmatrix <- function(id,
       qenv
     })
 
-    decorated_output_q <- srv_decorate_teal_data(
+    decorated_output_q <- teal::srv_transform_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = quote(plot)
     )
 
@@ -549,15 +549,15 @@ get_scatterplotmatrix_stats <- function(x, y,
     stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)), error = function(e) NA)
 
     if (anyNA(stat)) {
-      return("NA")
+      "NA"
     } else if (all(c("estimate", "p.value") %in% names(stat))) {
-      return(paste(
+      paste(
         c(
           paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
           paste0("P:", round(stat$p.value, round_pval))
         ),
         collapse = "\n"
-      ))
+      )
     } else {
       stop("function not supported")
     }
@@ -573,6 +573,6 @@ get_scatterplotmatrix_stats <- function(x, y,
         return("rho:-")
       }
     }
-    return("-")
+    "-"
   }
 }

@@ -119,7 +119,7 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module()
+        all = teal_transform_module()
       )
     )
 
@@ -150,7 +150,7 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module(server = function(id, data) {
+        all = teal_transform_module(server = function(id, data) {
           reactive({
             stop()
           })
@@ -212,7 +212,11 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
+<<<<<<< HEAD
         default = list(teal_transform_module()),
+=======
+        all = teal_transform_module(),
+>>>>>>> c72a145ea1a15869d27266314e80e0de7a66dbf2
         table = list(teal_transform_module(), teal_transform_module())
       )
     )
@@ -242,7 +246,7 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module(),
+        all = teal_transform_module(),
         table = teal_transform_module()
       )
     )
