@@ -294,7 +294,7 @@ tm_g_bivariate <- function(label = "Bivariate Plots",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  assert_decorators(decorators, "plot")
+  teal::assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -366,7 +366,7 @@ ui_g_bivariate <- function(id, ...) {
           justified = TRUE
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",
@@ -691,10 +691,10 @@ srv_g_bivariate <- function(id,
       teal.code::eval_code(obj, substitute(expr = plot <- cl, env = list(cl = cl)))
     })
 
-    decorated_output_q_facets <- srv_decorate_teal_data(
+    decorated_output_q_facets <- teal::srv_transform_teal_data(
       "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = reactive({
         ANL <- merged$anl_q_r()[["ANL"]]
         row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)

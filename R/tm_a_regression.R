@@ -230,7 +230,7 @@ tm_a_regression <- function(label = "Regression Analysis",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_choice(default_plot_type, seq.int(1L, length(plot_choices)))
   checkmate::assert_string(default_outlier_label)
-  checkmate::assert_list(decorators, "teal_transform_module")
+  assert_decorators(decorators)
 
   if (length(label_segment_threshold) == 1) {
     checkmate::assert_numeric(label_segment_threshold, any.missing = FALSE, finite = TRUE)
@@ -243,7 +243,7 @@ tm_a_regression <- function(label = "Regression Analysis",
       .var.name = "label_segment_threshold"
     )
   }
-  assert_decorators(decorators, "plot")
+  teal::assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -334,7 +334,7 @@ ui_a_regression <- function(id, ...) {
           label = "Outlier label"
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
@@ -993,10 +993,10 @@ srv_a_regression <- function(id,
       )
     })
 
-    decorated_output_q <- srv_decorate_teal_data(
+    decorated_output_q <- teal::srv_transform_teal_data(
       "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = quote(plot)
     )
 

@@ -119,7 +119,7 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module()
+        all = teal_transform_module()
       )
     )
 
@@ -134,7 +134,8 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        session$flushReact()
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
@@ -149,7 +150,7 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module(server = function(id, data) {
+        all = teal_transform_module(server = function(id, data) {
           reactive({
             stop()
           })
@@ -168,7 +169,8 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_is(tryCatch(print_output_decorated(), error = function(e) e), "shiny.silent.error")
+        session$flushReact()
+        testthat::expect_is(tryCatch(session$returned(), error = function(e) e), "shiny.silent.error")
       }
     )
   })
@@ -195,7 +197,8 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        session$flushReact()
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
@@ -209,7 +212,7 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module(),
+        all = teal_transform_module(),
         table = list(teal_transform_module(), teal_transform_module())
       )
     )
@@ -225,7 +228,8 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        session$flushReact()
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
@@ -238,7 +242,7 @@ testthat::describe("Module with decorators:", {
       by_selected = c("am"),
       include_selected = c("carb", "cyl"),
       decorators = list(
-        default = teal_transform_module(),
+        all = teal_transform_module(),
         table = teal_transform_module()
       )
     )
@@ -254,7 +258,8 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        session$flushReact()
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
