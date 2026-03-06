@@ -361,3 +361,13 @@ set_chunk_dims <- function(pws, q_r, inner_classes = NULL) {
     q
   })
 }
+
+
+validate_qenv <- function(qenv) {
+  validate(
+    need(
+      inherits(qenv, "qenv"),
+      sub("when evaluating qenv", "when evaluating", qenv$message, fixed = TRUE)
+    )
+  )
+}

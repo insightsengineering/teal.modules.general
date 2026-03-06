@@ -249,8 +249,9 @@ testthat::describe("tm_gtsummary module server behavior", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
+        session$flushReact()
 
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         testthat::expect_true(inherits(table_r(), "gtsummary"))
       }
     )
@@ -277,8 +278,9 @@ testthat::describe("tm_gtsummary module server behavior", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = NULL
         )
+        session$flushReact()
 
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         testthat::expect_true(inherits(table_r(), "gtsummary"))
         testthat::expect_gt(length(unique(table_r()$table_body$variable)), 3L)
       }
@@ -308,7 +310,9 @@ testthat::describe("tm_gtsummary module server behavior", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        session$flushReact()
+
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         table <- table_r()
         testthat::expect_equal(table$inputs$label, col_label)
         testthat::expect_true(all(table$table_body$var_label %in% unlist(col_label)))
@@ -343,7 +347,7 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
         session$flushReact()
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         testthat::expect_s3_class(table_r(), "gtsummary")
       }
     )
@@ -379,9 +383,10 @@ testthat::describe("tm_gtsummary module server behavior with decorators", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
-        testthat::expect_true(grepl("table2 <-", get_code(print_output_decorated()), fixed = TRUE))
-        testthat::expect_s3_class(print_output_decorated()$table2, "gtsummary")
+
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
+        testthat::expect_true(grepl("table2 <-", get_code(session$returned()), fixed = TRUE))
+        testthat::expect_s3_class(session$returned()$table2, "gtsummary")
       }
     )
   })
