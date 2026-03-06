@@ -367,7 +367,7 @@ validate_qenv <- function(qenv) {
   validate(
     need(
       inherits(qenv, "qenv"),
-      sub("when evaluating qenv", "when evaluating:", qenv$message, fixed = TRUE)
+      sub("when evaluating qenv", "when evaluating", qenv$message, fixed = TRUE)
     )
   )
 }
