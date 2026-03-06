@@ -135,7 +135,7 @@ testthat::describe("Module with decorators:", {
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
         session$flushReact()
-        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
@@ -170,7 +170,7 @@ testthat::describe("Module with decorators:", {
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
         session$flushReact()
-        testthat::expect_is(tryCatch(decorated_output_q(), error = function(e) e), "teal_report")
+        testthat::expect_is(tryCatch(session$returned(), error = function(e) e), "shiny.silent.error")
       }
     )
   })
@@ -198,7 +198,7 @@ testthat::describe("Module with decorators:", {
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
         session$flushReact()
-        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
@@ -229,7 +229,7 @@ testthat::describe("Module with decorators:", {
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
         session$flushReact()
-        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
@@ -259,7 +259,7 @@ testthat::describe("Module with decorators:", {
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
         session$flushReact()
-        testthat::expect_true(endsWith(get_code(decorated_output_q()), "table"))
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
