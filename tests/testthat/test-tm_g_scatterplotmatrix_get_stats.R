@@ -47,3 +47,4 @@ testthat::test_that("get_scatterplotmatrix_stats() x-y character", {
   })
   testthat::expect_true(startsWith(corr, "rho"))
 })
+
