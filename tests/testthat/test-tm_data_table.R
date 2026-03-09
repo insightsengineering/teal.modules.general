@@ -117,18 +117,11 @@ testthat::describe("tm_data_table module ui behavior returns a htmltools tag or 
 })
 
 
-testthat::describe("tm_g_response module server behavior", {
+testthat::describe("tm_data_table module server behavior", {
   data <- within(teal.data::teal_data(), ADSL <- teal.data::rADSL)
   variables_selected <- list(ADSL = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"))
-  set_shared_inputs <- function(session) {
-    session$setInputs(
-      "test-variables" = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
-      if_filtered = TRUE,
-      if_distinct = TRUE
-    )
-  }
 
-  it("", {
+  it("returns a teal_data object", {
     mod <- tm_data_table(variables_selected = variables_selected)
     shiny::testServer(
       mod$server,
@@ -137,9 +130,95 @@ testthat::describe("tm_g_response module server behavior", {
         list(id = "test", data = reactive(data))
       ),
       expr = {
-        set_shared_inputs(session)
+        session$setInputs(
+          "ADSL-variables" = c("STUDYID", "USUBJID", "SUBJID", "SITEID", "AGE", "SEX"),
+          if_distinct = TRUE
+        )
         session$flushReact()
         testthat::expect_s4_class(session$returned[["ADSL"]](), "teal_data")
+      }
+    )
+  })
+})
+
+testthat::describe("tm_data_table module server behavior with if_distinct option", {
+  # Create test data with explicit duplicate rows to verify distinct behavior
+  data_with_dups <- within(teal.data::teal_data(), {
+    test_df <- data.frame(
+      ID = c(1L, 2L, 2L, 3L),
+      VALUE = c("A", "B", "B", "C"),
+      stringsAsFactors = FALSE
+    )
+  })
+
+  it("returns only distinct rows when if_distinct is TRUE", {
+    mod <- tm_data_table(datanames = "test_df")
+    shiny::testServer(
+      mod$server,
+      args = c(
+        mod$server_args,
+        list(id = "test", data = reactive(data_with_dups))
+      ),
+      expr = {
+        session$setInputs(
+          if_distinct = TRUE,
+          "test_df-variables" = c("ID", "VALUE")
+        )
+        session$flushReact()
+        result <- session$returned[["test_df"]]()[["dataframe_selected"]]
+        testthat::expect_equal(nrow(result), 3L)
+      }
+    )
+  })
+
+  it("returns all rows including duplicates when if_distinct is FALSE", {
+    mod <- tm_data_table(datanames = "test_df")
+    shiny::testServer(
+      mod$server,
+      args = c(
+        mod$server_args,
+        list(id = "test", data = reactive(data_with_dups))
+      ),
+      expr = {
+        session$setInputs(
+          if_distinct = FALSE,
+          "test_df-variables" = c("ID", "VALUE")
+        )
+        session$flushReact()
+        result <- session$returned[["test_df"]]()[["dataframe_selected"]]
+        testthat::expect_equal(nrow(result), 4L)
+      }
+    )
+  })
+
+  it("does not error when variables is NULL and if_distinct is TRUE", {
+    mod <- tm_data_table(datanames = "test_df")
+    shiny::testServer(
+      mod$server,
+      args = c(
+        mod$server_args,
+        list(id = "test", data = reactive(data_with_dups))
+      ),
+      expr = {
+        session$setInputs(if_distinct = TRUE)
+        session$flushReact()
+        testthat::expect_no_error(session$returned[["test_df"]]())
+      }
+    )
+  })
+
+  it("does not error when variables is NULL and if_distinct is FALSE", {
+    mod <- tm_data_table(datanames = "test_df")
+    shiny::testServer(
+      mod$server,
+      args = c(
+        mod$server_args,
+        list(id = "test", data = reactive(data_with_dups))
+      ),
+      expr = {
+        session$setInputs(if_distinct = FALSE)
+        session$flushReact()
+        testthat::expect_no_error(session$returned[["test_df"]]())
       }
     )
   })
