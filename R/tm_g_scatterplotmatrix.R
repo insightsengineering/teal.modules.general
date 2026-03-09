@@ -284,7 +284,18 @@ ui_g_scatterplotmatrix <- function(id, ...) {
             choiceValues = c("pearson", "kendall", "spearman"),
             inline = TRUE
           ),
-          checkboxInput(ns("cor_na_omit"), "Pairwise Complete Observations", value = TRUE)
+          selectInput(
+            ns("cor_use"),
+            "NA handling:",
+            choices = c(
+              "Everything" = "everything",
+              "All observations" = "all.obs",
+              "Complete observations" = "complete.obs",
+              "NA or complete" = "na.or.complete",
+              "Pairwise complete" = "pairwise.complete.obs"
+            ),
+            selected = "pairwise.complete.obs"
+          )
         )
       )
     ),
@@ -351,13 +362,7 @@ srv_g_scatterplotmatrix <- function(id,
       size_val <- input$size
       add_cor <- input$cor
       cor_method <- input$cor_method
-      cor_na_omit <- input$cor_na_omit
-
-      cor_use <- if (isTruthy(cor_na_omit)) {
-        "pairwise.complete.obs"
-      } else {
-        "everything"
-      }
+      cor_use <- input$cor_use
 
       teal::validate_has_data(ANL, 10)
       teal::validate_has_data(ANL[, cols_names, drop = FALSE], 10, complete = TRUE, allow_inf = FALSE)
@@ -368,23 +373,19 @@ srv_g_scatterplotmatrix <- function(id,
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {
-        qenv <- teal.code::eval_code(
+        qenv <- within(
           qenv,
-          substitute(
-            expr = ANL <- ANL[, cols_names] %>%
-              dplyr::mutate_if(is.character, as.factor) %>%
-              droplevels(),
-            env = list(cols_names = cols_names)
-          )
+          ANL <- ANL[, cols_names] %>%
+            dplyr::mutate_if(is.character, as.factor) %>%
+            droplevels(),
+          cols_names = cols_names
         )
       } else {
-        qenv <- teal.code::eval_code(
+        qenv <- within(
           qenv,
-          substitute(
-            expr = ANL <- ANL[, cols_names] %>%
-              droplevels(),
-            env = list(cols_names = cols_names)
-          )
+          ANL <- ANL[, cols_names] %>%
+            droplevels(),
+          cols_names = cols_names
         )
       }
 
@@ -393,216 +394,168 @@ srv_g_scatterplotmatrix <- function(id,
 
       if (add_cor) {
         shinyjs::show("cor_method")
-        shinyjs::show("cor_na_omit")
+        shinyjs::show("cor_use")
 
-        qenv <- teal.code::eval_code(
+        qenv <- within(
           qenv,
-          substitute(
-            expr = {
-              col_names <- names(ANL)
-              n_vars <- length(col_names)
-              plot_list <- list()
-              for (i in seq_len(n_vars)) {
-                for (j in seq_len(n_vars)) {
-                  vi <- col_names[i]
-                  vj <- col_names[j]
-                  if (i == j) {
-                    # diagonal: density for numeric, bar for factor
-                    if (is.numeric(ANL[[vi]])) {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vi]])) +
-                        ggplot2::geom_density(fill = "steelblue", alpha = 0.5) +
-                        ggplot2::labs(x = NULL, y = NULL) +
-                        ggplot2::ggtitle(varnames_value[i]) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(
-                          plot.title = ggplot2::element_text(hjust = 0.5, size = 9, face = "bold"),
-                          axis.text = ggplot2::element_text(size = 7)
-                        )
-                    } else {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vi]])) +
-                        ggplot2::geom_bar(fill = "steelblue", alpha = 0.5) +
-                        ggplot2::labs(x = NULL, y = NULL) +
-                        ggplot2::ggtitle(varnames_value[i]) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(
-                          plot.title = ggplot2::element_text(hjust = 0.5, size = 9, face = "bold"),
-                          axis.text = ggplot2::element_text(size = 7),
-                          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
-                        )
-                    }
-                  } else if (i < j) {
-                    # upper triangle: correlation text
-                    if (is.numeric(ANL[[vi]]) && is.numeric(ANL[[vj]])) {
-                      cor_val <- tryCatch(
-                        stats::cor(ANL[[vi]], ANL[[vj]], method = cor_method_value, use = cor_use_value),
-                        error = function(e) NA_real_
-                      )
-                      cor_label <- if (is.na(cor_val)) "NA" else sprintf("%.3f", cor_val)
-                      cor_size <- max(3, abs(cor_val) * 8 + 3)
-                      cor_color <- if (is.na(cor_val)) {
-                        "grey50"
-                      } else if (cor_val > 0) {
-                        "firebrick"
-                      } else {
-                        "steelblue"
-                      }
-                    } else {
-                      cor_label <- "-"
-                      cor_size <- 4
-                      cor_color <- "grey50"
-                    }
-                    p <- ggplot2::ggplot() +
-                      ggplot2::annotate(
-                        "text",
-                        x = 0.5, y = 0.5,
-                        label = cor_label,
-                        size = cor_size,
-                        fontface = "bold",
-                        color = cor_color
-                      ) +
-                      ggplot2::xlim(0, 1) +
-                      ggplot2::ylim(0, 1) +
-                      ggplot2::theme_void()
+          {
+            col_names <- names(ANL)
+            n_vars <- length(col_names)
+            plot_list <- list()
+            for (i in seq_len(n_vars)) {
+              for (j in seq_len(n_vars)) {
+                col_name_i <- col_names[i]
+                col_name_j <- col_names[j]
+                if (i == j) {
+                  # diagonal: density for numeric, bar for factor
+                  p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_i]])) +
+                    ggplot2::labs(x = NULL, y = NULL) +
+                    ggplot2::ggtitle(varnames_value[i])
+                  p <- if (is.numeric(ANL[[col_name_i]])) {
+                    p + ggplot2::geom_density(fill = "steelblue", alpha = 0.5)
                   } else {
-                    # lower triangle: scatter/box plot
-                    if (is.numeric(ANL[[vj]]) && is.numeric(ANL[[vi]])) {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vj]], y = .data[[vi]])) +
-                        ggplot2::geom_point(alpha = alpha_value, size = size_value, color = "steelblue") +
-                        ggplot2::labs(x = NULL, y = NULL) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(axis.text = ggplot2::element_text(size = 7))
-                    } else if (is.factor(ANL[[vj]]) && is.numeric(ANL[[vi]])) {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vj]], y = .data[[vi]])) +
-                        ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
-                        ggplot2::labs(x = NULL, y = NULL) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(
-                          axis.text = ggplot2::element_text(size = 7),
-                          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
-                        )
-                    } else if (is.numeric(ANL[[vj]]) && is.factor(ANL[[vi]])) {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vi]], y = .data[[vj]])) +
-                        ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
-                        ggplot2::labs(x = NULL, y = NULL) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(
-                          axis.text = ggplot2::element_text(size = 7),
-                          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
-                        ) +
-                        ggplot2::coord_flip()
-                    } else {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vj]], fill = .data[[vi]])) +
-                        ggplot2::geom_bar(position = "dodge", alpha = 0.5) +
-                        ggplot2::labs(x = NULL, y = NULL, fill = NULL) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(
-                          axis.text = ggplot2::element_text(size = 7),
-                          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-                          legend.position = "none"
-                        )
-                    }
+                    p +
+                      ggplot2::geom_bar(fill = "steelblue", alpha = 0.5) +
+                      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
                   }
-                  plot_list[[(i - 1) * n_vars + j]] <- p
+                } else if (i < j) {
+                  # upper triangle: correlation text
+                  if (is.numeric(ANL[[col_name_i]]) && is.numeric(ANL[[col_name_j]])) {
+                    cor_val <- tryCatch(
+                      stats::cor(ANL[[col_name_i]], ANL[[col_name_j]], method = cor_method_value, use = cor_use_value),
+                      error = function(e) NA_real_
+                    )
+                    cor_label <- if (is.na(cor_val)) "NA" else sprintf("%.3f", cor_val)
+                    cor_size <- max(3, abs(cor_val) * 8 + 3)
+                    cor_color <- if (is.na(cor_val)) {
+                      "grey50"
+                    } else if (cor_val > 0) {
+                      "firebrick"
+                    } else {
+                      "steelblue"
+                    }
+                  } else {
+                    cor_label <- "-"
+                    cor_size <- 4
+                    cor_color <- "grey50"
+                  }
+                  p <- ggplot2::ggplot() +
+                    ggplot2::annotate(
+                      "text",
+                      x = 0.5, y = 0.5,
+                      label = cor_label,
+                      size = cor_size,
+                      fontface = "bold",
+                      color = cor_color
+                    ) +
+                    ggplot2::xlim(0, 1) +
+                    ggplot2::ylim(0, 1) +
+                    ggplot2::theme_void()
+                } else {
+                  # lower triangle: scatter/box plot
+                  if (is.numeric(ANL[[col_name_j]]) && is.numeric(ANL[[col_name_i]])) {
+                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], y = .data[[col_name_i]])) +
+                      ggplot2::geom_point(alpha = alpha_value, size = size_value, color = "steelblue") +
+                      ggplot2::labs(x = NULL, y = NULL)
+                  } else if (is.factor(ANL[[col_name_j]]) && is.numeric(ANL[[col_name_i]])) {
+                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], y = .data[[col_name_i]])) +
+                      ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
+                      ggplot2::labs(x = NULL, y = NULL) +
+                      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+                  } else if (is.numeric(ANL[[col_name_j]]) && is.factor(ANL[[col_name_i]])) {
+                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_i]], y = .data[[col_name_j]])) +
+                      ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
+                      ggplot2::labs(x = NULL, y = NULL) +
+                      ggplot2::coord_flip()
+                  } else {
+                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], fill = .data[[col_name_i]])) +
+                      ggplot2::geom_bar(position = "dodge", alpha = 0.5) +
+                      ggplot2::labs(x = NULL, y = NULL, fill = NULL) +
+                      ggplot2::theme(
+                        axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+                        legend.position = "none"
+                      )
+                  }
                 }
+                plot_list[[(i - 1) * n_vars + j]] <- p
               }
-              plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars)
-            },
-            env = list(
-              varnames_value = varnames,
-              cor_method_value = cor_method,
-              cor_use_value = cor_use,
-              alpha_value = alpha_val,
-              size_value = size_val
-            )
-          )
+            }
+            plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars) &
+              ggplot2::theme_minimal() &
+              ggplot2::theme(
+                plot.title = ggplot2::element_text(hjust = 0.5, size = 9, face = "bold"),
+                axis.text = ggplot2::element_text(size = 7)
+              )
+          },
+          varnames_value = varnames,
+          cor_method_value = cor_method,
+          cor_use_value = cor_use,
+          alpha_value = alpha_val,
+          size_value = size_val
         )
       } else {
         shinyjs::hide("cor_method")
-        shinyjs::hide("cor_na_omit")
+        shinyjs::hide("cor_use")
 
-        qenv <- teal.code::eval_code(
+        qenv <- within(
           qenv,
-          substitute(
-            expr = {
-              col_names <- names(ANL)
-              n_vars <- length(col_names)
-              plot_list <- list()
-              for (i in seq_len(n_vars)) {
-                for (j in seq_len(n_vars)) {
-                  vi <- col_names[i]
-                  vj <- col_names[j]
-                  if (i == j) {
-                    if (is.numeric(ANL[[vi]])) {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vi]])) +
-                        ggplot2::geom_density(fill = "steelblue", alpha = 0.5) +
-                        ggplot2::labs(x = NULL, y = NULL) +
-                        ggplot2::ggtitle(varnames_value[i]) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(
-                          plot.title = ggplot2::element_text(hjust = 0.5, size = 9, face = "bold"),
-                          axis.text = ggplot2::element_text(size = 7)
-                        )
-                    } else {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vi]])) +
-                        ggplot2::geom_bar(fill = "steelblue", alpha = 0.5) +
-                        ggplot2::labs(x = NULL, y = NULL) +
-                        ggplot2::ggtitle(varnames_value[i]) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(
-                          plot.title = ggplot2::element_text(hjust = 0.5, size = 9, face = "bold"),
-                          axis.text = ggplot2::element_text(size = 7),
-                          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
-                        )
-                    }
+          {
+            col_names <- names(ANL)
+            n_vars <- length(col_names)
+            plot_list <- list()
+            for (i in seq_len(n_vars)) {
+              for (j in seq_len(n_vars)) {
+                col_name_i <- col_names[i]
+                col_name_j <- col_names[j]
+                if (i == j) {
+                  p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_i]])) +
+                    ggplot2::labs(x = NULL, y = NULL) +
+                    ggplot2::ggtitle(varnames_value[i])
+                  p <- if (is.numeric(ANL[[col_name_i]])) {
+                    p + ggplot2::geom_density(fill = "steelblue", alpha = 0.5)
                   } else {
-                    if (is.numeric(ANL[[vj]]) && is.numeric(ANL[[vi]])) {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vj]], y = .data[[vi]])) +
-                        ggplot2::geom_point(alpha = alpha_value, size = size_value, color = "steelblue") +
-                        ggplot2::labs(x = NULL, y = NULL) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(axis.text = ggplot2::element_text(size = 7))
-                    } else if (is.factor(ANL[[vj]]) && is.numeric(ANL[[vi]])) {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vj]], y = .data[[vi]])) +
-                        ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
-                        ggplot2::labs(x = NULL, y = NULL) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(
-                          axis.text = ggplot2::element_text(size = 7),
-                          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
-                        )
-                    } else if (is.numeric(ANL[[vj]]) && is.factor(ANL[[vi]])) {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vi]], y = .data[[vj]])) +
-                        ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
-                        ggplot2::labs(x = NULL, y = NULL) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(
-                          axis.text = ggplot2::element_text(size = 7),
-                          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
-                        ) +
-                        ggplot2::coord_flip()
-                    } else {
-                      p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[vj]], fill = .data[[vi]])) +
-                        ggplot2::geom_bar(position = "dodge", alpha = 0.5) +
-                        ggplot2::labs(x = NULL, y = NULL, fill = NULL) +
-                        ggplot2::theme_minimal() +
-                        ggplot2::theme(
-                          axis.text = ggplot2::element_text(size = 7),
-                          axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-                          legend.position = "none"
-                        )
-                    }
+                    p +
+                      ggplot2::geom_bar(fill = "steelblue", alpha = 0.5) +
+                      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
                   }
-                  plot_list[[(i - 1) * n_vars + j]] <- p
+                } else {
+                  if (is.numeric(ANL[[col_name_j]]) && is.numeric(ANL[[col_name_i]])) {
+                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], y = .data[[col_name_i]])) +
+                      ggplot2::geom_point(alpha = alpha_value, size = size_value, color = "steelblue") +
+                      ggplot2::labs(x = NULL, y = NULL)
+                  } else if (is.factor(ANL[[col_name_j]]) && is.numeric(ANL[[col_name_i]])) {
+                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], y = .data[[col_name_i]])) +
+                      ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
+                      ggplot2::labs(x = NULL, y = NULL) +
+                      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+                  } else if (is.numeric(ANL[[col_name_j]]) && is.factor(ANL[[col_name_i]])) {
+                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_i]], y = .data[[col_name_j]])) +
+                      ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
+                      ggplot2::labs(x = NULL, y = NULL) +
+                      ggplot2::coord_flip()
+                  } else {
+                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], fill = .data[[col_name_i]])) +
+                      ggplot2::geom_bar(position = "dodge", alpha = 0.5) +
+                      ggplot2::labs(x = NULL, y = NULL, fill = NULL) +
+                      ggplot2::theme(
+                        axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+                        legend.position = "none"
+                      )
+                  }
                 }
+                plot_list[[(i - 1) * n_vars + j]] <- p
               }
-              plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars)
-            },
-            env = list(
-              varnames_value = varnames,
-              alpha_value = alpha_val,
-              size_value = size_val
-            )
-          )
+            }
+            plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars) &
+              ggplot2::theme_minimal() &
+              ggplot2::theme(
+                plot.title = ggplot2::element_text(hjust = 0.5, size = 9, face = "bold"),
+                axis.text = ggplot2::element_text(size = 7)
+              )
+          },
+          varnames_value = varnames,
+          alpha_value = alpha_val,
+          size_value = size_val
         )
       }
       qenv
