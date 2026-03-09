@@ -134,7 +134,8 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        session$flushReact()
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
@@ -168,7 +169,8 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_is(tryCatch(print_output_decorated(), error = function(e) e), "shiny.silent.error")
+        session$flushReact()
+        testthat::expect_is(tryCatch(session$returned(), error = function(e) e), "shiny.silent.error")
       }
     )
   })
@@ -195,7 +197,8 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        session$flushReact()
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
@@ -225,7 +228,8 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        session$flushReact()
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })
@@ -254,7 +258,8 @@ testthat::describe("Module with decorators:", {
           "by-dataset_test_data_singleextract-select" = "am",
           "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
         )
-        testthat::expect_true(endsWith(get_code(print_output_decorated()), "table"))
+        session$flushReact()
+        testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
     )
   })

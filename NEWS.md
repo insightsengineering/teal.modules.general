@@ -1,4 +1,4 @@
-# teal.modules.general 0.6.0.9020
+# teal.modules.general 0.6.0.9023
 
 ### Enhancements
 
@@ -6,6 +6,7 @@
 - Support case when both variables are categorical in association and bivariate plots.
 - Improve `tm_missing_data` visualization (#495).
 - Multiple decorators can be applied to the same output object (#978).
+- Introduced `tm_gtsummary()`, a new module for generating tables using the [gtsummary](https://cran.r-project.org/package=gtsummary) package (#973).
 
 ### Bug fixes
 - `Show only distinct rows` in `tm_data_table` does no longer show an extra count column `n` (#983).
