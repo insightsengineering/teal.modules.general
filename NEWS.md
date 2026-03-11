@@ -9,9 +9,7 @@
 - Introduced `tm_gtsummary()`, a new module for generating tables using the [gtsummary](https://cran.r-project.org/package=gtsummary) package (#973).
 - `tm_g_scatterplotmatrix()` has been rewritten to use `ggplot2` and `patchwork`
   instead of `lattice`. Panel text scales automatically with the number of
-  variables so labels remain readable at any matrix size. Plot construction has
-  been optimised to pass per-column vectors instead of the full data frame to
-  each panel, reducing render time for large variable sets. NA handling retains
+  variables so labels remain readable at any matrix size. NA handling retains
   the familiar **Omit NAs** checkbox (default, `use = "pairwise.complete.obs"`);
   unchecking it reveals a dropdown with all five `stats::cor()` `use` options.
   `get_scatterplotmatrix_stats()` has been removed (#986).
