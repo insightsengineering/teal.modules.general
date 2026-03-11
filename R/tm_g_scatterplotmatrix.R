@@ -489,11 +489,11 @@ srv_g_scatterplotmatrix <- function(id,
                                   size  = if (!is.na(cv)) max(3, abs(cv) * 8 + 3) else if (is.numeric(xi) && is.numeric(xj)) 3 else 4) +
                 ggplot2::xlim(0, 1) + ggplot2::ylim(0, 1) + ggplot2::theme_void()
             } else {
-              p <- ggplot2::ggplot(data.frame(x = xj, y = xi)) + ggplot2::labs(x = NULL, y = NULL) + ggplot2::aes(x = x, y = y)
+              p     <- ggplot2::ggplot(data.frame(x = xj, y = xi)) + ggplot2::labs(x = NULL, y = NULL)
               n_num <- is.numeric(xi) + is.numeric(xj)
-              if (n_num == 2) p <- p + ggplot2::geom_point(color = "steelblue", alpha = alpha)
-              if (n_num == 1) p <- p + ggplot2::geom_boxplot(fill = "steelblue", alpha = alpha)
-              if (n_num == 0) p <- p + ggplot2::geom_bar(position = "dodge", alpha = alpha) + ggplot2::labs(fill = NULL)
+              if (n_num == 2) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_point(color = "steelblue", alpha = alpha)
+              if (n_num == 1) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_boxplot(fill = "steelblue", alpha = alpha)
+              if (n_num == 0) p <- p + ggplot2::aes(x = x, fill = y) + ggplot2::geom_bar(position = "dodge", alpha = alpha) + ggplot2::labs(fill = NULL)
               p
             }
           }
