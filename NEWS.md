@@ -5,8 +5,6 @@
 - Modules now return a `teal_report` object that contains the data, code and reporter. All the reporter buttons were removed from the modules' UI.
 - Support case when both variables are categorical in association and bivariate plots.
 - Improve `tm_missing_data` visualization (#495).
-- Multiple decorators can be applied to the same output object (#978).
-- Introduced `tm_gtsummary()`, a new module for generating tables using the [gtsummary](https://cran.r-project.org/package=gtsummary) package (#973).
 - `tm_g_scatterplotmatrix()` has been rewritten to use `ggplot2` and `patchwork`
   instead of `lattice`. Panel text scales automatically with the number of
   variables so labels remain readable at any matrix size. NA handling retains
