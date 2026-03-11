@@ -7,6 +7,11 @@
 #' @note For more examples, please see the vignette "Using scatterplot matrix" via
 #' `vignette("using-scatterplot-matrix", package = "teal.modules.general")`.
 #'
+#' @note When *Add Correlation* is enabled, a simple **Omit NAs** checkbox
+#'   controls NA handling (checked = `"pairwise.complete.obs"`, matching the
+#'   historical default).  Unchecking it reveals a dropdown with all five
+#'   `stats::cor()` `use` options for advanced control.
+#'
 #' @inheritParams teal::module
 #' @inheritParams tm_g_scatterplot
 #' @inheritParams shared_params
@@ -272,29 +277,63 @@ ui_g_scatterplotmatrix <- function(id, ...) {
             min = 0, max = 1,
             step = .05, value = .5, ticks = FALSE
           ),
-          sliderInput(
-            ns("size"), "Points size:",
-            min = 0.5, max = 5,
-            step = .25, value = 1.5, ticks = FALSE
-          ),
           checkboxInput(ns("cor"), "Add Correlation", value = FALSE),
-          radioButtons(
-            ns("cor_method"), "Select Correlation Method",
-            choiceNames = c("Pearson", "Kendall", "Spearman"),
-            choiceValues = c("pearson", "kendall", "spearman"),
-            inline = TRUE
+          shinyjs::hidden(
+            radioButtons(
+              ns("cor_method"), "Select Correlation Method",
+              choiceNames = c("Pearson", "Kendall", "Spearman"),
+              choiceValues = c("pearson", "kendall", "spearman"),
+              inline = TRUE
+            )
           ),
-          selectInput(
-            ns("cor_use"),
-            "NA handling:",
-            choices = c(
-              "Everything" = "everything",
-              "All observations" = "all.obs",
-              "Complete observations" = "complete.obs",
-              "NA or complete" = "na.or.complete",
-              "Pairwise complete" = "pairwise.complete.obs"
-            ),
-            selected = "pairwise.complete.obs"
+          shinyjs::hidden(
+            checkboxInput(
+              ns("cor_na_omit"),
+              label = tags$span(
+                "Omit NAs",
+                bslib::popover(
+                  icon("circle-info"),
+                  title = "NA handling",
+                  tags$p(tags$b("Checked:"), "use pairwise complete observations (each pair correlated over rows where both values are present)."),
+                  tags$p(tags$b("Unchecked:"), "reveals a dropdown with all five", tags$code("stats::cor()"), "use= options."),
+                  options = list(trigger = "hover focus")
+                )
+              ),
+              value = TRUE
+            )
+          ),
+          shinyjs::hidden(
+            selectInput(
+              ns("cor_use"),
+              label = tags$span(
+                "NA handling:",
+                bslib::popover(
+                  icon("circle-info"),
+                  title = "NA handling options",
+                  tags$dl(
+                    tags$dt("Everything"),
+                    tags$dd("Return NA for a pair if either variable contains any missing value."),
+                    tags$dt("All observations"),
+                    tags$dd("Assume no NAs are present; throws an error if any are found."),
+                    tags$dt("Complete observations"),
+                    tags$dd("Listwise deletion – only rows with no NAs across all selected variables."),
+                    tags$dt("NA or complete"),
+                    tags$dd("Like complete observations but returns NA instead of an error when no complete cases exist."),
+                    tags$dt("Pairwise complete"),
+                    tags$dd("Use all rows where both variables in a pair are non-missing (maximises available data).")
+                  ),
+                  options = list(trigger = "hover focus")
+                )
+              ),
+              choices = c(
+                "Everything" = "everything",
+                "All observations" = "all.obs",
+                "Complete observations" = "complete.obs",
+                "NA or complete" = "na.or.complete",
+                "Pairwise complete" = "pairwise.complete.obs"
+              ),
+              selected = "everything"
+            )
           )
         )
       )
@@ -320,7 +359,10 @@ srv_g_scatterplotmatrix <- function(id,
       data_extract = list(variables = variables),
       datasets = data,
       select_validation_rule = list(
-        variables = ~ if (length(.) <= 1) "Please select at least 2 columns."
+        variables = shinyvalidate::compose_rules(
+          ~ if (length(.) <= 1) "Please select at least 2 columns.",
+          ~ if (length(.) > 5) "Please select at most 5 columns."
+        )
       )
     )
 
@@ -332,7 +374,7 @@ srv_g_scatterplotmatrix <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
       selector_list = selector_list
-    )
+    ) |> debounce(500)
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
@@ -359,10 +401,10 @@ srv_g_scatterplotmatrix <- function(id,
 
       cols_names <- merged$anl_input_r()$columns_source$variables
       alpha_val <- input$alpha
-      size_val <- input$size
       add_cor <- input$cor
       cor_method <- input$cor_method
-      cor_use <- input$cor_use
+      cor_na_omit <- input$cor_na_omit
+      cor_use <- if (isTRUE(cor_na_omit)) "pairwise.complete.obs" else input$cor_use
 
       teal::validate_has_data(ANL, 10)
       teal::validate_has_data(ANL[, cols_names, drop = FALSE], 10, complete = TRUE, allow_inf = FALSE)
@@ -394,170 +436,86 @@ srv_g_scatterplotmatrix <- function(id,
 
       if (add_cor) {
         shinyjs::show("cor_method")
-        shinyjs::show("cor_use")
-
-        qenv <- within(
-          qenv,
-          {
-            col_names <- names(ANL)
-            n_vars <- length(col_names)
-            plot_list <- list()
-            for (i in seq_len(n_vars)) {
-              for (j in seq_len(n_vars)) {
-                col_name_i <- col_names[i]
-                col_name_j <- col_names[j]
-                if (i == j) {
-                  # diagonal: density for numeric, bar for factor
-                  p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_i]])) +
-                    ggplot2::labs(x = NULL, y = NULL) +
-                    ggplot2::ggtitle(varnames_value[i])
-                  p <- if (is.numeric(ANL[[col_name_i]])) {
-                    p + ggplot2::geom_density(fill = "steelblue", alpha = 0.5)
-                  } else {
-                    p +
-                      ggplot2::geom_bar(fill = "steelblue", alpha = 0.5) +
-                      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
-                  }
-                } else if (i < j) {
-                  # upper triangle: correlation text
-                  if (is.numeric(ANL[[col_name_i]]) && is.numeric(ANL[[col_name_j]])) {
-                    cor_val <- tryCatch(
-                      stats::cor(ANL[[col_name_i]], ANL[[col_name_j]], method = cor_method_value, use = cor_use_value),
-                      error = function(e) NA_real_
-                    )
-                    cor_label <- if (is.na(cor_val)) "NA" else sprintf("%.3f", cor_val)
-                    cor_size <- max(3, abs(cor_val) * 8 + 3)
-                    cor_color <- if (is.na(cor_val)) {
-                      "grey50"
-                    } else if (cor_val > 0) {
-                      "firebrick"
-                    } else {
-                      "steelblue"
-                    }
-                  } else {
-                    cor_label <- "-"
-                    cor_size <- 4
-                    cor_color <- "grey50"
-                  }
-                  p <- ggplot2::ggplot() +
-                    ggplot2::annotate(
-                      "text",
-                      x = 0.5, y = 0.5,
-                      label = cor_label,
-                      size = cor_size,
-                      fontface = "bold",
-                      color = cor_color
-                    ) +
-                    ggplot2::xlim(0, 1) +
-                    ggplot2::ylim(0, 1) +
-                    ggplot2::theme_void()
-                } else {
-                  # lower triangle: scatter/box plot
-                  if (is.numeric(ANL[[col_name_j]]) && is.numeric(ANL[[col_name_i]])) {
-                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], y = .data[[col_name_i]])) +
-                      ggplot2::geom_point(alpha = alpha_value, size = size_value, color = "steelblue") +
-                      ggplot2::labs(x = NULL, y = NULL)
-                  } else if (is.factor(ANL[[col_name_j]]) && is.numeric(ANL[[col_name_i]])) {
-                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], y = .data[[col_name_i]])) +
-                      ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
-                      ggplot2::labs(x = NULL, y = NULL) +
-                      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
-                  } else if (is.numeric(ANL[[col_name_j]]) && is.factor(ANL[[col_name_i]])) {
-                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_i]], y = .data[[col_name_j]])) +
-                      ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
-                      ggplot2::labs(x = NULL, y = NULL) +
-                      ggplot2::coord_flip()
-                  } else {
-                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], fill = .data[[col_name_i]])) +
-                      ggplot2::geom_bar(position = "dodge", alpha = 0.5) +
-                      ggplot2::labs(x = NULL, y = NULL, fill = NULL) +
-                      ggplot2::theme(
-                        axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-                        legend.position = "none"
-                      )
-                  }
-                }
-                plot_list[[(i - 1) * n_vars + j]] <- p
-              }
-            }
-            plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars) &
-              ggplot2::theme_minimal() &
-              ggplot2::theme(
-                plot.title = ggplot2::element_text(hjust = 0.5, size = 9, face = "bold"),
-                axis.text = ggplot2::element_text(size = 7)
-              )
-          },
-          varnames_value = varnames,
-          cor_method_value = cor_method,
-          cor_use_value = cor_use,
-          alpha_value = alpha_val,
-          size_value = size_val
-        )
+        shinyjs::show("cor_na_omit")
+        if (isTRUE(cor_na_omit)) {
+          shinyjs::hide("cor_use")
+        } else {
+          shinyjs::show("cor_use")
+        }
       } else {
         shinyjs::hide("cor_method")
+        shinyjs::hide("cor_na_omit")
         shinyjs::hide("cor_use")
-
-        qenv <- within(
-          qenv,
-          {
-            col_names <- names(ANL)
-            n_vars <- length(col_names)
-            plot_list <- list()
-            for (i in seq_len(n_vars)) {
-              for (j in seq_len(n_vars)) {
-                col_name_i <- col_names[i]
-                col_name_j <- col_names[j]
-                if (i == j) {
-                  p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_i]])) +
-                    ggplot2::labs(x = NULL, y = NULL) +
-                    ggplot2::ggtitle(varnames_value[i])
-                  p <- if (is.numeric(ANL[[col_name_i]])) {
-                    p + ggplot2::geom_density(fill = "steelblue", alpha = 0.5)
-                  } else {
-                    p +
-                      ggplot2::geom_bar(fill = "steelblue", alpha = 0.5) +
-                      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
-                  }
-                } else {
-                  if (is.numeric(ANL[[col_name_j]]) && is.numeric(ANL[[col_name_i]])) {
-                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], y = .data[[col_name_i]])) +
-                      ggplot2::geom_point(alpha = alpha_value, size = size_value, color = "steelblue") +
-                      ggplot2::labs(x = NULL, y = NULL)
-                  } else if (is.factor(ANL[[col_name_j]]) && is.numeric(ANL[[col_name_i]])) {
-                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], y = .data[[col_name_i]])) +
-                      ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
-                      ggplot2::labs(x = NULL, y = NULL) +
-                      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
-                  } else if (is.numeric(ANL[[col_name_j]]) && is.factor(ANL[[col_name_i]])) {
-                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_i]], y = .data[[col_name_j]])) +
-                      ggplot2::geom_boxplot(fill = "steelblue", alpha = 0.5) +
-                      ggplot2::labs(x = NULL, y = NULL) +
-                      ggplot2::coord_flip()
-                  } else {
-                    p <- ggplot2::ggplot(ANL, ggplot2::aes(x = .data[[col_name_j]], fill = .data[[col_name_i]])) +
-                      ggplot2::geom_bar(position = "dodge", alpha = 0.5) +
-                      ggplot2::labs(x = NULL, y = NULL, fill = NULL) +
-                      ggplot2::theme(
-                        axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-                        legend.position = "none"
-                      )
-                  }
-                }
-                plot_list[[(i - 1) * n_vars + j]] <- p
-              }
-            }
-            plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars) &
-              ggplot2::theme_minimal() &
-              ggplot2::theme(
-                plot.title = ggplot2::element_text(hjust = 0.5, size = 9, face = "bold"),
-                axis.text = ggplot2::element_text(size = 7)
-              )
-          },
-          varnames_value = varnames,
-          alpha_value = alpha_val,
-          size_value = size_val
-        )
       }
+
+      qenv <- within(
+        qenv,
+        {
+          add_cor    <- add_cor_value
+          cor_method <- cor_method_value
+          cor_use    <- cor_use_value
+          alpha      <- alpha_value
+          varnames   <- varnames_value
+
+          col_names <- names(ANL)
+          n_vars    <- length(col_names)
+          base_size <- max(6L, 14L - n_vars)
+
+          num_idx <- which(vapply(ANL, is.numeric, logical(1L)))
+          cor_mat <- if (add_cor && length(num_idx) >= 2L) {
+            tryCatch(
+              stats::cor(ANL[num_idx], method = cor_method, use = cor_use),
+              error = function(e) NULL
+            )
+          }
+
+          make_panel <- function(i, j) {
+            xi <- ANL[[col_names[i]]]
+            xj <- ANL[[col_names[j]]]
+            if (i == j) {
+              p <- ggplot2::ggplot(data.frame(x = xi), ggplot2::aes(x = x)) +
+                ggplot2::labs(x = NULL, y = NULL, title = varnames[i])
+              if (is.numeric(xi)) {
+                p <- p + ggplot2::geom_density(fill = "steelblue", alpha = alpha)
+              } else {
+                p <- p + ggplot2::geom_bar(fill = "steelblue", alpha = alpha)
+              }
+            } else if (i < j && add_cor) {
+              cv  <- if (!is.null(cor_mat) && is.numeric(xi) && is.numeric(xj)) cor_mat[col_names[i], col_names[j]] else NA_real_
+              col <- if (is.na(cv)) "grey50" else if (cv > 0) "firebrick" else "steelblue"
+              ggplot2::ggplot() +
+                ggplot2::annotate("text", x = 0.5, y = 0.5, fontface = "bold", color = col,
+                                  label = if (!is.na(cv)) sprintf("%.2f", cv) else if (is.numeric(xi) && is.numeric(xj)) "NA" else "-",
+                                  size  = if (!is.na(cv)) max(3, abs(cv) * 8 + 3) else if (is.numeric(xi) && is.numeric(xj)) 3 else 4) +
+                ggplot2::xlim(0, 1) + ggplot2::ylim(0, 1) + ggplot2::theme_void()
+            } else {
+              p <- ggplot2::ggplot(data.frame(x = xj, y = xi)) + ggplot2::labs(x = NULL, y = NULL) + ggplot2::aes(x = x, y = y)
+              n_num <- is.numeric(xi) + is.numeric(xj)
+              if (n_num == 2) p <- p + ggplot2::geom_point(color = "steelblue", alpha = alpha)
+              if (n_num == 1) p <- p + ggplot2::geom_boxplot(fill = "steelblue", alpha = alpha)
+              if (n_num == 0) p <- p + ggplot2::geom_bar(position = "dodge", alpha = alpha) + ggplot2::labs(fill = NULL)
+              p
+            }
+          }
+
+          plot_list <- unlist(
+            lapply(seq_len(n_vars), function(i) lapply(seq_len(n_vars), function(j) make_panel(i, j))),
+            recursive = FALSE
+          )
+          plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars) &
+            ggplot2::theme_minimal(base_size = base_size) &
+            ggplot2::theme(
+              plot.title  = ggplot2::element_text(hjust = 0.5, face = "bold"),
+              axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+              legend.position = "none"
+            )
+        },
+        add_cor_value    = add_cor,
+        cor_method_value = cor_method,
+        cor_use_value    = cor_use,
+        alpha_value      = alpha_val,
+        varnames_value   = varnames
+      )
       qenv
     })
 
@@ -602,81 +560,4 @@ srv_g_scatterplotmatrix <- function(id,
 
     set_chunk_dims(pws, decorated_output_q)
   })
-}
-
-#' Get stats for x-y pairs in scatterplot matrix
-#'
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' Uses [stats::cor.test()] per default for all numerical input variables and converts results
-#' to character vector.
-#' Could be extended if different stats for different variable types are needed.
-#'
-#' @param x,y (`numeric`) vectors of data values. `x` and `y` must have the same length.
-#' @param .f (`function`) function that accepts x and y as formula input `~ x + y`.
-#' Default `stats::cor.test`.
-#' @param .f_args (`list`) of arguments to be passed to `.f`.
-#' @param round_stat (`integer(1)`) optional, number of decimal places to use when rounding the estimate.
-#' @param round_pval (`integer(1)`) optional, number of decimal places to use when rounding the p-value.
-#'
-#' @return Character with stats. For [stats::cor.test()] correlation coefficient and p-value.
-#'
-#' @examples
-#' set.seed(1)
-#' x <- runif(25, 0, 1)
-#' y <- runif(25, 0, 1)
-#' x[c(3, 10, 18)] <- NA
-#'
-#' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(method = "pearson"))
-#' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(
-#'   method = "pearson",
-#'   na.action = na.fail
-#' ))
-#'
-#' @export
-#'
-get_scatterplotmatrix_stats <- function(x, y,
-                                        .f = stats::cor.test,
-                                        .f_args = list(),
-                                        round_stat = 2,
-                                        round_pval = 4) {
-  lifecycle::deprecate_warn(
-    "0.6.1",
-    "get_scatterplotmatrix_stats()",
-    details = paste(
-      "The scatterplot matrix module now uses ggplot2 + patchwork",
-      "which handles correlation display natively."
-    )
-  )
-  if (is.numeric(x) && is.numeric(y)) {
-    stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)), error = function(e) NA)
-
-    if (anyNA(stat)) {
-      "NA"
-    } else if (all(c("estimate", "p.value") %in% names(stat))) {
-      paste(
-        c(
-          paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
-          paste0("P:", round(stat$p.value, round_pval))
-        ),
-        collapse = "\n"
-      )
-    } else {
-      stop("function not supported")
-    }
-  } else {
-    if ("method" %in% names(.f_args)) {
-      if (.f_args$method == "pearson") {
-        return("cor:-")
-      }
-      if (.f_args$method == "kendall") {
-        return("tau:-")
-      }
-      if (.f_args$method == "spearman") {
-        return("rho:-")
-      }
-    }
-    "-"
-  }
 }
