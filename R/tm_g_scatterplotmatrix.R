@@ -297,7 +297,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
                   tags$p(
                     tags$b("Checked:"),
                     "use pairwise complete observations (each pair correlated over rows where both values are present)."
-                  ),                    ,
+                  ), ,
                   tags$p(
                     tags$b("Unchecked:"),
                     "reveals a dropdown with all five", tags$code("stats::cor()"), "use= options."
