@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.6.0.9022
+## teal.modules.general 0.6.0.9024
 
 #### Enhancements
 
@@ -18,6 +18,12 @@
   a new module for generating tables using the
   [gtsummary](https://cran.r-project.org/package=gtsummary) package
   ([\#973](https://github.com/insightsengineering/teal.modules.general/issues/973)).
+
+#### Bug fixes
+
+- `Show only distinct rows` in `tm_data_table` does no longer show an
+  extra count column `n`
+  ([\#983](https://github.com/insightsengineering/teal.modules.general/issues/983)).
 
 ## teal.modules.general 0.5.1
 

@@ -48,7 +48,7 @@ tm_gtsummary(
 
   `statistic`
 
-  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))  
+  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
       Specifies summary statistics to display for each variable. The
       default is
       `list(all_continuous() ~ "{median} ({p25}, {p75})", all_categorical() ~ "{n} ({p}%)")`.
@@ -56,14 +56,14 @@ tm_gtsummary(
 
   `digits`
 
-  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))  
+  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
       Specifies how summary statistics are rounded. Values may be either
       integer(s) or function(s). If not specified, default formatting is
       assigned via `assign_summary_digits()`. See below for details.
 
   `type`
 
-  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))  
+  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
       Specifies the summary type. Accepted value are
       `c("continuous", "continuous2", "categorical", "dichotomous")`. If
       not specified, default type is assigned via
@@ -71,7 +71,7 @@ tm_gtsummary(
 
   `value`
 
-  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))  
+  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
       Specifies the level of a variable to display on a single row. The
       gtsummary type selectors, e.g. `all_dichotomous()`, cannot be used
       with this argument. Default is `NULL`. See below for details.
@@ -91,7 +91,7 @@ tm_gtsummary(
 
   `sort`
 
-  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))  
+  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
       Specifies sorting to perform for categorical variables. Values
       must be one of `c("alphanumeric", "frequency")`. Default is
       `all_categorical(FALSE) ~ "alphanumeric"`.
