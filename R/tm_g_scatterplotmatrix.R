@@ -316,7 +316,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
                     tags$dt("All observations"),
                     tags$dd("Assume no NAs are present; throws an error if any are found."),
                     tags$dt("Complete observations"),
-                    tags$dd("Listwise deletion – only rows with no NAs across all selected variables."),
+                    tags$dd("Listwise deletion - only rows with no NAs across all selected variables."),
                     tags$dt("NA or complete"),
                     tags$dd("Like complete observations but returns NA instead of an error when no complete cases exist."),
                     tags$dt("Pairwise complete"),
