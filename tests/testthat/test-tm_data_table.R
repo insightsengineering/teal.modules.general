@@ -191,7 +191,7 @@ testthat::describe("tm_data_table module server behavior with if_distinct option
     )
   })
 
-  it("does not error when variables is NULL and if_distinct is TRUE", {
+  it("does not error when variables is NULL regardless of if_distinct", {
     mod <- tm_data_table(datanames = "test_df")
     shiny::testServer(
       mod$server,
@@ -203,19 +203,7 @@ testthat::describe("tm_data_table module server behavior with if_distinct option
         session$setInputs(if_distinct = TRUE)
         session$flushReact()
         testthat::expect_no_error(session$returned[["test_df"]]())
-      }
-    )
-  })
 
-  it("does not error when variables is NULL and if_distinct is FALSE", {
-    mod <- tm_data_table(datanames = "test_df")
-    shiny::testServer(
-      mod$server,
-      args = c(
-        mod$server_args,
-        list(id = "test", data = reactive(data_with_dups))
-      ),
-      expr = {
         session$setInputs(if_distinct = FALSE)
         session$flushReact()
         testthat::expect_no_error(session$returned[["test_df"]]())
