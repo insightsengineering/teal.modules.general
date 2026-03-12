@@ -7,6 +7,11 @@
 #' @note For more examples, please see the vignette "Using scatterplot matrix" via
 #' `vignette("using-scatterplot-matrix", package = "teal.modules.general")`.
 #'
+#' @note When *Add Correlation* is enabled, a simple **Omit NAs** checkbox
+#'   controls NA handling (checked = `"pairwise.complete.obs"`, matching the
+#'   historical default).  Unchecking it reveals a dropdown with all five
+#'   `stats::cor()` `use` options for advanced control.
+#'
 #' @inheritParams teal::module
 #' @inheritParams tm_g_scatterplot
 #' @inheritParams shared_params
@@ -21,7 +26,7 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `plot` (`trellis` - output of `lattice::splom`)
+#' - `plot` (`ggplot` - a `patchwork` assembled from individual `ggplot` panels)
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -272,19 +277,70 @@ ui_g_scatterplotmatrix <- function(id, ...) {
             min = 0, max = 1,
             step = .05, value = .5, ticks = FALSE
           ),
-          sliderInput(
-            ns("cex"), "Points size:",
-            min = 0.2, max = 3,
-            step = .05, value = .65, ticks = FALSE
-          ),
           checkboxInput(ns("cor"), "Add Correlation", value = FALSE),
-          radioButtons(
-            ns("cor_method"), "Select Correlation Method",
-            choiceNames = c("Pearson", "Kendall", "Spearman"),
-            choiceValues = c("pearson", "kendall", "spearman"),
-            inline = TRUE
+          shinyjs::hidden(
+            radioButtons(
+              ns("cor_method"), "Select Correlation Method",
+              choiceNames = c("Pearson", "Kendall", "Spearman"),
+              choiceValues = c("pearson", "kendall", "spearman"),
+              inline = TRUE
+            )
           ),
-          checkboxInput(ns("cor_na_omit"), "Omit Missing Values", value = TRUE)
+          shinyjs::hidden(
+            checkboxInput(
+              ns("cor_na_omit"),
+              label = tags$span(
+                "Omit NAs",
+                bslib::popover(
+                  icon("circle-info"),
+                  title = "NA handling",
+                  tags$p(
+                    tags$b("Checked:"),
+                    "use pairwise complete observations (each pair correlated over rows where both values are present)."
+                  ), ,
+                  tags$p(
+                    tags$b("Unchecked:"),
+                    "reveals a dropdown with all five", tags$code("stats::cor()"), "use= options."
+                  ),
+                  options = list(trigger = "hover focus")
+                )
+              ),
+              value = TRUE
+            )
+          ),
+          shinyjs::hidden(
+            selectInput(
+              ns("cor_use"),
+              label = tags$span(
+                "NA handling:",
+                bslib::popover(
+                  icon("circle-info"),
+                  title = "NA handling options",
+                  tags$dl(
+                    tags$dt("Everything"),
+                    tags$dd("Return NA for a pair if either variable contains any missing value."),
+                    tags$dt("All observations"),
+                    tags$dd("Assume no NAs are present; throws an error if any are found."),
+                    tags$dt("Complete observations"),
+                    tags$dd("Listwise deletion - only rows with no NAs across all selected variables."),
+                    tags$dt("NA or complete"),
+                    tags$dd("Like complete observations but returns NA instead of an error when no complete cases exist."), # nolint line_length_linter.
+                    tags$dt("Pairwise complete"),
+                    tags$dd("Use all rows where both variables in a pair are non-missing (maximises available data).")
+                  ),
+                  options = list(trigger = "hover focus")
+                )
+              ),
+              choices = c(
+                "Everything" = "everything",
+                "All observations" = "all.obs",
+                "Complete observations" = "complete.obs",
+                "NA or complete" = "na.or.complete",
+                "Pairwise complete" = "pairwise.complete.obs"
+              ),
+              selected = "everything"
+            )
+          )
         )
       )
     ),
@@ -309,7 +365,10 @@ srv_g_scatterplotmatrix <- function(id,
       data_extract = list(variables = variables),
       datasets = data,
       select_validation_rule = list(
-        variables = ~ if (length(.) <= 1) "Please select at least 2 columns."
+        variables = shinyvalidate::compose_rules(
+          ~ if (length(.) <= 1) "Please select at least 2 columns.",
+          ~ if (length(.) > 5) "Please select at most 5 columns."
+        )
       )
     )
 
@@ -321,7 +380,7 @@ srv_g_scatterplotmatrix <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
       selector_list = selector_list
-    )
+    ) |> debounce(500)
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
@@ -330,7 +389,7 @@ srv_g_scatterplotmatrix <- function(id,
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's output(s)")
       )
-      qenv <- teal.code::eval_code(obj, "library(dplyr);library(lattice)")
+      qenv <- teal.code::eval_code(obj, "library(dplyr)")
       teal.code::eval_code(qenv, as.expression(anl_merged_input()$expr))
     })
 
@@ -347,17 +406,11 @@ srv_g_scatterplotmatrix <- function(id,
       ANL <- qenv[["ANL"]]
 
       cols_names <- merged$anl_input_r()$columns_source$variables
-      alpha <- input$alpha
-      cex <- input$cex
+      alpha_val <- input$alpha
       add_cor <- input$cor
       cor_method <- input$cor_method
       cor_na_omit <- input$cor_na_omit
-
-      cor_na_action <- if (isTruthy(cor_na_omit)) {
-        "na.omit"
-      } else {
-        "na.fail"
-      }
+      cor_use <- if (isTRUE(cor_na_omit)) "pairwise.complete.obs" else input$cor_use
 
       teal::validate_has_data(ANL, 10)
       teal::validate_has_data(ANL[, cols_names, drop = FALSE], 10, complete = TRUE, allow_inf = FALSE)
@@ -368,93 +421,112 @@ srv_g_scatterplotmatrix <- function(id,
       # check character columns. If any, then those are converted to factors
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {
-        qenv <- teal.code::eval_code(
+        qenv <- within(
           qenv,
-          substitute(
-            expr = ANL <- ANL[, cols_names] %>%
-              dplyr::mutate_if(is.character, as.factor) %>%
-              droplevels(),
-            env = list(cols_names = cols_names)
-          )
+          ANL <- ANL[, cols_names] %>%
+            dplyr::mutate_if(is.character, as.factor) %>%
+            droplevels(),
+          cols_names = cols_names
         )
       } else {
-        qenv <- teal.code::eval_code(
+        qenv <- within(
           qenv,
-          substitute(
-            expr = ANL <- ANL[, cols_names] %>%
-              droplevels(),
-            env = list(cols_names = cols_names)
-          )
+          ANL <- ANL[, cols_names] %>%
+            droplevels(),
+          cols_names = cols_names
         )
       }
-
 
       # create plot
       teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Plot")
 
       if (add_cor) {
         shinyjs::show("cor_method")
-        shinyjs::show("cor_use")
         shinyjs::show("cor_na_omit")
-
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = {
-              plot <- lattice::splom(
-                ANL,
-                varnames = varnames_value,
-                panel = function(x, y, ...) {
-                  lattice::panel.splom(x = x, y = y, ...)
-                  cpl <- lattice::current.panel.limits()
-                  lattice::panel.text(
-                    mean(cpl$xlim),
-                    mean(cpl$ylim),
-                    get_scatterplotmatrix_stats(
-                      x,
-                      y,
-                      .f = stats::cor.test,
-                      .f_args = list(method = cor_method, na.action = cor_na_action)
-                    ),
-                    alpha = 0.6,
-                    fontsize = 18,
-                    fontface = "bold"
-                  )
-                },
-                pch = 16,
-                alpha = alpha_value,
-                cex = cex_value
-              )
-            },
-            env = list(
-              varnames_value = varnames,
-              cor_method = cor_method,
-              cor_na_action = cor_na_action,
-              alpha_value = alpha,
-              cex_value = cex
-            )
-          )
-        )
+        if (isTRUE(cor_na_omit)) {
+          shinyjs::hide("cor_use")
+        } else {
+          shinyjs::show("cor_use")
+        }
       } else {
         shinyjs::hide("cor_method")
-        shinyjs::hide("cor_use")
         shinyjs::hide("cor_na_omit")
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = {
-              plot <- lattice::splom(
-                ANL,
-                varnames = varnames_value,
-                pch = 16,
-                alpha = alpha_value,
-                cex = cex_value
-              )
-            },
-            env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
-          )
-        )
+        shinyjs::hide("cor_use")
       }
+
+      qenv <- within(
+        qenv,
+        {
+          add_cor <- add_cor_value
+          cor_method <- cor_method_value
+          cor_use <- cor_use_value
+          alpha <- alpha_value
+          varnames <- varnames_value
+
+          col_names <- names(ANL)
+          n_vars <- length(col_names)
+          base_size <- max(6L, 14L - n_vars)
+
+          num_idx <- which(vapply(ANL, is.numeric, logical(1L)))
+          cor_mat <- if (add_cor && length(num_idx) >= 2L) {
+            tryCatch(
+              stats::cor(ANL[num_idx], method = cor_method, use = cor_use),
+              error = function(e) NULL
+            )
+          }
+
+          make_panel <- function(i, j) {
+            xi <- ANL[[col_names[i]]]
+            xj <- ANL[[col_names[j]]]
+            if (i == j) {
+              p <- ggplot2::ggplot(data.frame(x = xi), ggplot2::aes(x = x)) +
+                ggplot2::labs(x = NULL, y = NULL, title = varnames[i])
+              if (is.numeric(xi)) {
+                p <- p + ggplot2::geom_density(fill = "steelblue", alpha = alpha)
+              } else {
+                p <- p + ggplot2::geom_bar(fill = "steelblue", alpha = alpha)
+              }
+            } else if (i < j && add_cor) {
+              cv <- if (!is.null(cor_mat) && is.numeric(xi) && is.numeric(xj)) cor_mat[col_names[i], col_names[j]] else NA_real_ # nolint line_length_linter.
+              col <- if (is.na(cv)) "grey50" else if (cv > 0) "firebrick" else "steelblue"
+              ggplot2::ggplot() +
+                ggplot2::annotate("text",
+                  x = 0.5, y = 0.5, fontface = "bold", color = col,
+                  label = if (!is.na(cv)) sprintf("%.2f", cv) else if (is.numeric(xi) && is.numeric(xj)) "NA" else "-", # nolint line_length_linter.
+                  size = if (!is.na(cv)) max(3, abs(cv) * 8 + 3) else if (is.numeric(xi) && is.numeric(xj)) 3 else 4 # nolint line_length_linter.
+                ) +
+                ggplot2::xlim(0, 1) +
+                ggplot2::ylim(0, 1) +
+                ggplot2::theme_void()
+            } else {
+              p <- ggplot2::ggplot(data.frame(x = xj, y = xi)) +
+                ggplot2::labs(x = NULL, y = NULL)
+              n_num <- is.numeric(xi) + is.numeric(xj)
+              if (n_num == 2) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_point(color = "steelblue", alpha = alpha) # nolint line_length_linter.
+              if (n_num == 1) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_boxplot(fill = "steelblue", alpha = alpha) # nolint line_length_linter.
+              if (n_num == 0) p <- p + ggplot2::aes(x = x, fill = y) + ggplot2::geom_bar(position = "dodge", alpha = alpha) + ggplot2::labs(fill = NULL) # nolint line_length_linter.
+              p
+            }
+          }
+
+          plot_list <- unlist(
+            lapply(seq_len(n_vars), function(i) lapply(seq_len(n_vars), function(j) make_panel(i, j))),
+            recursive = FALSE
+          )
+          plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars) &
+            ggplot2::theme_minimal(base_size = base_size) &
+            ggplot2::theme(
+              plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
+              axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+              legend.position = "none"
+            )
+        },
+        add_cor_value = add_cor,
+        cor_method_value = cor_method,
+        cor_use_value = cor_use,
+        alpha_value = alpha_val,
+        varnames_value = varnames
+      )
       qenv
     })
 
@@ -499,80 +571,4 @@ srv_g_scatterplotmatrix <- function(id,
 
     set_chunk_dims(pws, decorated_output_q)
   })
-}
-
-#' Get stats for x-y pairs in scatterplot matrix
-#'
-#' Uses [stats::cor.test()] per default for all numerical input variables and converts results
-#' to character vector.
-#' Could be extended if different stats for different variable types are needed.
-#' Meant to be called from [lattice::panel.text()].
-#'
-#' Presently we need to use a formula input for `stats::cor.test` because
-#' `na.fail` only gets evaluated when a formula is passed (see below).
-#' ```
-#' x = c(1,3,5,7,NA)
-#' y = c(3,6,7,8,1)
-#' stats::cor.test(x, y, na.action = "na.fail")
-#' stats::cor.test(~ x + y,  na.action = "na.fail")
-#' ```
-#'
-#' @param x,y (`numeric`) vectors of data values. `x` and `y` must have the same length.
-#' @param .f (`function`) function that accepts x and y as formula input `~ x + y`.
-#' Default `stats::cor.test`.
-#' @param .f_args (`list`) of arguments to be passed to `.f`.
-#' @param round_stat (`integer(1)`) optional, number of decimal places to use when rounding the estimate.
-#' @param round_pval (`integer(1)`) optional, number of decimal places to use when rounding the p-value.
-#'
-#' @return Character with stats. For [stats::cor.test()] correlation coefficient and p-value.
-#'
-#' @examples
-#' set.seed(1)
-#' x <- runif(25, 0, 1)
-#' y <- runif(25, 0, 1)
-#' x[c(3, 10, 18)] <- NA
-#'
-#' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(method = "pearson"))
-#' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(
-#'   method = "pearson",
-#'   na.action = na.fail
-#' ))
-#'
-#' @export
-#'
-get_scatterplotmatrix_stats <- function(x, y,
-                                        .f = stats::cor.test,
-                                        .f_args = list(),
-                                        round_stat = 2,
-                                        round_pval = 4) {
-  if (is.numeric(x) && is.numeric(y)) {
-    stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)), error = function(e) NA)
-
-    if (anyNA(stat)) {
-      "NA"
-    } else if (all(c("estimate", "p.value") %in% names(stat))) {
-      paste(
-        c(
-          paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
-          paste0("P:", round(stat$p.value, round_pval))
-        ),
-        collapse = "\n"
-      )
-    } else {
-      stop("function not supported")
-    }
-  } else {
-    if ("method" %in% names(.f_args)) {
-      if (.f_args$method == "pearson") {
-        return("cor:-")
-      }
-      if (.f_args$method == "kendall") {
-        return("tau:-")
-      }
-      if (.f_args$method == "spearman") {
-        return("rho:-")
-      }
-    }
-    "-"
-  }
 }

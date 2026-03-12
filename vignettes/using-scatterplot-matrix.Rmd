@@ -24,7 +24,6 @@ various types of datasets using the scatter plot matrix module `tm_g_scatterplot
 ```{r library, echo=TRUE, message=FALSE, warning=FALSE, results="hide"}
 library(teal.modules.general) # used to create the app
 library(dplyr) # used to modify data sets
-library(lattice)
 ```
 
 ## 2 - Create data sets
