@@ -294,8 +294,14 @@ ui_g_scatterplotmatrix <- function(id, ...) {
                 bslib::popover(
                   icon("circle-info"),
                   title = "NA handling",
-                  tags$p(tags$b("Checked:"), "use pairwise complete observations (each pair correlated over rows where both values are present)."),
-                  tags$p(tags$b("Unchecked:"), "reveals a dropdown with all five", tags$code("stats::cor()"), "use= options."),
+                  tags$p(
+                    tags$b("Checked:"),
+                    "use pairwise complete observations (each pair correlated over rows where both values are present)."
+                  ),                    ,
+                  tags$p(
+                    tags$b("Unchecked:"),
+                    "reveals a dropdown with all five", tags$code("stats::cor()"), "use= options."
+                  ),
                   options = list(trigger = "hover focus")
                 )
               ),
@@ -318,7 +324,7 @@ ui_g_scatterplotmatrix <- function(id, ...) {
                     tags$dt("Complete observations"),
                     tags$dd("Listwise deletion - only rows with no NAs across all selected variables."),
                     tags$dt("NA or complete"),
-                    tags$dd("Like complete observations but returns NA instead of an error when no complete cases exist."),
+                    tags$dd("Like complete observations but returns NA instead of an error when no complete cases exist."), # nolint line_length_linter.
                     tags$dt("Pairwise complete"),
                     tags$dd("Use all rows where both variables in a pair are non-missing (maximises available data).")
                   ),
@@ -481,13 +487,13 @@ srv_g_scatterplotmatrix <- function(id,
                 p <- p + ggplot2::geom_bar(fill = "steelblue", alpha = alpha)
               }
             } else if (i < j && add_cor) {
-              cv <- if (!is.null(cor_mat) && is.numeric(xi) && is.numeric(xj)) cor_mat[col_names[i], col_names[j]] else NA_real_
+              cv <- if (!is.null(cor_mat) && is.numeric(xi) && is.numeric(xj)) cor_mat[col_names[i], col_names[j]] else NA_real_ # nolint line_length_linter.
               col <- if (is.na(cv)) "grey50" else if (cv > 0) "firebrick" else "steelblue"
               ggplot2::ggplot() +
                 ggplot2::annotate("text",
                   x = 0.5, y = 0.5, fontface = "bold", color = col,
-                  label = if (!is.na(cv)) sprintf("%.2f", cv) else if (is.numeric(xi) && is.numeric(xj)) "NA" else "-",
-                  size = if (!is.na(cv)) max(3, abs(cv) * 8 + 3) else if (is.numeric(xi) && is.numeric(xj)) 3 else 4
+                  label = if (!is.na(cv)) sprintf("%.2f", cv) else if (is.numeric(xi) && is.numeric(xj)) "NA" else "-", # nolint line_length_linter.
+                  size = if (!is.na(cv)) max(3, abs(cv) * 8 + 3) else if (is.numeric(xi) && is.numeric(xj)) 3 else 4 # nolint line_length_linter.
                 ) +
                 ggplot2::xlim(0, 1) +
                 ggplot2::ylim(0, 1) +
@@ -496,9 +502,9 @@ srv_g_scatterplotmatrix <- function(id,
               p <- ggplot2::ggplot(data.frame(x = xj, y = xi)) +
                 ggplot2::labs(x = NULL, y = NULL)
               n_num <- is.numeric(xi) + is.numeric(xj)
-              if (n_num == 2) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_point(color = "steelblue", alpha = alpha)
-              if (n_num == 1) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_boxplot(fill = "steelblue", alpha = alpha)
-              if (n_num == 0) p <- p + ggplot2::aes(x = x, fill = y) + ggplot2::geom_bar(position = "dodge", alpha = alpha) + ggplot2::labs(fill = NULL)
+              if (n_num == 2) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_point(color = "steelblue", alpha = alpha) # nolint line_length_linter.
+              if (n_num == 1) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_boxplot(fill = "steelblue", alpha = alpha) # nolint line_length_linter.
+              if (n_num == 0) p <- p + ggplot2::aes(x = x, fill = y) + ggplot2::geom_bar(position = "dodge", alpha = alpha) + ggplot2::labs(fill = NULL) # nolint line_length_linter.
               p
             }
           }
