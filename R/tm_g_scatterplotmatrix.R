@@ -451,14 +451,14 @@ srv_g_scatterplotmatrix <- function(id,
       qenv <- within(
         qenv,
         {
-          add_cor    <- add_cor_value
+          add_cor <- add_cor_value
           cor_method <- cor_method_value
-          cor_use    <- cor_use_value
-          alpha      <- alpha_value
-          varnames   <- varnames_value
+          cor_use <- cor_use_value
+          alpha <- alpha_value
+          varnames <- varnames_value
 
           col_names <- names(ANL)
-          n_vars    <- length(col_names)
+          n_vars <- length(col_names)
           base_size <- max(6L, 14L - n_vars)
 
           num_idx <- which(vapply(ANL, is.numeric, logical(1L)))
@@ -481,15 +481,20 @@ srv_g_scatterplotmatrix <- function(id,
                 p <- p + ggplot2::geom_bar(fill = "steelblue", alpha = alpha)
               }
             } else if (i < j && add_cor) {
-              cv  <- if (!is.null(cor_mat) && is.numeric(xi) && is.numeric(xj)) cor_mat[col_names[i], col_names[j]] else NA_real_
+              cv <- if (!is.null(cor_mat) && is.numeric(xi) && is.numeric(xj)) cor_mat[col_names[i], col_names[j]] else NA_real_
               col <- if (is.na(cv)) "grey50" else if (cv > 0) "firebrick" else "steelblue"
               ggplot2::ggplot() +
-                ggplot2::annotate("text", x = 0.5, y = 0.5, fontface = "bold", color = col,
-                                  label = if (!is.na(cv)) sprintf("%.2f", cv) else if (is.numeric(xi) && is.numeric(xj)) "NA" else "-",
-                                  size  = if (!is.na(cv)) max(3, abs(cv) * 8 + 3) else if (is.numeric(xi) && is.numeric(xj)) 3 else 4) +
-                ggplot2::xlim(0, 1) + ggplot2::ylim(0, 1) + ggplot2::theme_void()
+                ggplot2::annotate("text",
+                  x = 0.5, y = 0.5, fontface = "bold", color = col,
+                  label = if (!is.na(cv)) sprintf("%.2f", cv) else if (is.numeric(xi) && is.numeric(xj)) "NA" else "-",
+                  size = if (!is.na(cv)) max(3, abs(cv) * 8 + 3) else if (is.numeric(xi) && is.numeric(xj)) 3 else 4
+                ) +
+                ggplot2::xlim(0, 1) +
+                ggplot2::ylim(0, 1) +
+                ggplot2::theme_void()
             } else {
-              p     <- ggplot2::ggplot(data.frame(x = xj, y = xi)) + ggplot2::labs(x = NULL, y = NULL)
+              p <- ggplot2::ggplot(data.frame(x = xj, y = xi)) +
+                ggplot2::labs(x = NULL, y = NULL)
               n_num <- is.numeric(xi) + is.numeric(xj)
               if (n_num == 2) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_point(color = "steelblue", alpha = alpha)
               if (n_num == 1) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_boxplot(fill = "steelblue", alpha = alpha)
@@ -505,16 +510,16 @@ srv_g_scatterplotmatrix <- function(id,
           plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars) &
             ggplot2::theme_minimal(base_size = base_size) &
             ggplot2::theme(
-              plot.title  = ggplot2::element_text(hjust = 0.5, face = "bold"),
+              plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
               axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
               legend.position = "none"
             )
         },
-        add_cor_value    = add_cor,
+        add_cor_value = add_cor,
         cor_method_value = cor_method,
-        cor_use_value    = cor_use,
-        alpha_value      = alpha_val,
-        varnames_value   = varnames
+        cor_use_value = cor_use,
+        alpha_value = alpha_val,
+        varnames_value = varnames
       )
       qenv
     })
