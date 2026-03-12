@@ -8,6 +8,9 @@
 - Multiple decorators can be applied to the same output object (#978).
 - Introduced `tm_gtsummary()`, a new module for generating tables using the [gtsummary](https://cran.r-project.org/package=gtsummary) package (#973).
 
+### Bug fixes
+- `Show only distinct rows` in `tm_data_table` does no longer show an extra count column `n` (#983).
+
 # teal.modules.general 0.5.1
 
 - Removed ggmosaic package dependency to avoid being archived on CRAN (#932).
