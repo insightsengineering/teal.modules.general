@@ -1,4 +1,4 @@
-# teal.modules.general 0.6.0.9023
+# teal.modules.general 0.6.0.9024
 
 ### Enhancements
 
@@ -11,6 +11,9 @@
   the familiar **Omit NAs** checkbox (default, `use = "pairwise.complete.obs"`);
   unchecking it reveals a dropdown with all five `stats::cor()` `use` options.
   `get_scatterplotmatrix_stats()` has been removed (#986).
+
+### Bug fixes
+- `Show only distinct rows` in `tm_data_table` does no longer show an extra count column `n` (#983).
 
 # teal.modules.general 0.5.1
 
