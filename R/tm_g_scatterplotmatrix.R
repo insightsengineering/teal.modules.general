@@ -489,15 +489,17 @@ srv_g_scatterplotmatrix <- function(id,
             } else if (i < j && add_cor) {
               cv <- if (!is.null(cor_mat) && is.numeric(xi) && is.numeric(xj)) cor_mat[col_names[i], col_names[j]] else NA_real_ # nolint line_length_linter.
               col <- if (is.na(cv)) "grey50" else if (cv > 0) "firebrick" else "steelblue"
-              ggplot2::ggplot() +
-                ggplot2::annotate("text",
-                  x = 0.5, y = 0.5, fontface = "bold", color = col,
-                  label = if (!is.na(cv)) sprintf("%.2f", cv) else if (is.numeric(xi) && is.numeric(xj)) "NA" else "-", # nolint line_length_linter.
-                  size = if (!is.na(cv)) max(3, abs(cv) * 8 + 3) else if (is.numeric(xi) && is.numeric(xj)) 3 else 4 # nolint line_length_linter.
-                ) +
-                ggplot2::xlim(0, 1) +
-                ggplot2::ylim(0, 1) +
-                ggplot2::theme_void()
+              return(
+                ggplot2::ggplot() +
+                  ggplot2::annotate("text",
+                    x = 0.5, y = 0.5, fontface = "bold", color = col,
+                    label = if (!is.na(cv)) sprintf("%.2f", cv) else if (is.numeric(xi) && is.numeric(xj)) "NA" else "-", # nolint line_length_linter.
+                    size = if (!is.na(cv)) max(3, abs(cv) * 8 + 3) else if (is.numeric(xi) && is.numeric(xj)) 3 else 4 # nolint line_length_linter.
+                  ) +
+                  ggplot2::xlim(0, 1) +
+                  ggplot2::ylim(0, 1) +
+                  ggplot2::theme_void()
+              )
             } else {
               p <- ggplot2::ggplot(data.frame(x = xj, y = xi)) +
                 ggplot2::labs(x = NULL, y = NULL)
@@ -505,8 +507,19 @@ srv_g_scatterplotmatrix <- function(id,
               if (n_num == 2) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_point(color = "steelblue", alpha = alpha) # nolint line_length_linter.
               if (n_num == 1) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_boxplot(fill = "steelblue", alpha = alpha) # nolint line_length_linter.
               if (n_num == 0) p <- p + ggplot2::aes(x = x, fill = y) + ggplot2::geom_bar(position = "dodge", alpha = alpha) + ggplot2::labs(fill = NULL) # nolint line_length_linter.
-              p
             }
+            p <- p + ggplot2::theme_minimal(base_size = base_size)
+            if (i == n_vars) {
+              p <- p + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+              if (!is.numeric(xj)) {
+                p <- p + ggplot2::scale_x_discrete(
+                  labels = function(x) ifelse(nchar(x) > 10, paste0(substr(x, 1, 9), "\u2026"), x)
+                )
+              }
+            } else {
+              p <- p + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank())
+            }
+            p
           }
 
           plot_list <- unlist(
@@ -514,10 +527,8 @@ srv_g_scatterplotmatrix <- function(id,
             recursive = FALSE
           )
           plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars) &
-            ggplot2::theme_minimal(base_size = base_size) &
             ggplot2::theme(
               plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
-              axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
               legend.position = "none"
             )
         },
