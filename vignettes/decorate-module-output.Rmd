@@ -48,7 +48,7 @@ You can also refer the table shown below to know which module outputs can be dec
 | `tm_g_distribution`   | histogram_plot (ggplot), qq_plot (ggplot), summary_table (datatables), test_table (datatables) |
 | `tm_g_response`       | plot (ggplot)                                      |
 | `tm_g_scatterplot`    | plot (ggplot)                                      |
-| `tm_g_scatterplotmatrix` | plot (patchwork)                                |
+| `tm_g_scatterplotmatrix` | plot (patchwork/ggplot)                                |
 | `tm_missing_data`     | summary_plot (grob), combination_plot (grob), by_subject_plot (ggplot), table (datatables) |
 | `tm_outliers`         | box_plot (ggplot), density_plot (ggplot), cumulative_plot (ggplot), table (datatables) |
 | `tm_t_crosstable`     | table (ElementaryTable)                            |
