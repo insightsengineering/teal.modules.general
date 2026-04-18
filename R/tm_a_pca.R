@@ -608,7 +608,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
               )
 
             cols <- c(getOption("ggplot2.discrete.colour"), c("lightblue", "darkred", "black"))[1:3]
-            elbow_plot <- ggplot2::ggplot(mapping = ggplot2::aes_string(x = "component", y = "value")) +
+            elbow_plot <- ggplot2::ggplot(mapping = ggplot2::aes(x = component, y = value)) +
               ggplot2::geom_bar(
                 ggplot2::aes(fill = "Single variance"),
                 data = dplyr::filter(elb_dat, metric == "Proportion of Variance"),
@@ -687,9 +687,9 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
             )
 
             circle_plot <- ggplot2::ggplot(pca_rot) +
-              ggplot2::geom_point(ggplot2::aes_string(x = x_axis, y = y_axis)) +
+              ggplot2::geom_point(ggplot2::aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
               ggplot2::geom_label(
-                ggplot2::aes_string(x = x_axis, y = y_axis, label = "label"),
+                ggplot2::aes(x = .data[[x_axis]], y = .data[[y_axis]], label = label),
                 nudge_x = 0.1, nudge_y = 0.05,
                 fontface = "bold"
               ) +
@@ -789,7 +789,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         pca_plot_biplot_expr <- c(
           pca_plot_biplot_expr,
           substitute(
-            ggplot2::geom_point(ggplot2::aes_string(x = x_axis, y = y_axis),
+            ggplot2::geom_point(ggplot2::aes(x = .data[[x_axis]], y = .data[[y_axis]]),
               data = pca_rot, alpha = alpha, size = size
             ),
             list(x_axis = input$x_axis, y_axis = input$y_axis, alpha = input$alpha, size = input$size)
@@ -802,7 +802,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
         response <- ANL[[resp_col]]
 
         aes_biplot <- substitute(
-          ggplot2::aes_string(x = x_axis, y = y_axis, color = "response"),
+          ggplot2::aes(x = .data[[x_axis]], y = .data[[y_axis]], color = response),
           env = list(x_axis = x_axis, y_axis = y_axis)
         )
 
@@ -860,7 +860,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
           pca_plot_biplot_expr,
           substitute(
             ggplot2::geom_segment(
-              ggplot2::aes_string(x = "xstart", y = "ystart", xend = x_axis, yend = y_axis),
+              ggplot2::aes(x = xstart, y = ystart, xend = .data[[x_axis]], yend = .data[[y_axis]]),
               data = rot_vars,
               lineend = "round", linejoin = "round",
               arrow = grid::arrow(length = grid::unit(0.5, "cm"))
@@ -869,10 +869,10 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
           ),
           substitute(
             ggplot2::geom_label(
-              ggplot2::aes_string(
-                x = x_axis,
-                y = y_axis,
-                label = "label"
+              ggplot2::aes(
+                x = .data[[x_axis]],
+                y = .data[[y_axis]],
+                label = label
               ),
               data = rot_vars,
               nudge_y = 0.1,
@@ -965,7 +965,7 @@ srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, deco
           quote(ggplot(pca_rot)),
           substitute(
             ggplot2::geom_bar(
-              ggplot2::aes_string(x = "Variable", y = pc),
+              ggplot2::aes(x = Variable, y = .data[[pc]]),
               stat = "identity",
               color = "black",
               fill = c(getOption("ggplot2.discrete.colour"), "lightblue")[1]
