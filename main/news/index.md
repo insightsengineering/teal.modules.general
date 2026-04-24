@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.6.0.9024
+## teal.modules.general 0.6.0.9025
 
 #### Enhancements
 
@@ -24,6 +24,9 @@
 - `Show only distinct rows` in `tm_data_table` does no longer show an
   extra count column `n`
   ([\#983](https://github.com/insightsengineering/teal.modules.general/issues/983)).
+- Fixed overlapping UI elements in the output panel of
+  `tm_g_distribution`
+  ([\#896](https://github.com/insightsengineering/teal.modules.general/issues/896)).
 
 ## teal.modules.general 0.5.1
 
