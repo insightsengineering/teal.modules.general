@@ -1017,7 +1017,10 @@ srv_distribution <- function(id,
           )
         } else {
           substitute(
-            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes(sample = .data[[dist_var]], color = .data[[s_var]])) +
+            expr = ggplot2::ggplot(
+              ANL[ANL[[g_var]] != "NA", ],
+              ggplot2::aes(sample = .data[[dist_var]], color = .data[[s_var]])
+            ) +
               ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               dist_var = dist_var,
