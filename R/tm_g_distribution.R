@@ -246,19 +246,25 @@ ui_distribution <- function(id, ...) {
         tabPanel("Histogram", teal.widgets::plot_with_settings_ui(id = ns("hist_plot"))),
         tabPanel("QQplot", teal.widgets::plot_with_settings_ui(id = ns("qq_plot")))
       ),
-      tags$h3("Statistics Table"),
-      DT::dataTableOutput(ns("summary_table")),
-      tags$h3("Tests"),
-      conditionalPanel(
-        sprintf("input['%s'].length === 0", ns("dist_tests")),
-        div(
-          id = ns("please_select_a_test"),
-          "Please select a test"
-        )
+      tags$div(
+        style = "min-height: 120px; margin-top: 1rem;",
+        tags$h3("Statistics Table"),
+        DT::dataTableOutput(ns("summary_table"))
       ),
-      conditionalPanel(
-        sprintf("input['%s'].length > 0", ns("dist_tests")),
-        DT::dataTableOutput(ns("t_stats"))
+      tags$div(
+        style = "min-height: 120px; margin-top: 1rem;",
+        tags$h3("Tests"),
+        conditionalPanel(
+          sprintf("input['%s'].length === 0", ns("dist_tests")),
+          div(
+            id = ns("please_select_a_test"),
+            "Please select a test"
+          )
+        ),
+        conditionalPanel(
+          sprintf("input['%s'].length > 0", ns("dist_tests")),
+          DT::dataTableOutput(ns("t_stats"))
+        )
       )
     ),
     encoding = tags$div(
