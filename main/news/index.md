@@ -18,6 +18,12 @@
   a new module for generating tables using the
   [gtsummary](https://cran.r-project.org/package=gtsummary) package
   ([\#973](https://github.com/insightsengineering/teal.modules.general/issues/973)).
+- Replaced deprecated
+  [`ggplot2::aes_string()`](https://ggplot2.tidyverse.org/reference/aes_.html)
+  with [`aes()`](https://ggplot2.tidyverse.org/reference/aes.html) using
+  tidy evaluation idioms, and renamed `sec_axis(trans=)` to
+  `sec_axis(transform=)`
+  ([\#629](https://github.com/insightsengineering/teal.modules.general/issues/629)).
 
 #### Bug fixes
 
