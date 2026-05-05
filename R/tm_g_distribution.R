@@ -1002,17 +1002,17 @@ srv_distribution <- function(id,
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot2::ggplot(ANL, ggplot2::aes_string(sample = dist_var)),
+            expr = ggplot2::ggplot(ANL, ggplot2::aes(sample = .data[[dist_var]])),
             env = list(dist_var = dist_var)
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot2::ggplot(ANL, ggplot2::aes_string(sample = dist_var, color = s_var)),
+            expr = ggplot2::ggplot(ANL, ggplot2::aes(sample = .data[[dist_var]], color = .data[[s_var]])),
             env = list(dist_var = dist_var, s_var = s_var)
           )
         } else if (length(s_var) == 0 && length(g_var) != 0) {
           substitute(
-            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes_string(sample = dist_var)) +
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes(sample = .data[[dist_var]])) +
               ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               dist_var = dist_var,
@@ -1023,7 +1023,10 @@ srv_distribution <- function(id,
           )
         } else {
           substitute(
-            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes_string(sample = dist_var, color = s_var)) +
+            expr = ggplot2::ggplot(
+              ANL[ANL[[g_var]] != "NA", ],
+              ggplot2::aes(sample = .data[[dist_var]], color = .data[[s_var]])
+            ) +
               ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               dist_var = dist_var,

@@ -754,7 +754,7 @@ plot_var_summary <- function(qenv,
             ggplot2::geom_histogram(binwidth = binwidth) +
             ggplot2::scale_y_continuous(
               sec.axis = ggplot2::sec_axis(
-                trans = ~ . / nrow(ANL),
+                transform = ~ . / nrow(ANL),
                 labels = scales::percent,
                 name = "proportion (in %)"
               )
