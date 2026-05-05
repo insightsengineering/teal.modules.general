@@ -32,7 +32,7 @@ Character with stats. For \code{\link[stats:cor.test]{stats::cor.test()}} correl
 Uses \code{\link[stats:cor.test]{stats::cor.test()}} per default for all numerical input variables and converts results
 to character vector.
 Could be extended if different stats for different variable types are needed.
-Meant to be called from \code{\link[lattice:llines]{lattice::panel.text()}}.
+Meant to be called from \code{\link[lattice:panel.text]{lattice::panel.text()}}.
 }
 \details{
 Presently we need to use a formula input for \code{stats::cor.test} because

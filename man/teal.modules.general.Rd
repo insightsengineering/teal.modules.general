@@ -23,6 +23,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Dawid Kaledkowski \email{dawid.kaledkowski@roche.com}
   \item Pawel Rucki \email{pawel.rucki@roche.com}
   \item Mahmoud Hallal \email{mahmoud.hallal@roche.com}
   \item Maciej Nasinski
