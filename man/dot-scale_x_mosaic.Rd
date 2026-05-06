@@ -20,7 +20,7 @@
 \item \code{\link[ggplot2:waiver]{ggplot2::waiver()}} for the default breaks / labels computed by the scale.
 \item A numeric / character vector giving the positions of the breaks / labels.
 \item A function.
-See \code{\link[ggplot2:scale_continuous]{ggplot2::scale_x_continuous()}} for more details.
+See \code{\link[ggplot2:scale_x_continuous]{ggplot2::scale_x_continuous()}} for more details.
 }}
 
 \item{na.value}{The value to be used for \code{NA} values.}
