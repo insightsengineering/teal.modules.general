@@ -588,7 +588,7 @@ srv_a_regression <- function(id,
             as.data.frame(stats::lowess(x, y, f = 2 / 3, iter = 3))
           }
 
-          smoothy_aes <- ggplot2::aes_string(x = "x", y = "y")
+          smoothy_aes <- ggplot2::aes(x = x, y = y)
 
           reg_form <- deparse(fit$call[[2]])
         })
@@ -605,7 +605,7 @@ srv_a_regression <- function(id,
         shinyjs::show("size")
         shinyjs::show("alpha")
         plot <- substitute(
-          expr = ggplot2::ggplot(fit$model[, 2:1], ggplot2::aes_string(regressor, response)) +
+          expr = ggplot2::ggplot(fit$model[, 2:1], ggplot2::aes(x = .data[[regressor]], y = .data[[response]])) +
             ggplot2::geom_point(size = size, alpha = alpha) +
             ggplot2::stat_smooth(method = "lm", formula = y ~ x, se = FALSE),
           env = list(
@@ -625,7 +625,7 @@ srv_a_regression <- function(id,
         shinyjs::hide("size")
         shinyjs::hide("alpha")
         plot <- substitute(
-          expr = ggplot2::ggplot(fit$model[, 2:1], ggplot2::aes_string(regressor, response)) +
+          expr = ggplot2::ggplot(fit$model[, 2:1], ggplot2::aes(x = .data[[regressor]], y = .data[[response]])) +
             ggplot2::geom_boxplot(),
           env = list(regressor = regression_var()$regressor, response = regression_var()$response)
         )
