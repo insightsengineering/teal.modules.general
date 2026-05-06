@@ -380,7 +380,7 @@ srv_g_scatterplotmatrix <- function(id,
     anl_merged_input <- teal.transform::merge_expression_srv(
       datasets = data,
       selector_list = selector_list
-    ) |> debounce(500)
+    )
 
     anl_merged_q <- reactive({
       req(anl_merged_input())
