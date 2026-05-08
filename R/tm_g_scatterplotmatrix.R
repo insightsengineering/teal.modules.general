@@ -20,6 +20,10 @@
 #' Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 #' `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
 #' rendered according to selection order.
+#' @param min_n_variables (`integer(1)`)
+#' Minimum number of variables that must be selected.
+#' @param max_n_variables (`integer(1)`)
+#' Maximum number of variables that can be selected.
 #'
 #' @inherit shared_params return
 #'
@@ -196,6 +200,8 @@
 #'
 tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    variables,
+                                   min_n_variables = 2L,
+                                   max_n_variables = 5L,
                                    plot_height = c(600, 200, 2000),
                                    plot_width = NULL,
                                    pre_output = NULL,
@@ -210,6 +216,9 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
   # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(variables, types = "data_extract_spec")
+  checkmate::assert_count(min_n_variables, positive = TRUE)
+  checkmate::assert_count(max_n_variables, positive = TRUE)
+  checkmate::assert_true(min_n_variables <= max_n_variables)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -235,6 +244,8 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
     ui_args = args,
     server_args = list(
       variables = variables,
+      min_n_variables = min_n_variables,
+      max_n_variables = max_n_variables,
       plot_height = plot_height,
       plot_width = plot_width,
       decorators = decorators
@@ -353,6 +364,8 @@ ui_g_scatterplotmatrix <- function(id, ...) {
 srv_g_scatterplotmatrix <- function(id,
                                     data,
                                     variables,
+                                    min_n_variables,
+                                    max_n_variables,
                                     plot_height,
                                     plot_width,
                                     decorators) {
@@ -366,8 +379,12 @@ srv_g_scatterplotmatrix <- function(id,
       datasets = data,
       select_validation_rule = list(
         variables = shinyvalidate::compose_rules(
-          ~ if (length(.) <= 1) "Please select at least 2 columns.",
-          ~ if (length(.) > 5) "Please select at most 5 columns."
+          ~ if (length(.) < min_n_variables) {
+            sprintf("Please select at least %d column%s.", min_n_variables, ifelse(min_n_variables == 1L, "", "s"))
+          },
+          ~ if (length(.) > max_n_variables) {
+            sprintf("Please select at most %d column%s.", max_n_variables, ifelse(max_n_variables == 1L, "", "s"))
+          }
         )
       )
     )
