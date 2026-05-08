@@ -7,6 +7,8 @@
 tm_g_scatterplotmatrix(
   label = "Scatterplot Matrix",
   variables,
+  min_n_variables = 2L,
+  max_n_variables = 5L,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
@@ -23,6 +25,12 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if plot elements should be
 rendered according to selection order.}
+
+\item{min_n_variables}{(\code{integer(1)})
+Minimum number of variables that must be selected.}
+
+\item{max_n_variables}{(\code{integer(1)})
+Maximum number of variables that can be selected.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
