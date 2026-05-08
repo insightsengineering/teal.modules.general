@@ -362,7 +362,6 @@ set_chunk_dims <- function(pws, q_r, inner_classes = NULL) {
   })
 }
 
-
 validate_qenv <- function(qenv) {
   validate(
     need(

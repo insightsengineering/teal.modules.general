@@ -7,6 +7,8 @@
 tm_g_scatterplotmatrix(
   label = "Scatterplot Matrix",
   variables,
+  min_n_variables = 2L,
+  max_n_variables = 5L,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
@@ -23,6 +25,12 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 \code{data_extract_spec} use \code{select_spec(..., ordered = TRUE)} if plot elements should be
 rendered according to selection order.}
+
+\item{min_n_variables}{(\code{integer(1)})
+Minimum number of variables that must be selected.}
+
+\item{max_n_variables}{(\code{integer(1)})
+Maximum number of variables that can be selected.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
@@ -58,13 +66,18 @@ providing the overview of correlations and distributions across selected data.
 \note{
 For more examples, please see the vignette "Using scatterplot matrix" via
 \code{vignette("using-scatterplot-matrix", package = "teal.modules.general")}.
+
+When \emph{Add Correlation} is enabled, a simple \strong{Omit NAs} checkbox
+controls NA handling (checked = \code{"pairwise.complete.obs"}, matching the
+historical default).  Unchecking it reveals a dropdown with all five
+\code{stats::cor()} \code{use} options for advanced control.
 }
 \section{Decorating Module}{
 
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{plot} (\code{trellis} - output of \code{lattice::splom})
+\item \code{plot} (\code{ggplot} - a \code{patchwork} assembled from individual \code{ggplot} panels)
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
