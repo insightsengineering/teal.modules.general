@@ -11,6 +11,8 @@ across selected data.
 tm_g_scatterplotmatrix(
   label = "Scatterplot Matrix",
   variables,
+  min_n_variables = 2L,
+  max_n_variables = 5L,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   pre_output = NULL,
@@ -34,6 +36,14 @@ tm_g_scatterplotmatrix(
   and selecting. In case of `data_extract_spec` use
   `select_spec(..., ordered = TRUE)` if plot elements should be rendered
   according to selection order.
+
+- min_n_variables:
+
+  (`integer(1)`) Minimum number of variables that must be selected.
+
+- max_n_variables:
+
+  (`integer(1)`) Maximum number of variables that can be selected.
 
 - plot_height:
 
@@ -85,13 +95,19 @@ For more examples, please see the vignette "Using scatterplot matrix"
 via
 [`vignette("using-scatterplot-matrix", package = "teal.modules.general")`](https://insightsengineering.github.io/teal.modules.general/articles/using-scatterplot-matrix.md).
 
+When *Add Correlation* is enabled, a simple **Omit NAs** checkbox
+controls NA handling (checked = `"pairwise.complete.obs"`, matching the
+historical default). Unchecking it reveals a dropdown with all five
+[`stats::cor()`](https://rdrr.io/r/stats/cor.html) `use` options for
+advanced control.
+
 ## Decorating Module
 
 This module generates the following objects, which can be modified in
 place using decorators:
 
-- `plot` (`trellis` - output of
-  [`lattice::splom`](https://rdrr.io/pkg/lattice/man/splom.html))
+- `plot` (`ggplot` - a `patchwork` assembled from individual `ggplot`
+  panels)
 
 A Decorator is applied to the specific output using a named list of
 `teal_transform_module` objects. The name of this list corresponds to

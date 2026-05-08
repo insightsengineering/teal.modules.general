@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.6.0.9025
+## teal.modules.general 0.6.0.9027
 
 #### Enhancements
 
@@ -11,6 +11,15 @@
   bivariate plots.
 - Improve `tm_missing_data` visualization
   ([\#495](https://github.com/insightsengineering/teal.modules.general/issues/495)).
+- [`tm_g_scatterplotmatrix()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_scatterplotmatrix.md)
+  has been rewritten to use `ggplot2` and `patchwork` instead of
+  `lattice`. Panel text scales automatically with the number of
+  variables so labels remain readable at any matrix size. NA handling
+  retains the familiar **Omit NAs** checkbox (default,
+  `use = "pairwise.complete.obs"`); unchecking it reveals a dropdown
+  with all five [`stats::cor()`](https://rdrr.io/r/stats/cor.html) `use`
+  options. `get_scatterplotmatrix_stats()` has been removed
+  ([\#986](https://github.com/insightsengineering/teal.modules.general/issues/986)).
 - Multiple decorators can be applied to the same output object
   ([\#978](https://github.com/insightsengineering/teal.modules.general/issues/978)).
 - Introduced
