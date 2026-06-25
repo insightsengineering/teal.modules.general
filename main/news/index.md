@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.6.0.9027
+## teal.modules.general 0.6.0.9028
 
 #### Enhancements
 
@@ -22,11 +22,6 @@
   ([\#986](https://github.com/insightsengineering/teal.modules.general/issues/986)).
 - Multiple decorators can be applied to the same output object
   ([\#978](https://github.com/insightsengineering/teal.modules.general/issues/978)).
-- Introduced
-  [`tm_gtsummary()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_gtsummary.md),
-  a new module for generating tables using the
-  [gtsummary](https://cran.r-project.org/package=gtsummary) package
-  ([\#973](https://github.com/insightsengineering/teal.modules.general/issues/973)).
 - Replaced deprecated
   [`ggplot2::aes_string()`](https://ggplot2.tidyverse.org/reference/aes_.html)
   with [`aes()`](https://ggplot2.tidyverse.org/reference/aes.html) using
