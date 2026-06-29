@@ -1,10 +1,11 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.6.0.9028
+Version: 0.7.0
 Date: 2026-06-25
 Authors@R: c(
-    person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut", "cre")),
+     person("Dony", "Unardi", , "unardid@gene.com", role = c("aut", "cre")),
+    person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut")),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
     person("Mahmoud", "Hallal", , "mahmoud.hallal@roche.com", role = "aut"),
     person("Ondrej", "Slama", , "ondrej.slama@roche.com", role = "ctb"),
@@ -61,8 +62,8 @@ Imports:
     teal.code (>= 0.7.0),
     teal.data (>= 0.8.0),
     teal.logger (>= 0.4.0),
-    teal.reporter (>= 0.6.0.9001),
-    teal.widgets (>= 0.5.1.9006),
+    teal.reporter (>= 0.6.2),
+    teal.widgets (>= 0.5.2),
     tern (>= 0.9.7),
     tibble (>= 2.0.0),
     tidyr (>= 0.8.3),
@@ -82,10 +83,6 @@ Suggests:
 VignetteBuilder:
     knitr,
     rmarkdown
-Remotes:
-    insightsengineering/teal,
-    insightsengineering/teal.reporter,
-    insightsengineering/teal.widgets
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
