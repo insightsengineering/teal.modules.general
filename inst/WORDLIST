@@ -1,5 +1,4 @@
 ElementaryTable
-Forkers
 Hoffmann
 Prebuilt
 Rmarkdown
@@ -13,9 +12,12 @@ facetting
 funder
 ggmosaic
 ggplot
+pca
 pre
 qq
 reportable
+rmarkdown
 sortable
 tabset
+tm
 unchecking
