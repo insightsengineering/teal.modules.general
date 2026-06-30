@@ -1,4 +1,4 @@
-# teal.modules.general 0.7
+# teal.modules.general 0.7.0
 
 ### Enhancements
 
