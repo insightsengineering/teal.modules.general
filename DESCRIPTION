@@ -29,10 +29,6 @@ Depends:
     shiny (>= 1.8.1),
     teal (>= 1.2.0),
     teal.transform (>= 0.7.0)
-Remotes:
-    insightsengineering/teal,
-    insightsengineering/teal.reporter,
-    insightsengineering/teal.widgets
 Imports:
     bslib (>= 0.8.0),
     checkmate (>= 2.1.0),
