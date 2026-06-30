@@ -62,12 +62,14 @@ examples of `teal` apps with modules from this package.
 ## Installation
 
 ``` r
+
 install.packages('teal.modules.general')
 ```
 
 Alternatively, you might want to use the development version.
 
 ``` r
+
 # install.packages("pak")
 pak::pak("insightsengineering/teal.modules.general")
 ```
@@ -96,13 +98,3 @@ workspace](https://pharmaverse.slack.com).
 
 This package is a result of a joint efforts by many developers and
 stakeholders. We would like to thank everyone who contributed so far!
-
-[![Stargazers repo roster for
-@insightsengineering/teal.modules.general](https://reporoster.com/stars/insightsengineering/teal.modules.general)](https://github.com/insightsengineering/teal.modules.general/stargazers)
-[![Forkers repo roster for
-@insightsengineering/teal.modules.general](https://reporoster.com/forks/insightsengineering/teal.modules.general)](https://github.com/insightsengineering/teal.modules.general/network/members)
-
-## Stargazers over time
-
-[![Stargazers over
-time](https://starchart.cc/insightsengineering/teal.modules.general.svg)](https://starchart.cc/insightsengineering/teal.modules.general)

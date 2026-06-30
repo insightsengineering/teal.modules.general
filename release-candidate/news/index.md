@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.6.0
+## teal.modules.general 0.7.0
 
 #### Enhancements
 
@@ -11,6 +11,74 @@
   bivariate plots.
 - Improve `tm_missing_data` visualization
   ([\#495](https://github.com/insightsengineering/teal.modules.general/issues/495)).
+- [`tm_g_scatterplotmatrix()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_scatterplotmatrix.md)
+  has been rewritten to use `ggplot2` and `patchwork` instead of
+  `lattice`. Panel text scales automatically with the number of
+  variables so labels remain readable at any matrix size. NA handling
+  retains the familiar **Omit NAs** checkbox (default,
+  `use = "pairwise.complete.obs"`); unchecking it reveals a dropdown
+  with all five [`stats::cor()`](https://rdrr.io/r/stats/cor.html) `use`
+  options. `get_scatterplotmatrix_stats()` has been removed
+  ([\#986](https://github.com/insightsengineering/teal.modules.general/issues/986)).
+- Multiple decorators can be applied to the same output object
+  ([\#978](https://github.com/insightsengineering/teal.modules.general/issues/978)).
+- Replaced deprecated
+  [`ggplot2::aes_string()`](https://ggplot2.tidyverse.org/reference/aes_.html)
+  with [`aes()`](https://ggplot2.tidyverse.org/reference/aes.html) using
+  tidy evaluation idioms, and renamed `sec_axis(trans=)` to
+  `sec_axis(transform=)`
+  ([\#629](https://github.com/insightsengineering/teal.modules.general/issues/629)).
+
+#### Bug fixes
+
+- Improved user-facing robustness by reporting table creation errors to
+  users
+  ([\#982](https://github.com/insightsengineering/teal.modules.general/issues/982)).
+- `Show only distinct rows` in `tm_data_table` no longer shows an extra
+  count column `n`
+  ([\#983](https://github.com/insightsengineering/teal.modules.general/issues/983)).
+- Fixed overlapping UI elements in the output panel of
+  `tm_g_distribution`
+  ([\#896](https://github.com/insightsengineering/teal.modules.general/issues/896)).
+
+#### Miscellaneous
+
+- Extensive test coverage increases across modules:
+  - tm_front_page
+    ([\#961](https://github.com/insightsengineering/teal.modules.general/issues/961))
+  - tm_missing_data
+    ([\#960](https://github.com/insightsengineering/teal.modules.general/issues/960))
+  - tm_variable_browser
+    ([\#963](https://github.com/insightsengineering/teal.modules.general/issues/963))
+  - tm_g_distribution
+    ([\#962](https://github.com/insightsengineering/teal.modules.general/issues/962))
+  - tm_rmarkdown
+    ([\#967](https://github.com/insightsengineering/teal.modules.general/issues/967))
+  - tm_a_pca
+    ([\#966](https://github.com/insightsengineering/teal.modules.general/issues/966))
+  - tm_outliers
+    ([\#965](https://github.com/insightsengineering/teal.modules.general/issues/965))
+  - tm_data_table
+    ([\#970](https://github.com/insightsengineering/teal.modules.general/issues/970))
+  - broader coverage improvements
+    ([\#959](https://github.com/insightsengineering/teal.modules.general/issues/959))
+  - additional targeted tests (tm_a_regression, tm_file_viewer, etc.;
+    [\#969](https://github.com/insightsengineering/teal.modules.general/issues/969),
+    [\#968](https://github.com/insightsengineering/teal.modules.general/issues/968),
+    [\#964](https://github.com/insightsengineering/teal.modules.general/issues/964))
+  - Linting rule expansion for object names
+    ([\#977](https://github.com/insightsengineering/teal.modules.general/issues/977))
+  - Dependency/workflow maintenance:
+    - added/fixed copilot setup workflow
+      ([\#957](https://github.com/insightsengineering/teal.modules.general/issues/957),
+      [\#958](https://github.com/insightsengineering/teal.modules.general/issues/958))
+- Timeout and integration test stability adjustments
+  ([\#946](https://github.com/insightsengineering/teal.modules.general/issues/946),
+  [\#950](https://github.com/insightsengineering/teal.modules.general/issues/950),
+  [\#945](https://github.com/insightsengineering/teal.modules.general/issues/945)).
+- Re-enabled tm_g_association tests after upstream ggmosaic issue
+  resolution (PR
+  [\#991](https://github.com/insightsengineering/teal.modules.general/issues/991)).
 
 ## teal.modules.general 0.5.1
 

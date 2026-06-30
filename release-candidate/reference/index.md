@@ -99,6 +99,3 @@
   :
 
   Add labels for facets to a `ggplot2` object
-
-- [`get_scatterplotmatrix_stats()`](https://insightsengineering.github.io/teal.modules.general/reference/get_scatterplotmatrix_stats.md)
-  : Get stats for x-y pairs in scatterplot matrix

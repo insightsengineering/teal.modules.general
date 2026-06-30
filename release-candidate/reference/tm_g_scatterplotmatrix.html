@@ -8,8 +8,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>teal module: Scatterplot matrix — tm_g_scatterplotmatrix • teal.modules.general</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="teal module: Scatterplot matrix — tm_g_scatterplotmatrix">
 <meta name="description" content="Generates a scatterplot matrix from selected variables from datasets.
@@ -29,7 +29,7 @@ providing the overview of correlations and distributions across selected data.">
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,6 +70,7 @@ providing the overview of correlations and distributions across selected data.">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0-rc1">v0.7.0-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0">v0.6.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0-rc1">v0.6.0-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.5.1">v0.5.1</a>
@@ -93,7 +94,7 @@ providing the overview of correlations and distributions across selected data.">
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/insightsengineering/teal.modules.general"><span class="fa fa-github"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/insightsengineering/teal.modules.general" aria-label="View on Github"><span class="fa fa-github"></span></a></li>
       </ul>
 </div>
 
@@ -105,7 +106,7 @@ providing the overview of correlations and distributions across selected data.">
 
       <h1>
 <code>teal</code> module: Scatterplot matrix</h1>
-      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.6.0-rc1/R/tm_g_scatterplotmatrix.R" class="external-link"><code>R/tm_g_scatterplotmatrix.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.7.0-rc1/R/tm_g_scatterplotmatrix.R" class="external-link"><code>R/tm_g_scatterplotmatrix.R</code></a></small>
       <div class="d-none name"><code>tm_g_scatterplotmatrix.Rd</code></div>
     </div>
 
@@ -121,6 +122,8 @@ providing the overview of correlations and distributions across selected data.</
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tm_g_scatterplotmatrix</span><span class="op">(</span></span>
 <span>  label <span class="op">=</span> <span class="st">"Scatterplot Matrix"</span>,</span>
 <span>  <span class="va">variables</span>,</span>
+<span>  min_n_variables <span class="op">=</span> <span class="fl">2L</span>,</span>
+<span>  max_n_variables <span class="op">=</span> <span class="fl">5L</span>,</span>
 <span>  plot_height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">600</span>, <span class="fl">200</span>, <span class="fl">2000</span><span class="op">)</span>,</span>
 <span>  plot_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pre_output <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -148,6 +151,18 @@ For <code>modules()</code> defaults to <code>"root"</code>. See <code>Details</c
 Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
 <code>data_extract_spec</code> use <code>select_spec(..., ordered = TRUE)</code> if plot elements should be
 rendered according to selection order.</p></dd>
+
+
+<dt id="arg-min-n-variables">min_n_variables<a class="anchor" aria-label="anchor" href="#arg-min-n-variables"></a>
+</dt>
+<dd><p>(<code>integer(1)</code>)
+Minimum number of variables that must be selected.</p></dd>
+
+
+<dt id="arg-max-n-variables">max_n_variables<a class="anchor" aria-label="anchor" href="#arg-max-n-variables"></a>
+</dt>
+<dd><p>(<code>integer(1)</code>)
+Maximum number of variables that can be selected.</p></dd>
 
 
 <dt id="arg-plot-height">plot_height<a class="anchor" aria-label="anchor" href="#arg-plot-height"></a>
@@ -203,6 +218,10 @@ The decorators are applied to the respective output objects.</p>
 </h2>
     <p>For more examples, please see the vignette "Using scatterplot matrix" via
 <code><a href="../articles/using-scatterplot-matrix.html">vignette("using-scatterplot-matrix", package = "teal.modules.general")</a></code>.</p>
+<p>When <em>Add Correlation</em> is enabled, a simple <strong>Omit NAs</strong> checkbox
+controls NA handling (checked = <code>"pairwise.complete.obs"</code>, matching the
+historical default).  Unchecking it reveals a dropdown with all five
+<code><a href="https://rdrr.io/r/stats/cor.html" class="external-link">stats::cor()</a></code> <code>use</code> options for advanced control.</p>
     </div>
     <div class="section level2">
     <h2 id="decorating-module">Decorating Module<a class="anchor" aria-label="anchor" href="#decorating-module"></a>
@@ -212,7 +231,7 @@ The decorators are applied to the respective output objects.</p>
 
 <p>This module generates the following objects, which can be modified in place using decorators:</p>
 <ul>
-<li><p><code>plot</code> (<code>trellis</code> - output of <code><a href="https://rdrr.io/pkg/lattice/man/splom.html" class="external-link">lattice::splom</a></code>)</p></li>
+<li><p><code>plot</code> (<code>ggplot</code> - a <code>patchwork</code> assembled from individual <code>ggplot</code> panels)</p></li>
 </ul>
 <p>A Decorator is applied to the specific output using a named list of <code>teal_transform_module</code> objects.
 The name of this list corresponds to the name of the output to which the decorator is applied.
