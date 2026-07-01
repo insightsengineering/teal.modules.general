@@ -1,4 +1,4 @@
-# teal.modules.general 0.6.0.9028
+# teal.modules.general 0.7.0
 
 ### Enhancements
 
@@ -15,8 +15,28 @@
 - Replaced deprecated `ggplot2::aes_string()` with `aes()` using tidy evaluation idioms, and renamed `sec_axis(trans=)` to `sec_axis(transform=)` (#629).
 
 ### Bug fixes
-- `Show only distinct rows` in `tm_data_table` does no longer show an extra count column `n` (#983).
+- Improved user-facing robustness by reporting table creation errors to users (#982).
+- `Show only distinct rows` in `tm_data_table` no longer shows an extra count column `n` (#983).
 - Fixed overlapping UI elements in the output panel of `tm_g_distribution` (#896).
+
+### Miscellaneous
+
+- Extensive test coverage increases across modules:
+  - tm_front_page (#961)
+  - tm_missing_data (#960)
+  - tm_variable_browser (#963)
+  - tm_g_distribution (#962)
+  - tm_rmarkdown (#967)
+  - tm_a_pca (#966)
+  - tm_outliers (#965)
+  - tm_data_table (#970)
+  - broader coverage improvements (#959)
+  - additional targeted tests (tm_a_regression, tm_file_viewer, etc.; #969, #968, #964)
+  - Linting rule expansion for object names (#977)
+  - Dependency/workflow maintenance:
+    - added/fixed copilot setup workflow (#957, #958)
+- Timeout and integration test stability adjustments (#946, #950, #945).
+- Re-enabled tm_g_association tests after upstream ggmosaic issue resolution (PR #991).
 
 # teal.modules.general 0.5.1
 
