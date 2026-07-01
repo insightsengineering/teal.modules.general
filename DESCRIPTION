@@ -1,11 +1,11 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.7.0
-Date: 2026-06-25
+Version: 0.7.0.9000
+Date: 2026-07-01
 Authors@R: c(
-     person("Dony", "Unardi", , "unardid@gene.com", role = c("aut", "cre")),
-    person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = c("aut")),
+    person("Dony", "Unardi", , "unardid@gene.com", role = c("aut", "cre")),
+    person("Dawid", "Kaledkowski", , "dawid.kaledkowski@roche.com", role = "aut"),
     person("Pawel", "Rucki", , "pawel.rucki@roche.com", role = "aut"),
     person("Mahmoud", "Hallal", , "mahmoud.hallal@roche.com", role = "aut"),
     person("Ondrej", "Slama", , "ondrej.slama@roche.com", role = "ctb"),
