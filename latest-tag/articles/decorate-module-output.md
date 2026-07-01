@@ -41,7 +41,7 @@ can be decorated.
 | `tm_g_distribution` | histogram_plot (ggplot), qq_plot (ggplot), summary_table (datatables), test_table (datatables) |
 | `tm_g_response` | plot (ggplot) |
 | `tm_g_scatterplot` | plot (ggplot) |
-| `tm_g_scatterplotmatrix` | plot (trellis) |
+| `tm_g_scatterplotmatrix` | plot (patchwork/ggplot) |
 | `tm_missing_data` | summary_plot (grob), combination_plot (grob), by_subject_plot (ggplot), table (datatables) |
 | `tm_outliers` | box_plot (ggplot), density_plot (ggplot), cumulative_plot (ggplot), table (datatables) |
 | `tm_t_crosstable` | table (ElementaryTable) |
@@ -51,9 +51,9 @@ decorated:
 
 1.  `ElementaryTable`
 2.  `ggplot`
-3.  `grob`
-4.  `datatables`
-5.  `trellis`
+3.  `patchwork`
+4.  `grob`
+5.  `datatables`
 
 *Tip:* A general tip before trying to decorate the output from the
 module is to copy the reproducible code and running them in a separate R
@@ -67,6 +67,7 @@ Here’s an example to showcase how you can edit an output of class
 can be applied to modify this object.
 
 ``` r
+
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -142,6 +143,7 @@ Here’s an example to showcase how you can edit an output of class
 `ggplot`. You can extend them using `ggplot2` functions.
 
 ``` r
+
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -215,6 +217,7 @@ Here’s an example to showcase how you can edit an output of class
 `grob`. You can extend them using `grid` and `gridExtra` functions.
 
 ``` r
+
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -301,6 +304,7 @@ functions](https://rstudio.github.io/DT/functions.html) of the `DT`
 package to learn more about extending the `datatables` objects.
 
 ``` r
+
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -380,19 +384,22 @@ app <- init(
     ## Initializing tm_g_distribution
 
 ``` r
+
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
 ```
 
-## Decorating `trellis`
+## Decorating `patchwork`
 
 Here’s an example to showcase how you can edit an output of class
-`trellis`. `rtables` modifiers like
-[`rtables::insert_rrow`](https://insightsengineering.github.io/rtables/latest-tag/reference/insert_rrow.html)
-can be applied to modify this object.
+`patchwork`. Since `patchwork` objects support ggplot2-style addition,
+you can use
+[`patchwork::plot_annotation()`](https://patchwork.data-imaginist.com/reference/plot_annotation.html)
+and standard ggplot2 theme modifications.
 
 ``` r
+
 library(teal.modules.general)
 
 data <- teal_data(join_keys = default_cdisc_join_keys[c("ADSL", "ADRS")])
@@ -402,19 +409,19 @@ data <- within(data, {
   ADRS <- rADRS
 })
 
-trellis_subtitle_decorator <- function(default_caption = "I am a good decorator") {
+patchwork_title_decorator <- function(default_title = "I am a good decorator") {
   teal_transform_module(
-    label = "Caption",
-    ui = function(id) shiny::textInput(shiny::NS(id, "footnote"), "Footnote", value = default_caption),
+    label = "Title",
+    ui = function(id) shiny::textInput(shiny::NS(id, "title"), "Plot Title", value = default_title),
     server = function(id, data) {
       moduleServer(id, function(input, output, session) {
         reactive({
           data() |>
             within(
               {
-                plot <- update(plot, sub = footnote)
+                plot <- plot + patchwork::plot_annotation(title = plot_title)
               },
-              footnote = input$footnote
+              plot_title = input$title
             )
         })
       })
@@ -455,7 +462,7 @@ app <- init(
         )
       ),
       decorators = list(
-        plot = trellis_subtitle_decorator("I am a Scatterplot matrix")
+        plot = patchwork_title_decorator("I am a Scatterplot matrix")
       )
     )
   )

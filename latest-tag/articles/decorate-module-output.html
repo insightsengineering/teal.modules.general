@@ -8,8 +8,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Decorate Module Output • teal.modules.general</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Decorate Module Output">
 <link rel="stylesheet" href="../consent.css">
@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,6 +64,7 @@
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0">v0.7.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0-rc1">v0.7.0-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0">v0.6.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0-rc1">v0.6.0-rc1</a>
@@ -88,7 +89,7 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/insightsengineering/teal.modules.general"><span class="fa fa-github"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/insightsengineering/teal.modules.general" aria-label="View on Github"><span class="fa fa-github"></span></a></li>
       </ul>
 </div>
 
@@ -107,7 +108,7 @@
 CoreDev</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.6.0/vignettes/decorate-module-output.Rmd" class="external-link"><code>vignettes/decorate-module-output.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.7.0/vignettes/decorate-module-output.Rmd" class="external-link"><code>vignettes/decorate-module-output.Rmd</code></a></small>
       <div class="d-none name"><code>decorate-module-output.Rmd</code></div>
     </div>
 
@@ -187,7 +188,7 @@ eigenvector_plot (ggplot)</td>
 </tr>
 <tr class="even">
 <td><code>tm_g_scatterplotmatrix</code></td>
-<td>plot (trellis)</td>
+<td>plot (patchwork/ggplot)</td>
 </tr>
 <tr class="odd">
 <td><code>tm_missing_data</code></td>
@@ -210,9 +211,9 @@ decorated:</p>
 <ol style="list-style-type: decimal">
 <li><code>ElementaryTable</code></li>
 <li><code>ggplot</code></li>
+<li><code>patchwork</code></li>
 <li><code>grob</code></li>
 <li><code>datatables</code></li>
-<li><code>trellis</code></li>
 </ol>
 <p><em>Tip:</em> A general tip before trying to decorate the output from
 the module is to copy the reproducible code and running them in a
@@ -548,12 +549,13 @@ of the <code>DT</code> package to learn more about extending the
 </iframe>
 </div>
 <div class="section level2">
-<h2 id="decorating-trellis">Decorating <code>trellis</code><a class="anchor" aria-label="anchor" href="#decorating-trellis"></a>
+<h2 id="decorating-patchwork">Decorating <code>patchwork</code><a class="anchor" aria-label="anchor" href="#decorating-patchwork"></a>
 </h2>
 <p>Here’s an example to showcase how you can edit an output of class
-<code>trellis</code>. <code>rtables</code> modifiers like
-<code><a href="https://insightsengineering.github.io/rtables/latest-tag/reference/insert_rrow.html" class="external-link">rtables::insert_rrow</a></code> can be applied to modify this
-object.</p>
+<code>patchwork</code>. Since <code>patchwork</code> objects support
+ggplot2-style addition, you can use
+<code><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">patchwork::plot_annotation()</a></code> and standard ggplot2 theme
+modifications.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/teal.modules.general/">teal.modules.general</a></span><span class="op">)</span></span>
 <span></span>
@@ -564,19 +566,19 @@ object.</p>
 <span>  <span class="va">ADRS</span> <span class="op">&lt;-</span> <span class="va">rADRS</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">trellis_subtitle_decorator</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">default_caption</span> <span class="op">=</span> <span class="st">"I am a good decorator"</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="va">patchwork_title_decorator</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">default_title</span> <span class="op">=</span> <span class="st">"I am a good decorator"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">teal_transform_module</span><span class="op">(</span></span>
-<span>    label <span class="op">=</span> <span class="st">"Caption"</span>,</span>
-<span>    ui <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textInput.html" class="external-link">textInput</a></span><span class="op">(</span><span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/NS.html" class="external-link">NS</a></span><span class="op">(</span><span class="va">id</span>, <span class="st">"footnote"</span><span class="op">)</span>, <span class="st">"Footnote"</span>, value <span class="op">=</span> <span class="va">default_caption</span><span class="op">)</span>,</span>
+<span>    label <span class="op">=</span> <span class="st">"Title"</span>,</span>
+<span>    ui <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span> <span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textInput.html" class="external-link">textInput</a></span><span class="op">(</span><span class="fu">shiny</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/NS.html" class="external-link">NS</a></span><span class="op">(</span><span class="va">id</span>, <span class="st">"title"</span><span class="op">)</span>, <span class="st">"Plot Title"</span>, value <span class="op">=</span> <span class="va">default_title</span><span class="op">)</span>,</span>
 <span>    server <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">id</span>, <span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
 <span>      <span class="fu">moduleServer</span><span class="op">(</span><span class="va">id</span>, <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span> <span class="op">{</span></span>
 <span>        <span class="fu">reactive</span><span class="op">(</span><span class="op">{</span></span>
 <span>          <span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>            <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span></span>
 <span>              <span class="op">{</span></span>
-<span>                <span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/update.html" class="external-link">update</a></span><span class="op">(</span><span class="va">plot</span>, sub <span class="op">=</span> <span class="va">footnote</span><span class="op">)</span></span>
+<span>                <span class="va">plot</span> <span class="op">&lt;-</span> <span class="va">plot</span> <span class="op">+</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_annotation.html" class="external-link">plot_annotation</a></span><span class="op">(</span>title <span class="op">=</span> <span class="va">plot_title</span><span class="op">)</span></span>
 <span>              <span class="op">}</span>,</span>
-<span>              footnote <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">footnote</span></span>
+<span>              plot_title <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">title</span></span>
 <span>            <span class="op">)</span></span>
 <span>        <span class="op">}</span><span class="op">)</span></span>
 <span>      <span class="op">}</span><span class="op">)</span></span>
@@ -617,7 +619,7 @@ object.</p>
 <span>        <span class="op">)</span></span>
 <span>      <span class="op">)</span>,</span>
 <span>      decorators <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>        plot <span class="op">=</span> <span class="fu">trellis_subtitle_decorator</span><span class="op">(</span><span class="st">"I am a Scatterplot matrix"</span><span class="op">)</span></span>
+<span>        plot <span class="op">=</span> <span class="fu">patchwork_title_decorator</span><span class="op">(</span><span class="st">"I am a Scatterplot matrix"</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
@@ -626,7 +628,7 @@ object.</p>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMASzLgCcoDTqA3OAAgB4BaDgMwCuEZtRIAKAJQcAKlgCqAUQA6EADbUARo3oBPceShqMMIgBNBauAGcMAcwoMjk1Ru1Q9BuEZPnLN+0dGNRcIVTMoUihuPkM1AH0IqPEAKyJaeIBrOF1rDgBeDjM4fihLUniCM2prAni0jOzc4AJxZTAAQQARAGUAGXbcDnburB72yQBdUKTo3g4Ad2pSAAtacVmhkFUODno4AEdBan3xCBtSYjUielDd7v6YvYeBiHuusaf6UfGIAF9QqpSPs1BprPFrIJNCxSFZEnBiIxSDcnkIRCwJMVSuVKmgMW9Cu0AJIcWCkjh2IjmIoIm6RG4TDjbN4cOLxYFQCDWfg3GDxUwWKxtFm7NRQTRwNQFYZgADCeLEYTwO12HGO0rRogk1DM0msawgukQiHIAA9SESIKhBKRxPraEbEAA5HriHVDdo8oikCDeuATD1gABiVJ9fsGHFYRkEnEKWLKagqBAVJEkuBVu2sDHY9A1wi1EDdZiGs2kzNVqoF-h62YYRaGmvxbqtNqGRBt1tIQyz1msirLGYre28onY4nLQ4rsykHAAPgA+QeT3ZLVbrJfL3YTzeT1DXUhPQSoJJwcR773dqEa0O+8h3HcVv7pkUPgQ3v3S2idgAkXrD5A3Sd70nAEN1Al8-hVUJILCaB0CeWhlmFXZZmlTYVSrKw8kKTCbGQ1VSD5OwIWTUhyHoc9CMiehqFNfCKzFCUpUJMAelI8jKI4GBqNowYNyjGjxSw6UwVtQCikiKB4jgc1GGYCFUARejl1maB4GlEZegGZUX0nLMrGYaV9IRCprEU1pxIrAgVnSAgbGlATqCEuBKhs6g7OsDZJOAYBNP6dpJmmZ9Xw4YzmDgMxpQszoAHEVDwGUsA6WV4sDHpFAADQDSzK3Kag91jWQFEUYLXxuYp9kiwo5CUHLgKHNNxNmaTZKYUzzOUydVNgQrNLGPjdKHfhqETBgNRG8iFKUnLRXFSUNNYyUTI4CgzFQdIyGsRABpCgTsI4aKAAUOiSgBZWUugjEYADUiR6IkZGywbJ2s2z7MKKM1BjVy3s82YfL68YwECoYjpOjpzsuhKbruh6AwOtowGOs6rs6W77sesBJEa56hzC8gqplIknWuxQZA4PhFCdLoOAAeSDDhia6eRZRkIlaadHbXxgPKCulGqVFx3YcYffGjKW+SzOmoXVVe9z3sjDwnM0OE5Y8ryogBzoPiBwKRdffGIqixGOji1GOmujptMDboAE0npCnnE3yqx+eK0qH3Khgjeq4q6vE+rhY91VikRel6H20TOtVTjCmBSUwQhKEYThUO6WRehEZJMlojYyIOP3LieNNCYN3q+9QkBCBqH4Dhm3Itq2FPbGmRVe1DQ6dBxDQVBv2OIYe+-LN6BzaCwD+SYgA" width="150%" height="800px" data-external="1" style="position: relative; z-index:1">
+<iframe src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMASzLgCcoDTqA3OAAgB4BaDgMwCuEZtRIAKAJQcAKlgCqAUQA6EADbUARo3oBPceShqMMIgBNBauAGcMAcwoMjk1Ru1Q9BuEZPnLN+0dGNRcIVTMoUihuPkM1AH0IqPEAKyJaeIBrOF1rDgBeDjM4fihLUniCM2prAni0jOzc4AJxZTAAQQARAGUAGXbcDnburB72yQBdUKTo3g4Ad2pSAAtacVmhkFUODno4AEdBan3xCBtSYjUielDd7v6YvYeBiHuusaf6UfGIAF9QqpUJECCsFjdMvEWKQrIk4MRGKQbk8hCIWBJiqVylDllYCsMwABJDiwEkcOxEcxFeE3SI3CYcbZvDhxKGMCDWfg3GDxUwWKxtZm7NRQTRwNT49oyXFwQY7XYcY741GiCTUMzSaxrCC6RCIcgAD1IhIgqEEpHEWtousQADkeuJ1UN2tCrBNnWAAArXUiyGWDDisIyCTiFTFlNQVV1wSS4eW7awMdj0ZXCVUQR1mIazaRMhUKvn+HpJhiZoYq9EZ2hm0hDIjmmtDRPWaxiCC5+P5vbeUTscR5rv52ZSDgAHwAfJ3B7slqt1lPp7sB4vB6gfU810RfQBqDjAy5giF6zcVKAQCBbyJtgwy-EnnEwmMLxd-ONCle7e-R-HV80AEmjZ8uzuacAQXMD3z+eVQigsJoHQJ5aGWQVdlmfFNnlQsrDyQosJsFCFVIHk7HiWpInIegTxgSJ6GoA0CPzEUxQlQp2h6AhyIYE8OGo0haINOV312INaNFbD8Q0awLSA2Z4jgI1GGYUjUHhBjp1maB4ElTpegGPAgITcV4V9QpEysJTrBU1oDIVUF0gIGx8RE6gxLgSoVns-DZmAYARl09pJmmN8P0M8zyDMfFrM6ABxFQ8AJLAOgAYTij0ekUAANd0bN2GBymoNdQ1kBRFGCkKbmKfYIsKOQlBskDB1jGTIigOSFKYCpLNUmyNNgIq-LGQSP34ahIwYZVRoo5TuqE6cmPFbTizCjgKDMVB0jIaxECGkKRJwjgos9DpEoAWSSroAxGAA1QkekJGRstmwc7OoBz9qDNQQ3czzrA2FqfIG8YwECoZDuOjozou+Lrtu+73QOtovXBk7Ls6G67oesBJCap6uzM4y4GqglCVtK7FBkDg+EUW0ug4AB5AAxDgSa6eQkpkQk6dtHaPzyyMCrxGqSvqsrF3x5h8XFzqrLUxcXrepyPBczRYXlrz-t8nTBuBoKco4KXCcixGOli1GOiujo9I9boAE1HpCnj8sK-FatKvWKoYQ2hbq3Hdga4CFxxwdigROl6H2yTpNx7jCn3UFwXoSFozhUOkXoRHiVJaJ2M4yj114-iJkDzsQNCQEIGofgOEdOhFJYPtscZeUrR1Dp0HENBUD-Y4hk7v9E3oZMYLAP5JiAA" width="150%" height="800px" data-external="1" style="position: relative; z-index:1">
 </iframe>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

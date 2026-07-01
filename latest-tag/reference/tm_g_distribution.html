@@ -8,8 +8,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>teal module: Distribution analysis — tm_g_distribution • teal.modules.general</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="teal module: Distribution analysis — tm_g_distribution">
 <meta name="description" content="Module is designed to explore the distribution of a single variable within a given dataset.
@@ -29,7 +29,7 @@ visually and statistically analyze the variable's distribution.">
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,6 +70,7 @@ visually and statistically analyze the variable's distribution.">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0">v0.7.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0-rc1">v0.7.0-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0">v0.6.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0-rc1">v0.6.0-rc1</a>
@@ -94,7 +95,7 @@ visually and statistically analyze the variable's distribution.">
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/insightsengineering/teal.modules.general"><span class="fa fa-github"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/insightsengineering/teal.modules.general" aria-label="View on Github"><span class="fa fa-github"></span></a></li>
       </ul>
 </div>
 
@@ -106,7 +107,7 @@ visually and statistically analyze the variable's distribution.">
 
       <h1>
 <code>teal</code> module: Distribution analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.6.0/R/tm_g_distribution.R" class="external-link"><code>R/tm_g_distribution.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.7.0/R/tm_g_distribution.R" class="external-link"><code>R/tm_g_distribution.R</code></a></small>
       <div class="d-none name"><code>tm_g_distribution.Rd</code></div>
     </div>
 
@@ -257,6 +258,8 @@ The decorators are applied to the respective output objects.</p>
 <ul>
 <li><p><code>histogram_plot</code> (<code>ggplot</code>)</p></li>
 <li><p><code>qq_plot</code> (<code>ggplot</code>)</p></li>
+<li><p><code>summary_table</code> (<code><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">DT::datatable</a></code>)</p></li>
+<li><p><code>test_table</code> (<code><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">DT::datatable</a></code>)</p></li>
 </ul>
 <p>A Decorator is applied to the specific output using a named list of <code>teal_transform_module</code> objects.
 The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -268,8 +271,11 @@ See code snippet below:</p>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>   <span class="at">decorators =</span> <span class="fu">list</span>(</span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>     <span class="at">histogram_plot =</span> <span class="fu">teal_transform_module</span>(...), <span class="co"># applied only to `histogram_plot` output</span></span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>     <span class="at">qq_plot =</span> <span class="fu">teal_transform_module</span>(...) <span class="co"># applied only to `qq_plot` output</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>   )</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>)</span></code></pre>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>     <span class="at">summary_table =</span> <span class="fu">teal_transform_module</span>(...) <span class="co"># applied only to `summary_table` output</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>     <span class="at">test_table =</span> <span class="fu">teal_transform_module</span>(...) <span class="co"># applied only to `test_table` output</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>   )</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>)</span></code></pre>
 <p></p>
 </div>
 <p>For additional details and examples of decorators, refer to the vignette

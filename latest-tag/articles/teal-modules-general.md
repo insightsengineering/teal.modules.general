@@ -46,6 +46,7 @@ A simple application featuring the
 module:
 
 ``` r
+
 # load libraries
 library(teal.modules.general)
 library(teal.widgets)
@@ -86,6 +87,7 @@ Let’s break the above app into pieces:
 1: Load the necessary libraries and data.
 
 ``` r
+
 library(teal.modules.general)
 library(teal.widgets)
 ```
@@ -102,6 +104,7 @@ data are stored together.
 Following this, we set the `datanames` and `join_keys`.
 
 ``` r
+
 data <- teal_data()
 data <- within(data, {
   ADSL <- teal.data::rADSL
@@ -118,6 +121,7 @@ this case, the module: `tm_variable_browser`, datasets:`ADSL` and
 the `ui` and `server` component to initialize the `teal` app.
 
 ``` r
+
 tm_variable_browser_module <- tm_variable_browser(
   # module name to display in the GUI
   label = "Variable browser",
@@ -151,12 +155,14 @@ In a `teal` app, data and modules are decoupled. In the app above:
   running:
 
   ``` r
+
   class(app)
   ```
 
       ## [1] "teal_app" "list"
 
   ``` r
+
   names(app)
   ```
 
