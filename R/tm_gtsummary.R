@@ -87,6 +87,7 @@ tm_gtsummary <- function(
   label = "Summary table",
   by,
   include,
+  .fun = crane::tbl_roche_summary,
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -110,15 +111,27 @@ tm_gtsummary <- function(
   teal::assert_decorators(decorators, "table")
   datanames <- teal.transform::get_extract_datanames(list(by = by, include = include))
   checkmate::assert_character(datanames, len = 1L, any.missing = FALSE, all.missing = FALSE)
+  .fun <- rlang::enquo(.fun) # Capture the function as a quosure for later evaluation
+  checkmate::assert(
+    .var.name = ".fun",
+    combine = "or",
+    if (rlang::is_function(rlang::get_expr(.fun))) TRUE else "Must be a function reference.",
+    checkmate::check_function(rlang::eval_tidy(.fun))
+  )
 
   # Make UI args
   ui_args <- as.list(environment())
   ui_args <- c(ui_args, list(...))
-  srv_args <- list(...)
-  srv_args$by <- by
-  srv_args$include <- include
-  srv_args$decorators <- decorators
-  srv_args$label <- col_label
+  srv_args <- c(
+    list(...),
+    list(
+      by = by,
+      include = include,
+      decorators = decorators,
+      label = col_label,
+      .fun_quo = .fun
+    )
+  )
   module <- module(
     label = label,
     server = srv_gtsummary,
@@ -174,6 +187,7 @@ srv_gtsummary <- function(id,
                           data,
                           by,
                           include,
+                          .fun_quo,
                           ...,
                           decorators) {
   checkmate::assert_class(data, "reactive")
@@ -235,7 +249,7 @@ srv_gtsummary <- function(id,
       as.call(
         c(
           list(
-            quote(crane::tbl_roche_summary),
+            rlang::get_expr(.fun_quo),
             data = as.name(dataset)
           ),
           tbl_summary_args
