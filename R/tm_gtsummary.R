@@ -161,7 +161,7 @@ srv_gtsummary_partial <- function(id,
   moduleServer(id, function(input, output, session) {
     summary_args_processed <- reactive({
       tbl_summary_args <- req(summary_args_r()) # Additional arguments from UI
-      tbl_summary_args$nonmissing <- input$missing
+      tbl_summary_args$missing <- input$missing
       tbl_summary_args$percent <- input$percent
       tbl_summary_args
     })
