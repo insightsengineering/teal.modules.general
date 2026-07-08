@@ -166,10 +166,6 @@ srv_gtsummary_partial <- function(id,
       tbl_summary_args
     })
 
-    tbl_summary_call <- reactive({
-      as.call(c(list(rlang::get_expr(.fun_quo)), req(summary_args_processed())))
-    })
-
     validated_q <- reactive({
       q <- req(data())
       summary_args <- req(summary_args_processed())
@@ -182,21 +178,15 @@ srv_gtsummary_partial <- function(id,
       q
     })
 
-    qenv <- reactive({
-      obj <- req(validated_q())
-      teal.reporter::teal_card(obj) <-
-        c(
-          teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's output(s)")
-        )
-      teal.code::eval_code(obj, "library(gtsummary)")
-    })
-
-    reactive({
-      within(req(qenv()),
-        expr = table <- table_call,
-        table_call = req(tbl_summary_call())
-      )
-    })
+    srv_gt_template_partial(
+      id = id,
+      data = validated_q,
+      .fun_quo = .fun_quo,
+      by = by,
+      include = include,
+      ...,
+      decorators = decorators,
+      summary_args_r = summary_args_processed
+    )
   })
 }
