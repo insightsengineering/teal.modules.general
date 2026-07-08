@@ -167,7 +167,7 @@ srv_roche_summary_partial <- function(id,
       summary_args <- req(summary_args_processed())
       validate(
         need(
-          length(summary_args$include) != 0L && summary_args$include != summary_args$by,
+          length(summary_args$include) != 0L && all(!summary_args$include %in% summary_args$by),
           "Variables to stratify with and variables to include should be different"
         ),
       )
