@@ -87,7 +87,12 @@ tm_roche_summary <- function(
 
   message("Initializing tm_roche_summary")
 
-  assert_single_selection(if (inherits(by, "data_extract_spec")) list(by) else by)
+  if (inherits(by, "data_extract_spec")) by <- list(by)
+  if (inherits(include, "data_extract_spec")) include <- list(include)
+  checkmate::assert_list(by, types = "data_extract_spec")
+  assert_single_selection(by)
+  checkmate::assert_list(include, types = "data_extract_spec")
+
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
   server <- function(id, data, ...) {
     srv_gt_template(id = id, data = data, ..., server = srv_roche_summary_partial)
