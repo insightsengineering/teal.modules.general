@@ -83,11 +83,11 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-tm_gtsummary <- function(
-  label = "Summary table",
+tm_tbl_listing <- function(
+  label = "Listing table",
   by,
   include,
-  .fun = gtsummary::tbl_summary,
+  .fun = crane::tbl_listing,
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -153,29 +153,22 @@ srv_gtsummary_partial <- function(id,
   moduleServer(id, function(input, output, session) {
     summary_args_processed <- reactive({
       tbl_summary_args <- req(summary_args_r()) # Additional arguments from UI
-      tbl_summary_args$nonmissing <- input$missing
+      tbl_summary_args$missing <- input$missing
       tbl_summary_args$percent <- input$percent
       tbl_summary_args
     })
 
     tbl_summary_call <- reactive({
-      as.call(c(list(rlang::get_expr(.fun_quo)), req(summary_args_processed())))
-    })
-
-    validated_q <- reactive({
-      q <- req(data())
-      summary_args <- req(summary_args_processed())
-      validate(
-        need(
-          length(summary_args$include) != 0L && summary_args$include != summary_args$by,
-          "Variables to stratify with and variables to include should be different"
-        ),
+      as.call(
+        c(
+          list(rlang::get_expr(.fun_quo)),
+          req(summary_args_processed())
+        )
       )
-      q
     })
 
     qenv <- reactive({
-      obj <- req(validated_q())
+      obj <- req(data())
       teal.reporter::teal_card(obj) <-
         c(
           teal.reporter::teal_card(obj),
@@ -187,10 +180,12 @@ srv_gtsummary_partial <- function(id,
     reactive({
       q <- req(qenv())
       table_call <- req(tbl_summary_call())
-      within(q,
+      qq <- within(q,
         expr = table <- table_call,
         table_call = table_call
       )
+      validate_qenv(qq)
+      qq
     })
   })
 }

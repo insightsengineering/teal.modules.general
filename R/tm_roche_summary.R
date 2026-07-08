@@ -1,22 +1,12 @@
-#' `teal` module: GT Summary table
+#' `teal` module: Roche GT Summary table
 #'
-#' Summary table from a given dataset, using `gtsummary`.
+#' Summary table from a given dataset, using `crane::tbl_roche_summary`.
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param by (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' An object with all available choices and with a pre-selected option on how to split rows.
-#'
-#' `data_extract_spec` multiple selection: not allowed
-#' @param include  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' An object with all available choices and with a pre-selected option that picks columns to include as rows.
-#'
-#' `data_extract_spec` multiple selection: allowed
-#' @param col_label Used to override default labels in summary table, e.g. `list(age = "Age, years")`.
-#' The default for each variable is the column label attribute, `attr(., 'label')`.
-#' If no label has been set, the column name is used.
+#' @inheritParams tm_gtsummary
 # nolint start
-#' @inheritDotParams gtsummary::tbl_summary statistic digits type value missing missing_text missing_stat sort
+#' @inheritDotParams crane::tbl_roche_summary statistic digits type sort nonmissing nonmissing_text nonmissing_stat value
 # nolint ends
 #' @inherit shared_params return
 #' @inheritSection gtsummary::tbl_summary statistic argument
@@ -25,7 +15,7 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `table` (`gtsummary` - output of [`gtsummary::tbl_summary()`])
+#' - `table` (`gtsummary` - output of [`crane::tbl_roche_summary()`])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -83,11 +73,11 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-tm_gtsummary <- function(
+tm_roche_summary <- function(
   label = "Summary table",
   by,
   include,
-  .fun = gtsummary::tbl_summary,
+  .fun = crane::tbl_roche_summary,
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -95,16 +85,21 @@ tm_gtsummary <- function(
   transformators = list(),
   decorators = list()) {
 
-  message("Initializing tm_gtsummary")
+  message("Initializing tm_roche_summary")
+  checkmate::assert(if (!missing(by) && !is.null(by)) TRUE else "Must be non-null", .var.name = "by")
+  checkmate::assert(if (!missing(include) && !is.null(include)) TRUE else "Must be non-null", .var.name = "include")
 
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
   server <- function(id, data, ...) {
-    srv_gt_template(id = id, data = data, ..., server = srv_gtsummary_partial)
+    srv_gt_template(id = id, data = data, ..., server = srv_roche_summary_partial)
   }
 
   ui <- function(id, ...) {
-    ui_gt_template(id = id, ui = ui_gtsummary_partial(id, ...), ...)
+    ui_gt_template(id = id, ui = ui_roche_summary_partial(id, ...), ...)
   }
+
+  attr(by, "label") <- "By variable"
+  attr(include, "label") <- "Include variable(s)"
 
   tm_gt_template(
     label = label,
@@ -122,16 +117,16 @@ tm_gtsummary <- function(
   )
 }
 
-ui_gtsummary_partial <- function(id, ...) {
+ui_roche_summary_partial <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
 
   tagList(
     radioButtons(
-      ns(NS("custom", "missing")),
+      ns(NS("custom", "nonmissing")),
       label = "Display missing counts:",
       choices = c("No" = "no", "If any" = "ifany", "Always" = "always"),
-      selected = args$missing
+      selected = args$nonmissing
     ),
     radioButtons(
       ns(NS("custom", "percent")),
@@ -142,18 +137,18 @@ ui_gtsummary_partial <- function(id, ...) {
   )
 }
 
-srv_gtsummary_partial <- function(id,
-                                  data,
-                                  by,
-                                  include,
-                                  .fun_quo,
-                                  ...,
-                                  decorators,
-                                  summary_args_r) {
+srv_roche_summary_partial <- function(id,
+                                      data,
+                                      by,
+                                      include,
+                                      .fun_quo,
+                                      ...,
+                                      decorators,
+                                      summary_args_r) {
   moduleServer(id, function(input, output, session) {
     summary_args_processed <- reactive({
       tbl_summary_args <- req(summary_args_r()) # Additional arguments from UI
-      tbl_summary_args$nonmissing <- input$missing
+      tbl_summary_args$nonmissing <- input$nonmissing
       tbl_summary_args$percent <- input$percent
       tbl_summary_args
     })
