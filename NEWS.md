@@ -1,5 +1,9 @@
 # teal.modules.general 0.7.0.9000
 
+### Enhancements
+
+- Introduced `tm_gtsummary()`, a new module for generating tables using the [gtsummary](https://cran.r-project.org/package=gtsummary) package (#973).
+
 # teal.modules.general 0.7.0
 
 ### Enhancements
@@ -14,7 +18,6 @@
   unchecking it reveals a dropdown with all five `stats::cor()` `use` options.
   `get_scatterplotmatrix_stats()` has been removed (#986).
 - Multiple decorators can be applied to the same output object (#978).
-- Introduced `tm_gtsummary()`, a new module for generating tables using the [gtsummary](https://cran.r-project.org/package=gtsummary) package (#973).
 - Replaced deprecated `ggplot2::aes_string()` with `aes()` using tidy evaluation idioms, and renamed `sec_axis(trans=)` to `sec_axis(transform=)` (#629).
 
 ### Bug fixes
