@@ -96,36 +96,5 @@ tm_tbl_listing <- function(
 }
 
 srv_tbl_listing <- function(id, data, ...) {
-  srv_gt_template(id = id, data = data, ..., partial_srv = srv_tbl_listing_partial)
-}
-
-srv_tbl_listing_partial <- function(id,
-                                  data,
-                                  by,
-                                  .fun_quo,
-                                  ...,
-                                  decorators,
-                                  summary_args_r) {
-  moduleServer(id, function(input, output, session) {
-    tbl_summary_call <- reactive({
-      as.call(c(list(rlang::get_expr(.fun_quo)), req(summary_args_r())))
-    })
-
-    qenv <- reactive({
-      obj <- req(data())
-      teal.reporter::teal_card(obj) <-
-        c(
-          teal.reporter::teal_card(obj),
-          teal.reporter::teal_card("## Module's output(s)")
-        )
-      teal.code::eval_code(obj, "library(crane)")
-    })
-
-    reactive({
-      within(req(qenv()),
-        expr = table <- table_call,
-        table_call = req(tbl_summary_call())
-      )
-    })
-  })
+  srv_gt_template(id = id, data = data, ..., partial_srv = srv_gt_template_partial)
 }

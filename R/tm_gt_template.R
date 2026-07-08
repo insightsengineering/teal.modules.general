@@ -123,34 +123,6 @@ ui_gt_template <- function(id, opts_des, opts_cs, pre_output, post_output, decor
   )
 }
 
-srv_gt_template_partial <- function(id,
-                                    data,
-                                    .fun_quo,
-                                    ...,
-                                    decorators,
-                                    summary_args_r) {
-  moduleServer(id, function(input, output, session) {
-    summary_args_processed <- summary_args_r
-
-    tbl_summary_call <- reactive({
-      as.call(c(list(rlang::get_expr(.fun_quo)), req(summary_args_processed())))
-    })
-
-    qenv <- reactive({
-      obj <- req(data())
-      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Module's output(s)")
-      teal.code::eval_code(obj, "library(gtsummary)")
-    })
-
-    reactive({
-      within(req(qenv()),
-        expr = table <- table_call,
-        table_call = req(tbl_summary_call())
-      )
-    })
-  })
-}
-
 srv_gt_template <- function(id,
                             data,
                             opts_des,
@@ -237,4 +209,38 @@ srv_gt_template <- function(id,
     )
     print_output_decorated
     })
+}
+
+srv_gt_template_partial <- function(id,
+                                    data,
+                                    .fun_quo,
+                                    ...,
+                                    decorators,
+                                    summary_args_r) {
+  moduleServer(id, function(input, output, session) {
+    summary_args_processed <- summary_args_r
+
+    tbl_summary_call <- reactive({
+      as.call(c(list(rlang::get_expr(.fun_quo)), req(summary_args_processed())))
+    })
+
+    library_name <- rlang::call_ns(as.call(list(rlang::get_expr(.fun_quo))))
+
+    qenv <- reactive({
+      obj <- req(data())
+      teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Module's output(s)")
+      if (is.null(library_name)) {
+        obj
+      } else {
+        teal.code::eval_code(obj, sprintf("library(%s)", library_name))
+      }
+    })
+
+    reactive({
+      within(req(qenv()),
+        expr = table <- table_call,
+        table_call = req(tbl_summary_call())
+      )
+    })
+  })
 }
