@@ -83,8 +83,8 @@ tm_roche_summary <- function(
   pre_output = NULL,
   post_output = NULL,
   transformators = list(),
-  decorators = list()) {
-
+  decorators = list()
+) {
   message("Initializing tm_roche_summary")
 
   if (inherits(by, "data_extract_spec")) by <- list(by)

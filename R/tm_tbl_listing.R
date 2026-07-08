@@ -74,8 +74,8 @@ tm_tbl_listing <- function(
   pre_output = NULL,
   post_output = NULL,
   transformators = list(),
-  decorators = list()) {
-
+  decorators = list()
+) {
   message("Initializing tm_gtsummary")
 
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing

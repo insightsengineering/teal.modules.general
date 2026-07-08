@@ -208,7 +208,7 @@ srv_gt_template <- function(id,
       table_r = table_r
     )
     print_output_decorated
-    })
+  })
 }
 
 srv_gt_template_partial <- function(id,

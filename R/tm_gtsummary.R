@@ -93,8 +93,8 @@ tm_gtsummary <- function(
   pre_output = NULL,
   post_output = NULL,
   transformators = list(),
-  decorators = list()) {
-
+  decorators = list()
+) {
   message("Initializing tm_gtsummary")
 
   if (inherits(by, "data_extract_spec")) by <- list(by)
