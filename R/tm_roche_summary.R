@@ -94,13 +94,6 @@ tm_roche_summary <- function(
   checkmate::assert_list(include, types = "data_extract_spec")
 
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
-  server <- function(id, data, ...) {
-    srv_gt_template(id = id, data = data, ..., server = srv_roche_summary_partial)
-  }
-
-  ui <- function(id, ...) {
-    ui_gt_template(id = id, ui = ui_roche_summary_partial(id, ...), ...)
-  }
 
   attr(by, "label") <- "By variable"
   attr(include, "label") <- "Include variable(s)"
@@ -110,8 +103,8 @@ tm_roche_summary <- function(
     by = by,
     include = include,
     .fun = .fun_quo,
-    .ui = ui,
-    .srv = server,
+    .ui = ui_roche_summary,
+    .srv = srv_roche_summary,
     ...,
     col_label = col_label,
     pre_output = pre_output,
@@ -119,6 +112,14 @@ tm_roche_summary <- function(
     transformators = transformators,
     decorators = decorators
   )
+}
+
+ui_roche_summary <- function(id, ...) {
+  ui_gt_template(id = id, partial_ui = ui_roche_summary_partial(id, ...), ...)
+}
+
+srv_roche_summary <- function(id, data, ...) {
+  srv_gt_template(id = id, data = data, ..., partial_srv = srv_roche_summary_partial)
 }
 
 ui_roche_summary_partial <- function(id, ...) {
@@ -184,11 +185,9 @@ srv_roche_summary_partial <- function(id,
     })
 
     reactive({
-      q <- req(qenv())
-      table_call <- req(tbl_summary_call())
-      within(q,
+      within(req(qenv()),
         expr = table <- table_call,
-        table_call = table_call
+        table_call = req(tbl_summary_call())
       )
     })
   })

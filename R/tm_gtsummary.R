@@ -104,21 +104,14 @@ tm_gtsummary <- function(
   checkmate::assert_list(include, types = "data_extract_spec")
 
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
-  server <- function(id, data, ...) {
-    srv_gt_template(id = id, data = data, ..., server = srv_gtsummary_partial)
-  }
-
-  ui <- function(id, ...) {
-    ui_gt_template(id = id, ui = ui_gtsummary_partial(id, ...), ...)
-  }
 
   tm_gt_template(
     label = label,
     by = by,
     include = include,
     .fun = .fun_quo,
-    .ui = ui,
-    .srv = server,
+    .ui = ui_gtsummary,
+    .srv = srv_gtsummary,
     ...,
     col_label = col_label,
     pre_output = pre_output,
@@ -127,6 +120,15 @@ tm_gtsummary <- function(
     decorators = decorators
   )
 }
+
+srv_gtsummary <- function(id, data, ...) {
+  srv_gt_template(id = id, data = data, ..., partial_srv = srv_gtsummary_partial)
+}
+
+ui_gtsummary <- function(id, ...) {
+  ui_gt_template(id = id, partial_ui = ui_gtsummary_partial(id, ...), ...)
+}
+
 
 ui_gtsummary_partial <- function(id, ...) {
   ns <- NS(id)
@@ -191,11 +193,9 @@ srv_gtsummary_partial <- function(id,
     })
 
     reactive({
-      q <- req(qenv())
-      table_call <- req(tbl_summary_call())
-      within(q,
+      within(req(qenv()),
         expr = table <- table_call,
-        table_call = table_call
+        table_call = req(tbl_summary_call())
       )
     })
   })

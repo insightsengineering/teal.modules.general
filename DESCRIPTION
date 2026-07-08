@@ -82,6 +82,8 @@ Suggests:
     shinytest2,
     testthat (>= 3.1.9),
     withr (>= 2.0.0)
+Remotes:
+    insightsengineering/teal.widgets@999-tm_gtsummary
 VignetteBuilder:
     knitr,
     rmarkdown

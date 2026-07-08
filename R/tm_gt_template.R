@@ -3,6 +3,7 @@ tm_gt_template <- function(
   .fun = gtsummary::tbl_summary,
   .ui = ui_gt_template,
   .srv = srv_gt_template,
+  .dataname = NULL,
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -35,7 +36,11 @@ tm_gt_template <- function(
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   teal::assert_decorators(decorators, "table")
-  datanames <- teal.transform::get_extract_datanames(opts_des)
+  datanames <- if (length(opts_des) == 0L) {
+    .dataname
+  } else {
+    c(teal.transform::get_extract_datanames(opts_des), .dataname)
+  }
   checkmate::assert_character(datanames, len = 1L, any.missing = FALSE, all.missing = FALSE)
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later evaluation
   if (rlang::is_quosure(.fun)) {
@@ -53,6 +58,7 @@ tm_gt_template <- function(
     opts_cs = opts_cs,
     opts_static = opts_static,
     decorators = decorators,
+    .dataname = .dataname,
     .fun_quo = .fun_quo,
     pre_output = pre_output,
     post_output = post_output
@@ -73,9 +79,9 @@ tm_gt_template <- function(
   module
 }
 
-ui_gt_template <- function(id, opts_des, opts_cs, pre_output, post_output, decorators, ui = NULL) {
+ui_gt_template <- function(id, opts_des, opts_cs, pre_output, post_output, decorators, partial_ui = NULL) {
   ns <- NS(id)
-  checkmate::assert_multi_class(ui, c("shiny.tag", "shiny.tag.list"), null.ok = TRUE)
+  checkmate::assert_multi_class(partial_ui, c("shiny.tag", "shiny.tag.list"), null.ok = TRUE)
 
   des_ui <- lapply(names(opts_des), function(x_name) {
     x <- opts_des[[x_name]]
@@ -97,17 +103,21 @@ ui_gt_template <- function(id, opts_des, opts_cs, pre_output, post_output, decor
     )
   })
 
-  teal.widgets::standard_layout(
-    output = teal.widgets::table_with_settings_ui(ns("table")),
-    encoding = tags$div(
+  encodings <- if (length(des_ui) > 0L || length(cs_ui) > 0L || !is.null(partial_ui) || length(decorators > 0L)) {
+    tags$div(
       tags$label("Encodings", class = "text-primary"),
-      teal.transform::datanames_input(opts_des),
+      if (length(opts_des) > 0L) teal.transform::datanames_input(opts_des),
       tagList(!!!des_ui),
       tagList(!!!cs_ui),
-      ui,
+      partial_ui,
       # Allow multiple decorators for a single object (table)
       teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "table")),
-    ),
+    )
+  }
+
+  teal.widgets::standard_layout(
+    output = teal.widgets::table_with_settings_ui(ns("table")),
+    encoding = encodings,
     pre_output = pre_output,
     post_output = post_output
   )
@@ -133,11 +143,9 @@ srv_gt_template_partial <- function(id,
     })
 
     reactive({
-      q <- req(qenv())
-      table_call <- req(tbl_summary_call())
-      within(q,
+      within(req(qenv()),
         expr = table <- table_call,
-        table_call = table_call
+        table_call = req(tbl_summary_call())
       )
     })
   })
@@ -149,8 +157,9 @@ srv_gt_template <- function(id,
                             opts_cs,
                             opts_static,
                             .fun_quo,
+                            .dataname,
                             ...,
-                            server = srv_gt_template_partial,
+                            partial_srv = srv_gt_template_partial,
                             decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -158,39 +167,52 @@ srv_gt_template <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    selector_list <- teal.transform::data_extract_multiple_srv(
-      data_extract = opts_des,
-      datasets = data
-    )
+    summary_args <- if (length(opts_des) > 0L) {
+      selector_list <- teal.transform::data_extract_multiple_srv(
+        data_extract = opts_des,
+        datasets = data
+      )
 
-    summary_args <- reactive({
-      sl <- req(selector_list())
-      dataset <- unique(vapply(names(sl), function(x) sl[[x]]()$dataname, character(1L)))
-      validate(
-        need(
-          length(dataset) > 0L,
-          "Specify variables to use in tables."
-        ),
-        need(
-          do.call(teal.transform::is_single_dataset, opts_des),
-          "Input from multiple tables: this module doesn't accept that."
+      reactive({
+        sl <- req(selector_list())
+        dataset <- unique(vapply(names(sl), function(x) sl[[x]]()$dataname, character(1L)))
+        validate(
+          need(
+            length(dataset) > 0L,
+            "Specify variables to use in tables."
+          ),
+          need(
+            do.call(teal.transform::is_single_dataset, opts_des),
+            "Input from multiple tables: this module doesn't accept that."
+          )
+        )
+        rlang::list2(
+          data = as.name(dataset[[1]]),
+          !!!rlang::set_names(
+            sapply(names(sl), function(x_name) sl[[x_name]]()$select, simplify = FALSE),
+            names(sl)
+          ),
+          !!!rlang::set_names(
+            sapply(names(opts_cs), function(x_name) input[[x_name]], simplify = FALSE),
+            names(opts_cs)
+          ),
+          !!!opts_static
+        )
+      })
+    } else {
+      reactive(
+        rlang::list2(
+          data = as.name(.dataname),
+          !!!rlang::set_names(
+            sapply(names(opts_cs), function(x_name) input[[x_name]], simplify = FALSE),
+            names(opts_cs)
+          ),
+          !!!opts_static
         )
       )
-      rlang::list2(
-        data = as.name(dataset[[1]]),
-        !!!rlang::set_names(
-          sapply(names(sl), function(x_name) sl[[x_name]]()$select, simplify = FALSE),
-          names(sl)
-        ),
-        !!!rlang::set_names(
-          sapply(names(opts_cs), function(x_name) input[[x_name]], simplify = FALSE),
-          names(opts_cs)
-        ),
-        !!!opts_static
-      )
-    })
+    }
 
-    output_q <- server("custom", data, summary_args_r = summary_args, .fun_quo = .fun_quo)
+    output_q <- partial_srv("custom", data, summary_args_r = summary_args, .fun_quo = .fun_quo)
 
     validated_q <- reactive({
       q <- output_q()
@@ -214,5 +236,5 @@ srv_gt_template <- function(id,
       table_r = table_r
     )
     print_output_decorated
-  })
+    })
 }

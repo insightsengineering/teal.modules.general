@@ -59,25 +59,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_gtsummary(
-#'       by = teal.transform::data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
-#'           choices = c("SEX", "COUNTRY", "SITEID", "ACTARM"),
-#'           selected = "SEX",
-#'           multiple = FALSE
-#'         )
-#'       ),
-#'       include = teal.transform::data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
-#'           choices = c("SITEID", "COUNTRY", "ACTARM"),
-#'           selected = "SITEID",
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
-#'       )
-#'     )
+#'     tm_tbl_listing()
 #'   )
 #' )
 #' if (interactive()) {
@@ -85,8 +67,7 @@
 #' }
 tm_tbl_listing <- function(
   label = "Listing table",
-  by,
-  include,
+  dataname = NULL,
   .fun = crane::tbl_listing,
   ...,
   col_label = NULL,
@@ -98,21 +79,13 @@ tm_tbl_listing <- function(
   message("Initializing tm_gtsummary")
 
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
-  server <- function(id, data, ...) {
-    srv_gt_template(id = id, data = data, ..., server = srv_gtsummary_partial)
-  }
-
-  ui <- function(id, ...) {
-    ui_gt_template(id = id, ui = ui_gtsummary_partial(id, ...), ...)
-  }
 
   tm_gt_template(
     label = label,
-    by = by,
-    include = include,
     .fun = .fun_quo,
-    .ui = ui,
-    .srv = server,
+    .ui = ui_gt_template,
+    .srv = srv_tbl_listing,
+    .dataname = dataname,
     ...,
     col_label = col_label,
     pre_output = pre_output,
@@ -122,49 +95,20 @@ tm_tbl_listing <- function(
   )
 }
 
-ui_gtsummary_partial <- function(id, ...) {
-  ns <- NS(id)
-  args <- list(...)
-
-  tagList(
-    radioButtons(
-      ns(NS("custom", "missing")),
-      label = "Display missing counts:",
-      choices = c("No" = "no", "If any" = "ifany", "Always" = "always"),
-      selected = args$missing
-    ),
-    radioButtons(
-      ns(NS("custom", "percent")),
-      label = "Percentage based on:",
-      choices = c("Column" = "column", "Row" = "row", "Cell" = "cell"),
-      selected = args$percent
-    )
-  )
+srv_tbl_listing <- function(id, data, ...) {
+  srv_gt_template(id = id, data = data, ..., partial_srv = srv_tbl_listing_partial)
 }
 
-srv_gtsummary_partial <- function(id,
+srv_tbl_listing_partial <- function(id,
                                   data,
                                   by,
-                                  include,
                                   .fun_quo,
                                   ...,
                                   decorators,
                                   summary_args_r) {
   moduleServer(id, function(input, output, session) {
-    summary_args_processed <- reactive({
-      tbl_summary_args <- req(summary_args_r()) # Additional arguments from UI
-      tbl_summary_args$missing <- input$missing
-      tbl_summary_args$percent <- input$percent
-      tbl_summary_args
-    })
-
     tbl_summary_call <- reactive({
-      as.call(
-        c(
-          list(rlang::get_expr(.fun_quo)),
-          req(summary_args_processed())
-        )
-      )
+      as.call(c(list(rlang::get_expr(.fun_quo)), req(summary_args_r())))
     })
 
     qenv <- reactive({
@@ -174,18 +118,14 @@ srv_gtsummary_partial <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's output(s)")
         )
-      teal.code::eval_code(obj, "library(gtsummary)")
+      teal.code::eval_code(obj, "library(crane)")
     })
 
     reactive({
-      q <- req(qenv())
-      table_call <- req(tbl_summary_call())
-      qq <- within(q,
+      within(req(qenv()),
         expr = table <- table_call,
-        table_call = table_call
+        table_call = req(tbl_summary_call())
       )
-      validate_qenv(qq)
-      qq
     })
   })
 }
