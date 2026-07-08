@@ -179,10 +179,7 @@ srv_gtsummary_partial <- function(id,
       id = id,
       data = validated_q,
       .fun_quo = .fun_quo,
-      by = by,
-      include = include,
       ...,
-      decorators = decorators,
       summary_args_r = summary_args_processed
     )
   })
