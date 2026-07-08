@@ -49,7 +49,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_gtsummary(
+#'     tm_roche_summary(
 #'       by = teal.transform::data_extract_spec(
 #'         dataname = "ADSL",
 #'         select = teal.transform::select_spec(

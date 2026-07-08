@@ -4,35 +4,20 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param by (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' An object with all available choices and with a pre-selected option on how to split rows.
-#'
-#' `data_extract_spec` multiple selection: not allowed
-#' @param include  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' An object with all available choices and with a pre-selected option that picks columns to include as rows.
-#'
-#' `data_extract_spec` multiple selection: allowed
-#' @param col_label Used to override default labels in summary table, e.g. `list(age = "Age, years")`.
-#' The default for each variable is the column label attribute, `attr(., 'label')`.
-#' If no label has been set, the column name is used.
-# nolint start
-#' @inheritDotParams gtsummary::tbl_summary statistic digits type value missing missing_text missing_stat sort
+#' @inheritDotParams crane::tbl_listing statistic digits type value missing missing_text missing_stat sort
 # nolint ends
 #' @inherit shared_params return
-#' @inheritSection gtsummary::tbl_summary statistic argument
-#' @inheritSection gtsummary::tbl_summary digits argument
-#' @inheritSection gtsummary::tbl_summary type and value arguments
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `table` (`gtsummary` - output of [`gtsummary::tbl_summary()`])
+#' - `table` (`gt_summary` - output of [`crane::tbl_listing()`])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
 #' See code snippet below:
 #'
 #' ```
-#' tm_gtsummary(
+#' tm_tbl_listing(
 #'    ..., # arguments for module
 #'    decorators = list(
 #'      table = teal_transform_module(...) # applied to the `table` output
