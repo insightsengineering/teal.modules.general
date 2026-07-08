@@ -22,7 +22,7 @@
 #' See code snippet below:
 #'
 #' ```
-#' tm_gtsummary(
+#' tm_roche_summary(
 #'    ..., # arguments for module
 #'    decorators = list(
 #'      table = teal_transform_module(...) # applied to the `table` output

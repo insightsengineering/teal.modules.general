@@ -129,7 +129,6 @@ ui_gtsummary <- function(id, ...) {
   ui_gt_template(id = id, partial_ui = ui_gtsummary_partial(id, ...), ...)
 }
 
-
 ui_gtsummary_partial <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
