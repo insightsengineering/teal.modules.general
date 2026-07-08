@@ -12,7 +12,8 @@ tm_gt_template <- function(
 ) {
   dots <- rlang::dots_list(..., .named = TRUE)
 
-  # Normalize the parameters
+  # Normalize the parameters and extract data_extract_spec, choices_selected and
+  #  named static arguments from the dots
   des_index <- vapply(dots, inherits, FUN.VALUE = logical(1L), "data_extract_spec")
   des_list_index <- vapply(
     dots,

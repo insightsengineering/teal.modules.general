@@ -86,9 +86,8 @@ tm_roche_summary <- function(
   decorators = list()) {
 
   message("Initializing tm_roche_summary")
-  checkmate::assert(if (!missing(by) && !is.null(by)) TRUE else "Must be non-null", .var.name = "by")
-  checkmate::assert(if (!missing(include) && !is.null(include)) TRUE else "Must be non-null", .var.name = "include")
 
+  assert_single_selection(if (inherits(by, "data_extract_spec")) list(by) else by)
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
   server <- function(id, data, ...) {
     srv_gt_template(id = id, data = data, ..., server = srv_roche_summary_partial)
