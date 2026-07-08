@@ -144,11 +144,8 @@ ui_roche_summary_partial <- function(id, ...) {
 
 srv_roche_summary_partial <- function(id,
                                       data,
-                                      by,
-                                      include,
                                       .fun_quo,
                                       ...,
-                                      decorators,
                                       summary_args_r) {
   moduleServer(id, function(input, output, session) {
     summary_args_processed <- reactive({
@@ -158,7 +155,7 @@ srv_roche_summary_partial <- function(id,
       tbl_summary_args
     })
 
-    validated_q <- reactive({
+    validated_q <- reactive({ # Custom validation for gtsummary
       q <- req(data())
       summary_args <- req(summary_args_processed())
       validate(
