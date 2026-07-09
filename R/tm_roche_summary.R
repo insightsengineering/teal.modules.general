@@ -150,7 +150,7 @@ srv_roche_summary_partial <- function(id,
   moduleServer(id, function(input, output, session) {
     summary_args_processed <- reactive({
       tbl_summary_args <- req(summary_args_r()) # Arguments forwarded from the main server function (template)
-      tbl_summary_args$missing <- input$missing # Additional argument from custom UI
+      tbl_summary_args$nonmissing <- input$nonmissing # Additional argument from custom UI
       tbl_summary_args$percent <- input$percent # Additional argument from custom UI
       tbl_summary_args
     })
