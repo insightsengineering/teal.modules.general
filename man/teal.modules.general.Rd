@@ -19,10 +19,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Dawid Kaledkowski \email{dawid.kaledkowski@roche.com}
+\strong{Maintainer}: Dony Unardi \email{unardid@gene.com}
 
 Authors:
 \itemize{
+  \item Dony Unardi \email{unardid@gene.com}
+  \item Dawid Kaledkowski \email{dawid.kaledkowski@roche.com}
   \item Pawel Rucki \email{pawel.rucki@roche.com}
   \item Mahmoud Hallal \email{mahmoud.hallal@roche.com}
   \item Maciej Nasinski

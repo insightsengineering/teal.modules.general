@@ -1,0 +1,187 @@
+testthat::describe("srv_rmarkdown", {
+  content <- c(
+    "---",
+    "title: \"R Markdown Report\"",
+    "output: html_document",
+    "---",
+    "",
+    "```{r}",
+    "nrow(my_data)",
+    "```"
+  )
+
+  data <- shiny::reactive(
+    within(teal.data::teal_data(), {
+      my_data <- CO2
+    })
+  )
+
+  it("fails to render invalid contents", {
+    mod <- tm_rmarkdown(
+      rmd_content = c("```{r}", "var_does_not_exist", "```"),
+      extra_transform = list(), allow_download = TRUE
+    )
+    shiny::testServer(
+      srv_rmarkdown,
+      args = c(list(id = "test", data = data), mod$server_args),
+      expr = {
+        testthat::expect_warning(
+          testthat::expect_error(session$returned()),
+          "Error rendering RMD file"
+        )
+      }
+    )
+  })
+
+  it("renders number of rows of `my_data` to markdown file", {
+    mod <- tm_rmarkdown(rmd_content = content, extra_transform = list(), allow_download = TRUE)
+    shiny::testServer(
+      srv_rmarkdown,
+      args = c(list(id = "test", data = data), mod$server_args),
+      expr = {
+        testthat::expect_match(readLines(rendered_path_r()), "    ## [1] 84", fixed = TRUE, all = FALSE)
+      }
+    )
+  })
+
+  it("returns a teal.reporter reactive", {
+    mod <- tm_rmarkdown(rmd_content = content, extra_transform = list(), allow_download = TRUE)
+    shiny::testServer(
+      mod$server,
+      args = c(list(id = "test", data = data), mod$server_args),
+      expr = {
+        testthat::expect_s3_class(session$returned, "reactive")
+        testthat::expect_s4_class(session$returned(), "teal_report")
+      }
+    )
+  })
+
+  it("renders expected html", {
+    shiny::testServer(
+      srv_rmarkdown,
+      args = list(
+        id = "test", rmd_content = content, data = data,
+        extra_transform = list(), allow_download = TRUE
+      ),
+      expr = {
+        .noWs <- c("before", "after", "outside", "after-begin", "before-end") # nolint: object_name_linter.
+        testthat::expect_equal(
+          gsub("\n", "", as.character(output$rmd_output$html)),
+          as.character(
+            shiny::tagList(
+              shiny::tags$pre(
+                .noWS = .noWs,
+                shiny::tags$code(
+                  .noWS = .noWs,
+                  class = "language-r",
+                  "nrow(my_data)"
+                )
+              ),
+              shiny::tags$pre(
+                .noWS = .noWs,
+                shiny::tags$code(
+                  .noWS = .noWs,
+                  "## [1] 84"
+                )
+              )
+            )
+          )
+        )
+      }
+    )
+  })
+
+  it("download handler returns a rmd file", {
+    mod <- tm_rmarkdown(rmd_content = content, extra_transform = list(), allow_download = TRUE)
+    shiny::testServer(
+      srv_rmarkdown,
+      args = c(list(id = "test", data = data), mod$server_args),
+      expr = {
+        checkmate::expect_file_exists(session$output$download_rmd, extension = "Rmd")
+      }
+    )
+  })
+})
+
+testthat::describe("tm_rmarkdown module ui behavior returns a htmltools tag or taglist", {
+  content <- c(
+    "---",
+    "title: \"R Markdown Report\"",
+    "output: html_document",
+    "---",
+    "",
+    "```{r}",
+    "nrow(my_data)",
+    "```"
+  )
+  it("with default arguments", {
+    mod <- tm_rmarkdown(rmd_content = content)
+    checkmate::expect_multi_class(
+      ui <- do.call(what = mod$ui, args = c(mod$ui_args, list(id = "test")), quote = TRUE),
+      c("shiny.tag", "shiny.tag.list")
+    )
+  })
+})
+
+
+testthat::describe("print methods returned expected contents", {
+  content <- c(
+    "---",
+    "title: \"R Markdown Report\"",
+    "output: html_document",
+    "---",
+    "",
+    "```{r}",
+    "nrow(my_data)",
+    "```"
+  )
+
+  data <- shiny::reactive(
+    within(teal.data::teal_data(), {
+      my_data <- CO2
+    })
+  )
+
+  it("tools::toHTML", {
+    mod <- tm_rmarkdown(rmd_content = content, extra_transform = list(), allow_download = TRUE)
+    shiny::testServer(
+      srv_rmarkdown,
+      args = c(list(id = "test", data = data), mod$server_args),
+      expr = {
+        card <- teal.reporter::teal_card(session$returned())
+        contents <- tools::toHTML(card[[length(card)]])
+        testthat::expect_s3_class(contents, "html")
+        testthat::expect_match(contents, "<code>## [1] 84", fixed = TRUE, all = FALSE)
+      }
+    )
+  })
+
+  it("tools::toHTML without cache", {
+    mod <- tm_rmarkdown(rmd_content = content, extra_transform = list(), allow_download = TRUE)
+    shiny::testServer(
+      srv_rmarkdown,
+      args = c(list(id = "test", data = data), mod$server_args),
+      expr = {
+        card <- teal.reporter::teal_card(session$returned())
+        obj <- card[[length(card)]]
+        attr(obj, "cached_html") <- NULL
+        contents <- tools::toHTML(obj)
+        testthat::expect_s3_class(contents, "html")
+        testthat::expect_match(contents, "<code>## [1] 84", fixed = TRUE, all = FALSE)
+      }
+    )
+  })
+
+  it("tools::toHTML without using existing `cached_html` attribute generated by the server function", {
+    mod <- tm_rmarkdown(rmd_content = content, extra_transform = list(), allow_download = TRUE)
+    shiny::testServer(
+      srv_rmarkdown,
+      args = c(list(id = "test", data = data), mod$server_args),
+      expr = {
+        cards <- teal.reporter::teal_card(session$returned())
+        result <- teal.reporter::to_rmd(cards[[length(cards)]])
+        testthat::expect_equal(result, cards[[length(cards)]])
+      }
+    )
+  })
+})

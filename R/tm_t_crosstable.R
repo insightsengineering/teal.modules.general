@@ -215,7 +215,7 @@ tm_t_crosstable.default <- function(label = "Cross Table",
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_class(basic_table_args, classes = "basic_table_args")
 
-  assert_decorators(decorators, "table")
+  teal::assert_decorators(decorators, "table")
   # End of assertions
 
   # Make UI args
@@ -283,7 +283,7 @@ ui_t_crosstable.default <- function(id, x, y, show_percentage, show_total, remov
           checkboxInput(ns("remove_zero_columns"), "Remove zero-only columns", value = remove_zero_columns)
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "table"))
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "table"))
     ),
     pre_output = pre_output,
     post_output = post_output
@@ -352,7 +352,7 @@ srv_t_crosstable.default <- function(id, data, label, x, y, remove_zero_columns,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's output(s)")
         )
-      teal.code::eval_code(obj, 'library("rtables");library("tern");library("dplyr")') # nolint quotes
+      teal.code::eval_code(obj, "library(rtables);library(tern);library(dplyr)")
     })
     anl_merged_q <- reactive({
       req(anl_merged_input())
@@ -480,10 +480,10 @@ srv_t_crosstable.default <- function(id, data, label, x, y, remove_zero_columns,
       obj
     })
 
-    decorated_output_q <- srv_decorate_teal_data(
+    decorated_output_q <- teal::srv_transform_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "table"),
+      transformators = select_decorators(decorators, "table"),
       expr = quote(table)
     )
 

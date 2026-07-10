@@ -286,7 +286,7 @@ tm_g_bivariate.default <- function(label = "Bivariate Plots",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  assert_decorators(decorators, "plot")
+  teal::assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -358,7 +358,7 @@ ui_g_bivariate.default <- function(id, ...) {
           justified = TRUE
         )
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       if (!is.null(args$row_facet) || !is.null(args$col_facet)) {
         tags$div(
           class = "data-extract-box",
@@ -550,9 +550,9 @@ srv_g_bivariate.default <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's output(s)")
         )
-      obj %>%
-        teal.code::eval_code('library("ggplot2");library("dplyr")') %>%
-        teal.code::eval_code(as.expression(anl_merged_input()$expr)) # don't mix char with expr in single eval_code
+      obj |>
+        teal.code::eval_code("library(ggplot2);library(dplyr)") |>
+        teal.code::eval_code(as.expression(anl_merged_input()$expr))
     })
 
     merged <- list(
@@ -683,10 +683,10 @@ srv_g_bivariate.default <- function(id,
       teal.code::eval_code(obj, substitute(expr = plot <- cl, env = list(cl = cl)))
     })
 
-    decorated_output_q_facets <- srv_decorate_teal_data(
+    decorated_output_q_facets <- teal::srv_transform_teal_data(
       "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = reactive({
         ANL <- merged$anl_q_r()[["ANL"]]
         row_facet_name <- as.vector(merged$anl_input_r()$columns_source$row_facet)
@@ -716,7 +716,9 @@ srv_g_bivariate.default <- function(id,
       })
     )
 
-    plot_r <- reactive(req(decorated_output_q_facets())[["plot"]])
+    plot_r <- reactive({
+      req(decorated_output_q_facets())[["plot"]]
+    })
 
     pws <- teal.widgets::plot_with_settings_srv(
       id = "myplot",
@@ -755,7 +757,7 @@ bivariate_plot_call <- function(data_name,
     y <- if (is.call(y)) y else as.name(y)
   }
 
-  cl <- bivariate_ggplot_call(
+  bivariate_ggplot_call(
     x_class = x_class,
     y_class = y_class,
     freq = freq,
@@ -914,7 +916,13 @@ bivariate_ggplot_call <- function(x_class,
     )
     # Factor and character plots
   } else if (x_class == "factor" && y_class == "factor") {
-    stop("Categorical variables 'x' and 'y' are currently not supported.")
+    plot_call <- reduce_plot_call(
+      plot_call,
+      substitute(
+        teal.modules.general::geom_mosaic(ggplot2::aes(x = xval, fill = yval)),
+        env = list(xval = x, yval = y)
+      )
+    )
   } else {
     stop("x y type combination not allowed")
   }

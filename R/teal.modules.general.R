@@ -7,8 +7,7 @@
 #' @import shiny
 #' @import teal
 #' @import teal.transform
-#' @importFrom dplyr %>%
-#'
+#' @importFrom dplyr %>% .data
 #'
 #' @name teal.modules.general
 #' @keywords internal

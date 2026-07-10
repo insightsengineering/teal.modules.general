@@ -20,6 +20,7 @@ navbar:
     github:
       icon: fa-github
       href: https://github.com/insightsengineering/teal.modules.general
+      aria-label: View on Github
 
 reference:
   - title:
@@ -42,4 +43,3 @@ reference:
   - title: Utilities functions
     contents:
       - add_facet_labels
-      - get_scatterplotmatrix_stats

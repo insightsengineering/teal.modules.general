@@ -6,9 +6,9 @@
 \usage{
 tm_a_pca(
   label = "Principal Component Analysis",
-  dat = teal.transform::picks(teal.transform::datasets(),
-    teal.transform::variables(choices = tidyselect::where(~is.numeric(.x) &&
-    all(!is.na(.x))), selected = tidyselect::everything(), multiple = TRUE)),
+  dat = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(choices =
+    tidyselect::where(~is.numeric(.x) && all(!is.na(.x))), selected =
+    tidyselect::everything(), multiple = TRUE)),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
@@ -124,6 +124,22 @@ To learn more please refer to the vignette
 \code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
+\section{Reporting}{
+
+
+
+This module returns an object of class \code{teal_module}, that contains a \code{server} function.
+Since the server function returns a \code{teal_report} object, this makes this module reportable, which means that
+the reporting functionality will be turned on automatically by the \code{teal} framework.
+
+For more information on reporting in \code{teal}, see the vignettes:
+\itemize{
+\item \code{vignette("reportable-shiny-application", package = "teal.reporter")}
+\item \code{vignette("adding-support-for-reporting-to-custom-modules", package = "teal")}
+}
+
+}
+
 \examples{
 
 # general data example
@@ -138,9 +154,9 @@ app <- init(
   modules = modules(
     tm_a_pca(
       "PCA",
-      dat = teal.transform::picks(
+      dat = teal.picks::picks(
         datasets("USArrests"),
-        teal.transform::variables(
+        teal.picks::variables(
           choices = c("Murder", "Assault", "UrbanPop", "Rape"),
           selected = c("Murder", "Assault"),
           multiple = TRUE
@@ -166,9 +182,9 @@ app <- init(
   data = data,
   modules = modules(
     tm_a_pca(
-      dat = teal.transform::picks(
+      dat = teal.picks::picks(
         datasets("ADSL"),
-        teal.transform::variables(
+        teal.picks::variables(
           choices = c("BMRKR1", "AGE", "EOSDY"),
           selected = c("BMRKR1", "AGE"),
           multiple = TRUE
@@ -185,13 +201,13 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFWOAMoAgow1raLxuv1DI6SiSgC+3UpoqOMq+eyVAZm6ALxbwbibfEIiY3vHwmIbPVW6pDBJUEmoBGmbt7oKYAAKAMIDX0ONw+sV2dzg3AwpGYEFEJk6MEQiFQtAIAGtRNcPiDMqI4DMNmBJsMxDMvnIgdjbokoTC4QikVoWLQoPRTliqbcCAUiKixGCCISALKCRj8GSAz5gAaiURQYSkSVfRyMehQCDfIioJVgLBoODkymcqp4kQaOD8AXC0Xixg6mVyhWG96cmAK2hRPR7BwuF0fbpUgO3IPdbq0Ey6dgqcjMSw6Gy2Co3URFCCsAbodjLAAkDTKObxjB0XXmSjAcwAukA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFWOAMoAgow1raLxuv1DI6SiSgC+3UpoqOMq+eyVAZm6ALxbwbibfEIiY3vHwmIbPVW6pDBJUEmoBGmbt7oKYAAKAMIDX0ONw+sV2dzg3AwpGYEFEJk6MEQiFQtAIAGtRNcPiDMqI4DMNmBJsMxDMvnIgdjbokoTC4QikVoWLQoPRTliqbcCAUiKixGCCISALKCRj8GSAz5gAaiURQYSkSVfRyMehQCDfIioJVgLBoODkymcqp4kQaOD8AXC0Xixg6mVyhWG96cmAK2hRPR7BwuF0fbpUgO3IPdbq0Ey6dgqcjMSw6Gy2Co3URFCCsAbodjLAAkDTKObxjB0XXmSjAcwAukA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFWOAMoAgow1raLxuv1DI6SiSgC+3UpoqOMq+eyVAZm6ALxbwbibfEIiY3vHwmIbPVW6pDBJUEmoBGmbt7oKYAAKAMIDX0ONw+sV2dzg3AwqFoBAA1qJEIhoXDRNcPiDMqI4DMNmBJsMxDMvnIgejbokoTD4YitCxaFB6Kc0WTbgQCkQYWIwQRcQBZQSMfgyQGfMADUSiKDCUgir6ORj0KAQb5EVCysBYNBwYmkllVLEiDRwfjcvkCoWMdXiyXSnXvFkwaW0KJ6PYOFz2j7dMne26+7rdWgmXTsFTkZiWHQ2WwVG6iIoQVgDdDsZYAEgaZXTWMYOi68yUYDmAF0gA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFWOAMoAgow1raLxuv1DI6SiSgC+3UpoqOMq+eyVAZm6ALxbwbibfEIiY3vHwmIbPVW6pDBJUEmoBGmbt7oKYAAKAMIDX0ONw+sV2dzg3AwqFoBAA1qJEIhoXDRNcPiDMqI4DMNmBJsMxDMvnIgejbokoTD4YitCxaFB6Kc0WTbgQCkQYWIwQRcQBZQSMfgyQGfMADUSiKDCUgir6ORj0KAQb5EVCysBYNBwYmkllVLEiDRwfjcvkCoWMdXiyXSnXvFkwaW0KJ6PYOFz2j7dMne26+7rdWgmXTsFTkZiWHQ2WwVG6iIoQVgDdDsZYAEgaZXTWMYOi68yUYDmAF0gA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY6HI6akZgQUQmPowOaoWgEbYHYkk6FQURwUgssCLMYKMByWGYtlTODcDAUqBUmmMOmILQsWhQeiIjGikkEUqbAhiZEEEFgABCAFksABpLAARgF1QFQwA4q48LoBc4APKBXwATQFQtZos5Ig0cH4+sNpot1ttrt5Tr9wo1WJgl1o8T0UIcLgDWIGorzudBAwGtBMunYKnIzEsOhstlqmNE5QgrCG6HY-wAJK1ql3OYwdP0VkowMtvkA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY6HI6akZgQUQmPowOaoWgEbYHYkk6FQURwUgssCLMYKMByWGYtlTODcDAUqBUmmMOmILQsWhQeiIjGikkEUqbAhiZEEEFgABCAFksABpLAARgF1QFQwA4q48LoBc4APKBXwATQFQtZos5Ig0cH4+sNpot1ttrt5Tr9wo1WJgl1o8T0UIcLgDWIGorzudBAwGtBMunYKnIzEsOhstlqmNE5QgrCG6HY-wAJK1ql3OYwdP0VkowMtvkA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY6HI6aoWgEbaiOYUqkHYkk6FQURwUgMsCLMYKMByWGYplTODcDB06lzLQsWhQeiIjGCkkEUqbAhiZEEEFgABCAFksABpLAARh51R5QwA4q48Loec4APKBXwATR5fMZgtZIg0cH46s1uoNxtNts5Vrd-IVWJgl1o8T0UIcLg9WIGgrTqdBAwGtBMunYKnIzEsOhstlqmNE5QgrCG6HY-wAJK1qk3WYwdP0VkowMtvkA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY6HI6aoWgEbaiOYUqkHYkk6FQURwUgMsCLMYKMByWGYplTODcDB06lzLQsWhQeiIjGCkkEUqbAhiZEEEFgABCAFksABpLAARh51R5QwA4q48Loec4APKBXwATR5fMZgtZIg0cH46s1uoNxtNts5Vrd-IVWJgl1o8T0UIcLg9WIGgrTqdBAwGtBMunYKnIzEsOhstlqmNE5QgrCG6HY-wAJK1qk3WYwdP0VkowMtvkA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

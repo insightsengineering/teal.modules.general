@@ -1,8 +1,44 @@
-# teal.modules.general 0.5.1.9012
+# teal.modules.general 0.7.0.9000
+
+# teal.modules.general 0.7.0
 
 ### Enhancements
 
 - Modules now return a `teal_report` object that contains the data, code and reporter. All the reporter buttons were removed from the modules' UI.
+- Support case when both variables are categorical in association and bivariate plots.
+- Improve `tm_missing_data` visualization (#495).
+- `tm_g_scatterplotmatrix()` has been rewritten to use `ggplot2` and `patchwork`
+  instead of `lattice`. Panel text scales automatically with the number of
+  variables so labels remain readable at any matrix size. NA handling retains
+  the familiar **Omit NAs** checkbox (default, `use = "pairwise.complete.obs"`);
+  unchecking it reveals a dropdown with all five `stats::cor()` `use` options.
+  `get_scatterplotmatrix_stats()` has been removed (#986).
+- Multiple decorators can be applied to the same output object (#978).
+- Replaced deprecated `ggplot2::aes_string()` with `aes()` using tidy evaluation idioms, and renamed `sec_axis(trans=)` to `sec_axis(transform=)` (#629).
+
+### Bug fixes
+- Improved user-facing robustness by reporting table creation errors to users (#982).
+- `Show only distinct rows` in `tm_data_table` no longer shows an extra count column `n` (#983).
+- Fixed overlapping UI elements in the output panel of `tm_g_distribution` (#896).
+
+### Miscellaneous
+
+- Extensive test coverage increases across modules:
+  - tm_front_page (#961)
+  - tm_missing_data (#960)
+  - tm_variable_browser (#963)
+  - tm_g_distribution (#962)
+  - tm_rmarkdown (#967)
+  - tm_a_pca (#966)
+  - tm_outliers (#965)
+  - tm_data_table (#970)
+  - broader coverage improvements (#959)
+  - additional targeted tests (tm_a_regression, tm_file_viewer, etc.; #969, #968, #964)
+  - Linting rule expansion for object names (#977)
+  - Dependency/workflow maintenance:
+    - added/fixed copilot setup workflow (#957, #958)
+- Timeout and integration test stability adjustments (#946, #950, #945).
+- Re-enabled tm_g_association tests after upstream ggmosaic issue resolution (PR #991).
 
 # teal.modules.general 0.5.1
 

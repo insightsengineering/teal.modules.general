@@ -6,8 +6,8 @@
 \usage{
 tm_g_scatterplot(
   label = "Scatterplot",
-  x = teal.transform::picks(teal.transform::datasets(),
-    teal.transform::variables(is.numeric), teal.transform::values()),
+  x = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(is.numeric),
+    teal.picks::values()),
   y,
   color_by = NULL,
   size_by = NULL,
@@ -145,6 +145,22 @@ To learn more please refer to the vignette
 \code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
+\section{Reporting}{
+
+
+
+This module returns an object of class \code{teal_module}, that contains a \code{server} function.
+Since the server function returns a \code{teal_report} object, this makes this module reportable, which means that
+the reporting functionality will be turned on automatically by the \code{teal} framework.
+
+For more information on reporting in \code{teal}, see the vignettes:
+\itemize{
+\item \code{vignette("reportable-shiny-application", package = "teal.reporter")}
+\item \code{vignette("adding-support-for-reporting-to-custom-modules", package = "teal")}
+}
+
+}
+
 \examples{
 # general data example
 data <- teal_data()
@@ -158,47 +174,47 @@ app <- init(
   modules = modules(
     tm_g_scatterplot(
       label = "Scatterplot Choices",
-      x = teal.transform::picks(
+      x = teal.picks::picks(
         datasets("CO2"),
-        teal.transform::variables(
+        teal.picks::variables(
           choices = c("conc", "uptake"),
           selected = "conc"
         ),
-        teal.transform::values()
+        teal.picks::values()
       ),
-      y = teal.transform::picks(
+      y = teal.picks::picks(
         datasets("CO2"),
-        teal.transform::variables(
+        teal.picks::variables(
           choices = c("conc", "uptake"),
           selected = "uptake"
         ),
-        teal.transform::values()
+        teal.picks::values()
       ),
-      color_by = teal.transform::picks(
+      color_by = teal.picks::picks(
         datasets("CO2"),
-        teal.transform::variables(
+        teal.picks::variables(
           choices = c("Plant", "Type", "Treatment", "conc", "uptake"),
           selected = NULL
         ),
-        teal.transform::values()
+        teal.picks::values()
       ),
-      size_by = teal.transform::picks(
+      size_by = teal.picks::picks(
         datasets("CO2"),
-        teal.transform::variables(choices = c("conc", "uptake"), selected = "uptake"),
-        teal.transform::values()
+        teal.picks::variables(choices = c("conc", "uptake"), selected = "uptake"),
+        teal.picks::values()
       ),
-      row_facet = teal.transform::picks(
+      row_facet = teal.picks::picks(
         datasets("CO2"),
-        teal.transform::variables(
+        teal.picks::variables(
           choices = c("Plant", "Type", "Treatment"),
           selected = NULL
         ),
-        teal.transform::values()
+        teal.picks::values()
       ),
-      col_facet = teal.transform::picks(
+      col_facet = teal.picks::picks(
         datasets("CO2"),
-        teal.transform::variables(choices = c("Plant", "Type", "Treatment"), selected = NULL),
-        teal.transform::values()
+        teal.picks::variables(choices = c("Plant", "Type", "Treatment"), selected = NULL),
+        teal.picks::values()
       )
     )
   )
@@ -220,35 +236,35 @@ app <- init(
   modules = modules(
     tm_g_scatterplot(
       label = "Scatterplot Choices",
-      x = teal.transform::picks(
+      x = teal.picks::picks(
         datasets("ADSL"),
-        teal.transform::variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "AGE"),
-        teal.transform::values()
+        teal.picks::variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "AGE"),
+        teal.picks::values()
       ),
-      y = teal.transform::picks(
+      y = teal.picks::picks(
         datasets("ADSL"),
-        teal.transform::variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "BMRKR1"),
-        teal.transform::values()
+        teal.picks::variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "BMRKR1"),
+        teal.picks::values()
       ),
-      color_by = teal.transform::picks(
+      color_by = teal.picks::picks(
         datasets("ADSL"),
-        teal.transform::variables(c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1"), selected = NULL),
-        teal.transform::values()
+        teal.picks::variables(c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1"), selected = NULL),
+        teal.picks::values()
       ),
-      size_by = teal.transform::picks(
+      size_by = teal.picks::picks(
         datasets("ADSL"),
-        teal.transform::variables(choices = c("AGE", "BMRKR1"), selected = "AGE"),
-        teal.transform::values()
+        teal.picks::variables(choices = c("AGE", "BMRKR1"), selected = "AGE"),
+        teal.picks::values()
       ),
-      row_facet = teal.transform::picks(
+      row_facet = teal.picks::picks(
         datasets("ADSL"),
-        teal.transform::variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
-        teal.transform::values()
+        teal.picks::variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+        teal.picks::values()
       ),
-      col_facet = teal.transform::picks(
+      col_facet = teal.picks::picks(
         datasets("ADSL"),
-        teal.transform::variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
-        teal.transform::values()
+        teal.picks::variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+        teal.picks::values()
       )
     )
   )
@@ -261,13 +277,13 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QNKAL5dSmiowyp57BX+GboAvMtBuEt8QiKia7o7wmKL3ZW6pDCJEomiBIHkjJFEpKfn59RQ9HB+6wpgAGV7qRHs9SCN8kRaAQxP8tmd3qEDgkMKRmBBRCYOjBEIhUNCANaiN7vc4pURwUjE-6jf5yeGk84otFQDFYxg4xBaFi0L57EmMyoESHQsQHAiLQgkAhw3T-QSoIIEuB0hmCyoUkQaOD8A7-YgWf5LRn042k5nozHY3Hc6iCE5dE1q96sZFwbioy3szn4ghEgWk8mU6lgWlgU0I83ungstnWrk8vknM2M4VQmH7dYS-XS2XyxVQZWqlOkzVwbW6v5gBVKlVgEuVCPqi2sq0cm3ce3Ex2kpuktodRL0V3rFtx9t4wnUyPvINUyVhvuMsdtzncxi8+j8hvnNOizO6bNgAAKnzIebAdlYqDrpX+dmqgXg57wcqlhtf+drxZnpZ+5fIStdAAOUcAAZMCdyXKMPVjVcOztB0S2gjVaAALzgIcRwuaNPVbb1cV9f0dznENF2dGCYy9eN103fk9wzcVJQNGVP2rAsi3DUoywrPV2O-LidxXAiE0Q7tkIoypGCIbJEhMdRKTdWDqInIjp3VUiF0GH9m1wuCRNopN1PVQ8RUYrNJVPVlSAvK8b1sx9LgoGzBN-d4eMAg5QIgqDJKZPSVLXTskN-FDDyIJJ5JhcFRwC-D4zUgNZwyCl5xpbTXN05T4onQytxOBixQs-4rJfO9L2vW83wfd0nJfeldA8nUvPAsCwsqYSaOC8TQrNHsui6WgTF0dgVEedRNB0GxbHKM5REKCBWAAQXQdgZgAEnqUoNopRgdE6CYlDAcYAF0gA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QNKAL5dSmiowyp57BX+GboAvMtBuEt8QiKia7o7wmKL3ZW6pDCJEomiBIHkjJFEpKfn59RQ9HB+6wpgAGV7qRHs9SCN8kRaAQxP8tmd3qEDgkMKRmBBRCYOjBEIhUNCANaiN7vc4pURwUjE-6jf5yeGk84otFQDFYxg4xBaFi0L57EmMyoESHQsQHAiLQgkAhw3T-QSoIIEuB0hmCyoUkQaOD8A7-YgWf5LRn042k5nozHY3Hc6iCE5dE1q96sZFwbioy3szn4ghEgWk8mU6lgWlgU0I83ungstnWrk8vknM2M4VQmH7dYS-XS2XyxVQZWqlOkzVwbW6v5gBVKlVgEuVCPqi2sq0cm3ce3Ex2kpuktodRL0V3rFtx9t4wnUyPvINUyVhvuMsdtzncxi8+j8hvnNOizO6bNgAAKnzIebAdlYqDrpX+dmqgXg57wcqlhtf+drxZnpZ+5fIStdAAOUcAAZMCdyXKMPVjVcOztB0S2gjVaAALzgIcRwuaNPVbb1cV9f0dznENF2dGCYy9eN103fk9wzcVJQNGVP2rAsi3DUoywrPV2O-LidxXAiE0Q7tkIoypGCIbJEhMdRKTdWDqInIjp3VUiF0GH9m1wuCRNopN1PVQ8RUYrNJVPVlSAvK8b1sx9LgoGzBN-d4eMAg5QIgqDJKZPSVLXTskN-FDDyIJJ5JhcFRwC-D4zUgNZwyCl5xpbTXN05T4onQytxOBixQs-4rJfO9L2vW83wfd0nJfeldA8nUvPAsCwsqYSaOC8TQrNHsui6WgTF0dgVEedRNB0GxbHKM5REKCBWAAQXQdgZgAEnqUoNopRgdE6CYlDAcYAF0gA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QNKAL5dSmiowyp57BX+GboAvMtBuEt8QiKia7o7wmKL3ZW6pDCJEomiBIHkjJFEpKfn59RQ9HB+6wpgAGV7qRHs9SCN8kRaAQxP8tmd3qEDgkMKhoQBrUSIRBogiYt7vc4pURwUiiRZgUb-OTwwnnFG4zHYrQsWhfPYEumVAiQ6FiA4ECnECxw3T-QSoILouDU2lcyokkQaOD8A7-YUEf5LOk07WEhkYrGIFnUQQnLo6uXvVjIuDcVGG7GM8l697E0kuymDWWu+l2njO5ms9knX3vHlQmH7daC9UkTV4MVgCVSmVgXUIrmKuDK1V-ZOSqDSrWZ94Z+UGvFGk1m8kWwnlwltDqJeg29aVpk4w2cwnuskUqnpq36-0OqtBxhs+gcsPnCN86O6WNgAAKnzIov+dlYqDTpW31UC8E3ibjIrPBdTPtLhOzuYOADlHAAZF9zxt0zvV7i1tK3z9zlEWgAC84FbdsLjHQNuyrXs3QyEkB3+IdAPeb9J2nDkFyjAUhXjLcryLNMaV0e9yDzJMU2Im8K2gx1jV-c1fTQqoiGyRITHUUlbXtGDnXgolEI9QdvWHOcMMYqcQxdW9w15XCYwpdcoFPA8wB3PdCLsI9LgoUhaPlMifhzCin1fd85N0VjKkkmtmIAkduSIJIuJhcEO3oidYPxOd+09VCnL9PiGJZaSZxOHD+SU-4VLUpNNP3BLdJPAzh2MpUzPWZ83xsqCQu8+y6xYvV6y6LpaBMXR2BUR51E0HQbFscozlEQoIFYABBdB2BmAASepSn6klGB0ToJiUMBxgAXSAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QNKAL5dSmiowyp57BX+GboAvMtBuEt8QiKia7o7wmKL3ZW6pDCJEomiBIHkjJFEpKfn59RQ9HB+6wpgAGV7qRHs9SCN8kRaAQxP8tmd3qEDgkMKhoQBrUSIRBogiYt7vc4pURwUiiRZgUb-OTwwnnFG4zHYrQsWhfPYEumVAiQ6FiA4ECnECxw3T-QSoILouDU2lcyokkQaOD8A7-YUEf5LOk07WEhkYrGIFnUQQnLo6uXvVjIuDcVGG7GM8l697E0kuymDWWu+l2njO5ms9knX3vHlQmH7daC9UkTV4MVgCVSmVgXUIrmKuDK1V-ZOSqDSrWZ94Z+UGvFGk1m8kWwnlwltDqJeg29aVpk4w2cwnuskUqnpq36-0OqtBxhs+gcsPnCN86O6WNgAAKnzIov+dlYqDTpW31UC8E3ibjIrPBdTPtLhOzuYOADlHAAZF9zxt0zvV7i1tK3z9zlEWgAC84FbdsLjHQNuyrXs3QyEkB3+IdAPeb9J2nDkFyjAUhXjLcryLNMaV0e9yDzJMU2Im8K2gx1jV-c1fTQqoiGyRITHUUlbXtGDnXgolEI9QdvWHOcMMYqcQxdW9w15XCYwpdcoFPA8wB3PdCLsI9LgoUhaPlMifhzCin1fd85N0VjKkkmtmIAkduSIJIuJhcEO3oidYPxOd+09VCnL9PiGJZaSZxOHD+SU-4VLUpNNP3BLdJPAzh2MpUzPWZ83xsqCQu8+y6xYvV6y6LpaBMXR2BUR51E0HQbFscozlEQoIFYABBdB2BmAASepSn6klGB0ToJiUMBxgAXSAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0ncwuRGHEiKR0ZjMdQoPQ4NQkQowAECASZMTSN4ShsCGJ6TCMeSokipqRmBBRCZejBZqhaAQtvsQeS6plRHBSPKwAtRvS5LzFZihSKxRLZloWLQqQj2AQOTKxEiCMCNQBxVx4XT0gBCAFksABpLAARh57rA3r9WAATNqqiqRBo4Pw6c7XTqFYqDVBReLGJLEKbqII0f09am+ZjWIK4NwMMLM0ac1KZXKyXqoVAVWrHZro2nyRms8a82aLWjrZy7ZCHfTBi7g56ff6g275+Go2AdbpY3B44nISvFz2y32qzxawOG0OC0Xe7pS3rur00vQK5D+-Xc9LZfKj5jlar1d2666q2b7ZrmpqMOa9CWlOyZzqGC6BvBYb+muVT0lggxeK66FgFgzhOn4ADyAByS4bluO5IiRjijKMd4gSeNaGmBJrcIW+zFoqDHkqItAAF5wE+L6TExZ7vo2X4tnqf6dtOIxakBN51KBg4QVBME2lyiKTl2s7Lgh4bkTGNLbuQu4hjOKbAXqqkXvmHHZD+PGYowRAFGkZxcmyr5iSxg6fs2ylth2AEKYeraidW4msUOkEjvsY62jpuiwShkbwZh2GZQRxFkdGm6mVRkI0XRLnHtF-n2ex17OTZmLdJ56iqpWlV1rFgXfpFslhYsSk-ipfntWpw7QaOWkTqljrpWhIZZThc25aRxmFXG5nUbR9H1RVp5VeBNWcTeXF1Fx-T9LQJi6OwKiEuomg6DYtg1BiohlBArCDOg7BoKgAAkLRVD9v0qowOh9MsShgEsXxAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0ncwuRGHEiKR0ZjMdQoPQ4NQkQowAECASZMTSN4ShsCGJ6TCMeSokipqRmBBRCZejBZqhaAQtvsQeS6plRHBSPKwAtRvS5LzFZihSKxRLZloWLQqQj2AQOTKxEiCMCNQBxVx4XT0gBCAFksABpLAARh57rA3r9WAATNqqiqRBo4Pw6c7XTqFYqDVBReLGJLEKbqII0f09am+ZjWIK4NwMMLM0ac1KZXKyXqoVAVWrHZro2nyRms8a82aLWjrZy7ZCHfTBi7g56ff6g275+Go2AdbpY3B44nISvFz2y32qzxawOG0OC0Xe7pS3rur00vQK5D+-Xc9LZfKj5jlar1d2666q2b7ZrmpqMOa9CWlOyZzqGC6BvBYb+muVT0lggxeK66FgFgzhOn4ADyAByS4bluO5IiRjijKMd4gSeNaGmBJrcIW+zFoqDHkqItAAF5wE+L6TExZ7vo2X4tnqf6dtOIxakBN51KBg4QVBME2lyiKTl2s7Lgh4bkTGNLbuQu4hjOKbAXqqkXvmHHZD+PGYowRAFGkZxcmyr5iSxg6fs2ylth2AEKYeraidW4msUOkEjvsY62jpuiwShkbwZh2GZQRxFkdGm6mVRkI0XRLnHtF-n2ex17OTZmLdJ56iqpWlV1rFgXfpFslhYsSk-ipfntWpw7QaOWkTqljrpWhIZZThc25aRxmFXG5nUbR9H1RVp5VeBNWcTeXF1Fx-T9LQJi6OwKiEuomg6DYtg1BiohlBArCDOg7BoKgAAkLRVD9v0qowOh9MsShgEsXxAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0ncwuRGHEiKR0ZjMdQoPQ4NQkQowAECASZMTSN4ShsCGJ6TCMeSokipqhaAQtqJZsLRfsQeS6plRHBSNKwAtRvS5LzZZihSKxbMtCxaFSEewCByRWIkQRgSqAOKuPC6ekAIQAslgANJYACMPKdYDdnqwACZ1VUFSINHB+HS7Q6NTLZTqpfruII0f0tQm+ZjWIK4NwMJK9Yhi9Kc+T5Yrlaqw4nycmSwbGEb6CazZzLZDrfTBva-S73V7fY7B0HQ2ANboI3AozHIWPh3WK9qCzwy6nqOn9pnZdmtd1eml6HnIY3xaXdeWtXLcgqlTba5PNTfz6mW8a0T24wOA0Ofb+gZehOVT0lggxeA6oFgFgzi2n4ADyAByI5TjOc5IkhjijKM+6vmuRZXpu27ZCueHkqItAAF5wMep6TARG6XlKZI3lWD69iMarPvWq6Fkxzatu25pcoi3aPv2o5-kGqHhjSs7kPO-p9vGL5am+iAGluGa8eRmKMEQBRpGcXJsmejFEcxYqsVq7E1lxy43gx-GWYJn77B2Fpibo35ASGv7gZBAVwYhKFhtO8kYZCWE4XpDYWSmmlpjpZFqZi3TGeoir5i5iVljZsp2Y+Dk8SudQaW5bZfiJXY+Tafkgf6gVQU1IXIbJEWRopmHYbhaXxblTbJTuumJru-T9LQJi6OwKiEuomg6DYtg1BiohlBArCDOg7BoKgAAkLRVHt+0KowOh9MsShgEsXxAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0ncwuRGHEiKR0ZjMdQoPQ4NQkQowAECASZMTSN4ShsCGJ6TCMeSokipqhaAQtqJZsLRfsQeS6plRHBSNKwAtRvS5LzZZihSKxbMtCxaFSEewCByRWIkQRgSqAOKuPC6ekAIQAslgANJYACMPKdYDdnqwACZ1VUFSINHB+HS7Q6NTLZTqpfruII0f0tQm+ZjWIK4NwMJK9Yhi9Kc+T5Yrlaqw4nycmSwbGEb6CazZzLZDrfTBva-S73V7fY7B0HQ2ANboI3AozHIWPh3WK9qCzwy6nqOn9pnZdmtd1eml6HnIY3xaXdeWtXLcgqlTba5PNTfz6mW8a0T24wOA0Ofb+gZehOVT0lggxeA6oFgFgzi2n4ADyAByI5TjOc5IkhjijKM+6vmuRZXpu27ZCueHkqItAAF5wMep6TARG6XlKZI3lWD69iMarPvWq6Fkxzatu25pcoi3aPv2o5-kGqHhjSs7kPO-p9vGL5am+iAGluGa8eRmKMEQBRpGcXJsmejFEcxYqsVq7E1lxy43gx-GWYJn77B2Fpibo35ASGv7gZBAVwYhKFhtO8kYZCWE4XpDYWSmmlpjpZFqZi3TGeoir5i5iVljZsp2Y+Dk8SudQaW5bZfiJXY+Tafkgf6gVQU1IXIbJEWRopmHYbhaXxblTbJTuumJru-T9LQJi6OwKiEuomg6DYtg1BiohlBArCDOg7BoKgAAkLRVHt+0KowOh9MsShgEsXxAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

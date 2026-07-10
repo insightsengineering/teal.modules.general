@@ -31,6 +31,8 @@
 #' This module generates the following objects, which can be modified in place using decorators::
 #' - `histogram_plot` (`ggplot`)
 #' - `qq_plot` (`ggplot`)
+#' - `summary_table` (`DT::datatable`)
+#' - `test_table` (`DT::datatable`)
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -42,6 +44,9 @@
 #'    decorators = list(
 #'      histogram_plot = teal_transform_module(...), # applied only to `histogram_plot` output
 #'      qq_plot = teal_transform_module(...) # applied only to `qq_plot` output
+#'      summary_table = teal_transform_module(...) # applied only to `summary_table` output
+#'      test_table = teal_transform_module(...) # applied only to `test_table` output
+#'
 #'    )
 #' )
 #' ```
@@ -200,7 +205,7 @@ tm_g_distribution.default <- function(label = "Distribution Module",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  assert_decorators(decorators, names = c("histogram_plot", "qq_plot"))
+  teal::assert_decorators(decorators, names = c("histogram_plot", "qq_plot", "summary_table", "test_table"))
 
   # End of assertions
 
@@ -247,19 +252,25 @@ ui_g_distribution.default <- function(id, ...) {
         tabPanel("Histogram", teal.widgets::plot_with_settings_ui(id = ns("hist_plot"))),
         tabPanel("QQplot", teal.widgets::plot_with_settings_ui(id = ns("qq_plot")))
       ),
-      tags$h3("Statistics Table"),
-      DT::dataTableOutput(ns("summary_table")),
-      tags$h3("Tests"),
-      conditionalPanel(
-        sprintf("input['%s'].length === 0", ns("dist_tests")),
-        div(
-          id = ns("please_select_a_test"),
-          "Please select a test"
-        )
+      tags$div(
+        style = "min-height: 120px; margin-top: 1rem;",
+        tags$h3("Statistics Table"),
+        DT::dataTableOutput(ns("summary_table"))
       ),
-      conditionalPanel(
-        sprintf("input['%s'].length > 0", ns("dist_tests")),
-        DT::dataTableOutput(ns("t_stats"))
+      tags$div(
+        style = "min-height: 120px; margin-top: 1rem;",
+        tags$h3("Tests"),
+        conditionalPanel(
+          sprintf("input['%s'].length === 0", ns("dist_tests")),
+          div(
+            id = ns("please_select_a_test"),
+            "Please select a test"
+          )
+        ),
+        conditionalPanel(
+          sprintf("input['%s'].length > 0", ns("dist_tests")),
+          DT::dataTableOutput(ns("t_stats"))
+        )
       )
     ),
     encoding = tags$div(
@@ -305,9 +316,9 @@ ui_g_distribution.default <- function(id, ...) {
               inline = TRUE
             ),
             checkboxInput(ns("add_dens"), label = "Overlay Density", value = TRUE),
-            ui_decorate_teal_data(
+            teal::ui_transform_teal_data(
               ns("d_density"),
-              decorators = select_decorators(args$decorators, "histogram_plot")
+              transformators = select_decorators(args$decorators, "histogram_plot")
             )
           )
         ),
@@ -316,9 +327,9 @@ ui_g_distribution.default <- function(id, ...) {
           bslib::accordion_panel(
             "QQ Plot",
             checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
-            ui_decorate_teal_data(
+            teal::ui_transform_teal_data(
               ns("d_qq"),
-              decorators = select_decorators(args$decorators, "qq_plot")
+              transformators = select_decorators(args$decorators, "qq_plot")
             ),
             collapsed = FALSE
           )
@@ -529,7 +540,7 @@ srv_g_distribution.default <- function(id,
     )
 
     qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
+      teal.code::eval_code(data(), "library(ggplot2);library(dplyr)")
     )
 
     anl_merged_q <- reactive({
@@ -603,7 +614,7 @@ srv_g_distribution.default <- function(id,
         updateNumericInput(
           inputId = "dist_param2",
           label = params_names[2],
-          value = restoreInput(ns("dist_param1"), params_vals[2])
+          value = restoreInput(ns("dist_param2"), params_vals[2])
         )
       },
       ignoreInit = TRUE
@@ -669,7 +680,7 @@ srv_g_distribution.default <- function(id,
             "Group by variable must be `factor`, `character`, or `integer`"
           )
         )
-        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
+        qenv <- teal.code::eval_code(qenv, "library(forcats)")
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -687,7 +698,7 @@ srv_g_distribution.default <- function(id,
           )
         )
 
-        qenv <- teal.code::eval_code(qenv, 'library("forcats")') # nolint quotes
+        qenv <- teal.code::eval_code(qenv, "library(forcats)")
         qenv <- teal.code::eval_code(
           qenv,
           substitute(
@@ -807,7 +818,6 @@ srv_g_distribution.default <- function(id,
         qenv <- common_q()
 
         m_type <- if (main_type_var == "Density") "density" else "count"
-
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
             expr = ggplot2::ggplot(ANL, ggplot2::aes(dist_var_name)) +
@@ -897,7 +907,7 @@ srv_g_distribution.default <- function(id,
         }
 
         if (length(t_dist) != 0 && main_type_var == "Density" && length(g_var) == 0 && length(s_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, 'library("ggpp")') # nolint quotes
+          qenv <- teal.code::eval_code(qenv, "library(ggpp)")
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -998,17 +1008,17 @@ srv_g_distribution.default <- function(id,
 
         plot_call <- if (length(s_var) == 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot2::ggplot(ANL, ggplot2::aes_string(sample = dist_var)),
+            expr = ggplot2::ggplot(ANL, ggplot2::aes(sample = .data[[dist_var]])),
             env = list(dist_var = dist_var)
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
-            expr = ggplot2::ggplot(ANL, ggplot2::aes_string(sample = dist_var, color = s_var)),
+            expr = ggplot2::ggplot(ANL, ggplot2::aes(sample = .data[[dist_var]], color = .data[[s_var]])),
             env = list(dist_var = dist_var, s_var = s_var)
           )
         } else if (length(s_var) == 0 && length(g_var) != 0) {
           substitute(
-            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes_string(sample = dist_var)) +
+            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes(sample = .data[[dist_var]])) +
               ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               dist_var = dist_var,
@@ -1019,7 +1029,10 @@ srv_g_distribution.default <- function(id,
           )
         } else {
           substitute(
-            expr = ggplot2::ggplot(ANL[ANL[[g_var]] != "NA", ], ggplot2::aes_string(sample = dist_var, color = s_var)) +
+            expr = ggplot2::ggplot(
+              ANL[ANL[[g_var]] != "NA", ],
+              ggplot2::aes(sample = .data[[dist_var]], color = .data[[s_var]])
+            ) +
               ggplot2::facet_wrap(~g_var_name, ncol = 1, scales = scales_raw),
             env = list(
               dist_var = dist_var,
@@ -1043,7 +1056,7 @@ srv_g_distribution.default <- function(id,
         )
 
         if (length(t_dist) != 0 && length(g_var) == 0 && length(s_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, 'library("ggpp")') # nolint quotes
+          qenv <- teal.code::eval_code(qenv, "library(ggpp)")
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -1239,7 +1252,7 @@ srv_g_distribution.default <- function(id,
         qenv <- common_q()
 
         if (length(s_var) == 0 && length(g_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, 'library("generics")') # nolint quotes
+          qenv <- teal.code::eval_code(qenv, "library(generics)")
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -1253,7 +1266,7 @@ srv_g_distribution.default <- function(id,
             )
           )
         } else {
-          qenv <- teal.code::eval_code(qenv, 'library("tidyr")') # nolint quotes
+          qenv <- teal.code::eval_code(qenv, "library(tidyr)")
           qenv <- teal.code::eval_code(
             qenv,
             substitute(
@@ -1315,31 +1328,31 @@ srv_g_distribution.default <- function(id,
       }
     })
 
-    decorated_output_dist_q <- srv_decorate_teal_data(
+    decorated_output_dist_q <- teal::srv_transform_teal_data(
       "d_density",
       data = output_dist_q,
-      decorators = select_decorators(decorators, "histogram_plot"),
+      transformators = select_decorators(decorators, "histogram_plot"),
       expr = quote(histogram_plot)
     )
 
-    decorated_output_qq_q <- srv_decorate_teal_data(
+    decorated_output_qq_q <- teal::srv_transform_teal_data(
       "d_qq",
       data = output_qq_q,
-      decorators = select_decorators(decorators, "qq_plot"),
+      transformators = select_decorators(decorators, "qq_plot"),
       expr = quote(qq_plot)
     )
 
-    decorated_output_summary_q <- srv_decorate_teal_data(
+    decorated_output_summary_q <- teal::srv_transform_teal_data(
       "d_summary",
       data = output_summary_q,
-      decorators = select_decorators(decorators, "summary_table"),
+      transformators = select_decorators(decorators, "summary_table"),
       expr = quote(summary_table)
     )
 
-    decorated_output_test_q <- srv_decorate_teal_data(
+    decorated_output_test_q <- teal::srv_transform_teal_data(
       "d_test",
       data = output_test_q,
-      decorators = select_decorators(decorators, "test_table"),
+      transformators = select_decorators(decorators, "test_table"),
       expr = quote(test_table)
     )
 
@@ -1395,7 +1408,7 @@ srv_g_distribution.default <- function(id,
         QQplot = decorated_output_qq_dims_q()
       )
       withCallingHandlers(
-        c(out_q, output_summary_q(), test_q_out),
+        c(out_q, decorated_output_summary_q(), test_q_out),
         warning = function(w) {
           if (grepl("Restoring original content and adding only", conditionMessage(w))) {
             invokeRestart("muffleWarning")

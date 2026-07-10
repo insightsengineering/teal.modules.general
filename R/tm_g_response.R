@@ -237,7 +237,7 @@ tm_g_response.default <- function(label = "Response Plot",
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
 
-  assert_decorators(decorators, "plot")
+  teal::assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -319,7 +319,7 @@ ui_g_response.default <- function(id, ...) {
         selected = ifelse(args$freq, "frequency", "density"),
         justified = TRUE
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
@@ -404,7 +404,7 @@ srv_g_response.default <- function(id,
     )
 
     qenv <- reactive(
-      teal.code::eval_code(data(), 'library("ggplot2");library("dplyr")') # nolint quotes
+      teal.code::eval_code(data(), "library(ggplot2);library(dplyr)")
     )
 
     anl_merged_q <- reactive({
@@ -537,7 +537,7 @@ srv_g_response.default <- function(id,
             resp_cl = resp_cl,
             hjust_value = if (swap_axes) "left" else "middle",
             vjust_value = if (swap_axes) "middle" else -1,
-            position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)), # nolint: line_length.
+            position_anl2_value = if (!freq) quote(position_fill(0.5)) else quote(position_stack(0.5)), # nolint: line_length_linter.
             anl3_y = if (!freq) 1.1 else as.name("ns"),
             position_anl3_value = if (!freq) "fill" else "stack"
           )
@@ -590,10 +590,10 @@ srv_g_response.default <- function(id,
       teal.code::eval_code(qenv, plot_call)
     })
 
-    decorated_output_plot_q <- srv_decorate_teal_data(
+    decorated_output_plot_q <- teal::srv_transform_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = quote(plot)
     )
 

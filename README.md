@@ -69,10 +69,3 @@ If you encounter a bug or have a feature request, please file an issue. For ques
 ## Acknowledgment
 
 This package is a result of a joint efforts by many developers and stakeholders. We would like to thank everyone who contributed so far!
-
-[![Stargazers repo roster for @insightsengineering/teal.modules.general](https://reporoster.com/stars/insightsengineering/teal.modules.general)](https://github.com/insightsengineering/teal.modules.general/stargazers)
-[![Forkers repo roster for @insightsengineering/teal.modules.general](https://reporoster.com/forks/insightsengineering/teal.modules.general)](https://github.com/insightsengineering/teal.modules.general/network/members)
-
-## Stargazers over time
-
-[![Stargazers over time](https://starchart.cc/insightsengineering/teal.modules.general.svg)](https://starchart.cc/insightsengineering/teal.modules.general)

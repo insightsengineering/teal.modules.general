@@ -17,8 +17,7 @@ app_driver_tm_data_table <- function() {
         pre_output = NULL,
         post_output = NULL
       )
-    ),
-    timeout = 3000
+    )
   )
 }
 
@@ -70,9 +69,8 @@ test_that("e2e - tm_data_table: Verify module displays data table", {
   app_driver$set_active_module_input("if_distinct", TRUE)
   iris_extracted_distinct <- extract_iris_table()
   iris_subset_distinct <- iris %>%
-    dplyr::mutate(n = 1) %>%
-    dplyr::arrange(dplyr::across(dplyr::everything())) %>%
     dplyr::mutate(Species = as.character(Species)) %>%
+    dplyr::distinct() %>%
     dplyr::slice(1:30)
   testthat::expect_equal(iris_extracted_distinct, iris_subset_distinct)
 

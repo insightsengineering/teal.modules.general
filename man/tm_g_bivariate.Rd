@@ -6,9 +6,9 @@
 \usage{
 tm_g_bivariate(
   label = "Bivariate Plots",
-  x = teal.transform::picks(teal.transform::datasets(), teal.transform::variables(choices
-    = is.numeric | teal.transform::is_categorical(min.len = 2, max.len = 10), selected =
-    1L), teal.transform::values()),
+  x = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(choices =
+    is.numeric | teal.picks::is_categorical(min.len = 2, max.len = 10), selected = 1L),
+    teal.picks::values()),
   y,
   row_facet,
   col_facet,
@@ -36,17 +36,17 @@ tm_g_bivariate(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{x}{(\code{picks}) Variable specification for the x-axis. Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.
+\item{x}{(\code{picks}) Variable specification for the x-axis. Created using \code{\link[teal.picks:picks]{teal.picks::picks()}}.
 Can be numeric, factor or character. No empty selections are allowed.}
 
-\item{y}{(\code{picks}) Variable specification for the y-axis. Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.
+\item{y}{(\code{picks}) Variable specification for the y-axis. Created using \code{\link[teal.picks:picks]{teal.picks::picks()}}.
 Can be numeric, factor or character.}
 
 \item{row_facet}{(\code{picks}) optional, specification of the data variable(s) to use for faceting rows.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.}
+Created using \code{\link[teal.picks:picks]{teal.picks::picks()}}.}
 
 \item{col_facet}{(\code{picks}) optional, specification of the data variable(s) to use for faceting columns.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.}
+Created using \code{\link[teal.picks:picks]{teal.picks::picks()}}.}
 
 \item{facet}{(\code{logical}) optional, specifies whether the facet encodings \code{ui} elements are toggled
 on and shown to the user by default. Defaults to \code{TRUE} if either \code{row_facet} or \code{column_facet}
@@ -54,15 +54,15 @@ are supplied.}
 
 \item{color}{(\code{picks}) optional, specification of the data variable(s) selected for the outline color
 inside the coloring settings. It will be applied when \code{color_settings} is set to \code{TRUE}.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.}
+Created using \code{\link[teal.picks:picks]{teal.picks::picks()}}.}
 
 \item{fill}{(\code{picks}) optional, specification of the data variable(s) selected for the fill color
 inside the coloring settings. It will be applied when \code{color_settings} is set to \code{TRUE}.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.}
+Created using \code{\link[teal.picks:picks]{teal.picks::picks()}}.}
 
 \item{size}{(\code{picks}) optional, specification of the data variable(s) selected for the size of
 \code{geom_point} plots inside the coloring settings. It will be applied when \code{color_settings} is set to \code{TRUE}.
-Created using \code{\link[teal.transform:picks]{teal.transform::picks()}}.}
+Created using \code{\link[teal.picks:picks]{teal.picks::picks()}}.}
 
 \item{use_density}{(\code{logical}) optional, indicates whether to plot density (\code{TRUE}) or frequency (\code{FALSE}).
 Defaults to frequency (\code{FALSE}).}
@@ -151,6 +151,22 @@ To learn more please refer to the vignette
 \code{vignette("transform-module-output", package = "teal")} or the \code{\link[teal:teal_transform_module]{teal::teal_transform_module()}} documentation.
 }
 
+\section{Reporting}{
+
+
+
+This module returns an object of class \code{teal_module}, that contains a \code{server} function.
+Since the server function returns a \code{teal_report} object, this makes this module reportable, which means that
+the reporting functionality will be turned on automatically by the \code{teal} framework.
+
+For more information on reporting in \code{teal}, see the vignettes:
+\itemize{
+\item \code{vignette("reportable-shiny-application", package = "teal.reporter")}
+\item \code{vignette("adding-support-for-reporting-to-custom-modules", package = "teal")}
+}
+
+}
+
 \examples{
 # general data example
 data <- teal_data()
@@ -163,21 +179,21 @@ app <- init(
   data = data,
   modules = tm_g_bivariate(
     label = "Bivariate Plots",
-    x = teal.transform::picks(
+    x = teal.picks::picks(
       datasets("CO2"),
-      teal.transform::variables(selected = "conc")
+      teal.picks::variables(selected = "conc")
     ),
-    y = teal.transform::picks(
+    y = teal.picks::picks(
       datasets("CO2"),
-      teal.transform::variables(selected = "uptake")
+      teal.picks::variables(selected = "uptake")
     ),
-    row_facet = teal.transform::picks(
+    row_facet = teal.picks::picks(
       datasets("CO2"),
-      teal.transform::variables(selected = "Type")
+      teal.picks::variables(selected = "Type")
     ),
-    col_facet = teal.transform::picks(
+    col_facet = teal.picks::picks(
       datasets("CO2"),
-      teal.transform::variables(selected = "Treatment")
+      teal.picks::variables(selected = "Treatment")
     )
   )
 )
@@ -197,21 +213,21 @@ app <- init(
   data = data,
   modules = tm_g_bivariate(
     label = "Bivariate Plots",
-    x = teal.transform::picks(
+    x = teal.picks::picks(
       datasets("ADSL"),
-      teal.transform::variables(selected = "AGE")
+      teal.picks::variables(selected = "AGE")
     ),
-    y = teal.transform::picks(
+    y = teal.picks::picks(
       datasets("ADSL"),
-      teal.transform::variables(selected = "SEX")
+      teal.picks::variables(selected = "SEX")
     ),
-    row_facet = teal.transform::picks(
+    row_facet = teal.picks::picks(
       datasets("ADSL"),
-      teal.transform::variables(selected = "ARM")
+      teal.picks::variables(selected = "ARM")
     ),
-    col_facet = teal.transform::picks(
+    col_facet = teal.picks::picks(
       datasets("ADSL"),
-      teal.transform::variables(selected = "COUNTRY")
+      teal.picks::variables(selected = "COUNTRY")
     )
   )
 )
@@ -223,13 +239,13 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHH+GRgmzPDs-QNdAL5dSmiowyp57BUjsQC8m1C4G3xCIqK6O6QwiRKJ9NostIFw692VutRQ9HB+OwpgAEK3jHu5F0AAV2qRRD99s9KqFTroEhhSMwIKITB0YIhEKhaAQANaiJ4vF4pURwCHrMDTH5yaHEyqI5FQVHoxiYxBaO7vY7sMkiDRwfjwn7ECw0jaVWkS3SseGMlFojFYnH4wnSyqk8lqqmDGl0+ny5mKtlYzmA7liXmfOACoXfMCCVBBPFwcUw3RS92MIjZRImdTkuVwbhIhWs9kqglE+maik-algT30hHBnhMllKjlc+g8vk28h23Q-OysVCuxPSpMvNp+gOkIMh9PGiO4qPq3ZkuM6gZ69uGjMmrPmnOWvO24VgOzVQLwMhu4ldSVKLq0Ey6dgqcjMSw6Gy2crPUSFCCsACC6HYSwAJPVSteyYwdJ0lLMlGBZgBdIA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHH+GRgmzPDs-QNdAL5dSmiowyp57BUjsQC8m1C4G3xCIqK6O6QwiRKJ9NostIFw692VutRQ9HB+OwpgAEK3jHu5F0AAV2qRRD99s9KqFTroEhhSMwIKITB0YIhEKhaAQANaiJ4vF4pURwCHrMDTH5yaHEyqI5FQVHoxiYxBaO7vY7sMkiDRwfjwn7ECw0jaVWkS3SseGMlFojFYnH4wnSyqk8lqqmDGl0+ny5mKtlYzmA7liXmfOACoXfMCCVBBPFwcUw3RS92MIjZRImdTkuVwbhIhWs9kqglE+maik-algT30hHBnhMllKjlc+g8vk28h23Q-OysVCuxPSpMvNp+gOkIMh9PGiO4qPq3ZkuM6gZ69uGjMmrPmnOWvO24VgOzVQLwMhu4ldSVKLq0Ey6dgqcjMSw6Gy2crPUSFCCsACC6HYSwAJPVSteyYwdJ0lLMlGBZgBdIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHH+GRgmzPDs-QNdAL5dSmiowyp57BUjsQC8m1C4G3xCIqK6O6QwiRKJ9NostIFw692VutRQ9HB+OwpgAEK3jHu5F0AAV2qRRD99s9KqFTroEhhULQCABrUSIRDItGiJ4vF4pURwCHrMDTH5yaH4yqI7HozFaO7vY7sIkiDRwfjwn7ECwUjaVSkC3SseG0lH0rES3HCyqE4kysmDClU6ninEMpn0FlsuAcrnfMCCVBBVFwfkw3RCy2MIjZRImdTEsVwbhI6WYukyy1yjJEkk-clga3UhGunhezWA5liVmfPXkA26H52Vioc3B4Uhl5tB1O0gut2RqU4vHU+UBpUDFWysNFj2IRnR7Wx3X67lgOzVQLwMgW-FdQVKLq0Ey6dgqcjMSw6Gy2crPUSFCCsACC6HYSwAJPVStuiYwdJ0lLMlGBZgBdIA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHH+GRgmzPDs-QNdAL5dSmiowyp57BUjsQC8m1C4G3xCIqK6O6QwiRKJ9NostIFw692VutRQ9HB+OwpgAEK3jHu5F0AAV2qRRD99s9KqFTroEhhULQCABrUSIRDItGiJ4vF4pURwCHrMDTH5yaH4yqI7HozFaO7vY7sIkiDRwfjwn7ECwUjaVSkC3SseG0lH0rES3HCyqE4kysmDClU6ninEMpn0FlsuAcrnfMCCVBBVFwfkw3RCy2MIjZRImdTEsVwbhI6WYukyy1yjJEkk-clga3UhGunhezWA5liVmfPXkA26H52Vioc3B4Uhl5tB1O0gut2RqU4vHU+UBpUDFWysNFj2IRnR7Wx3X67lgOzVQLwMgW-FdQVKLq0Ey6dgqcjMSw6Gy2crPUSFCCsACC6HYSwAJPVStuiYwdJ0lLMlGBZgBdIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIZMYGkJGl6NoWLQwnBgQM6rpqFB6HBqEiFGAAEKYxjY8i6AAKPVIogpMPxdSiSKmpGYEFEJl6MFmqFoBC2+xBBKhUFEcBZwLAC1GFLk7OldR5fIFQtmWixxIR7DlIg0cH45KVAHFXGB+tK1VLdKxuXBuBheVB+YLGMLEKLxZKOQTMnKFRTlar1RqtV6db69Qb6EaTXAzRbIRSAs4ABqqp2O4OMIgFNJnAjy13uz3e3X+sUSvEamVhyVKkYqu3R6Wx2sJxD62mGsTG0lp8gZ3QRrAAWXzwcL0u6ZfUlchvfjfoDjaddVD8rbka7u8mbp4Nc3iaHyZHqfTlq8AHlHAA5BwATXnDpB-X6tBMujsCo5DMJYOg2LYNT4qIZQQKwgzoOwaCoAAJC0VTIShcqMDofTLEoYBLF8QA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIZMYGkJGl6NoWLQwnBgQM6rpqFB6HBqEiFGAAEKYxjY8i6AAKPVIogpMPxdSiSKmpGYEFEJl6MFmqFoBC2+xBBKhUFEcBZwLAC1GFLk7OldR5fIFQtmWixxIR7DlIg0cH45KVAHFXGB+tK1VLdKxuXBuBheVB+YLGMLEKLxZKOQTMnKFRTlar1RqtV6db69Qb6EaTXAzRbIRSAs4ABqqp2O4OMIgFNJnAjy13uz3e3X+sUSvEamVhyVKkYqu3R6Wx2sJxD62mGsTG0lp8gZ3QRrAAWXzwcL0u6ZfUlchvfjfoDjaddVD8rbka7u8mbp4Nc3iaHyZHqfTlq8AHlHAA5BwATXnDpB-X6tBMujsCo5DMJYOg2LYNT4qIZQQKwgzoOwaCoAAJC0VTIShcqMDofTLEoYBLF8QA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIZMYGkJGl6NoWLQwnBgQM6rpqFB6HBqEiFGAAEKYxjY8i6AAKPVIogpMPxdSiSKmqFoBC2olmvP5+xBBKhUFEcBZwLAC1GFLk7PFdR5fIFsy0WOJCPYUpEGjg-HJcoA4q4wP1xUqxbpWNy4NwMMKNYgXaKOQTMlKZRT5YrlSq1SLNdr6Lr9XBDcbIRSAs4ABqK202z2MIgFNJnAjSh1O91C9UelUSn2iuUjBWWwPi4OurW0nViPWkqPkGO6P1YACyyc9qfF3Sz6lzkLrgrdRbxJe90vL-urttVjp4BcQDex4ebkejJq8AHlHAA5BwATT71pB-X6tBMunYKnIzEsOhsthq+NEZQgrEG6HYaCoAAJC0VSAUBUqMDofTLEoYBLF8QA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIZMYGkJGl6NoWLQwnBgQM6rpqFB6HBqEiFGAAEKYxjY8i6AAKPVIogpMPxdSiSKmqFoBC2olmvP5+xBBKhUFEcBZwLAC1GFLk7PFdR5fIFsy0WOJCPYUpEGjg-HJcoA4q4wP1xUqxbpWNy4NwMMKNYgXaKOQTMlKZRT5YrlSq1SLNdr6Lr9XBDcbIRSAs4ABqK202z2MIgFNJnAjSh1O91C9UelUSn2iuUjBWWwPi4OurW0nViPWkqPkGO6P1YACyyc9qfF3Sz6lzkLrgrdRbxJe90vL-urttVjp4BcQDex4ebkejJq8AHlHAA5BwATT71pB-X6tBMunYKnIzEsOhsthq+NEZQgrEG6HYaCoAAJC0VSAUBUqMDofTLEoYBLF8QA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

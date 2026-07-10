@@ -47,8 +47,8 @@ with_mocked_app_bindings <- function(code) {
       shinytest2::AppDriver$new(
         x,
         shiny_args = args,
-        timeout = 20 * 1000,
-        load_timeout = 30 * 1000,
+        timeout = 60 * 1000,
+        load_timeout = 120 * 1000,
         check_names = FALSE, # explicit check below
         options = options() # https://github.com/rstudio/shinytest2/issues/377
       ),

@@ -143,8 +143,8 @@ tm_g_association <- function(label = "Association",
                              show_association = TRUE,
                              plot_height = c(600, 400, 5000),
                              plot_width = NULL,
-                             distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length.
-                             association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint: line_length.
+                             distribution_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint line_length_linter.
+                             association_theme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"), # nolint line_length_linter.
                              pre_output = NULL,
                              post_output = NULL,
                              ggplot2_args = teal.widgets::ggplot2_args(),
@@ -203,7 +203,7 @@ tm_g_association.default <- function(label = "Association",
   checkmate::assert_list(ggplot2_args, types = "ggplot2_args")
   checkmate::assert_subset(names(ggplot2_args), c("default", plot_choices))
 
-  assert_decorators(decorators, "plot")
+  teal::assert_decorators(decorators, "plot")
   # End of assertions
 
   # Make UI args
@@ -272,7 +272,7 @@ ui_tm_g_association.default <- function(id, ...) {
         "Log transformed",
         value = FALSE
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(args$decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(args$decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
@@ -354,7 +354,7 @@ srv_tm_g_association.default <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's output(s)")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")') # nolint: quotes
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr)")
     })
     anl_merged_q <- reactive({
       req(anl_merged_input())
@@ -515,12 +515,12 @@ srv_tm_g_association.default <- function(id,
           substitute(
             expr = {
               plots <- plot_calls
-              plot <- gridExtra::arrangeGrob(plots[[1]], plots[[2]], ncol = 1)
+              plot <- gridExtra::arrangeGrob(grobs = plots, ncol = 1)
             },
             env = list(
               plot_calls = do.call(
                 "call",
-                c(list("list", ref_call), var_calls),
+                c(list("list", ref_call), unname(var_calls)),
                 quote = TRUE
               )
             )
@@ -528,10 +528,10 @@ srv_tm_g_association.default <- function(id,
         )
     })
 
-    decorated_output_grob_q <- srv_decorate_teal_data(
+    decorated_output_grob_q <- teal::srv_transform_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = quote({
         grid::grid.newpage()
         grid::grid.draw(plot)

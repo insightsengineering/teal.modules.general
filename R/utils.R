@@ -238,6 +238,8 @@ variable_type_icons <- function(var_type) {
   ))
 }
 
+#' JavaScript expression to check if a tab is active
+#'
 #' @param id (`character(1)`) the id of the tab panel with tabs.
 #' @param name (`character(1)`) the name of the tab.
 #' @return JavaScript expression to be used in `shiny::conditionalPanel()` to determine
@@ -264,108 +266,8 @@ assert_single_selection <- function(x,
   invisible(TRUE)
 }
 
-#' Wrappers around `srv_transform_teal_data` that allows to decorate the data
-#' @inheritParams teal::srv_transform_teal_data
-#' @inheritParams teal.reporter::`eval_code,teal_report-method`
-#' @param expr (`reactive`) with expression to evaluate on the output of the
-#' decoration. It must be compatible with `code` argument of [teal.code::eval_code()].
-#' Default is `NULL` which won't evaluate any appending code.
-#' @details
-#' `srv_decorate_teal_data` is a wrapper around `srv_transform_teal_data` that
-#' allows to decorate the data with additional expressions.
-#' When original `teal_data` object is in error state, it will show that error
-#' first.
-#'
-#' @keywords internal
-srv_decorate_teal_data <- function(id, data, decorators, expr) {
-  checkmate::assert_class(data, classes = "reactive")
-  checkmate::assert_list(decorators, "teal_transform_module")
-
-  no_expr <- missing(expr)
-
-  moduleServer(id, function(input, output, session) {
-    decorated_output <- srv_transform_teal_data("inner", data = data, transformators = decorators)
-
-    expr_r <- if (is.reactive(expr)) expr else reactive(expr)
-
-    reactive({
-      req(decorated_output())
-      if (no_expr) {
-        decorated_output()
-      } else {
-        teal.code::eval_code(decorated_output(), expr_r())
-      }
-    })
-  })
-}
-
-#' @rdname srv_decorate_teal_data
-#' @details
-#' `ui_decorate_teal_data` is a wrapper around `ui_transform_teal_data`.
-#' @keywords internal
-ui_decorate_teal_data <- function(id, decorators, ...) {
-  teal::ui_transform_teal_data(NS(id, "inner"), transformators = decorators, ...)
-}
-
-#' Internal function to check if decorators is a valid object
 #' @noRd
-check_decorators <- function(x, names = NULL) { # nolint: object_name.
-
-  check_message <- checkmate::check_list(x, names = "named")
-
-  if (!is.null(names)) {
-    if (isTRUE(check_message)) {
-      if (length(names(x)) != length(unique(names(x)))) {
-        check_message <- sprintf(
-          "The `decorators` must contain unique names from these names: %s.",
-          paste(names, collapse = ", ")
-        )
-      }
-    } else {
-      check_message <- sprintf(
-        "The `decorators` must be a named list from these names: %s.",
-        paste(names, collapse = ", ")
-      )
-    }
-  }
-
-  if (!isTRUE(check_message)) {
-    return(check_message)
-  }
-
-  valid_elements <- vapply(
-    x,
-    checkmate::test_class,
-    classes = "teal_transform_module",
-    FUN.VALUE = logical(1L)
-  )
-
-  if (all(valid_elements)) {
-    return(TRUE)
-  }
-
-  "Make sure that the named list contains 'teal_transform_module' objects created using `teal_transform_module()`."
-}
-#' Internal assertion on decorators
-#' @noRd
-assert_decorators <- checkmate::makeAssertionFunction(check_decorators)
-
-#' Subset decorators based on the scope
-#'
-#' @param scope (`character`) a character vector of decorator names to include.
-#' @param decorators (named `list`) of list decorators to subset.
-#'
-#' @return Subsetted list with all decorators to include.
-#' It can be an empty list if none of the scope exists in `decorators` argument.
-#' @keywords internal
-select_decorators <- function(decorators, scope) {
-  checkmate::assert_character(scope, null.ok = TRUE)
-  if (scope %in% names(decorators)) {
-    decorators[scope]
-  } else {
-    list()
-  }
-}
+select_decorators <- utils::getFromNamespace("select_decorators", "teal")
 
 #' Set the attributes of the last chunk outputs
 #' @param teal_card (`teal_card`) object to modify.
@@ -393,7 +295,7 @@ set_chunk_attrs <- function(teal_card,
     return(teal_card)
   }
 
-  for (ix in seq_len(length(teal_card))) {
+  for (ix in seq_along(teal_card)) {
     if (ix > n) {
       break
     }
@@ -462,4 +364,13 @@ set_chunk_dims <- function(pws, q_r, inner_classes = NULL) {
     )
     q
   })
+}
+
+validate_qenv <- function(qenv) {
+  validate(
+    need(
+      inherits(qenv, "qenv"),
+      sub("when evaluating qenv", "when evaluating", qenv$message, fixed = TRUE)
+    )
+  )
 }

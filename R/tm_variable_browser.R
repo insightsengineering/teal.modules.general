@@ -765,7 +765,7 @@ plot_var_summary <- function(qenv,
             ggplot2::geom_histogram(binwidth = binwidth) +
             ggplot2::scale_y_continuous(
               sec.axis = ggplot2::sec_axis(
-                trans = ~ . / nrow(ANL),
+                transform = ~ . / nrow(ANL),
                 labels = scales::percent,
                 name = "proportion (in %)"
               )
@@ -846,7 +846,7 @@ plot_var_summary <- function(qenv,
     module_plot = dev_ggplot2_args
   )
 
-  if (is.ggplot(qenv_plot$plot)) {
+  if (inherits(qenv_plot$plot, "ggplot")) {
     qenv_plot <- within(qenv_plot,
       {
         plot <- plot +
@@ -874,7 +874,7 @@ get_plotted_data <- function(input, plot_var, data) {
       teal.reporter::teal_card(obj),
       teal.reporter::teal_card("## Module's output(s)")
     )
-  teal.code::eval_code(obj, "library(ggplot2)") |>
+  teal.code::eval_code(obj, "library(ggplot2)\nlibrary(dplyr)") |>
     within(
       {
         ANL <- dplyr::select(dataset_name, varname)

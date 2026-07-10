@@ -114,14 +114,15 @@ tm_data_table <- function(label = "Data Table",
   if (!missing(datasets_selected)) {
     lifecycle::deprecate_stop(
       when = "0.4.0",
-      what = "tm_data_table(datasets_selected)",
+      what = "teal.modules.general::tm_data_table(datasets_selected)",
       with = "tm_data_table(datanames)",
       details = 'Use tm_data_table(datanames = "all") to keep the previous behavior and avoid this warning.',
     )
   }
   checkmate::assert_character(datanames, min.len = 0, min.chars = 1, null.ok = TRUE)
   checkmate::assert(
-    checkmate::check_list(dt_args, len = 0),
+    combine = "and",
+    checkmate::check_list(dt_args, min.len = 0),
     checkmate::check_subset(names(dt_args), choices = names(formals(DT::datatable)))
   )
   checkmate::assert_list(dt_options, names = "named")
@@ -318,7 +319,7 @@ srv_dataset_table <- function(id,
       teal::validate_has_data(df, min_nrow = 1L, msg = paste("data", dataname, "is empty"))
       qenv <- teal.code::eval_code(
         data(),
-        'library("dplyr");library("DT")' # nolint: quotes.
+        "library(dplyr);library(DT)"
       )
       teal.code::eval_code(
         qenv,
@@ -334,7 +335,7 @@ srv_dataset_table <- function(id,
           expr = {
             variables <- vars
             dataframe_selected <- if (if_distinct) {
-              dplyr::count(dataname, dplyr::across(dplyr::all_of(variables)))
+              dplyr::distinct(dataname[variables])
             } else {
               dataname[variables]
             }
@@ -354,5 +355,6 @@ srv_dataset_table <- function(id,
       teal::validate_inputs(iv)
       req(data_table_data())[["table"]]
     })
+    data_table_data
   })
 }

@@ -190,7 +190,7 @@ srv_front_page <- function(id, data, tables) {
         )
       })
 
-      output$metadata_table <- renderDataTable({
+      output$metadata_table <- DT::renderDT({
         validate(need(nrow(metadata_data_frame()) > 0, "The data has no associated metadata"))
         metadata_data_frame()
       })
