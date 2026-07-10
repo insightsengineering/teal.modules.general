@@ -144,30 +144,30 @@ ui_a_pca.picks <- function(id,
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Elbow plot'", ns("plot_type")),
-              ui_decorate_teal_data(
+              teal::ui_transform_teal_data(
                 ns("d_elbow_plot"),
-                decorators = select_decorators(decorators, "elbow_plot")
+                transformators = select_decorators(decorators, "elbow_plot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Circle plot'", ns("plot_type")),
-              ui_decorate_teal_data(
+              teal::ui_transform_teal_data(
                 ns("d_circle_plot"),
-                decorators = select_decorators(decorators, "circle_plot")
+                transformators = select_decorators(decorators, "circle_plot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Biplot'", ns("plot_type")),
-              ui_decorate_teal_data(
+              teal::ui_transform_teal_data(
                 ns("d_biplot"),
-                decorators = select_decorators(decorators, "biplot")
+                transformators = select_decorators(decorators, "biplot")
               )
             ),
             conditionalPanel(
               condition = sprintf("input['%s'] == 'Eigenvector plot'", ns("plot_type")),
-              ui_decorate_teal_data(
+              teal::ui_transform_teal_data(
                 ns("d_eigenvector_plot"),
-                decorators = select_decorators(decorators, "eigenvector_plot")
+                transformators = select_decorators(decorators, "eigenvector_plot")
               )
             )
           ),
@@ -851,10 +851,10 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
 
     decorated_q <- mapply(
       function(obj_name, q) {
-        srv_decorate_teal_data(
+        teal::srv_transform_teal_data(
           id = sprintf("d_%s", obj_name),
           data = q,
-          decorators = select_decorators(decorators, obj_name),
+          transformators = select_decorators(decorators, obj_name),
           expr = reactive({
             substitute(.plot, env = list(.plot = as.name(obj_name)))
           })

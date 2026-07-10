@@ -251,7 +251,7 @@ ui_g_bivariate.picks <- function(id,
         )
       ),
       tags$div(
-        ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot"))
+        teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "plot"))
       )
     ),
     pre_output = pre_output,
@@ -443,10 +443,10 @@ srv_g_bivariate.picks <- function(id,
       teal.code::eval_code(obj, substitute(expr = plot <- cl, env = list(cl = cl)))
     })
 
-    decorated_output_q_facets <- srv_decorate_teal_data(
+    decorated_output_q_facets <- teal::srv_transform_teal_data(
       "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = reactive({
         anl <- merged$data()[["anl"]]
         row_facet_name <- merged$variables()$row_facet

@@ -108,7 +108,7 @@ ui_g_association.picks <- function(id,
       checkboxInput(ns("association"), "Association with reference variable", value = show_association),
       checkboxInput(ns("show_dist"), "Scaled frequencies", value = FALSE),
       checkboxInput(ns("log_transformation"), "Log transformed", value = FALSE),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
@@ -334,10 +334,10 @@ srv_g_association.picks <- function(id,
       )
     })
 
-    decorated_output_grob_q <- srv_decorate_teal_data(
+    decorated_output_grob_q <- teal::srv_transform_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = quote({
         grid::grid.newpage()
         grid::grid.draw(plot)

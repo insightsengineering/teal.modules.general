@@ -73,7 +73,7 @@ ui_g_scatterplotmatrix.picks <- function(id,
         })
       ),
       tags$hr(),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
@@ -259,10 +259,10 @@ srv_g_scatterplotmatrix.picks <- function(id,
       qenv
     })
 
-    decorated_output_q <- srv_decorate_teal_data(
+    decorated_output_q <- teal::srv_transform_teal_data(
       id = "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = quote(plot)
     )
 

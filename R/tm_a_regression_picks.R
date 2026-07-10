@@ -181,7 +181,7 @@ ui_a_regression.picks <- function(id,
         ),
         teal.picks::picks_ui(id = ns("outlier"), picks = outlier)
       ),
-      ui_decorate_teal_data(ns("decorator"), decorators = select_decorators(decorators, "plot")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "plot")),
       bslib::accordion(
         open = TRUE,
         bslib::accordion_panel(
@@ -756,10 +756,10 @@ srv_a_regression.picks <- function(id,
       )
     })
 
-    decorated_output_q <- srv_decorate_teal_data(
+    decorated_output_q <- teal::srv_transform_teal_data(
       "decorator",
       data = output_q,
-      decorators = select_decorators(decorators, "plot"),
+      transformators = select_decorators(decorators, "plot"),
       expr = quote(plot)
     )
 
