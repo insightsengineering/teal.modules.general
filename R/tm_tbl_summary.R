@@ -120,7 +120,7 @@ tm_tbl_summary <- function(
         TRUE
       }
     )
-      attr(by, "label") <- "By variable"
+    attr(by, "label") <- "By variable"
   }
 
   if (inherits(include, "picks")) {
