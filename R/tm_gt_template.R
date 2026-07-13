@@ -13,20 +13,14 @@ tm_gt_template <- function(
 ) {
   dots <- rlang::dots_list(..., .named = TRUE)
 
-  # Normalize the parameters and extract data_extract_spec, choices_selected and
+  # Normalize the parameters and extract teal.picks::picks, teal.picks::values and
   #  named static arguments from the dots
-  des_index <- vapply(dots, inherits, FUN.VALUE = logical(1L), "data_extract_spec")
-  des_list_index <- vapply(
-    dots,
-    function(x) is.list(x) && all(vapply(x, inherits, logical(1), "data_extract_spec")),
-    logical(1L)
-  )
-  cs_index <- vapply(dots, inherits, FUN.VALUE = logical(1L), "choices_selected")
-  dots[des_index] <- lapply(dots[des_index], function(x) list(x))
+  picks_index <- vapply(dots, inherits, FUN.VALUE = logical(1L), "picks")
+  values_index <- vapply(dots, checkmate::test_class, FUN.VALUE = logical(1L), classes = c("pick", "values"))
 
-  opts_des <- dots[des_index | des_list_index]
-  opts_cs <- dots[cs_index]
-  opts_static <- dots[!(des_index | des_list_index | cs_index)]
+  opts_picks <- dots[picks_index]
+  opts_values <- dots[values_index]
+  opts_static <- dots[!(picks_index | values_index)]
   if (!is.null(col_label)) {
     opts_static$label <- col_label # label conflicts with teal modules argument, so we need to relabel it
   }
@@ -36,12 +30,10 @@ tm_gt_template <- function(
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   teal::assert_decorators(decorators, "table")
-  datanames <- if (length(opts_des) == 0L) {
+  datanames <- if (length(opts_picks) == 0L) {
     .dataname
-  } else {
-    c(teal.transform::get_extract_datanames(opts_des), .dataname)
   }
-  checkmate::assert_character(datanames, len = 1L, any.missing = FALSE, all.missing = FALSE)
+  checkmate::assert_string(datanames, null.ok = TRUE)
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later evaluation
   if (rlang::is_quosure(.fun)) {
     .fun_quo <- .fun
@@ -54,8 +46,8 @@ tm_gt_template <- function(
   )
 
   args <- list(
-    opts_des = opts_des,
-    opts_cs = opts_cs,
+    opts_picks = opts_picks,
+    opts_values = opts_values,
     opts_static = opts_static,
     decorators = decorators,
     .dataname = .dataname,
@@ -79,37 +71,43 @@ tm_gt_template <- function(
   module
 }
 
-ui_gt_template <- function(id, opts_des, opts_cs, pre_output, post_output, decorators, partial_ui = NULL) {
+ui_gt_template <- function(id, opts_picks, opts_values, pre_output, post_output, decorators, partial_ui = NULL) {
   ns <- NS(id)
-  checkmate::assert_multi_class(partial_ui, c("shiny.tag", "shiny.tag.list"), null.ok = TRUE)
+  checkmate::assert_function(partial_ui, null.ok = TRUE)
+  partial_ui_rendered <- if (!is.null(partial_ui)) {
+    partial_ui(id = ns("custom"), opts_picks = opts_picks, opts_values = opts_values)
+  }
+  checkmate::assert_multi_class(partial_ui_rendered, c("shiny.tag", "shiny.tag.list"), null.ok = TRUE)
 
-  des_ui <- lapply(names(opts_des), function(x_name) {
-    x <- opts_des[[x_name]]
-    teal.transform::data_extract_ui(
-      ns(x_name),
-      label = attr(x, "label", exact = TRUE) %||% attr(x[[1]], "label", exact = TRUE) %||% x_name,
-      data_extract_spec = x
+  picks_ui <- lapply(names(opts_picks), function(x_name) {
+    x <- opts_picks[[x_name]]
+    label <- attr(x, "label", exact = TRUE)
+    if (!checkmate::test_string(label)) label <- x_name
+    tags$div(
+      tags$label(label, class = "text-primary"),
+      teal.picks::picks_ui(ns(x_name), x)
     )
   })
-  cs_ui <- lapply(names(opts_cs), function(x_name) {
-    x <- opts_cs[[x_name]]
+  values_ui <- lapply(names(opts_values), function(x_name) {
+    x <- opts_values[[x_name]]
+    label <- attr(x, "label", exact = TRUE)
+    if (!checkmate::test_string(label)) label <- x_name
     teal.widgets::optionalSelectInput(
-      ns(x_name),
-      attr(x, "label", exact = TRUE) %||% x_name,
-      x$choices,
-      x$selected,
+      inputId = ns(x_name),
+      label = label,
+      choices = x$choices,
+      selected = x$selected,
       multiple = FALSE,
       fixed = x$fixed
     )
   })
 
-  encodings <- if (length(des_ui) > 0L || length(cs_ui) > 0L || !is.null(partial_ui) || length(decorators > 0L)) {
+  encodings <- if (length(picks_ui) > 0L || length(values_ui) > 0L || !is.null(partial_ui_rendered) || length(decorators > 0L)) {
     tags$div(
       tags$label("Encodings", class = "text-primary"),
-      if (length(opts_des) > 0L) teal.transform::datanames_input(opts_des),
-      tagList(!!!des_ui),
-      tagList(!!!cs_ui),
-      partial_ui,
+      tagList(!!!picks_ui),
+      tagList(!!!values_ui),
+      partial_ui_rendered,
       # Allow multiple decorators for a single object (table)
       teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "table")),
     )
@@ -125,8 +123,8 @@ ui_gt_template <- function(id, opts_des, opts_cs, pre_output, post_output, decor
 
 srv_gt_template <- function(id,
                             data,
-                            opts_des,
-                            opts_cs,
+                            opts_picks,
+                            opts_values,
                             opts_static,
                             .fun_quo,
                             .dataname,
@@ -139,34 +137,33 @@ srv_gt_template <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
-    summary_args <- if (length(opts_des) > 0L) {
-      selector_list <- teal.transform::data_extract_multiple_srv(
-        data_extract = opts_des,
-        datasets = data
+    summary_args <- if (length(opts_picks) > 0L) {
+      selectors <- teal.picks::picks_srv(
+        picks = opts_picks,
+        data = data
       )
 
       reactive({
-        sl <- req(selector_list())
-        dataset <- unique(vapply(names(sl), function(x) sl[[x]]()$dataname, character(1L)))
+        dataset <- unique(vapply(names(selectors), function(x) selectors[[x]]()$datasets$selected, character(1L)))
         validate(
           need(
             length(dataset) > 0L,
-            "Specify variables to use in tables."
+            "No table selected in the module. Please check inputs"
           ),
           need(
-            do.call(teal.transform::is_single_dataset, opts_des),
+            length(dataset) == 1L,
             "Input from multiple tables: this module doesn't accept that."
           )
         )
         rlang::list2(
           data = as.name(dataset[[1]]),
           !!!rlang::set_names(
-            sapply(names(sl), function(x_name) sl[[x_name]]()$select, simplify = FALSE),
-            names(sl)
+            sapply(names(selectors), function(x_name) selectors[[x_name]]()$variables$selected, simplify = FALSE),
+            names(selectors)
           ),
           !!!rlang::set_names(
-            sapply(names(opts_cs), function(x_name) input[[x_name]], simplify = FALSE),
-            names(opts_cs)
+            sapply(names(opts_values), function(x_name) input[[x_name]], simplify = FALSE),
+            names(opts_values)
           ),
           !!!opts_static
         )
@@ -176,8 +173,8 @@ srv_gt_template <- function(id,
         rlang::list2(
           data = as.name(.dataname),
           !!!rlang::set_names(
-            sapply(names(opts_cs), function(x_name) input[[x_name]], simplify = FALSE),
-            names(opts_cs)
+            sapply(names(opts_values), function(x_name) input[[x_name]], simplify = FALSE),
+            names(opts_values)
           ),
           !!!opts_static
         )

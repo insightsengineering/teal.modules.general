@@ -87,24 +87,49 @@ tm_tbl_roche_summary <- function(
 ) {
   message("Initializing tm_roche_summary")
 
-  if (inherits(by, "data_extract_spec")) by <- list(by)
-  if (inherits(include, "data_extract_spec")) include <- list(include)
-  checkmate::assert_list(by, types = "data_extract_spec")
-  assert_single_selection(by)
-  checkmate::assert_list(include, types = "data_extract_spec")
-
+  include_expr <- substitute(include)
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
 
-  attr(by, "label") <- "By variable"
-  attr(include, "label") <- "Include variable(s)"
+  dots <- c(
+    rlang::dots_list(..., .named = TRUE),
+    list(by = by),
+    list(include = tryCatch(include, error = function(e) include_expr))
+  )
+  include <- dots$include # Tidyselect expression that needs to be defused for assertion bellow
+  stopifnot(
+    "dataname string must be provided if teal.picks::picks is not used for other arguments." =
+      (length(dots) > 0L && any(vapply(dots, inherits, FUN.VALUE = logical(1L), "picks"))) ||
+        checkmate::test_string(dataname)
+  )
+
+  if (inherits(by, "picks")) {
+    checkmate::assert(
+      .var.name = "by",
+      if (teal.picks::is_pick_multiple(by$variables)) {
+        "Argument `by` must be a single selection (`multiple = FALSE`)."
+      } else {
+        TRUE
+      }
+    )
+    attr(by, "label") <- "By variable"
+  }
+
+
+  if (inherits(include, "picks")) {
+    attr(include, "label") <- "Include variable(s)"
+  }
 
   tm_gt_template(
     label = label,
     by = by,
     include = include,
     .fun = .fun_quo,
-    .ui = ui_tbl_roche_summary,
-    .srv = srv_tbl_roche_summary,
+    .ui = function(id, ...) {
+      ui_gt_template(id = id, partial_ui = ui_tbl_roche_summary_partial, ...)
+    },
+    .srv = function(id, data, ...) {
+      srv_gt_template(id = id, data = data, ..., partial_srv = srv_tbl_roche_summary_partial)
+    },
     ...,
     col_label = col_label,
     pre_output = pre_output,
@@ -114,27 +139,19 @@ tm_tbl_roche_summary <- function(
   )
 }
 
-ui_tbl_roche_summary <- function(id, ...) {
-  ui_gt_template(id = id, partial_ui = ui_tbl_roche_summary_partial(id, ...), ...)
-}
-
-srv_tbl_roche_summary <- function(id, data, ...) {
-  srv_gt_template(id = id, data = data, ..., partial_srv = srv_tbl_roche_summary_partial)
-}
-
 ui_tbl_roche_summary_partial <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
 
   tagList(
     radioButtons(
-      ns(NS("custom", "nonmissing")),
+      ns("nonmissing"),
       label = "Display missing counts:",
       choices = c("No" = "no", "If any" = "ifany", "Always" = "always"),
       selected = args$nonmissing
     ),
     radioButtons(
-      ns(NS("custom", "percent")),
+      ns("percent"),
       label = "Percentage based on:",
       choices = c("Column" = "column", "Row" = "row", "Cell" = "cell"),
       selected = args$percent
@@ -152,12 +169,12 @@ srv_tbl_roche_summary_partial <- function(id,
       tbl_summary_args <- req(summary_args_r()) # Arguments forwarded from the main server function (template)
       tbl_summary_args$nonmissing <- input$nonmissing # Additional argument from custom UI
       tbl_summary_args$percent <- input$percent # Additional argument from custom UI
-      tbl_summary_args
 
       # Defaults to include all variables if none selected
       if (length(tbl_summary_args$include) == 0L) {
         tbl_summary_args$include <- rlang::expr(gtsummary::everything())
       }
+      tbl_summary_args
     })
 
     validated_q <- reactive({ # Custom validation for gtsummary

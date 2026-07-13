@@ -68,7 +68,9 @@ tm_tbl_listing <- function(
     label = label,
     .fun = .fun_quo,
     .ui = ui_gt_template,
-    .srv = srv_tbl_listing,
+    .srv = function(id, data, ...) {
+      srv_gt_template(id = id, data = data, ..., partial_srv = srv_gt_template_partial)
+    },
     .dataname = dataname,
     ...,
     col_label = col_label,
@@ -77,8 +79,4 @@ tm_tbl_listing <- function(
     transformators = transformators,
     decorators = decorators
   )
-}
-
-srv_tbl_listing <- function(id, data, ...) {
-  srv_gt_template(id = id, data = data, ..., partial_srv = srv_gt_template_partial)
 }

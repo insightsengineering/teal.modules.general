@@ -98,41 +98,48 @@ tm_tbl_summary <- function(
 ) {
   message("Initializing tm_gtsummary")
 
-  include_quo <- rlang::enquo(include)
+  include_expr <- substitute(include)
+  .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
 
   dots <- c(
     rlang::dots_list(..., .named = TRUE),
     list(by = by),
-    list(include = try(include, silent = TRUE))
+    list(include = tryCatch(include, error = function(e) include_expr))
   )
-
+  include <- dots$include # Tidyselect expression that needs to be defused for assertion bellow
   stopifnot(
     "dataname string must be provided if teal.picks::picks is not used for other arguments." =
-      (
-        length(dots) > 0L &&
-          any(vapply(dots, inherits, FUN.VALUE = logical(1L), "data_extract_spec"))
-      ) || checkmate::test_string(dataname)
+      (length(dots) > 0L && any(vapply(dots, inherits, FUN.VALUE = logical(1L), "picks"))) ||
+        checkmate::test_string(dataname)
   )
 
-  if (inherits(by, "data_extract_spec")) {
-    by <- list(by)
-    assert_single_selection(by)
-  }
-  if (inherits(dots$include, "data_extract_spec")) {
-    include <- list(include)
-  } else {
-    include <- rlang::get_expr(include_quo)
+  if (inherits(by, "picks")) {
+    checkmate::assert(
+      .var.name = "by",
+      if (teal.picks::is_pick_multiple(by$variables)) {
+        "Argument `by` must be a single selection (`multiple = FALSE`)."
+      } else {
+        TRUE
+      }
+    )
+      attr(by, "label") <- "By variable"
   }
 
-  .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
+  if (inherits(include, "picks")) {
+    attr(include, "label") <- "Include variable(s)"
+  }
 
   tm_gt_template(
     label = label,
     by = by,
     include = include,
     .fun = .fun_quo,
-    .ui = ui_tbl_summary,
-    .srv = srv_tbl_summary,
+    .ui = function(id, ...) {
+      ui_gt_template(id = id, partial_ui = ui_tbl_summary_partial, ...)
+    },
+    .srv = function(id, data, ...) {
+      srv_gt_template(id = id, data = data, ..., partial_srv = srv_tbl_summary_partial)
+    },
     ...,
     .dataname = dataname,
     col_label = col_label,
@@ -143,27 +150,19 @@ tm_tbl_summary <- function(
   )
 }
 
-ui_tbl_summary <- function(id, ...) {
-  ui_gt_template(id = id, partial_ui = ui_tbl_summary_partial(id, ...), ...)
-}
-
-srv_tbl_summary <- function(id, data, ...) {
-  srv_gt_template(id = id, data = data, ..., partial_srv = srv_tbl_summary_partial)
-}
-
 ui_tbl_summary_partial <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
 
   tagList(
     radioButtons(
-      ns(NS("custom", "missing")),
+      ns("missing"),
       label = "Display missing counts:",
       choices = c("No" = "no", "If any" = "ifany", "Always" = "always"),
       selected = args$missing
     ),
     radioButtons(
-      ns(NS("custom", "percent")),
+      ns("percent"),
       label = "Percentage based on:",
       choices = c("Column" = "column", "Row" = "row", "Cell" = "cell"),
       selected = args$percent
