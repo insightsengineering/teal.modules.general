@@ -713,7 +713,7 @@ plot_var_summary <- function(qenv,
           col_label <- attr(ANL[[var]], "label")
           ANL[[var]] <- as.factor(ANL[[var]])
           attr(ANL[[var]], "label") <- col_label
-          p <- ANL %>%
+          plot <- ANL %>%
             ggplot2::ggplot(ggplot2::aes(x = var_name)) +
             ggplot2::geom_histogram(stat = "count")
         },

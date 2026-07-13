@@ -1,5 +1,7 @@
 # teal.modules.general 0.7.0.9000
 
+- Fixed missing visualization in `tm_variable_browser` when "Treat variable as factor" is enabled for a numeric variable (#996).
+
 # teal.modules.general 0.7.0
 
 ### Enhancements
