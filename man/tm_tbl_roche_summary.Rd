@@ -8,7 +8,6 @@ tm_tbl_roche_summary(
   label = "Summary table",
   by,
   include,
-  .fun = crane::tbl_roche_summary,
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -94,7 +93,7 @@ Summary table from a given dataset, using \code{crane::tbl_roche_summary}.
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{table} (\code{gtsummary} - output of \code{\link[crane:tbl_roche_summary]{crane::tbl_roche_summary()}})
+\item \code{listing} (\code{gtsummary} - output of \code{\link[crane:tbl_roche_summary]{crane::tbl_roche_summary()}})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
@@ -104,7 +103,7 @@ See code snippet below:
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_roche_summary(
    ..., # arguments for module
    decorators = list(
-     table = teal_transform_module(...) # applied to the `table` output
+     listing = teal_transform_module(...) # applied to the `listing` output
    )
 )
 }\if{html}{\out{</div>}}

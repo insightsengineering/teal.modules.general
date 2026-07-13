@@ -9,7 +9,6 @@ tm_tbl_summary(
   by = NULL,
   include = gtsummary::everything(),
   dataname = NULL,
-  .fun = gtsummary::tbl_summary,
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -95,7 +94,7 @@ Summary table from a given dataset, using \code{gtsummary}.
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{table} (\code{gtsummary} - output of \code{\link[gtsummary:tbl_summary]{gtsummary::tbl_summary()}})
+\item \code{listing} (\code{gtsummary} - output of \code{\link[gtsummary:tbl_summary]{gtsummary::tbl_summary()}})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
@@ -105,7 +104,7 @@ See code snippet below:
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_gtsummary(
    ..., # arguments for module
    decorators = list(
-     table = teal_transform_module(...) # applied to the `table` output
+     listing = teal_transform_module(...) # applied to the `listing` output
    )
 )
 }\if{html}{\out{</div>}}

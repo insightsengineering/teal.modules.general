@@ -7,7 +7,6 @@
 tm_tbl_listing(
   label = "Listing table",
   dataname = NULL,
-  .fun = crane::tbl_listing,
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -60,7 +59,7 @@ Summary table from a given dataset, using \code{gtsummary}.
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{table} (\code{gt_summary} - output of \code{\link[crane:tbl_listing]{crane::tbl_listing()}})
+\item \code{listing} (\code{gt_summary} - output of \code{\link[crane:tbl_listing]{crane::tbl_listing()}})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
@@ -70,7 +69,7 @@ See code snippet below:
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_tbl_listing(
    ..., # arguments for module
    decorators = list(
-     table = teal_transform_module(...) # applied to the `table` output
+     listing = teal_transform_module(...) # applied to the `listing` output
    )
 )
 }\if{html}{\out{</div>}}
