@@ -20,10 +20,19 @@ tm_tbl_listing(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{...}{\itemize{
-\item For \code{modules()}: (\code{teal_module} or \code{teal_modules}) Objects to wrap into a tab.
-\item For \code{format()} and \code{print()}: Arguments passed to other methods.
-}}
+\item{...}{
+  Arguments passed on to \code{\link[crane:tbl_listing]{crane::tbl_listing}}
+  \describe{
+    \item{\code{split_by_rows,split_by_columns,add_blank_rows}}{(named \code{list})\cr
+\itemize{
+\item \code{split_by_rows}: Named list of arguments that are passed to \code{gtsummary::tbl_split_by_rows()}.
+\item \code{split_by_columns}: Named list of arguments that are passed to \code{gtsummary::tbl_split_by_columns()}.
+\item \code{add_blank_rows}: Named list of arguments that are passed to \code{crane::add_blank_rows()}.
+\code{add_blank_rows()} is applied after table splitting and applied to each table individually.
+}
+
+\emph{Variable names passed in these named lists must be character vectors; tidyselect/unquoted syntax is not accepted.}}
+  }}
 
 \item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
 providing context or a title.
@@ -38,9 +47,7 @@ To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 \item{decorators}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 (named \code{list} of lists of \code{teal_transform_module}) optional,
 decorator for tables or plots included in the module output reported.
-The decorators are applied to the respective output objects.
-
-See section "Decorating Module" below for more details.}
+The decorators are applied to the respective output objects.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.

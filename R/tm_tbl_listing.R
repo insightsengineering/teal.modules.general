@@ -4,8 +4,7 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @inheritDotParams crane::tbl_listing statistic digits type value missing missing_text missing_stat sort
-# nolint ends
+#' @inheritDotParams crane::tbl_listing split_by_rows split_by_columns add_blank_rows
 #' @inherit shared_params return
 #' @section Decorating Module:
 #'

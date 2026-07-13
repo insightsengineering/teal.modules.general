@@ -83,10 +83,11 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-tm_gtsummary <- function(
+tm_tbl_summary <- function(
   label = "Summary table",
-  by,
-  include,
+  by = NULL,
+  include = gtsummary::everything(),
+  dataname = NULL,
   .fun = gtsummary::tbl_summary,
   ...,
   col_label = NULL,
@@ -97,11 +98,31 @@ tm_gtsummary <- function(
 ) {
   message("Initializing tm_gtsummary")
 
-  if (inherits(by, "data_extract_spec")) by <- list(by)
-  if (inherits(include, "data_extract_spec")) include <- list(include)
-  checkmate::assert_list(by, types = "data_extract_spec")
-  assert_single_selection(by)
-  checkmate::assert_list(include, types = "data_extract_spec")
+  include_quo <- rlang::enquo(include)
+
+  dots <- c(
+    rlang::dots_list(..., .named = TRUE),
+    list(by = by),
+    list(include = try(include, silent = TRUE))
+  )
+
+  stopifnot(
+    "dataname string must be provided if teal.picks::picks is not used for other arguments." =
+      (
+        length(dots) > 0L &&
+          any(vapply(dots, inherits, FUN.VALUE = logical(1L), "data_extract_spec"))
+      ) || checkmate::test_string(dataname)
+  )
+
+  if (inherits(by, "data_extract_spec")) {
+    by <- list(by)
+    assert_single_selection(by)
+  }
+  if (inherits(dots$include, "data_extract_spec")) {
+    include <- list(include)
+  } else {
+    include <- rlang::get_expr(include_quo)
+  }
 
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
 
@@ -110,9 +131,10 @@ tm_gtsummary <- function(
     by = by,
     include = include,
     .fun = .fun_quo,
-    .ui = ui_gtsummary,
-    .srv = srv_gtsummary,
+    .ui = ui_tbl_summary,
+    .srv = srv_tbl_summary,
     ...,
+    .dataname = dataname,
     col_label = col_label,
     pre_output = pre_output,
     post_output = post_output,
@@ -121,15 +143,15 @@ tm_gtsummary <- function(
   )
 }
 
-srv_gtsummary <- function(id, data, ...) {
-  srv_gt_template(id = id, data = data, ..., partial_srv = srv_gtsummary_partial)
+ui_tbl_summary <- function(id, ...) {
+  ui_gt_template(id = id, partial_ui = ui_tbl_summary_partial(id, ...), ...)
 }
 
-ui_gtsummary <- function(id, ...) {
-  ui_gt_template(id = id, partial_ui = ui_gtsummary_partial(id, ...), ...)
+srv_tbl_summary <- function(id, data, ...) {
+  srv_gt_template(id = id, data = data, ..., partial_srv = srv_tbl_summary_partial)
 }
 
-ui_gtsummary_partial <- function(id, ...) {
+ui_tbl_summary_partial <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
 
@@ -149,16 +171,21 @@ ui_gtsummary_partial <- function(id, ...) {
   )
 }
 
-srv_gtsummary_partial <- function(id,
-                                  data,
-                                  .fun_quo,
-                                  ...,
-                                  summary_args_r) {
+srv_tbl_summary_partial <- function(id,
+                                    data,
+                                    .fun_quo,
+                                    ...,
+                                    summary_args_r) {
   moduleServer(id, function(input, output, session) {
     summary_args_processed <- reactive({
       tbl_summary_args <- req(summary_args_r()) # Arguments forwarded from the main server function (template)
       tbl_summary_args$missing <- input$missing # Additional argument from custom UI
       tbl_summary_args$percent <- input$percent # Additional argument from custom UI
+
+      # Defaults to include all variables if none selected
+      if (length(tbl_summary_args$include) == 0L) {
+        tbl_summary_args$include <- rlang::expr(gtsummary::everything())
+      }
       tbl_summary_args
     })
 
@@ -167,7 +194,10 @@ srv_gtsummary_partial <- function(id,
       summary_args <- req(summary_args_processed())
       validate(
         need(
-          length(summary_args$include) != 0L && all(!summary_args$include %in% summary_args$by),
+          is.null(summary_args$include) && is.null(summary_args$by) ||
+            rlang::is_quosure(summary_args$include) ||
+            rlang::is_expression(summary_args$include) ||
+            (length(summary_args$include) != 0L && all(!summary_args$include %in% summary_args$by)),
           "Variables to stratify with and variables to include should be different"
         ),
       )

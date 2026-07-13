@@ -4,7 +4,7 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @inheritParams tm_gtsummary
+#' @inheritParams tm_tbl_summary
 # nolint start
 #' @inheritDotParams crane::tbl_roche_summary statistic digits type sort nonmissing nonmissing_text nonmissing_stat value
 # nolint ends
@@ -73,7 +73,7 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
-tm_roche_summary <- function(
+tm_tbl_roche_summary <- function(
   label = "Summary table",
   by,
   include,
@@ -103,8 +103,8 @@ tm_roche_summary <- function(
     by = by,
     include = include,
     .fun = .fun_quo,
-    .ui = ui_roche_summary,
-    .srv = srv_roche_summary,
+    .ui = ui_tbl_roche_summary,
+    .srv = srv_tbl_roche_summary,
     ...,
     col_label = col_label,
     pre_output = pre_output,
@@ -114,15 +114,15 @@ tm_roche_summary <- function(
   )
 }
 
-ui_roche_summary <- function(id, ...) {
-  ui_gt_template(id = id, partial_ui = ui_roche_summary_partial(id, ...), ...)
+ui_tbl_roche_summary <- function(id, ...) {
+  ui_gt_template(id = id, partial_ui = ui_tbl_roche_summary_partial(id, ...), ...)
 }
 
-srv_roche_summary <- function(id, data, ...) {
-  srv_gt_template(id = id, data = data, ..., partial_srv = srv_roche_summary_partial)
+srv_tbl_roche_summary <- function(id, data, ...) {
+  srv_gt_template(id = id, data = data, ..., partial_srv = srv_tbl_roche_summary_partial)
 }
 
-ui_roche_summary_partial <- function(id, ...) {
+ui_tbl_roche_summary_partial <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
 
@@ -142,17 +142,22 @@ ui_roche_summary_partial <- function(id, ...) {
   )
 }
 
-srv_roche_summary_partial <- function(id,
-                                      data,
-                                      .fun_quo,
-                                      ...,
-                                      summary_args_r) {
+srv_tbl_roche_summary_partial <- function(id,
+                                          data,
+                                          .fun_quo,
+                                          ...,
+                                          summary_args_r) {
   moduleServer(id, function(input, output, session) {
     summary_args_processed <- reactive({
       tbl_summary_args <- req(summary_args_r()) # Arguments forwarded from the main server function (template)
       tbl_summary_args$nonmissing <- input$nonmissing # Additional argument from custom UI
       tbl_summary_args$percent <- input$percent # Additional argument from custom UI
       tbl_summary_args
+
+      # Defaults to include all variables if none selected
+      if (length(tbl_summary_args$include) == 0L) {
+        tbl_summary_args$include <- rlang::expr(gtsummary::everything())
+      }
     })
 
     validated_q <- reactive({ # Custom validation for gtsummary
@@ -160,9 +165,12 @@ srv_roche_summary_partial <- function(id,
       summary_args <- req(summary_args_processed())
       validate(
         need(
-          length(summary_args$include) != 0L && all(!summary_args$include %in% summary_args$by),
+          is.null(summary_args$include) && is.null(summary_args$by) ||
+            rlang::is_quosure(summary_args$include) ||
+            rlang::is_expression(summary_args$include) ||
+            (length(summary_args$include) != 0L && all(!summary_args$include %in% summary_args$by)),
           "Variables to stratify with and variables to include should be different"
-        ),
+        )
       )
       q
     })
