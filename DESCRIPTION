@@ -28,6 +28,7 @@ Depends:
     R (>= 4.1),
     shiny (>= 1.8.1),
     teal (>= 1.2.0),
+    teal.picks (>= 0.1.0),
     teal.transform (>= 0.7.0)
 Imports:
     bslib (>= 0.8.0),
@@ -49,6 +50,7 @@ Imports:
     jsonlite (>= 1.8.9),
     lifecycle (>= 0.2.0),
     MASS (>= 7.3-60),
+    rlang,
     patchwork (>= 1.2.0),
     rmarkdown (>= 2.23),
     rtables (>= 0.6.11),
@@ -76,7 +78,6 @@ Suggests:
     logger (>= 0.4.0),
     nestcolor (>= 0.1.0),
     pkgload,
-    rlang (>= 1.0.0),
     roxy.shinylive,
     rvest,
     shinytest2,

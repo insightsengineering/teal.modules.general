@@ -7,4 +7,8 @@
 ggplot_themes <- c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void")
 
 #' @importFrom lifecycle deprecated
+#' @importFrom rlang :=
 interactive <- NULL
+
+
+validate_input <- getFromNamespace("validate_input", "teal")

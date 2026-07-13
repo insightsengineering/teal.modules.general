@@ -16,9 +16,9 @@
 #' @inheritParams tm_g_scatterplot
 #' @inheritParams shared_params
 #'
-#' @param variables (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param variables (`picks` or `list` of `picks`)
 #' Specifies plotting variables from an incoming dataset with filtering and selecting. In case of
-#' `data_extract_spec` use `select_spec(..., ordered = TRUE)` if plot elements should be
+#' `picks` use `teal.picks::variables(..., ordered = TRUE)` if plot elements should be
 #' rendered according to selection order.
 #' @param min_n_variables (`integer(1)`)
 #' Minimum number of variables that must be selected.
@@ -103,33 +103,32 @@
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       variables = list(
-#'         data_extract_spec(
-#'           dataname = "countries",
-#'           select = select_spec(
-#'             label = "Select variables:",
-#'             choices = variable_choices(data[["countries"]]),
+#'         teal.picks::picks(
+#'           datasets("countries"),
+#'           teal.picks::variables(
+#'             choices = tidyselect::everything(),
 #'             selected = c("area", "gdp", "debt"),
 #'             multiple = TRUE,
-#'             ordered = TRUE,
-#'             fixed = FALSE
-#'           )
-#'         ),
-#'         data_extract_spec(
-#'           dataname = "sales",
-#'           filter = filter_spec(
-#'             label = "Select variable:",
-#'             vars = "country_id",
-#'             choices = value_choices(data[["sales"]], "country_id"),
-#'             selected = c("DE", "FR", "IT", "PT", "GR", "NL", "BE", "LU", "AT"),
-#'             multiple = TRUE
+#'             ordered = TRUE
 #'           ),
-#'           select = select_spec(
-#'             label = "Select variables:",
-#'             choices = variable_choices(data[["sales"]], c("quantity", "costs", "profit")),
+#'           teal.picks::values()
+#'         ),
+#'         teal.picks::picks(
+#'           datasets("sales"),
+#'           teal.picks::variables(
+#'             choices = c("quantity", "costs", "profit"),
 #'             selected = c("quantity", "costs", "profit"),
 #'             multiple = TRUE,
-#'             ordered = TRUE,
-#'             fixed = FALSE
+#'             ordered = TRUE
+#'           )
+#'         )
+#'       ),
+#'       transformators = list(
+#'         teal_transform_filter(
+#'           teal.picks::picks(
+#'             datasets("sales"),
+#'             teal.picks::variables("country_id"),
+#'             teal.picks::values()
 #'           )
 #'         )
 #'       )
@@ -159,35 +158,30 @@
 #'     tm_g_scatterplotmatrix(
 #'       label = "Scatterplot matrix",
 #'       variables = list(
-#'         data_extract_spec(
-#'           dataname = "ADSL",
-#'           select = select_spec(
-#'             label = "Select variables:",
-#'             choices = variable_choices(data[["ADSL"]]),
+#'         teal.picks::picks(
+#'           datasets("ADSL"),
+#'           teal.picks::variables(
+#'             choices = tidyselect::everything(),
 #'             selected = c("AGE", "RACE", "SEX"),
 #'             multiple = TRUE,
 #'             ordered = TRUE,
 #'             fixed = FALSE
-#'           )
-#'         ),
-#'         data_extract_spec(
-#'           dataname = "ADRS",
-#'           filter = filter_spec(
-#'             label = "Select endpoints:",
-#'             vars = c("PARAMCD", "AVISIT"),
-#'             choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
-#'             selected = "INVET - END OF INDUCTION",
-#'             multiple = TRUE
 #'           ),
-#'           select = select_spec(
-#'             label = "Select variables:",
-#'             choices = variable_choices(data[["ADRS"]]),
+#'           teal.picks::values()
+#'         ),
+#'         teal.picks::picks(
+#'           datasets("ADRS"),
+#'           teal.picks::variables(
+#'             choices = tidyselect::everything(),
 #'             selected = c("AGE", "AVAL", "ADY"),
 #'             multiple = TRUE,
 #'             ordered = TRUE,
 #'             fixed = FALSE
 #'           )
 #'         )
+#'       ),
+#'       transformators = list(
+#'         teal_transform_filter(teal.picks::picks(datasets("ADRS"), teal.picks::variables("PARAMCD"), values(selected = "BESRSPI")))
 #'       )
 #'     )
 #'   )
@@ -197,9 +191,13 @@
 #' }
 #'
 #' @export
-#'
 tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
-                                   variables,
+                                   variables = list(
+                                     teal.picks::picks(
+                                       teal.picks::datasets(),
+                                       teal.picks::variables(selected = seq(1L, 5L), multiple = TRUE)
+                                     )
+                                   ),
                                    min_n_variables = 2L,
                                    max_n_variables = 5L,
                                    plot_height = c(600, 200, 2000),
@@ -208,6 +206,18 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    post_output = NULL,
                                    transformators = list(),
                                    decorators = list()) {
+  UseMethod("tm_g_scatterplotmatrix", variables[[1]])
+}
+
+#' @export
+tm_g_scatterplotmatrix.default <- function(label = "Scatterplot Matrix",
+                                           variables,
+                                           plot_height = c(600, 200, 2000),
+                                           plot_width = NULL,
+                                           pre_output = NULL,
+                                           post_output = NULL,
+                                           transformators = list(),
+                                           decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
 
   # Normalize the parameters
@@ -239,8 +249,8 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
 
   ans <- module(
     label = label,
-    server = srv_g_scatterplotmatrix,
-    ui = ui_g_scatterplotmatrix,
+    server = srv_g_scatterplotmatrix.default,
+    ui = ui_g_scatterplotmatrix.default,
     ui_args = args,
     server_args = list(
       variables = variables,
@@ -258,7 +268,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
 }
 
 # UI function for the scatterplot matrix module
-ui_g_scatterplotmatrix <- function(id, ...) {
+ui_g_scatterplotmatrix.default <- function(id, ...) {
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$variables)
   ns <- NS(id)
