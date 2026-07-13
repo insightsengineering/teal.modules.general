@@ -25,7 +25,7 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `table` (`gtsummary` - output of [`gtsummary::tbl_summary()`])
+#' - `listing` (`gtsummary` - output of [`gtsummary::tbl_summary()`])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -35,7 +35,7 @@
 #' tm_gtsummary(
 #'    ..., # arguments for module
 #'    decorators = list(
-#'      table = teal_transform_module(...) # applied to the `table` output
+#'      listing = teal_transform_module(...) # applied to the `listing` output
 #'    )
 #' )
 #' ```

@@ -7,7 +7,8 @@
 tm_tbl_summary(
   label = "Summary table",
   by = NULL,
-  include = NULL,
+  include = gtsummary::everything(),
+  dataname = NULL,
   .fun = gtsummary::tbl_summary,
   ...,
   col_label = NULL,

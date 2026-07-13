@@ -109,7 +109,7 @@ ui_gt_template <- function(id, opts_picks, opts_values, pre_output, post_output,
       tagList(!!!values_ui),
       partial_ui_rendered,
       # Allow multiple decorators for a single object (table)
-      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "table")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "listing")),
     )
   }
 
@@ -192,7 +192,7 @@ srv_gt_template <- function(id,
     print_output_decorated <- teal::srv_transform_teal_data(
       id = "decorator",
       data = validated_q,
-      transformators = select_decorators(decorators, "table"),
+      transformators = select_decorators(decorators, "listing"),
       expr = quote(table)
     )
 
@@ -235,7 +235,7 @@ srv_gt_template_partial <- function(id,
 
     reactive({
       within(req(qenv()),
-        expr = table <- table_call,
+        expr = listing <- table_call,
         table_call = req(tbl_summary_call())
       )
     })
