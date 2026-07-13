@@ -88,7 +88,6 @@ tm_tbl_summary <- function(
   by = NULL,
   include = gtsummary::everything(),
   dataname = NULL,
-  .fun = gtsummary::tbl_summary,
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -99,7 +98,6 @@ tm_tbl_summary <- function(
   message("Initializing tm_gtsummary")
 
   include_expr <- substitute(include)
-  .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
 
   dots <- c(
     rlang::dots_list(..., .named = TRUE),
@@ -133,7 +131,7 @@ tm_tbl_summary <- function(
     label = label,
     by = by,
     include = include,
-    .fun = .fun_quo,
+    .fun = gtsummary::tbl_summary,
     .ui = function(id, ...) {
       ui_gt_template(id = id, partial_ui = ui_tbl_summary_partial, ...)
     },

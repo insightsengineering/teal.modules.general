@@ -52,7 +52,6 @@
 tm_tbl_listing <- function(
   label = "Listing table",
   dataname = NULL,
-  .fun = crane::tbl_listing,
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -62,11 +61,9 @@ tm_tbl_listing <- function(
 ) {
   message("Initializing tm_tbl_listing")
 
-  .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later processing
-
   tm_gt_template(
     label = label,
-    .fun = .fun_quo,
+    .fun = crane::tbl_listing,
     .ui = ui_gt_template,
     .srv = function(id, data, ...) {
       srv_gt_template(id = id, data = data, ..., partial_srv = srv_gt_template_partial)

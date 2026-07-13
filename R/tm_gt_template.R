@@ -98,7 +98,7 @@ ui_gt_template <- function(id, opts_picks, opts_values, pre_output, post_output,
       choices = x$choices,
       selected = x$selected,
       multiple = FALSE,
-      fixed = x$fixed
+      fixed = x$fixed %||% FALSE
     )
   })
 
@@ -193,11 +193,11 @@ srv_gt_template <- function(id,
       id = "decorator",
       data = validated_q,
       transformators = select_decorators(decorators, "listing"),
-      expr = quote(table)
+      expr = quote(listing)
     )
 
     table_r <- reactive({
-      req(print_output_decorated())[["table"]]
+      req(print_output_decorated())[["listing"]]
     })
 
     teal.widgets::table_with_settings_srv(
