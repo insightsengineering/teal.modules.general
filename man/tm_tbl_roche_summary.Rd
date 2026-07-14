@@ -7,8 +7,8 @@
 tm_tbl_roche_summary(
   label = "Summary table",
   by = NULL,
-  include = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(multiple =
-    TRUE)),
+  include = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(selected =
+    dplyr::everything(), multiple = TRUE)),
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -21,15 +21,15 @@ tm_tbl_roche_summary(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+\item{by}{(\code{picks})
 An object with all available choices and with a pre-selected option on how to split rows.
 
-\code{data_extract_spec} multiple selection: not allowed}
+Note: multiple selection is not allowed}
 
-\item{include}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+\item{include}{(\code{picks})
 An object with all available choices and with a pre-selected option that picks columns to include as rows.
 
-\code{data_extract_spec} multiple selection: allowed}
+Note: multiple selection is not allowed}
 
 \item{...}{
   Arguments passed on to \code{\link[crane:tbl_roche_summary]{crane::tbl_roche_summary}}
@@ -94,7 +94,7 @@ Summary table from a given dataset, using \code{crane::tbl_roche_summary}.
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{listing} (\code{gtsummary} - output of \code{\link[crane:tbl_roche_summary]{crane::tbl_roche_summary()}})
+\item \code{table} (\code{gtsummary} - output of \code{\link[crane:tbl_roche_summary]{crane::tbl_roche_summary()}})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
@@ -104,7 +104,7 @@ See code snippet below:
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_roche_summary(
    ..., # arguments for module
    decorators = list(
-     listing = teal_transform_module(...) # applied to the `listing` output
+     table = teal_transform_module(...) # applied to the `table` output
    )
 )
 }\if{html}{\out{</div>}}
@@ -213,28 +213,20 @@ For more information on reporting in \code{teal}, see the vignettes:
 \examples{
 data <- within(teal.data::teal_data(), {
   ADSL <- teal.data::rADSL
+  ADTTE <- teal.data::rADTTE
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 app <- init(
   data = data,
   modules = modules(
     tm_roche_summary(
-      by = teal.transform::data_extract_spec(
-        dataname = "ADSL",
-        select = teal.transform::select_spec(
-          choices = c("SEX", "COUNTRY", "SITEID", "ACTARM"),
-          selected = "SEX",
-          multiple = FALSE
-        )
+      by = teal.picks::picks(
+        datasets(c("ADSL", "ADTTE"), "ADTTE"),
+        variables(c("SEX", "COUNTRY", "SITEID", "ACTARM", "CNSR", "PARAMCD"), "SEX")
       ),
-      include = teal.transform::data_extract_spec(
-        dataname = "ADSL",
-        select = teal.transform::select_spec(
-          choices = c("SITEID", "COUNTRY", "ACTARM"),
-          selected = "SITEID",
-          multiple = TRUE,
-          fixed = FALSE
-        )
+      include = teal.picks::picks(
+        datasets(c("ADSL", "ADTTE"), "ADSL"),
+        variables(c("SITEID", "COUNTRY", "ACTARM", "SEX"), "SITEID", multiple = TRUE)
       )
     )
   )
@@ -246,8 +238,8 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQVKAL6KEABWRCpxANZwrKLsibZGuvxwJlDCpHEE-LSiBHFNLe2dwNDwXT0AukpoqEUqAezp-WW6ALwHXrj7fEIiose6l8JiexAZGaQwcYxEBIFwcaKCMBgLA4+xeunorFuJVIzAgohMREYMGiiTicAAHjD1KNRKg4AQnmCwYklnoTgowFV8hTzs8iRlRHARBooWEeFi4QikdFGcycXiCaD6bpvs0CGJboKwLlnAANGm6CkAYQA8o4AHIOACaCopuQAknZnPrsrrKUq7JksABZClyWnCl68-Hkfi3PVymlC+kwEa0VAiW4AMUy+Rl3pe9Xp9ojKgI1EEA1Z4Q58MRyMQqIxWI0fwFhOFJNgZMVlLy1LwEYZTJdyfZsLT3MQztzuPxBcdoto4puJylBqNJrNqo12rNmQtVttYBjdMdLdd7ulhuNpsrc+FvuomgDJYcLgdjtMtHRcDdJxDYdcG7BUaJd4yd-q9VoJl07BU5GYlh0NlsaTpURgggVhMnQdhNgAEkEWgUigxlGB0Rh6hqMAalWIA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQVKAL6KEABWRCpxANZwrKLsibZGuvxwJlDCpHEE-LSiBHFNLe2dwNDwXT0AukpoqEUqAezp-WW6ALwHXrj7fEIiose6l8JiexAZGaQwcYxEBIFwcaKCMBgLA4+xeunorFuJVIzAgohMREYMGiiTicAAHjD1KNRKg4AQnmCwYklnoTgowFV8hTzs8iRlRHARBooWEeFi4QikdFGcycXiCaD6bpvs0CGJboKwLlnAANGm6CkAYQA8o4AHIOACaCopuQAknZnPrsrrKUq7JksABZClyWnCl68-Hkfi3PVymlC+kwEa0VAiW4AMUy+Rl3pe9Xp9ojKgI1EEA1Z4Q58MRyMQqIxWI0fwFhOFJNgZMVlLy1LwEYZTJdyfZsLT3MQztzuPxBcdoto4puJylBqNJrNqo12rNmQtVttYBjdMdLdd7ulhuNpsrc+FvuomgDJYcLgdjtMtHRcDdJxDYdcG7BUaJd4yd-q9VoJl07BU5GYlh0NlsaTpURgggVhMnQdhNgAEkEWgUigxlGB0Rh6hqMAalWIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQXpWdl2ds5FJYkVOfWuEAC+ihAAVkQqcQDWcKyi7Im2Rrr8cCZQwqRxBPy0ogRx-YMjY8DQ8OOTALpKaKhFKgHsNYm6ALwzZbg1fEIiove6r8Ji1xAZGVIMDijCIBECcDiokEMBgLA4NQBunorE+JVQtAIQ1E0QxWPGiKRjy8ojgpHGBGuYCq+QUeF0dLaDTpchSjLqzLArMJSK0LFoUHo73YlLpuWcAA06WywABhADyjgAcg4AJrShlgXIASQa2uyGsZsrsmSwAFlDXKlbksJaAAqmzJm2UGrky8VSrk83Tc-5ElQEaiCWZosI8PHY3GY7F-IkAxKk8kiqk0y1M1xuzWpt3ejJ8xgCoW-UVa3XOfWWhXKtVp42mi30sWSlnussV+kwRa0VAiT4OFw9OODgHDno9WgmXTsFTkZiWHQ2WxpP2iYIQViZdDsM4AEkEtBSu9JjB0jB6nTAnSOQA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQXpWdl2ds5FJYkVOfWuEAC+ihAAVkQqcQDWcKyi7Im2Rrr8cCZQwqRxBPy0ogRx-YMjY8DQ8OOTALpKaKhFKgHsNYm6ALwzZbg1fEIiove6r8Ji1xAZGVIMDijCIBECcDiokEMBgLA4NQBunorE+JVQtAIQ1E0QxWPGiKRjy8ojgpHGBGuYCq+QUeF0dLaDTpchSjLqzLArMJSK0LFoUHo73YlLpuWcAA06WywABhADyjgAcg4AJrShlgXIASQa2uyGsZsrsmSwAFlDXKlbksJaAAqmzJm2UGrky8VSrk83Tc-5ElQEaiCWZosI8PHY3GY7F-IkAxKk8kiqk0y1M1xuzWpt3ejJ8xgCoW-UVa3XOfWWhXKtVp42mi30sWSlnussV+kwRa0VAiT4OFw9OODgHDno9WgmXTsFTkZiWHQ2WxpP2iYIQViZdDsM4AEkEtBSu9JjB0jB6nTAnSOQA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

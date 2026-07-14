@@ -4,14 +4,14 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param by (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param by (`picks`)
 #' An object with all available choices and with a pre-selected option on how to split rows.
 #'
-#' `data_extract_spec` multiple selection: not allowed
-#' @param include  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' Note: multiple selection is not allowed
+#' @param include  (`picks`)
 #' An object with all available choices and with a pre-selected option that picks columns to include as rows.
 #'
-#' `data_extract_spec` multiple selection: allowed
+#' Note: multiple selection is not allowed
 #' @param col_label Used to override default labels in summary table, e.g. `list(age = "Age, years")`.
 #' The default for each variable is the column label attribute, `attr(., 'label')`.
 #' If no label has been set, the column name is used.
@@ -25,7 +25,7 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `listing` (`gtsummary` - output of [`gtsummary::tbl_summary()`])
+#' - `table` (`gtsummary` - output of [`gtsummary::tbl_summary()`])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -35,7 +35,7 @@
 #' tm_gtsummary(
 #'    ..., # arguments for module
 #'    decorators = list(
-#'      listing = teal_transform_module(...) # applied to the `listing` output
+#'      table = teal_transform_module(...) # applied to the `table` output
 #'    )
 #' )
 #' ```
@@ -60,22 +60,13 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_gtsummary(
-#'       by = teal.transform::data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
-#'           choices = c("SEX", "COUNTRY", "SITEID", "ACTARM"),
-#'           selected = "SEX",
-#'           multiple = FALSE
-#'         )
+#'       by = teal.picks::picks(
+#'         datasets(c("ADSL", "ADTTE"), "ADTTE"),
+#'         variables(c("SEX", "COUNTRY", "SITEID", "ACTARM", "CNSR", "PARAMCD"), "SEX")
 #'       ),
-#'       include = teal.transform::data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
-#'           choices = c("SITEID", "COUNTRY", "ACTARM"),
-#'           selected = "SITEID",
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
+#'       include = teal.picks::picks(
+#'         datasets(c("ADSL", "ADTTE"), "ADSL"),
+#'         variables(c("SITEID", "COUNTRY", "ACTARM", "SEX"), "SITEID", multiple = TRUE)
 #'       )
 #'     )
 #'   )

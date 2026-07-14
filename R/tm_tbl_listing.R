@@ -74,6 +74,7 @@ tm_tbl_listing <- function(
     pre_output = pre_output,
     post_output = post_output,
     transformators = transformators,
+    .decorator_name = "listing",
     decorators = decorators
   )
 }

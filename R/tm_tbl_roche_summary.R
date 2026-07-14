@@ -15,7 +15,7 @@
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:
-#' - `listing` (`gtsummary` - output of [`crane::tbl_roche_summary()`])
+#' - `table` (`gtsummary` - output of [`crane::tbl_roche_summary()`])
 #'
 #' A Decorator is applied to the specific output using a named list of `teal_transform_module` objects.
 #' The name of this list corresponds to the name of the output to which the decorator is applied.
@@ -25,7 +25,7 @@
 #' tm_roche_summary(
 #'    ..., # arguments for module
 #'    decorators = list(
-#'      listing = teal_transform_module(...) # applied to the `listing` output
+#'      table = teal_transform_module(...) # applied to the `table` output
 #'    )
 #' )
 #' ```
@@ -44,28 +44,20 @@
 #' @examples
 #' data <- within(teal.data::teal_data(), {
 #'   ADSL <- teal.data::rADSL
+#'   ADTTE <- teal.data::rADTTE
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_roche_summary(
-#'       by = teal.transform::data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
-#'           choices = c("SEX", "COUNTRY", "SITEID", "ACTARM"),
-#'           selected = "SEX",
-#'           multiple = FALSE
-#'         )
+#'       by = teal.picks::picks(
+#'         datasets(c("ADSL", "ADTTE"), "ADTTE"),
+#'         variables(c("SEX", "COUNTRY", "SITEID", "ACTARM", "CNSR", "PARAMCD"), "SEX")
 #'       ),
-#'       include = teal.transform::data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = teal.transform::select_spec(
-#'           choices = c("SITEID", "COUNTRY", "ACTARM"),
-#'           selected = "SITEID",
-#'           multiple = TRUE,
-#'           fixed = FALSE
-#'         )
+#'       include = teal.picks::picks(
+#'         datasets(c("ADSL", "ADTTE"), "ADSL"),
+#'         variables(c("SITEID", "COUNTRY", "ACTARM", "SEX"), "SITEID", multiple = TRUE)
 #'       )
 #'     )
 #'   )

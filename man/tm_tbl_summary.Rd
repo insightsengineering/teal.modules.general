@@ -7,8 +7,8 @@
 tm_tbl_summary(
   label = "Summary table",
   by = NULL,
-  include = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(multiple =
-    TRUE)),
+  include = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(selected =
+    dplyr::everything(), multiple = TRUE)),
   dataname = NULL,
   ...,
   col_label = NULL,
@@ -22,15 +22,15 @@ tm_tbl_summary(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{by}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+\item{by}{(\code{picks})
 An object with all available choices and with a pre-selected option on how to split rows.
 
-\code{data_extract_spec} multiple selection: not allowed}
+Note: multiple selection is not allowed}
 
-\item{include}{(\code{data_extract_spec} or \code{list} of multiple \code{data_extract_spec})
+\item{include}{(\code{picks})
 An object with all available choices and with a pre-selected option that picks columns to include as rows.
 
-\code{data_extract_spec} multiple selection: allowed}
+Note: multiple selection is not allowed}
 
 \item{...}{
   Arguments passed on to \code{\link[gtsummary:tbl_summary]{gtsummary::tbl_summary}}
@@ -95,7 +95,7 @@ Summary table from a given dataset, using \code{gtsummary}.
 
 This module generates the following objects, which can be modified in place using decorators:
 \itemize{
-\item \code{listing} (\code{gtsummary} - output of \code{\link[gtsummary:tbl_summary]{gtsummary::tbl_summary()}})
+\item \code{table} (\code{gtsummary} - output of \code{\link[gtsummary:tbl_summary]{gtsummary::tbl_summary()}})
 }
 
 A Decorator is applied to the specific output using a named list of \code{teal_transform_module} objects.
@@ -105,7 +105,7 @@ See code snippet below:
 \if{html}{\out{<div class="sourceCode">}}\preformatted{tm_gtsummary(
    ..., # arguments for module
    decorators = list(
-     listing = teal_transform_module(...) # applied to the `listing` output
+     table = teal_transform_module(...) # applied to the `table` output
    )
 )
 }\if{html}{\out{</div>}}
@@ -220,22 +220,13 @@ app <- init(
   data = data,
   modules = modules(
     tm_gtsummary(
-      by = teal.transform::data_extract_spec(
-        dataname = "ADSL",
-        select = teal.transform::select_spec(
-          choices = c("SEX", "COUNTRY", "SITEID", "ACTARM"),
-          selected = "SEX",
-          multiple = FALSE
-        )
+      by = teal.picks::picks(
+        datasets(c("ADSL", "ADTTE"), "ADTTE"),
+        variables(c("SEX", "COUNTRY", "SITEID", "ACTARM", "CNSR", "PARAMCD"), "SEX")
       ),
-      include = teal.transform::data_extract_spec(
-        dataname = "ADSL",
-        select = teal.transform::select_spec(
-          choices = c("SITEID", "COUNTRY", "ACTARM"),
-          selected = "SITEID",
-          multiple = TRUE,
-          fixed = FALSE
-        )
+      include = teal.picks::picks(
+        datasets(c("ADSL", "ADTTE"), "ADSL"),
+        variables(c("SITEID", "COUNTRY", "ACTARM", "SEX"), "SITEID", multiple = TRUE)
       )
     )
   )
@@ -247,8 +238,8 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQVKAL6KEABWRCpxANZwrKLsibZGuvxwJlDCpHEE-LSiBHFNLe2dwNDwXT0AukpoqEUqAezp-WW6ALwHXrj7fEIiose6l8JiexAZGaQwcRKkooIwMCwc+xeunorFuJVIzAgohMREYMGiiTicAAHhD1KNRKg4AQnkCgYklnoTgowFV8iTzs88RlRHARBowWEeGioTC4dFafSMVicYDqboCIFmgQxLdeWBcs4ABoU3QkgDCAHlHAA5BwATVlJNyAEk7M4ddktaT5XZMlgALIkuSU-kvTnY8j8W7a6UUvnUmAjWioES3ABimXyko9L3q1JtoZUBGoggGjPCLOhsPhiERKLRGjimOxuP5BNgRLlpLy5LwoZpdMdCeZkOT7MQDqzOd5VLtguFopO4t1+sNxqVqo1xsypvNVrAkbb-KbTpdEr1BqN5ennu9vqLDhctrtployLgzpOgeDrlXYdD4YvVPq9VoJl07BU5GYlh0NlsaSpomCEFYmXQdhNgAEkEWgUhA2lGB0Rh6hqMAalWIA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQVKAL6KEABWRCpxANZwrKLsibZGuvxwJlDCpHEE-LSiBHFNLe2dwNDwXT0AukpoqEUqAezp-WW6ALwHXrj7fEIiose6l8JiexAZGaQwcRKkooIwMCwc+xeunorFuJVIzAgohMREYMGiiTicAAHhD1KNRKg4AQnkCgYklnoTgowFV8iTzs88RlRHARBowWEeGioTC4dFafSMVicYDqboCIFmgQxLdeWBcs4ABoU3QkgDCAHlHAA5BwATVlJNyAEk7M4ddktaT5XZMlgALIkuSU-kvTnY8j8W7a6UUvnUmAjWioES3ABimXyko9L3q1JtoZUBGoggGjPCLOhsPhiERKLRGjimOxuP5BNgRLlpLy5LwoZpdMdCeZkOT7MQDqzOd5VLtguFopO4t1+sNxqVqo1xsypvNVrAkbb-KbTpdEr1BqN5ennu9vqLDhctrtployLgzpOgeDrlXYdD4YvVPq9VoJl07BU5GYlh0NlsaSpomCEFYmXQdhNgAEkEWgUhA2lGB0Rh6hqMAalWIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQVKAL6KEABWRCpxANZwrKLsibZGuvxwJlDCpHEE-LSiBHFNLe2dwNDwXT0AukpoqEUqAezp-WW6ALwHXrj7fEIiose6l8JiexAZGaQwcRKkooIwMCwc+xeunorFuJVQtAIrVE0QhUK6gKBpygojgX3YBD2YCq+QUeF0eJydjsrjAchShOyxNJ5MRQK0LFoUHo1wxWNyzgAGniKWAAMIAeUcADkHABNHkEsC5ACSJJl2UlhL5dkyWAAskr+cLclgtQAFNWZdV8xVk3kc7lkum6WnPJEqAjUQQDMFhHhw6GwyHQp5Il6JVHozGU6r4ynUvHkqU4qPne3+hmMJksx4h6Vy5wKrWCkXirWZFVqzXh6VcuNS2Xys0pGAjWioES3Bwuer+tsvDv1eq0Ey6dgqcjMSw6Gy2NL20TBCCsTLodibAAkgloKSXqMYOkY9RqYBqqyAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQVKAL6KEABWRCpxANZwrKLsibZGuvxwJlDCpHEE-LSiBHFNLe2dwNDwXT0AukpoqEUqAezp-WW6ALwHXrj7fEIiose6l8JiexAZGaQwcRKkooIwMCwc+xeunorFuJVQtAIrVE0QhUK6gKBpygojgX3YBD2YCq+QUeF0eJydjsrjAchShOyxNJ5MRQK0LFoUHo1wxWNyzgAGniKWAAMIAeUcADkHABNHkEsC5ACSJJl2UlhL5dkyWAAskr+cLclgtQAFNWZdV8xVk3kc7lkum6WnPJEqAjUQQDMFhHhw6GwyHQp5Il6JVHozGU6r4ynUvHkqU4qPne3+hmMJksx4h6Vy5wKrWCkXirWZFVqzXh6VcuNS2Xys0pGAjWioES3Bwuer+tsvDv1eq0Ey6dgqcjMSw6Gy2NL20TBCCsTLodibAAkgloKSXqMYOkY9RqYBqqyAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }

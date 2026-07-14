@@ -8,6 +8,7 @@ tm_gt_template <- function(
   col_label = NULL,
   pre_output = NULL,
   post_output = NULL,
+  .decorator_name = "table",
   transformators = list(),
   decorators = list()
 ) {
@@ -40,7 +41,8 @@ tm_gt_template <- function(
   checkmate::assert_list(col_label, null.ok = TRUE, types = "character")
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
   checkmate::assert_multi_class(post_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
-  teal::assert_decorators(decorators, "table")
+  checkmate::assert_string(.decorator_name)
+  teal::assert_decorators(decorators, .decorator_name)
   datanames <- if (length(opts_picks) == 0L) {
     .dataname
   } else {
@@ -64,6 +66,7 @@ tm_gt_template <- function(
     opts_values = opts_values,
     opts_static = opts_static,
     decorators = decorators,
+    .decorator_name = .decorator_name,
     .dataname = .dataname,
     .fun_quo = .fun_quo,
     pre_output = pre_output,
@@ -85,7 +88,14 @@ tm_gt_template <- function(
   module
 }
 
-ui_gt_template <- function(id, opts_picks, opts_values, pre_output, post_output, decorators, partial_ui = NULL) {
+ui_gt_template <- function(id,
+                           opts_picks,
+                           opts_values,
+                           pre_output,
+                           post_output,
+                           decorators,
+                           .decorator_name = "table",
+                           partial_ui = NULL) {
   ns <- NS(id)
   checkmate::assert_function(partial_ui, null.ok = TRUE)
   partial_ui_rendered <- if (!is.null(partial_ui)) {
@@ -116,14 +126,14 @@ ui_gt_template <- function(id, opts_picks, opts_values, pre_output, post_output,
     )
   })
 
-  encodings <- if (length(picks_ui) > 0L || length(values_ui) > 0L || !is.null(partial_ui_rendered) || length(decorators > 0L)) {
+  encodings <- if (length(picks_ui) > 0L || length(values_ui) > 0L || !is.null(partial_ui_rendered) || length(decorators) > 0L) {
     tags$div(
       tags$label("Encodings", class = "text-primary"),
       tagList(!!!picks_ui),
       tagList(!!!values_ui),
       partial_ui_rendered,
       # Allow multiple decorators for a single object (table)
-      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "listing")),
+      teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, .decorator_name)),
     )
   }
 
@@ -144,6 +154,7 @@ srv_gt_template <- function(id,
                             .dataname,
                             ...,
                             partial_srv = srv_gt_template_partial,
+                            .decorator_name,
                             decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
@@ -198,12 +209,12 @@ srv_gt_template <- function(id,
     print_output_decorated <- teal::srv_transform_teal_data(
       id = "decorator",
       data = validated_q,
-      transformators = select_decorators(decorators, "listing"),
-      expr = quote(listing)
+      transformators = select_decorators(decorators, .decorator_name),
+      expr = substitute(decorator_name, list(decorator_name = as.name(.decorator_name)))
     )
 
     table_r <- reactive({
-      req(print_output_decorated())[["listing"]]
+      req(print_output_decorated())[[.decorator_name]]
     })
 
     teal.widgets::table_with_settings_srv(
@@ -241,7 +252,7 @@ srv_gt_template_partial <- function(id,
 
     reactive({
       within(req(qenv()),
-        expr = listing <- table_call,
+        expr = table <- table_call,
         table_call = req(tbl_summary_call())
       )
     })
