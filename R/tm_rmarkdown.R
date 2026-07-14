@@ -329,6 +329,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
 #' @return `markdown_internal` object
 #'
 #' @keywords internal
+#' @noRd
 .markdown_internal <- function(markdown_file, rendered_html) {
   base_file <- basename(markdown_file)
 

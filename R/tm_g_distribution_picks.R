@@ -406,7 +406,7 @@ srv_g_distribution.picks <- function(id,
 
     # outputs ----
     hist_output <- .srv_hist(
-      "histogram_plot",
+      id = "histogram_plot",
       data = reactive({
         validate_merged()
         validate_dist()

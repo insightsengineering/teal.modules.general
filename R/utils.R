@@ -146,6 +146,7 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
 #' Value of call to `fun` with arguments specified in `str_args`.
 #'
 #' @keywords internal
+#' @noRd
 call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
@@ -160,7 +161,7 @@ call_fun_dots <- function(fun, str_args) {
 #' @return (`character`) String with variable name and label.
 #'
 #' @keywords internal
-#'
+#' @noRd
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,
@@ -206,6 +207,7 @@ shape_names <- c(
 #' @param var_type (`character`) of R internal types (classes).
 #' @return (`character`) vector of HTML icons corresponding to data type in each column.
 #' @keywords internal
+#' @noRd
 variable_type_icons <- function(var_type) {
   checkmate::assert_character(var_type, any.missing = FALSE)
 
@@ -277,6 +279,7 @@ select_decorators <- utils::getFromNamespace("select_decorators", "teal")
 #' @param inner_classes (`character`) classes within `chunk_output` that should be modified.
 #' This can be used to only change `recordedplot`, `ggplot2` or other type of objects.
 #' @keywords internal
+#' @noRd
 set_chunk_attrs <- function(teal_card,
                             attributes,
                             n = 1,
@@ -341,6 +344,7 @@ set_chunk_attrs <- function(teal_card,
 #' @return A reactive expression that returns the `teal_card` with updated dimensions
 #'
 #' @keywords internal
+#' @noRd
 set_chunk_dims <- function(pws, q_r, inner_classes = NULL) {
   checkmate::assert_list(pws)
   checkmate::assert_names(names(pws), must.include = "dim")
