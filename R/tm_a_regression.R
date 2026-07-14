@@ -151,6 +151,7 @@ tm_a_regression <- function(label = "Regression Analysis",
                               )
                             ),
                             response,
+                            outlier,
                             plot_height = c(600, 200, 2000),
                             plot_width = NULL,
                             alpha = c(1, 0, 1),
@@ -171,6 +172,7 @@ tm_a_regression <- function(label = "Regression Analysis",
 tm_a_regression.default <- function(label = "Regression Analysis",
                                     regressor,
                                     response,
+                                    outlier,
                                     plot_height = c(600, 200, 2000),
                                     plot_width = NULL,
                                     alpha = c(1, 0, 1),
@@ -190,7 +192,9 @@ tm_a_regression.default <- function(label = "Regression Analysis",
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
-
+  if (!missing(outliers)) {
+    stop("Argumetn `outliers` shouldn't be used without picks on the regressor.")
+  }
   # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(regressor, types = "data_extract_spec")
@@ -397,6 +401,7 @@ srv_a_regression.default <- function(id,
                                      decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
+  checkmate::assert_character(default_outlier_label, len = 1, null.ok = FALSE)
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 

@@ -6,6 +6,8 @@ tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
                                              teal.picks::variables(selected = seq(1L, 5L), multiple = TRUE)
                                            )
                                          ),
+                                         min_n_variables = 2L,
+                                         max_n_variables = 5L,
                                          plot_height = c(600, 200, 2000),
                                          plot_width = NULL,
                                          pre_output = NULL,
@@ -15,6 +17,13 @@ tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
   message("Initializing tm_g_scatterplotmatrix")
   if (is.null(names(variables))) {
     names(variables) <- sprintf("pick_%s", seq_along(variables))
+  }
+
+  if (!missing("min_n_variables")) {
+    warning("`min_n_variables` argument is not used with the picks.")
+  }
+  if (!missing("max_n_variables")) {
+    warning("`max_n_variables` argument is not used with the picks.")
   }
 
   # Start of assertions

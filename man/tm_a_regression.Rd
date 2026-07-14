@@ -9,6 +9,7 @@ tm_a_regression(
   regressor = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(choices =
     is.numeric, selected = tidyselect::last_col(), multiple = TRUE)),
   response,
+  outlier,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   alpha = c(1, 0, 1),
@@ -35,6 +36,10 @@ to use as regressors in the regression model. \code{teal.picks::variables(multip
 \item{response}{(\code{picks}) Specification for response variable selection.
 Created using \code{\link[teal.picks:picks]{teal.picks::picks()}}, which allows selecting a single numeric variable
 to use as the response in the regression model. \code{teal.picks::variables(multiple = TRUE)} not allowed.}
+
+\item{outlier}{(\code{picks}) Optional specification for outlier label variable selection.
+Created using \code{\link[teal.picks:picks]{teal.picks::picks()}}, which allows selecting a factor or character variable
+to label outlier points on the plots.}
 
 \item{plot_height}{(\code{numeric}) optional, specifies the plot height as a three-element vector of
 \code{value}, \code{min}, and \code{max} intended for use with a slider UI element.}
@@ -107,10 +112,6 @@ To learn more check \code{vignette("transform-input-data", package = "teal")}.}
 (named \code{list} of lists of \code{teal_transform_module}) optional,
 decorator for tables or plots included in the module output reported.
 The decorators are applied to the respective output objects.}
-
-\item{outlier}{(\code{picks}) Optional specification for outlier label variable selection.
-Created using \code{\link[teal.picks:picks]{teal.picks::picks()}}, which allows selecting a factor or character variable
-to label outlier points on the plots.}
 }
 \value{
 Object of class \code{teal_module} to be used in \code{teal} applications.
