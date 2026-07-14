@@ -192,8 +192,8 @@ tm_a_regression.default <- function(label = "Regression Analysis",
   if (inherits(regressor, "data_extract_spec")) regressor <- list(regressor)
   if (inherits(response, "data_extract_spec")) response <- list(response)
   if (inherits(ggplot2_args, "ggplot2_args")) ggplot2_args <- list(default = ggplot2_args)
-  if (!missing(outliers)) {
-    stop("Argumetn `outliers` shouldn't be used without picks on the regressor.")
+  if (!missing(outlier)) {
+    stop("Argumetn `outlier` shouldn't be used without picks on the regressor.")
   }
   # Start of assertions
   checkmate::assert_string(label)

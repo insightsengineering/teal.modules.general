@@ -198,6 +198,9 @@ srv_t_crosstable.picks <- function(id, data, label, x, y, remove_zero_columns, b
 
       obj <- merged$data()
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "# Table")
+
+      # To avoid R CMD check for Undefined global functions or variables
+      split_call <-  basic_tables <- count_value <- NULL
       obj <- within(
         obj,
         expr = title <- plot_title,

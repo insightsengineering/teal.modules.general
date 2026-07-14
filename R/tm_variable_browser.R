@@ -628,6 +628,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #'
 #' @return plot
 #' @keywords internal
+#' @importFrom utils tail
 #' @noRd
 plot_var_summary <- function(qenv,
                              wrap_character = NULL,

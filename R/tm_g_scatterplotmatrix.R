@@ -181,7 +181,13 @@
 #'         )
 #'       ),
 #'       transformators = list(
-#'         teal_transform_filter(teal.picks::picks(datasets("ADRS"), teal.picks::variables("PARAMCD"), values(selected = "BESRSPI")))
+#'         teal_transform_filter(
+#'           teal.picks::picks(
+#'             teal.picks::datasets("ADRS"),
+#'             teal.picks::variables("PARAMCD"),
+#'             teal.picks::values(selected = "BESRSPI")
+#'           )
+#'         )
 #'       )
 #'     )
 #'   )

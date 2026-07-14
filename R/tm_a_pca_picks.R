@@ -248,7 +248,7 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
       teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tidyr")')
     })
 
-    merged <- merge_srv("merge", data = qenv, selectors = selectors, output_name = "anl")
+    merged <- teal.picks::merge_srv("merge", data = qenv, selectors = selectors, output_name = "anl")
     anl_merged_q <- merged$data
     selected_vars <- reactive(merged$variables()$dat)
 

@@ -81,9 +81,9 @@
 #'   modules = modules(
 #'     tm_g_response(
 #'       label = "Response Plots",
-#'       response = picks(
-#'         datasets("mtcars"),
-#'         variables(
+#'       response = teal.picks::picks(
+#'         teal.picks::datasets("mtcars"),
+#'         teal.picks::variables(
 #'           choices = c("cyl", "gear"),
 #'           selected = "cyl",
 #'           multiple = FALSE,

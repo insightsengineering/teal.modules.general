@@ -404,9 +404,11 @@ srv_t_crosstable.default <- function(id, data, label, x, y, remove_zero_columns,
         character(1),
         ANL
       )
-
       obj <- merged$anl_q_r()
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "### Table")
+
+      # To avoid R CMD check for Undefined global functions or variables
+      split_call <-  basic_tables <- count_value <- NULL
       obj <- teal.code::eval_code(
         obj,
         substitute(
