@@ -103,8 +103,16 @@ tm_tbl_roche_summary <- function(
   if (inherits(by, "picks")) {
     checkmate::assert(
       .var.name = "by",
+      if (checkmate::test_class(by$variables, c("pick", "variables"))) {
+        TRUE
+      } else {
+        "picks must contain `variables()`"
+      }
+    )
+    checkmate::assert(
+      .var.name = "by",
       if (teal.picks::is_pick_multiple(by$variables)) {
-        "Argument `by` must be a single selection (`multiple = FALSE`)."
+        "Argument `by` must be a single selection (`multiple = FALSE`)"
       } else {
         TRUE
       }
@@ -114,6 +122,14 @@ tm_tbl_roche_summary <- function(
 
 
   if (inherits(include, "picks")) {
+    checkmate::assert(
+      .var.name = "include",
+      if (checkmate::test_class(include$variables, c("pick", "variables"))) {
+        TRUE
+      } else {
+        "picks must contain `variables()`"
+      }
+    )
     attr(include, "label") <- "Include variable(s)"
   }
 
