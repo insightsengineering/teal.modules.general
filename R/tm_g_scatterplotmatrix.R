@@ -212,6 +212,8 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
 #' @export
 tm_g_scatterplotmatrix.default <- function(label = "Scatterplot Matrix",
                                            variables,
+                                           min_n_variables = 2L,
+                                           max_n_variables = 5L,
                                            plot_height = c(600, 200, 2000),
                                            plot_width = NULL,
                                            pre_output = NULL,
