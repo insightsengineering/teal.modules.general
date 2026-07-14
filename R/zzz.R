@@ -8,4 +8,7 @@ ggplot_themes <- c("gray", "bw", "linedraw", "light", "dark", "minimal", "classi
 
 #' @importFrom lifecycle deprecated
 #' @importFrom rlang :=
+#' @importFrom forcats fct_na_value_to_level
+#' @importFrom forcats fct_rev
+#' @importFrom forcats fct_infreq
 interactive <- NULL
