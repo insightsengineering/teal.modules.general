@@ -11,4 +11,5 @@ ggplot_themes <- c("gray", "bw", "linedraw", "light", "dark", "minimal", "classi
 #' @importFrom forcats fct_na_value_to_level
 #' @importFrom forcats fct_rev
 #' @importFrom forcats fct_infreq
+#' @import tidyselect
 interactive <- NULL
