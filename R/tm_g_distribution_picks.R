@@ -109,13 +109,13 @@ ui_g_distribution.picks <- function(id,
     ns("histogram_plot"),
     bins = bins,
     freq = freq,
-    transformators = select_decorators(decorators, "histogram_plot")
+    decorators = select_decorators(decorators, "histogram_plot")
   )
-  qq_elem <- .ui_qq(ns("qq_plot"), transformators = select_decorators(decorators, "qq_plot"))
+  qq_elem <- .ui_qq(ns("qq_plot"), decorators = select_decorators(decorators, "qq_plot"))
   summary_table_elem <- .ui_summary_table(ns("summary_table"), select_decorators(decorators, "Statistics Table"))
   test_table_elem <- .ui_test_table(ns("test_table"),
     is_stratified = !is.null(strata_var),
-    transformators = select_decorators(decorators, "Test Table")
+    decorators = select_decorators(decorators, "Test Table")
   )
 
   teal.widgets::standard_layout(
@@ -425,7 +425,7 @@ srv_g_distribution.picks <- function(id,
         user_default = ggplot2_args$default,
         module_plot = teal.widgets::ggplot2_args(labs = list(x = "theoretical", y = "sample"))
       ),
-      transformators = select_decorators(decorators, "histogram_plot")
+      decorators = select_decorators(decorators, "histogram_plot")
     )
 
     qq_output <- .srv_qq(
@@ -453,7 +453,7 @@ srv_g_distribution.picks <- function(id,
         user_default = ggplot2_args$default,
         module_plot = teal.widgets::ggplot2_args(labs = list(x = "theoretical", y = "sample"))
       ),
-      transformators = select_decorators(decorators, "qq_plot")
+      decorators = select_decorators(decorators, "qq_plot")
     )
 
     summary_table_output <- .srv_summary_table(
@@ -463,7 +463,7 @@ srv_g_distribution.picks <- function(id,
         merged$data()
       }),
       variables = merged$variables,
-      transformators = select_decorators(decorators, "Statistics Table")
+      decorators = select_decorators(decorators, "Statistics Table")
     )
 
     test_q <- reactive({
@@ -513,7 +513,7 @@ srv_g_distribution.picks <- function(id,
       data = test_q,
       variables = merged$variables,
       t_dist = reactive(input$t_dist),
-      transformators = select_decorators(decorators, "Test Table")
+      decorators = select_decorators(decorators, "Test Table")
     )
 
     # decorated_output_q <- reactive({
