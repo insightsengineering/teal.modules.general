@@ -48,10 +48,11 @@ Imports:
     gridExtra (>= 2.3),
     htmlwidgets (>= 1.6.4),
     jsonlite (>= 1.8.9),
+    lattice,
     lifecycle (>= 0.2.0),
     MASS (>= 7.3-60),
-    rlang,
     patchwork (>= 1.2.0),
+    rlang,
     rmarkdown (>= 2.23),
     rtables (>= 0.6.11),
     scales (>= 1.3.0),
@@ -70,6 +71,7 @@ Imports:
     tern (>= 0.9.7),
     tibble (>= 2.0.0),
     tidyr (>= 0.8.3),
+    tidyselect,
     tools,
     utils
 Suggests:

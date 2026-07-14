@@ -467,7 +467,7 @@ srv_g_scatterplot.picks <- function(id,
         validate_input(
           "x-variables-selected",
           condition = is.numeric(anl[[x_var]]) && all(anl[[x_var]] > 0 | is.na(anl[[x_var]])),
-          nessage = "X variable can only be log transformed if variable is numeric and all values are positive."
+          message = "X variable can only be log transformed if variable is numeric and all values are positive."
         )
       }
       if (log_y) {

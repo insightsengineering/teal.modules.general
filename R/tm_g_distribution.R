@@ -587,7 +587,7 @@ srv_g_distribution.default <- function(id,
             }
 
             ANL <- merged$anl_q_r()[["ANL"]]
-            round(get_dist_params(as.numeric(stats::na.omit(ANL[[variables()$dist_var]])), input$t_dist), 2)
+            round(get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var]])), input$t_dist), 2)
           } else {
             c("param1" = NA_real_, "param2" = NA_real_)
           }
@@ -657,13 +657,6 @@ srv_g_distribution.default <- function(id,
         )
 
       ANL <- obj[["ANL"]]
-      dist_var <- variables()$dist_var
-      s_var <- variables()$s_var
-      g_var <- variables()$g_var
-
-      dist_var_name <- variables()$dist_var_name
-      s_var_name <- variables()$s_var_name
-      g_var_name <- variables()$g_var_name
 
       roundn <- input$roundn
       dist_param1 <- input$dist_param1
@@ -795,19 +788,13 @@ srv_g_distribution.default <- function(id,
         is.null(input$ggtheme)
       },
       valueExpr = {
-        dist_var <- variables()$dist_var
-        s_var <- variables()$s_var
-        g_var <- variables()$g_var
-        dist_var_name <- variables()$dist_var_name
-        s_var_name <- variables()$s_var_name
-        g_var_name <- variables()$g_var_name
         t_dist <- input$t_dist
         dist_param1 <- input$dist_param1
         dist_param2 <- input$dist_param2
 
         scales_type <- input$scales_type
 
-        ndensity <- 512
+        ndensity <- 2^9
         main_type_var <- input$main_type
         bins_var <- input$bins
         add_dens_var <- input$add_dens
@@ -990,12 +977,6 @@ srv_g_distribution.default <- function(id,
         input$tabs
       },
       valueExpr = {
-        dist_var <- variables()$dist_var
-        s_var <- variables()$s_var
-        g_var <- variables()$g_var
-        dist_var_name <- variables()$dist_var_name
-        s_var_name <- variables()$s_var_name
-        g_var_name <- variables()$g_var_name
         dist_param1 <- input$dist_param1
         dist_param2 <- input$dist_param2
 
@@ -1126,14 +1107,6 @@ srv_g_distribution.default <- function(id,
       valueExpr = {
         # Create a private stack for this function only.
         ANL <- common_q()[["ANL"]]
-
-        dist_var <- variables()$dist_var
-        s_var <- variables()$s_var
-        g_var <- variables()$g_var
-
-        dist_var_name <- variables()$dist_var_name
-        s_var_name <- variables()$s_var_name
-        g_var_name <- variables()$g_var_name
 
         dist_param1 <- input$dist_param1
         dist_param2 <- input$dist_param2

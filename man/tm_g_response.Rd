@@ -162,9 +162,9 @@ app <- init(
   modules = modules(
     tm_g_response(
       label = "Response Plots",
-      response = picks(
-        datasets("mtcars"),
-        variables(
+      response = teal.picks::picks(
+        teal.picks::datasets("mtcars"),
+        teal.picks::variables(
           choices = c("cyl", "gear"),
           selected = "cyl",
           multiple = FALSE,
@@ -229,8 +229,8 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsWroqugTsCoSs1Iuli1qiq7qLsFuLUiyLcrbl3ZVDfYyiwMBaALp3g1DiJuqkHezD-Tf3d12VAF8lACuko0KhBio8gszildABefwZXBjPhCEQDRFo4RiGHnXSkGCJCSJaqiVAkURwPH43TUKD0OB+RGLLBiCkQKm6AAK7VImzwY3xZI5XMRqFoBAA1qIabSkUEqfyFmAvlcjiizvKtCxaAyMXL5XN8kRJWIEXMVQRlnswAdGBqhUaqSINHB+BbFtaVoKtUaYMJNJE9IiAGIAQQAMgBlZyao3nEy0ULui0RmOuP34uTxo0JDAS6WiRCIHXUQS4-60nNOyqhC35wsyktN2W184pJVt1WXAU1rPnRuS5ul3X63Ht-EEE1mzGW9YCtYoGCOgf4l1wN0ellgDarSfnAPUIMiNNR2O5hNJlPb3Tp2MH-sJodFktliuyqvZp1VrpdWgmJMKjkMwlg6DYJxjKIhQQKw4boOw4IACT1KUyFUowOidMCShgACdxAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsWroqugTsCoSs1Iuli1qiq7qLsFuLUiyLcrbl3ZVDfYyiwMBaALp3g1DiJuqkHezD-Tf3d12VAF8lACuko0KhBio8gszildABefwZXBjPhCEQDRFo4RiGHnXSkGCJCSJaqiVAkURwPH43TUKD0OB+RGLLBiCkQKm6AAK7VImzwY3xZI5XMRqFoBAA1qIabSkUEqfyFmAvlcjiizvKtCxaAyMXL5XN8kRJWIEXMVQRlnswAdGBqhUaqSINHB+BbFtaVoKtUaYMJNJE9IiAGIAQQAMgBlZyao3nEy0ULui0RmOuP34uTxo0JDAS6WiRCIHXUQS4-60nNOyqhC35wsyktN2W184pJVt1WXAU1rPnRuS5ul3X63Ht-EEE1mzGW9YCtYoGCOgf4l1wN0ellgDarSfnAPUIMiNNR2O5hNJlPb3Tp2MH-sJodFktliuyqvZp1VrpdWgmJMKjkMwlg6DYJxjKIhQQKw4boOw4IACT1KUyFUowOidMCShgACdxAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsWroqugTsCoSs1Iuli1qiq7qLsFuLUiyLcrbl3ZVDfYyiwMBaALp3g1DiJuqkHezD-Tf3d12VAF8lACuko0KhBio8gszildABefwZXBjPhCEQDRFo4RiGHnXSkGCJCSJaqiVAkURwPH43TUKD0OB+RGLLBiCkQKm6AAK7VImzwY3xZI5XMRCQwqFoBAA1qJEIgpbLRDTaQS4NxJdK5QqUlT+QswF8rkcUWc1RKlTrEFoWLQGRjVWq5vkiNKxAi5oaCMs9mADoxTULnVSRBo4PxPYsfStBebnTBhJpInpEQAxACCABkAMrOM3O84mWihCOezO51zx-FyAvOy3a+U27iCXH-Wm14OVUKehvKhVWlVd856uAGxbGgWd6vnPvW22Me30R3D-EEV3uzFe9YCtYoGBBmf40NwcORllgDarVfnRPUZMicvZvN1wvF0vn3QVvM36eFudNra1Ctiq7Y1sG7ZdF0tAmJMKjkMwlg6DYJxjKIhQQKwGboOw4IACT1KU+FUowOidMCShgACdxAA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsWroqugTsCoSs1Iuli1qiq7qLsFuLUiyLcrbl3ZVDfYyiwMBaALp3g1DiJuqkHezD-Tf3d12VAF8lACuko0KhBio8gszildABefwZXBjPhCEQDRFo4RiGHnXSkGCJCSJaqiVAkURwPH43TUKD0OB+RGLLBiCkQKm6AAK7VImzwY3xZI5XMRCQwqFoBAA1qJEIgpbLRDTaQS4NxJdK5QqUlT+QswF8rkcUWc1RKlTrEFoWLQGRjVWq5vkiNKxAi5oaCMs9mADoxTULnVSRBo4PxPYsfStBebnTBhJpInpEQAxACCABkAMrOM3O84mWihCOezO51zx-FyAvOy3a+U27iCXH-Wm14OVUKehvKhVWlVd856uAGxbGgWd6vnPvW22Me30R3D-EEV3uzFe9YCtYoGBBmf40NwcORllgDarVfnRPUZMicvZvN1wvF0vn3QVvM36eFudNra1Ctiq7Y1sG7ZdF0tAmJMKjkMwlg6DYJxjKIhQQKwGboOw4IACT1KU+FUowOidMCShgACdxAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
   \item{example-2}{

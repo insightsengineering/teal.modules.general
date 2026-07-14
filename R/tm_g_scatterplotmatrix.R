@@ -181,7 +181,13 @@
 #'         )
 #'       ),
 #'       transformators = list(
-#'         teal_transform_filter(teal.picks::picks(datasets("ADRS"), teal.picks::variables("PARAMCD"), values(selected = "BESRSPI")))
+#'         teal_transform_filter(
+#'           teal.picks::picks(
+#'             teal.picks::datasets("ADRS"),
+#'             teal.picks::variables("PARAMCD"),
+#'             teal.picks::values(selected = "BESRSPI")
+#'           )
+#'         )
 #'       )
 #'     )
 #'   )
@@ -212,6 +218,8 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
 #' @export
 tm_g_scatterplotmatrix.default <- function(label = "Scatterplot Matrix",
                                            variables,
+                                           min_n_variables = 2L,
+                                           max_n_variables = 5L,
                                            plot_height = c(600, 200, 2000),
                                            plot_width = NULL,
                                            pre_output = NULL,
@@ -249,7 +257,7 @@ tm_g_scatterplotmatrix.default <- function(label = "Scatterplot Matrix",
 
   ans <- module(
     label = label,
-    server = srv_g_scatterplotmatrix.default,
+    server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix.default,
     ui_args = args,
     server_args = list(

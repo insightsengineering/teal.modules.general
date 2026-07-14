@@ -321,6 +321,8 @@ srv_dataset_table <- function(id,
         data(),
         "library(dplyr);library(DT)"
       )
+
+      dt_rows <- NULL # To avoid "Undefined global functions or variables" note
       teal.code::eval_code(
         qenv,
         substitute(

@@ -513,6 +513,7 @@ srv_variable_browser <- function(id,
 #' @param x vector of any type and length
 #' @return Character string describing `NA` occurrence.
 #' @keywords internal
+#' @noRd
 var_missings_info <- function(x) {
   sprintf("%s [%s%%]", sum(is.na(x)), round(mean(is.na(x) * 100), 2))
 }
@@ -530,6 +531,7 @@ var_missings_info <- function(x) {
 #'   outliers (those more than `outlier_definition*IQR below/above Q1/Q3` be removed)
 #' @return text with simple statistics.
 #' @keywords internal
+#' @noRd
 var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition) {
   if (is.null(dt_rows)) {
     dt_rows <- 10
@@ -626,6 +628,8 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #'
 #' @return plot
 #' @keywords internal
+#' @importFrom utils tail
+#' @noRd
 plot_var_summary <- function(qenv,
                              wrap_character = NULL,
                              numeric_as_factor,
@@ -894,6 +898,7 @@ get_plotted_data <- function(input, plot_var, data) {
 #' @param columns_names (`environment`) the environment containing bindings for each dataset
 #' @param plot_var (`list`) the list containing the currently selected dataset (tab) and its column names
 #' @keywords internal
+#' @noRd
 render_tabset_panel_content <- function(datanames, parent_dataname, output, data, input, columns_names, plot_var) {
   lapply(datanames, render_single_tab,
     input = input,
@@ -914,6 +919,7 @@ render_tabset_panel_content <- function(datanames, parent_dataname, output, data
 #' @param parent_dataname (`character`) the name of a parent `dataname` to filter out variables from
 #' @inheritParams render_tabset_panel_content
 #' @keywords internal
+#' @noRd
 render_single_tab <- function(dataset_name, parent_dataname, output, data, input, columns_names, plot_var) {
   render_tab_header(dataset_name, output, data)
 
@@ -932,7 +938,11 @@ render_single_tab <- function(dataset_name, parent_dataname, output, data, input
 #'
 #' @param dataset_name (`character`) the name of the dataset of the tab
 #' @inheritParams render_tabset_panel_content
+# Added because there is no Rd to inherit from now:
+#' @param data (`teal_data`) the object containing all datasets
+#' @param output (`session$output`) the `shiny` session output
 #' @keywords internal
+#' @noRd
 render_tab_header <- function(dataset_name, output, data) {
   dataset_ui_id <- paste0("dataset_summary_", dataset_name)
   output[[dataset_ui_id]] <- renderText({
@@ -960,6 +970,7 @@ render_tab_header <- function(dataset_name, output, data) {
 #' @param parent_dataname (`character`) the name of a parent `dataname` to filter out variables from
 #' @inheritParams render_tabset_panel_content
 #' @keywords internal
+#' @noRd
 render_tab_table <- function(dataset_name, parent_dataname, output, data, input, columns_names, plot_var) {
   table_ui_id <- paste0("variable_browser_", dataset_name)
 
@@ -1078,6 +1089,7 @@ render_tab_table <- function(dataset_name, parent_dataname, output, data, input,
 #'
 #' @inheritParams render_tabset_panel_content
 #' @keywords internal
+#' @noRd
 establish_updating_selection <- function(datanames, input, plot_var, columns_names) {
   lapply(datanames, function(dataset_name) {
     table_ui_id <- paste0("variable_browser_", dataset_name)
@@ -1107,6 +1119,7 @@ get_bin_width <- function(x_vec, scaling_factor = 2) {
 #'   outliers (those more than `outlier_definition*IQR below/above Q1/Q3`) are removed
 #' @returns (`numeric`) vector without the outlier values
 #' @keywords internal
+#' @noRd
 remove_outliers_from <- function(var, outlier_definition) {
   var[filter_outliers(var, outlier_definition)]
 }
@@ -1120,6 +1133,7 @@ remove_outliers_from <- function(var, outlier_definition) {
 #' @inheritParams remove_outliers_from
 #'
 #' @keywords internal
+#' @noRd
 filter_outliers <- function(var, outlier_definition) {
   if (outlier_definition == 0) {
     return(rep(TRUE, length.out = length(var)))
@@ -1147,6 +1161,7 @@ filter_outliers <- function(var, outlier_definition) {
 #'
 #' @return Character string containing HTML code of the `sparkline` HTML widget.
 #' @keywords internal
+#' @noRd
 create_sparklines <- function(arr, width = 150, ...) {
   if (all(is.null(arr))) {
     return("")
