@@ -76,7 +76,10 @@
 tm_tbl_roche_summary <- function(
   label = "Summary table",
   by = NULL,
-  include = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(multiple = TRUE)),
+  include = teal.picks::picks(
+    teal.picks::datasets(),
+    teal.picks::variables(selected = dplyr::everything(), multiple = TRUE)
+  ),
   ...,
   col_label = NULL,
   pre_output = NULL,
