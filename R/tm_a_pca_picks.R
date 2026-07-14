@@ -223,6 +223,7 @@ ui_a_pca.picks <- function(id,
 }
 
 # Server function for the PCA module
+#' @importFrom teal validate_input
 srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args, decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
