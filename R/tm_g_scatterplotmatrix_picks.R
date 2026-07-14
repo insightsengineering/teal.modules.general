@@ -350,8 +350,7 @@ srv_g_scatterplotmatrix.picks <- function(id,
 #'   na.action = na.fail
 #' ))
 #'
-#' @export
-#'
+#' @noRd
 get_scatterplotmatrix_stats <- function(x, y,
                                         .f = stats::cor.test,
                                         .f_args = list(),
