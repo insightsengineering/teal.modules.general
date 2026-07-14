@@ -12,7 +12,7 @@ tm_a_regression.picks <- function(label = "Regression Analysis",
                                     teal.picks::datasets(),
                                     teal.picks::variables(choices = is.numeric),
                                     teal.picks::values()
-                                   ),
+                                  ),
                                   outlier = teal.picks::picks(
                                     regressor$datasets,
                                     teal.picks::variables(choices = tidyselect::where(~ is.factor(.) || is.character(.))),
