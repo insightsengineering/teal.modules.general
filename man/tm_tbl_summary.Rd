@@ -7,7 +7,8 @@
 tm_tbl_summary(
   label = "Summary table",
   by = NULL,
-  include = gtsummary::everything(),
+  include = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(multiple =
+    TRUE)),
   dataname = NULL,
   ...,
   col_label = NULL,

@@ -6,8 +6,9 @@
 \usage{
 tm_tbl_roche_summary(
   label = "Summary table",
-  by,
-  include,
+  by = NULL,
+  include = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(multiple =
+    TRUE)),
   ...,
   col_label = NULL,
   pre_output = NULL,
