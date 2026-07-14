@@ -32,8 +32,10 @@ tm_gt_template <- function(
   teal::assert_decorators(decorators, "table")
   datanames <- if (length(opts_picks) == 0L) {
     .dataname
+  } else {
+    .picks_datanames(opts_picks)
   }
-  checkmate::assert_string(datanames, null.ok = TRUE)
+  checkmate::assert_character(datanames, any.missing = FALSE, min.len = 1L)
 
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later evaluation
   if (rlang::is_quosure(.fun)) {
@@ -161,6 +163,7 @@ srv_gt_template <- function(id,
         )
       })
     } else {
+      merged <- list(data = data)
       reactive(
         rlang::list2(
           data = as.name(.dataname),
