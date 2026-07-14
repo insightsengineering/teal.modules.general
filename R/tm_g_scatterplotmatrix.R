@@ -251,7 +251,7 @@ tm_g_scatterplotmatrix.default <- function(label = "Scatterplot Matrix",
 
   ans <- module(
     label = label,
-    server = srv_g_scatterplotmatrix.default,
+    server = srv_g_scatterplotmatrix,
     ui = ui_g_scatterplotmatrix.default,
     ui_args = args,
     server_args = list(
