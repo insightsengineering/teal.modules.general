@@ -25,6 +25,17 @@ tm_gt_template <- function(
     opts_static$label <- col_label # label conflicts with teal modules argument, so we need to relabel it
   }
 
+  vapply(names(dots)[picks_index], function(x) {
+    checkmate::assert(
+      .var.name = x,
+      if (checkmate::test_class(dots[[x]]$variables, c("pick", "variables"))) {
+        TRUE
+      } else {
+        "picks must contain `variables()`"
+      }
+    )
+  }, FUN.VALUE = logical(1L))
+
   checkmate::assert_string(label)
   checkmate::assert_list(col_label, null.ok = TRUE, types = "character")
   checkmate::assert_multi_class(pre_output, c("shiny.tag", "shiny.tag.list", "html"), null.ok = TRUE)
