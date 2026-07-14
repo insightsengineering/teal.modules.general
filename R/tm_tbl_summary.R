@@ -4,14 +4,10 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param by (`picks`)
-#' An object with all available choices and with a pre-selected option on how to split rows.
-#'
-#' Note: multiple selection is not allowed
-#' @param include  (`picks`)
-#' An object with all available choices and with a pre-selected option that picks columns to include as rows.
-#'
-#' Note: multiple selection is not allowed
+#' @param by (`picks` or [dplyr::dplyr_tidy_select])
+#' When using picks object it should have [teal.picks::variables()] to identify a single column from the data.
+#' @param include  (`picks` or [dplyr::dplyr_tidy_select])
+#' When using picks object it should have [teal.picks::variables()] to identify one or more columns from the data.
 #' @param col_label Used to override default labels in summary table, e.g. `list(age = "Age, years")`.
 #' The default for each variable is the column label attribute, `attr(., 'label')`.
 #' If no label has been set, the column name is used.
@@ -46,12 +42,39 @@
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @inheritSection teal::example_module Reporting
-#' @export
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#' # General example
+#' data <- teal_data()
+#' data <- within(data, CO2 <- CO2)
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_tbl_summary(
+#'       by = teal.picks::picks(
+#'         datasets("CO2", "CO2"),
+#'         variables(selected = "Plant")
+#'       ),
+#'       include = teal.picks::picks(
+#'         datasets("CO2", "CO2"),
+#'         variables(selected = c("Type", "Treatment"), multiple = TRUE)
+#'       )
+#'     )
+#'   )
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examples
+#' # CDISC data example
 #' data <- within(teal.data::teal_data(), {
 #'   ADSL <- teal.data::rADSL
 #' })
@@ -59,7 +82,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_gtsummary(
+#'     tm_tbl_summary(
 #'       by = teal.picks::picks(
 #'         datasets(c("ADSL", "ADTTE"), "ADTTE"),
 #'         variables(c("SEX", "COUNTRY", "SITEID", "ACTARM", "CNSR", "PARAMCD"), "SEX")
@@ -74,6 +97,7 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#' @export
 tm_tbl_summary <- function(
   label = "Summary table",
   by = NULL,
@@ -206,7 +230,7 @@ srv_tbl_summary_partial <- function(id,
             rlang::is_expression(summary_args$include) ||
             (length(summary_args$include) != 0L && all(!summary_args$include %in% summary_args$by)),
           "Variables to stratify with and variables to include should be different"
-        ),
+        )
       )
       q
     })

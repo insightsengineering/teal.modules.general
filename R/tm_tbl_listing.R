@@ -30,12 +30,30 @@
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @inheritSection teal::example_module Reporting
-#' @export
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#' # General example
+#' data <- teal_data()
+#' data <- within(data, CO2 <- CO2)
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_tbl_listing(dataname = "CO2")
+#'   )
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examples
+#' # CDISC data example
 #' data <- within(teal.data::teal_data(), {
 #'   ADSL <- teal.data::rADSL
 #' })
@@ -43,12 +61,13 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_tbl_listing()
+#'     tm_tbl_listing(dataname = "ADSL")
 #'   )
 #' )
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#' @export
 tm_tbl_listing <- function(
   label = "Listing table",
   dataname = NULL,

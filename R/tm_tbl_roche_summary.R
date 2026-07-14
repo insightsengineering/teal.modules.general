@@ -36,12 +36,39 @@
 #' `vignette("transform-module-output", package = "teal")` or the [`teal::teal_transform_module()`] documentation.
 #'
 #' @inheritSection teal::example_module Reporting
-#' @export
 #' @examplesShinylive
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
 #' @examples
+#' # General example
+#' data <- teal_data()
+#' data <- within(data, CO2 <- CO2)
+#' app <- init(
+#'   data = data,
+#'   modules = modules(
+#'     tm_tbl_roche_summary(
+#'       by = teal.picks::picks(
+#'         datasets("CO2", "CO2"),
+#'         variables(selected = "Plant")
+#'       ),
+#'       include = teal.picks::picks(
+#'         datasets("CO2", "CO2"),
+#'         variables(selected = c("Type", "Treatment"), multiple = TRUE)
+#'       )
+#'     )
+#'   )
+#' )
+#' if (interactive()) {
+#'   shinyApp(app$ui, app$server)
+#' }
+#'
+#' @examplesShinylive
+#' library(teal.modules.general)
+#' interactive <- function() TRUE
+#' {{ next_example }}
+#' @examples
+#' # CDISC data example
 #' data <- within(teal.data::teal_data(), {
 #'   ADSL <- teal.data::rADSL
 #'   ADTTE <- teal.data::rADTTE
@@ -50,7 +77,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_roche_summary(
+#'     tm_tbl_roche_summary(
 #'       by = teal.picks::picks(
 #'         datasets(c("ADSL", "ADTTE"), "ADTTE"),
 #'         variables(c("SEX", "COUNTRY", "SITEID", "ACTARM", "CNSR", "PARAMCD"), "SEX")
@@ -65,6 +92,7 @@
 #' if (interactive()) {
 #'   shinyApp(app$ui, app$server)
 #' }
+#' @export
 tm_tbl_roche_summary <- function(
   label = "Summary table",
   by = NULL,

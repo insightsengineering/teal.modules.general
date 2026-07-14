@@ -22,15 +22,11 @@ tm_tbl_summary(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
-\item{by}{(\code{picks})
-An object with all available choices and with a pre-selected option on how to split rows.
+\item{by}{(\code{picks} or \link[dplyr:dplyr_tidy_select]{dplyr::dplyr_tidy_select})
+When using picks object it should have \code{\link[teal.picks:variables]{teal.picks::variables()}} to identify a single column from the data.}
 
-Note: multiple selection is not allowed}
-
-\item{include}{(\code{picks})
-An object with all available choices and with a pre-selected option that picks columns to include as rows.
-
-Note: multiple selection is not allowed}
+\item{include}{(\code{picks} or \link[dplyr:dplyr_tidy_select]{dplyr::dplyr_tidy_select})
+When using picks object it should have \code{\link[teal.picks:variables]{teal.picks::variables()}} to identify one or more columns from the data.}
 
 \item{...}{
   Arguments passed on to \code{\link[gtsummary:tbl_summary]{gtsummary::tbl_summary}}
@@ -212,6 +208,29 @@ For more information on reporting in \code{teal}, see the vignettes:
 }
 
 \examples{
+# General example
+data <- teal_data()
+data <- within(data, CO2 <- CO2)
+app <- init(
+  data = data,
+  modules = modules(
+    tm_tbl_summary(
+      by = teal.picks::picks(
+        datasets("CO2", "CO2"),
+        variables(selected = "Plant")
+      ),
+      include = teal.picks::picks(
+        datasets("CO2", "CO2"),
+        variables(selected = c("Type", "Treatment"), multiple = TRUE)
+      )
+    )
+  )
+)
+if (interactive()) {
+  shinyApp(app$ui, app$server)
+}
+
+# CDISC data example
 data <- within(teal.data::teal_data(), {
   ADSL <- teal.data::rADSL
 })
@@ -219,7 +238,7 @@ join_keys(data) <- default_cdisc_join_keys[names(data)]
 app <- init(
   data = data,
   modules = modules(
-    tm_gtsummary(
+    tm_tbl_summary(
       by = teal.picks::picks(
         datasets(c("ADSL", "ADTTE"), "ADTTE"),
         variables(c("SEX", "COUNTRY", "SITEID", "ACTARM", "CNSR", "PARAMCD"), "SEX")
@@ -238,8 +257,13 @@ if (interactive()) {
 \section{Examples in Shinylive}{
 \describe{
   \item{example-1}{
-    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQVKAL6KEABWRCpxANZwrKLsibZGuvxwJlDCpHEE-LSiBHFNLe2dwNDwXT0AukpoqEUqAezp-WW6ALwHXrj7fEIiose6l8JiexAZGaQwcRKkooIwMCwc+xeunorFuJVQtAIrVE0QhUK6gKBpygojgX3YBD2YCq+QUeF0eJydjsrjAchShOyxNJ5MRQK0LFoUHo1wxWNyzgAGniKWAAMIAeUcADkHABNHkEsC5ACSJJl2UlhL5dkyWAAskr+cLclgtQAFNWZdV8xVk3kc7lkum6WnPJEqAjUQQDMFhHhw6GwyHQp5Il6JVHozGU6r4ynUvHkqU4qPne3+hmMJksx4h6Vy5wKrWCkXirWZFVqzXh6VcuNS2Xys0pGAjWioES3Bwuer+tsvDv1eq0Ey6dgqcjMSw6Gy2NL20TBCCsTLodibAAkgloKSXqMYOkY9RqYBqqyAA}{Open in Shinylive}
-    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqX8opKAeMB3WqQAFiqccNwYHl6IiFzUAPqRUDa4uiBKuroAggAiAMoAMj66sRGeUNGMOQVKAL6KEABWRCpxANZwrKLsibZGuvxwJlDCpHEE-LSiBHFNLe2dwNDwXT0AukpoqEUqAezp-WW6ALwHXrj7fEIiose6l8JiexAZGaQwcRKkooIwMCwc+xeunorFuJVQtAIrVE0QhUK6gKBpygojgX3YBD2YCq+QUeF0eJydjsrjAchShOyxNJ5MRQK0LFoUHo1wxWNyzgAGniKWAAMIAeUcADkHABNHkEsC5ACSJJl2UlhL5dkyWAAskr+cLclgtQAFNWZdV8xVk3kc7lkum6WnPJEqAjUQQDMFhHhw6GwyHQp5Il6JVHozGU6r4ynUvHkqU4qPne3+hmMJksx4h6Vy5wKrWCkXirWZFVqzXh6VcuNS2Xys0pGAjWioES3Bwuer+tsvDv1eq0Ey6dgqcjMSw6Gy2NL20TBCCsTLodibAAkgloKSXqMYOkY9RqYBqqyAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQHFps3XAAPWFQRJX4oUigDYy5qAH1wyJswiKijXQB3WlIACxV2RKhcXQBhAHkAJmjSysVodGqVbPYlXV1C3QBedtTcVt0+IRFRLoGBYTEWiDa20hg40np40UEYGBYOfpndelZR2IxUWgIAa1FERCPT0Snt7cLROFIbhTByitfi1-fXuT7pu5tLQsWhQJaTR4iDRwfijV4ABWoUDIvy2Mz+aLaKgI1EE-D03QOVzOF2JLwBgIeTxeb0qn103zpYAxFLuwMYoPBN0hcGhsO6BBaYDsrFQcHprzsjDgEXgKOZxRgwk0IQJ9iczjqgK16P6dTqtBMunYKnIzEsOhsthA-VEeQgrAAguh2GhUAASQS0Ypu92PRg6Rh1AC+SjAwYAukA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQHFps3XAAPWFQRJX4oUigDYy5qAH1wyJswiKijXQB3WlIACxV2RKhcXQBhAHkAJmjSysVodGqVbPYlXV1C3QBedtTcVt0+IRFRLoGBYTEWiDa20hg40np40UEYGBYOfpndelZR2IxUWgIAa1FERCPT0Snt7cLROFIbhTByitfi1-fXuT7pu5tLQsWhQJaTR4iDRwfijV4ABWoUDIvy2Mz+aLaKgI1EE-D03QOVzOF2JLwBgIeTxeb0qn103zpYAxFLuwMYoPBN0hcGhsO6BBaYDsrFQcHprzsjDgEXgKOZxRgwk0IQJ9iczjqgK16P6dTqtBMunYKnIzEsOhsthA-VEeQgrAAguh2GhUAASQS0Ypu92PRg6Rh1AC+SjAwYAukA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
+    \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
+  }
+  \item{example-2}{
+    \href{https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYwB3WlIACxVOOG4MRKhERC5qAH0Cm1xdECVdXQBBHwCAGWTdEvywwsRGRpalAF9FCAArIhVSgGs4VlF2AtsjELgTKGFSUoJ+WlECUrGJ6dngaHg5hYBdJTRUNpV09lqQrt0AXmfw3Ce+IRFRN90P2EYkeEDqdVIMFKpHoZVEghgMBYHCe4N09FYAI6qFoBEmoiKOLxc1RaI+UFEcFIcwIjzAfWaCjwuiZjTsdlcYDkVVZPnZnO5pLRWhYtCgsJBtKZAWcAA0mTywF4APKOAByDgAmgqWWAAn4OX4fDrWV47PUsABZE1KtUBLA2gAKFvqlt8TO5upl8q5Qt0grBZJUBGogn4ene2Nx+MJ0ZJgbJ5Mp1PYUvpTUZzN5-I9ioZub9dRFjDFEppdP1huNWaVqo1WG1NfqZot1pr3tzXoNziNOpg61ocQj9iczmGifH4Mnw2GtBMunYKnIzEsOhsthqgdEWQgrHq6HYNwAJIJaFVj5TGDpGMMBmABhcgA}{Open in Shinylive}
+    \if{html}{\out{<iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYwB3WlIACxVOOG4MRKhERC5qAH0Cm1xdECVdXQBBHwCAGWTdEvywwsRGRpalAF9FCAArIhVSgGs4VlF2AtsjELgTKGFSUoJ+WlECUrGJ6dngaHg5hYBdJTRUNpV09lqQrt0AXmfw3Ce+IRFRN90P2EYkeEDqdVIMFKpHoZVEghgMBYHCe4N09FYAI6qFoBEmoiKOLxc1RaI+UFEcFIcwIjzAfWaCjwuiZjTsdlcYDkVVZPnZnO5pLRWhYtCgsJBtKZAWcAA0mTywF4APKOAByDgAmgqWWAAn4OX4fDrWV47PUsABZE1KtUBLA2gAKFvqlt8TO5upl8q5Qt0grBZJUBGogn4ene2Nx+MJ0ZJgbJ5Mp1PYUvpTUZzN5-I9ioZub9dRFjDFEppdP1huNWaVqo1WG1NfqZot1pr3tzXoNziNOpg61ocQj9iczmGifH4Mnw2GtBMunYKnIzEsOhsthqgdEWQgrHq6HYNwAJIJaFVj5TGDpGMMBmABhcgA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50\%; margin-top: 30px; transform: translateX(-50\%); z-index: 1"></iframe>}}
     \if{html}{\out{<a style='height: 800px; display: block;'></a>}}
   }
 }
