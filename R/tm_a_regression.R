@@ -46,7 +46,7 @@
 # nolint end: line_length.
 #'
 #' @inherit shared_params return
-#'
+#' @param default_outlier_label (`character`) optional, default column selected to label outliers.
 #' @section Decorating Module:
 #'
 #' This module generates the following objects, which can be modified in place using decorators:

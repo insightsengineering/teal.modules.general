@@ -82,6 +82,8 @@ adding context or further instructions. Elements like \code{shiny::helpText()} a
 \item Cook's dist vs Leverage
 }}
 
+\item{default_outlier_label}{(\code{character}) optional, default column selected to label outliers.}
+
 \item{label_segment_threshold}{(\code{numeric(1)} or \code{numeric(3)})
 Minimum distance between label and point on the plot that triggers the creation of
 a line segment between the two.
