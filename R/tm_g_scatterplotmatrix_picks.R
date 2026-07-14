@@ -105,6 +105,10 @@ ui_g_scatterplotmatrix.picks <- function(id,
 }
 
 # Server function for the scatterplot matrix module
+#' @importFrom lattice splom
+#' @importFrom lattice panel.splom
+#' @importFrom lattice current.panel.limits
+#' @importFrom lattice panel.text
 srv_g_scatterplotmatrix.picks <- function(id,
                                           data,
                                           variables,
