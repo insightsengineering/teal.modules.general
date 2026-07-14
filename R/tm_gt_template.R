@@ -198,7 +198,13 @@ srv_gt_template <- function(id,
       )
     }
 
-    output_q <- partial_srv("custom", merged$data, summary_args_r = summary_args, .fun_quo = .fun_quo)
+    output_q <- partial_srv(
+      "custom",
+      merged$data,
+      summary_args_r = summary_args,
+      .fun_quo = .fun_quo,
+      .decorator_name = .decorator_name
+    )
 
     validated_q <- reactive({
       q <- output_q()
@@ -230,6 +236,7 @@ srv_gt_template_partial <- function(id,
                                     .fun_quo,
                                     ...,
                                     decorators,
+                                    .decorator_name = "table",
                                     summary_args_r) {
   moduleServer(id, function(input, output, session) {
     summary_args_processed <- summary_args_r
@@ -252,8 +259,9 @@ srv_gt_template_partial <- function(id,
 
     reactive({
       within(req(qenv()),
-        expr = table <- table_call,
-        table_call = req(tbl_summary_call())
+        expr = decorator_name <- table_call,
+        table_call = req(tbl_summary_call()),
+        decorator_name = as.name(.decorator_name)
       )
     })
   })

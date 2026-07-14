@@ -61,7 +61,7 @@
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
-#'     tm_tbl_listing(dataname = "ADSL")
+#'     tm_tbl_listing(dataname = "ADSL", split_by_rows = list(variable_level = "SEX"))
 #'   )
 #' )
 #' if (interactive()) {
