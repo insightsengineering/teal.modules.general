@@ -34,6 +34,7 @@ tm_gt_template <- function(
     .dataname
   }
   checkmate::assert_string(datanames, null.ok = TRUE)
+
   .fun_quo <- rlang::enquo(.fun) # Capture the function as a quosure for later evaluation
   if (rlang::is_quosure(.fun)) {
     .fun_quo <- .fun
@@ -138,27 +139,18 @@ srv_gt_template <- function(id,
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     summary_args <- if (length(opts_picks) > 0L) {
-      selectors <- teal.picks::picks_srv(
-        picks = opts_picks,
-        data = data
-      )
+      selectors <- teal.picks::picks_srv(picks = opts_picks, data = data)
+      merged <- teal.picks::merge_srv("merge", data = data, selectors = selectors, output_name = "ANL")
 
       reactive({
-        dataset <- unique(vapply(names(selectors), function(x) selectors[[x]]()$datasets$selected, character(1L)))
+        datanames <- vapply(names(selectors), function(x) selectors[[x]]()$datasets$selected, character(1L))
         validate(
-          need(
-            length(dataset) > 0L,
-            "No table selected in the module. Please check inputs"
-          ),
-          need(
-            length(dataset) == 1L,
-            "Input from multiple tables: this module doesn't accept that."
-          )
+          need(length(datanames) > 0L, "No table selected in the module. Please check inputs")
         )
         rlang::list2(
-          data = as.name(dataset[[1]]),
+          data = as.name("ANL"),
           !!!rlang::set_names(
-            sapply(names(selectors), function(x_name) selectors[[x_name]]()$variables$selected, simplify = FALSE),
+            sapply(names(selectors), function(x_name) merged$variables()[[x_name]], simplify = FALSE),
             names(selectors)
           ),
           !!!rlang::set_names(
@@ -181,7 +173,7 @@ srv_gt_template <- function(id,
       )
     }
 
-    output_q <- partial_srv("custom", data, summary_args_r = summary_args, .fun_quo = .fun_quo)
+    output_q <- partial_srv("custom", merged$data, summary_args_r = summary_args, .fun_quo = .fun_quo)
 
     validated_q <- reactive({
       q <- output_q()
