@@ -28,6 +28,9 @@ When using picks object it should have \code{\link[teal.picks:variables]{teal.pi
 \item{include}{(\code{picks} or \link[dplyr:dplyr_tidy_select]{dplyr::dplyr_tidy_select})
 When using picks object it should have \code{\link[teal.picks:variables]{teal.picks::variables()}} to identify one or more columns from the data.}
 
+\item{dataname}{(\code{string} or \code{NULL}) Name of the dataset to be used in the module if and only if
+\code{picks} is not used for other arguments.}
+
 \item{...}{
   Arguments passed on to \code{\link[gtsummary:tbl_summary]{gtsummary::tbl_summary}}
   \describe{

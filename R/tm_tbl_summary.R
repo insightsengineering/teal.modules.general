@@ -12,6 +12,8 @@
 #' The default for each variable is the column label attribute, `attr(., 'label')`.
 #' If no label has been set, the column name is used.
 # nolint start
+#' @param dataname (`string` or `NULL`) Name of the dataset to be used in the module if and only if
+#' `picks` is not used for other arguments.
 #' @inheritDotParams gtsummary::tbl_summary statistic digits type value missing missing_text missing_stat sort
 # nolint ends
 #' @inherit shared_params return
@@ -122,44 +124,36 @@ tm_tbl_summary <- function(
     list(by = by),
     list(include = tryCatch(include, error = function(e) include_expr))
   )
-  include <- dots$include # Tidyselect expression that needs to be defused for assertion bellow
-  stopifnot(
-    "dataname string must be provided if teal.picks::picks is not used for other arguments." =
-      (length(dots) > 0L && any(vapply(dots, inherits, FUN.VALUE = logical(1L), "picks"))) ||
-        checkmate::test_string(dataname)
+
+  checkmate::assert_class(by, "picks")
+  checkmate::assert(
+    .var.name = "by",
+    if (checkmate::test_class(by$variables, c("pick", "variables"))) {
+      TRUE
+    } else {
+      "picks must contain `variables()`"
+    }
   )
+  checkmate::assert(
+    .var.name = "by",
+    if (teal.picks::is_pick_multiple(by$variables)) {
+      "Must be a single selection (`multiple = FALSE`)"
+    } else {
+      TRUE
+    }
+  )
+  attr(by, "label") <- "By variable"
 
-  if (inherits(by, "picks")) {
-    checkmate::assert(
-      .var.name = "by",
-      if (checkmate::test_class(by$variables, c("pick", "variables"))) {
-        TRUE
-      } else {
-        "picks must contain `variables()`"
-      }
-    )
-    checkmate::assert(
-      .var.name = "by",
-      if (teal.picks::is_pick_multiple(by$variables)) {
-        "Argument `by` must be a single selection (`multiple = FALSE`)."
-      } else {
-        TRUE
-      }
-    )
-    attr(by, "label") <- "By variable"
-  }
-
-  if (inherits(include, "picks")) {
-    checkmate::assert(
-      .var.name = "include",
-      if (checkmate::test_class(include$variables, c("pick", "variables"))) {
-        TRUE
-      } else {
-        "picks must contain `variables()`"
-      }
-    )
-    attr(include, "label") <- "Include variable(s)"
-  }
+  checkmate::assert_class(include, "picks")
+  checkmate::assert(
+    .var.name = "include",
+    if (checkmate::test_class(include$variables, c("pick", "variables"))) {
+      TRUE
+    } else {
+      "picks must contain `variables()`"
+    }
+  )
+  attr(include, "label") <- "Include variable(s)"
 
   tm_gt_template(
     label = label,
@@ -215,7 +209,7 @@ srv_tbl_summary_partial <- function(id,
 
       # Defaults to include all variables if none selected
       if (length(tbl_summary_args$include) == 0L) {
-        tbl_summary_args$include <- rlang::expr(gtsummary::everything())
+        tbl_summary_args$include <- character(0L)
       }
       tbl_summary_args
     })

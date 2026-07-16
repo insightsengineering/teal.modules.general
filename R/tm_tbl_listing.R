@@ -4,6 +4,7 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
+#' @inheritParams tm_tbl_summary
 #' @inheritDotParams crane::tbl_listing split_by_rows split_by_columns add_blank_rows
 #' @inherit shared_params return
 #' @section Decorating Module:

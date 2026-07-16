@@ -19,6 +19,9 @@ tm_tbl_listing(
 \item{label}{(\code{character(1)}) Label shown in the navigation item for the module or module group.
 For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
+\item{dataname}{(\code{string} or \code{NULL}) Name of the dataset to be used in the module if and only if
+\code{picks} is not used for other arguments.}
+
 \item{...}{
   Arguments passed on to \code{\link[crane:tbl_listing]{crane::tbl_listing}}
   \describe{
@@ -32,6 +35,10 @@ For \code{modules()} defaults to \code{"root"}. See \code{Details}.}
 
 \emph{Variable names passed in these named lists must be character vectors; tidyselect/unquoted syntax is not accepted.}}
   }}
+
+\item{col_label}{Used to override default labels in summary table, e.g. \code{list(age = "Age, years")}.
+The default for each variable is the column label attribute, \code{attr(., 'label')}.
+If no label has been set, the column name is used.}
 
 \item{pre_output}{(\code{shiny.tag}) optional, text or UI element to be displayed before the module's output,
 providing context or a title.

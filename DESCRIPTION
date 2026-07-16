@@ -87,6 +87,7 @@ Suggests:
     withr (>= 2.0.0)
 Remotes:
     insightsengineering/teal.widgets@999-tm_gtsummary
+    insightsengineering/teal.picks@assertion
 VignetteBuilder:
     knitr,
     rmarkdown

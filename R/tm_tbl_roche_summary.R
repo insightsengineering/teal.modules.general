@@ -100,6 +100,7 @@ tm_tbl_roche_summary <- function(
     teal.picks::datasets(),
     teal.picks::variables(selected = dplyr::everything(), multiple = TRUE)
   ),
+  dataname = NULL,
   ...,
   col_label = NULL,
   pre_output = NULL,
@@ -120,7 +121,7 @@ tm_tbl_roche_summary <- function(
   stopifnot(
     "dataname string must be provided if teal.picks::picks is not used for other arguments." =
       (length(dots) > 0L && any(vapply(dots, inherits, FUN.VALUE = logical(1L), "picks"))) ||
-        checkmate::test_string(dataname)
+        checkmate::test_string(dots$dataname)
   )
 
   if (inherits(by, "picks")) {
@@ -168,6 +169,7 @@ tm_tbl_roche_summary <- function(
       srv_gt_template(id = id, data = data, ..., partial_srv = srv_tbl_roche_summary_partial)
     },
     ...,
+    .dataname = dataname,
     col_label = col_label,
     pre_output = pre_output,
     post_output = post_output,

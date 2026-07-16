@@ -262,7 +262,7 @@ srv_g_distribution.picks <- function(id,
           condition = inherits(anl[[merged$variables()$group_var]], c("integer", "factor", "character")),
           message = "Group by variable must be `factor`, `character`, or `integer`"
         )
-        obj <- within(obj, library("forcats"))
+        obj <- teal.code::eval_code(obj, "library(forcats)")
         obj <- within(
           obj,
           expr = anl[[group_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[group_var]]), "NA"),
@@ -277,7 +277,7 @@ srv_g_distribution.picks <- function(id,
           message = "Stratify by variable must be `factor`, `character`, or `integer`"
         )
 
-        obj <- within(obj, library("forcats"))
+        obj <- teal.code::eval_code(obj, "library(forcats)")
         obj <- within(
           obj,
           expr = anl[[strata_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[strata_var]]), "NA"),
