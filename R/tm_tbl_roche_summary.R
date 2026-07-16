@@ -110,21 +110,8 @@ tm_tbl_roche_summary <- function(
 ) {
   message("Initializing tm_roche_summary")
 
-  include_expr <- substitute(include)
-
-  dots <- c(
-    rlang::dots_list(..., .named = TRUE),
-    list(by = by),
-    list(include = tryCatch(include, error = function(e) include_expr))
-  )
-  include <- dots$include # Tidyselect expression that needs to be defused for assertion bellow
-  stopifnot(
-    "dataname string must be provided if teal.picks::picks is not used for other arguments." =
-      (length(dots) > 0L && any(vapply(dots, inherits, FUN.VALUE = logical(1L), "picks"))) ||
-        checkmate::test_string(dots$dataname)
-  )
-
-  if (inherits(by, "picks")) {
+  checkmate::assert_class(by, "picks", null.ok = TRUE)
+  if (!is.null(by)) {
     checkmate::assert(
       .var.name = "by",
       if (checkmate::test_class(by$variables, c("pick", "variables"))) {
@@ -136,7 +123,7 @@ tm_tbl_roche_summary <- function(
     checkmate::assert(
       .var.name = "by",
       if (teal.picks::is_pick_multiple(by$variables)) {
-        "Argument `by` must be a single selection (`multiple = FALSE`)"
+        "Must be a single selection (`multiple = FALSE`)"
       } else {
         TRUE
       }
@@ -144,18 +131,16 @@ tm_tbl_roche_summary <- function(
     attr(by, "label") <- "By variable"
   }
 
-
-  if (inherits(include, "picks")) {
-    checkmate::assert(
-      .var.name = "include",
-      if (checkmate::test_class(include$variables, c("pick", "variables"))) {
-        TRUE
-      } else {
-        "picks must contain `variables()`"
-      }
-    )
-    attr(include, "label") <- "Include variable(s)"
-  }
+  checkmate::assert_class(include, "picks")
+  checkmate::assert(
+    .var.name = "include",
+    if (checkmate::test_class(include$variables, c("pick", "variables"))) {
+      TRUE
+    } else {
+      "picks must contain `variables()`"
+    }
+  )
+  attr(include, "label") <- "Include variable(s)"
 
   tm_gt_template(
     label = label,

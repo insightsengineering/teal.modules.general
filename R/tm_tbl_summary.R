@@ -117,32 +117,26 @@ tm_tbl_summary <- function(
 ) {
   message("Initializing tm_gtsummary")
 
-  include_expr <- substitute(include)
-
-  dots <- c(
-    rlang::dots_list(..., .named = TRUE),
-    list(by = by),
-    list(include = tryCatch(include, error = function(e) include_expr))
-  )
-
-  checkmate::assert_class(by, "picks")
-  checkmate::assert(
-    .var.name = "by",
-    if (checkmate::test_class(by$variables, c("pick", "variables"))) {
-      TRUE
-    } else {
-      "picks must contain `variables()`"
-    }
-  )
-  checkmate::assert(
-    .var.name = "by",
-    if (teal.picks::is_pick_multiple(by$variables)) {
-      "Must be a single selection (`multiple = FALSE`)"
-    } else {
-      TRUE
-    }
-  )
-  attr(by, "label") <- "By variable"
+  checkmate::assert_class(by, "picks", null.ok = TRUE)
+  if (!is.null(by)) {
+    checkmate::assert(
+      .var.name = "by",
+      if (checkmate::test_class(by$variables, c("pick", "variables"))) {
+        TRUE
+      } else {
+        "picks must contain `variables()`"
+      }
+    )
+    checkmate::assert(
+      .var.name = "by",
+      if (teal.picks::is_pick_multiple(by$variables)) {
+        "Must be a single selection (`multiple = FALSE`)"
+      } else {
+        TRUE
+      }
+    )
+    attr(by, "label") <- "By variable"
+  }
 
   checkmate::assert_class(include, "picks")
   checkmate::assert(
