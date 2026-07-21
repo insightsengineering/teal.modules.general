@@ -166,7 +166,6 @@ srv_gt_template <- function(id,
 
     summary_args <- if (length(opts_picks) > 0L) {
       selectors <- teal.picks::picks_srv(picks = opts_picks, data = q_with_dplyr)
-
       merged <- teal.picks::merge_srv("merge", data = q_with_dplyr, selectors = selectors, output_name = "ANL")
 
       reactive({
