@@ -162,9 +162,12 @@ srv_gt_template <- function(id,
   moduleServer(id, function(input, output, session) {
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
+    q_with_dplyr <- reactive(teal.code::eval_code(data(), "library(dplyr)"))
+
     summary_args <- if (length(opts_picks) > 0L) {
-      selectors <- teal.picks::picks_srv(picks = opts_picks, data = data)
-      merged <- teal.picks::merge_srv("merge", data = data, selectors = selectors, output_name = "ANL")
+      selectors <- teal.picks::picks_srv(picks = opts_picks, data = q_with_dplyr)
+
+      merged <- teal.picks::merge_srv("merge", data = q_with_dplyr, selectors = selectors, output_name = "ANL")
 
       reactive({
         datanames <- vapply(names(selectors), function(x) selectors[[x]]()$datasets$selected, character(1L))
@@ -248,7 +251,7 @@ srv_gt_template_partial <- function(id,
     library_name <- rlang::call_ns(as.call(list(rlang::get_expr(.fun_quo))))
 
     qenv <- reactive({
-      obj <- teal.code::eval_code(req(data()), "library(dplyr)")
+      obj <- req(data())
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Module's output(s)")
       if (is.null(library_name)) {
         obj
