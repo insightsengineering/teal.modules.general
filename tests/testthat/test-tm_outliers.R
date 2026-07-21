@@ -182,8 +182,8 @@ testthat::describe("test for input validation", {
     )
   )
 
-  it("fails if no outlier_var defined", {
-    testthat::expect_error(tm_outliers(), "argument \"outlier_var\" is missing, with no default")
+  it("succeeds with arguments defined", {
+    testthat::expect_no_error(tm_outliers())
   })
 
   it("fails if outlier_var is not of the expected type", {
