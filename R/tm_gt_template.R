@@ -248,7 +248,7 @@ srv_gt_template_partial <- function(id,
     library_name <- rlang::call_ns(as.call(list(rlang::get_expr(.fun_quo))))
 
     qenv <- reactive({
-      obj <- req(data())
+      obj <- teal.code::eval_code(req(data()), "library(dplyr)")
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Module's output(s)")
       if (is.null(library_name)) {
         obj
