@@ -209,11 +209,12 @@ ui_g_bivariate.picks <- function(id,
             conditionalPanel(
               condition = paste0("input['", ns("coloring"), "']"),
               tags$div(
-                teal.picks::picks_ui(id = ns("color"), picks = color), # label = "Outline color by variable"
-                teal.picks::picks_ui(id = ns("fill"), picks = fill), # label = "Outline color by variable"
+                teal.picks::picks_ui(id = ns("color"), picks = color), # (label) Outline color by variable
+                teal.picks::picks_ui(id = ns("fill"), picks = fill), # (label) Fill color by variable
                 tags$div(
                   id = ns("size_settings"),
-                  teal.picks::picks_ui(id = ns("size"), picks = size) # label = "Size of points by variable (only if x and y are numeric)"
+                  # (label) Size of points by variable (only if x and y are numeric)"
+                  teal.picks::picks_ui(id = ns("size"), picks = size)
                 )
               )
             )
