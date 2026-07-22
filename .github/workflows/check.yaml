@@ -10,7 +10,7 @@ on:
       - ready_for_review
     branches:
       - main
-      - redesign@main
+      - redesign_extraction@main
   push:
     branches:
       - main
