@@ -1159,11 +1159,15 @@ testthat::describe("UI switches and controls", {
         session$setInputs("numeric_as_factor" = FALSE)
         session$flushReact()
         testthat::expect_no_error(output$variable_summary_table)
+        expect_s3_class(plot_r(), "ggplot")
 
         # Treat as factor (numeric_as_factor = TRUE)
         session$setInputs("numeric_as_factor" = TRUE)
         session$flushReact()
         testthat::expect_no_error(output$variable_summary_table)
+        # Regression test for #996: factor plot must be produced (was assigned
+        # to `p` instead of `plot`, so no visualization was rendered).
+        expect_s3_class(plot_r(), "ggplot")
 
         # Toggle display_density when treated as numeric
         session$setInputs("numeric_as_factor" = FALSE)
