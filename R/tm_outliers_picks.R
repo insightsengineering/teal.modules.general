@@ -29,7 +29,10 @@ tm_outliers.picks <- function(label = "Outliers Module",
 
   checkmate::assert_class(outlier_var, "picks")
   if (isTRUE(attr(outlier_var$variables, "multiple"))) {
-    warning("`outlier_var` accepts only a single variable selection. Forcing `teal.picks::variables(multiple)` to FALSE.")
+    warning(
+      "`outlier_var` accepts only a single variable selection.",
+      "Forcing `teal.picks::variables(multiple)` to FALSE."
+    )
     attr(outlier_var$variables, "multiple") <- FALSE
   }
   checkmate::assert_class(categorical_var, "picks", null.ok = TRUE)
@@ -71,7 +74,7 @@ tm_outliers.picks <- function(label = "Outliers Module",
 }
 
 # UI function for the outliers module
-ui_outliers.picks <- function(id,
+ui_outliers.picks <- function(id, # nolint: object_name_linter.
                               outlier_var,
                               categorical_var = NULL,
                               ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
@@ -223,7 +226,7 @@ ui_outliers.picks <- function(id,
 }
 
 # Server function for the outliers module
-srv_outliers.picks <- function(id,
+srv_outliers.picks <- function(id, # nolint: object_name_linter.
                                data,
                                outlier_var,
                                categorical_var,
