@@ -83,6 +83,8 @@ Suggests:
     shinytest2,
     testthat (>= 3.1.9),
     withr (>= 2.0.0)
+Remotes:
+    insightsengineering/teal.picks
 VignetteBuilder:
     knitr,
     rmarkdown

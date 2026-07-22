@@ -10,6 +10,7 @@ on:
       - ready_for_review
     branches:
       - main
+      - redesign@main
   push:
     branches:
       - main
