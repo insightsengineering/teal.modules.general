@@ -428,9 +428,9 @@ srv_g_bivariate.picks <- function(id,
           legend_lbls <- substitute(
             expr = labs(color = color_name, fill = fill_name, size = size_name),
             env = list(
-              color_name = varname_w_label(color_name, ANL),
-              fill_name = varname_w_label(fill_name, ANL),
-              size_name = varname_w_label(size_name, ANL)
+              color_name = varname_w_label(color_name, anl),
+              fill_name = varname_w_label(fill_name, anl),
+              size_name = varname_w_label(size_name, anl)
             )
           )
         }

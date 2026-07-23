@@ -7,6 +7,7 @@
 #' @import shiny
 #' @import teal
 #' @import teal.transform
+#' @import teal.picks
 #' @importFrom dplyr %>% .data
 #'
 #' @name teal.modules.general
