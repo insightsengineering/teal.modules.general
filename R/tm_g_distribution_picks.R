@@ -22,7 +22,9 @@ tm_g_distribution.picks <- function(label = "Distribution Module",
                                       teal.picks::values()
                                     ),
                                     freq = FALSE,
-                                    ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                    ggtheme = c(
+                                      "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"
+                                    ),
                                     ggplot2_args = teal.widgets::ggplot2_args(),
                                     bins = c(30L, 1L, 100L),
                                     plot_height = c(600, 200, 2000),
@@ -516,18 +518,15 @@ srv_g_distribution.picks <- function(id,
       decorators = select_decorators(decorators, "Test Table")
     )
 
-    # decorated_output_q <- reactive({
-    #   req(input$tabs, hist_output(), qq_output(), summary_table_output(), output_test_q())
-    #   test_q_out <- output_test_q()
+    decorated_output_q <- reactive({
+      out_q <- switch(req(input$tabs),
+        Histogram = req(hist_output()),
+        QQplot = req(qq_output())
+      )
+      test_q <- tryCatch(test_output(), error = function(err) teal.code::qenv())
 
-    #   # return everything except switch
-    #   out_q <- switch(input$tabs,
-    #     Histogram = hist_output(),
-    #     QQplot = qq_output()
-    #   )
-    #   out_q
-    # })
-    NULL
+      c(out_q, summary_table_output(), test_q)
+    })
   })
 }
 
@@ -546,7 +545,7 @@ srv_g_distribution.picks <- function(id,
         inline = TRUE
       ),
       checkboxInput(ns("add_density"), label = "Overlay Density", value = TRUE),
-      teal::ui_transform_teal_data(ns("decorators"), decorators = decorators)
+      teal::ui_transform_teal_data(ns("decorators"), transformators = decorators)
     ),
     output = teal.widgets::plot_with_settings_ui(id = ns("plot"))
   )
@@ -693,7 +692,7 @@ srv_g_distribution.picks <- function(id,
     decorated_output_q <- teal::srv_transform_teal_data(
       "decorators",
       data = output_q,
-      decorators = decorators,
+      transformators = decorators,
       expr = quote(histogram_plot)
     )
 
@@ -716,7 +715,7 @@ srv_g_distribution.picks <- function(id,
   tagList(
     encodings = tagList(
       checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
-      teal::ui_transform_teal_data(ns("decorators"), decorators = decorators)
+      teal::ui_transform_teal_data(ns("decorators"), transformators = decorators)
     ),
     output = teal.widgets::plot_with_settings_ui(id = ns("plot"))
   )
@@ -835,7 +834,7 @@ srv_g_distribution.picks <- function(id,
 
     decorated_output_q <- teal::srv_transform_teal_data(
       "decorators",
-      decorators = decorators,
+      transformators = decorators,
       data = output_q,
       expr = quote(qq_plot)
     )
@@ -851,7 +850,7 @@ srv_g_distribution.picks <- function(id,
       brushing = FALSE
     )
 
-    # set_chunk_dims(pws, decorated_output_q)
+    set_chunk_dims(pws, decorated_output_q)
   })
 }
 
@@ -860,7 +859,7 @@ srv_g_distribution.picks <- function(id,
   tagList(
     encodings = tagList(
       sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2),
-      teal::ui_transform_teal_data(ns("decorators"), decorators = decorators)
+      teal::ui_transform_teal_data(ns("decorators"), transformators = decorators)
     ),
     output = tags$div(
       tags$h3("Statistics Table"),
@@ -915,20 +914,12 @@ srv_g_distribution.picks <- function(id,
       }
 
       within(obj, summary_table <- rtables::df_to_tt(summary_table_data))
-      # if (iv_r()$is_valid()) {
-
-      # } else {
-      #   within(
-      #     q_common,
-      #     summary_table <- rtables::rtable(header = rtables::rheader(colnames(summary_table_data)))
-      #   )
-      # }
     })
 
     decorated_output_q <- teal::srv_transform_teal_data(
       "decorators",
       data = output_q,
-      decorators = decorators,
+      transformators = decorators,
       expr = quote(summary_table)
     )
 
@@ -976,7 +967,7 @@ srv_g_distribution.picks <- function(id,
           "none-selected-text" = "- Nothing selected -"
         )
       ),
-      teal::ui_transform_teal_data(ns("decorators"), decorators = decorators)
+      teal::ui_transform_teal_data(ns("decorators"), transformators = decorators)
     ),
     output = tagList(
       tags$h3("Tests"),
@@ -1085,7 +1076,6 @@ srv_g_distribution.picks <- function(id,
           s_var_name = s_var_name
         )
 
-
         teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Distribution Tests table")
 
         obj <- if (length(s_var) == 0 && length(g_var) == 0) {
@@ -1130,7 +1120,7 @@ srv_g_distribution.picks <- function(id,
     decorated_output_q <- teal::srv_transform_teal_data(
       "decorators",
       data = output_q,
-      decorators = decorators,
+      transformators = decorators,
       expr = quote(test_table)
     )
 

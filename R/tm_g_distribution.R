@@ -127,7 +127,6 @@
 #' }
 #'
 #' @export
-#'
 tm_g_distribution <- function(label = "Distribution Module",
                               dist_var = teal.picks::picks(
                                 teal.picks::datasets(),
@@ -155,7 +154,9 @@ tm_g_distribution.default <- function(label = "Distribution Module",
                                       strata_var = NULL,
                                       group_var = NULL,
                                       freq = FALSE,
-                                      ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                      ggtheme = c(
+                                        "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"
+                                      ),
                                       ggplot2_args = teal.widgets::ggplot2_args(),
                                       bins = c(30L, 1L, 100L),
                                       plot_height = c(600, 200, 2000),

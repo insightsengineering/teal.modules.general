@@ -61,7 +61,15 @@ tm_t_crosstable.picks <- function(label = "Cross Table",
 }
 
 # UI function for the cross-table module
-ui_t_crosstable.picks <- function(id, x, y, show_percentage, show_total, remove_zero_columns, pre_output, post_output, decorators) {
+ui_t_crosstable.picks <- function(id,
+                                  x,
+                                  y,
+                                  show_percentage,
+                                  show_total,
+                                  remove_zero_columns,
+                                  pre_output,
+                                  post_output,
+                                  decorators) {
   ns <- NS(id)
 
   join_default_options <- c(

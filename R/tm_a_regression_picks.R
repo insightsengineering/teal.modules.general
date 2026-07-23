@@ -13,11 +13,14 @@ tm_a_regression.picks <- function(label = "Regression Analysis",
                                     teal.picks::variables(choices = is.numeric),
                                     teal.picks::values()
                                   ),
+                                  # default should be teal.picks::picks(datasets(), teal.picks::variables(primary_keys))
                                   outlier = teal.picks::picks(
                                     regressor$datasets,
-                                    teal.picks::variables(choices = tidyselect::where(~ is.factor(.) || is.character(.))),
+                                    teal.picks::variables(
+                                      choices = teal.picks::is_categorical(min.len = 2)
+                                    ),
                                     teal.picks::values()
-                                  ), # default should be teal.picks::picks(datasets(), teal.picks::variables(primary_keys())
+                                  ),
                                   plot_height = c(600, 200, 2000),
                                   plot_width = NULL,
                                   alpha = c(1, 0, 1),
@@ -158,7 +161,7 @@ ui_a_regression.picks <- function(id,
         choices = plot_choices,
         selected = plot_choices[default_plot_type]
       ),
-      checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = FALSE),
+      checkboxInput(ns("show_outlier"), label = "Display outlier labels", value = TRUE),
       conditionalPanel(
         condition = "input['show_outlier']",
         ns = ns,
@@ -179,7 +182,10 @@ ui_a_regression.picks <- function(id,
           ),
           min = 1, max = 10, value = 9, ticks = FALSE, step = .1
         ),
-        teal.picks::picks_ui(id = ns("outlier"), picks = outlier)
+        tags$div(
+          tags$strong("Outlier label"),
+          teal.picks::picks_ui(id = ns("outlier"), picks = outlier)
+        )
       ),
       teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "plot")),
       bslib::accordion(

@@ -244,7 +244,15 @@ tm_t_crosstable.default <- function(label = "Cross Table",
 }
 
 # UI function for the cross-table module
-ui_t_crosstable.default <- function(id, x, y, show_percentage, show_total, remove_zero_columns, pre_output, post_output, ...) {
+ui_t_crosstable.default <- function(id,
+                                    x,
+                                    y,
+                                    show_percentage,
+                                    show_total,
+                                    remove_zero_columns,
+                                    pre_output,
+                                    post_output,
+                                    ...) {
   args <- list(...)
   ns <- NS(id)
   is_single_dataset <- teal.transform::is_single_dataset(x, y)
