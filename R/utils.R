@@ -38,6 +38,10 @@
 #' decorator for tables or plots included in the module output reported.
 #' The decorators are applied to the respective output objects.
 #'
+#' @param table_datanames (`character`) names of the datasets which should be listed below the plot
+#'  when some data points are selected. Objects named after `table_datanames` will be pulled from
+#'  `data` so it is important that data actually contains these datasets. Please be aware that
+#'  table datasets must be linked with `plot_dataname` by the relevant [join_keys()].
 #' See section "Decorating Module" below for more details.
 #'
 #' @return Object of class `teal_module` to be used in `teal` applications.
@@ -142,6 +146,7 @@ add_facet_labels <- function(p, xfacet_label = NULL, yfacet_label = NULL) {
 #' Value of call to `fun` with arguments specified in `str_args`.
 #'
 #' @keywords internal
+#' @noRd
 call_fun_dots <- function(fun, str_args) {
   do.call("call", c(list(fun), lapply(str_args, as.name)), quote = TRUE)
 }
@@ -156,7 +161,7 @@ call_fun_dots <- function(fun, str_args) {
 #' @return (`character`) String with variable name and label.
 #'
 #' @keywords internal
-#'
+#' @noRd
 varname_w_label <- function(var_names,
                             dataset,
                             wrap_width = 80,
@@ -202,6 +207,7 @@ shape_names <- c(
 #' @param var_type (`character`) of R internal types (classes).
 #' @return (`character`) vector of HTML icons corresponding to data type in each column.
 #' @keywords internal
+#' @noRd
 variable_type_icons <- function(var_type) {
   checkmate::assert_character(var_type, any.missing = FALSE)
 
@@ -240,8 +246,8 @@ variable_type_icons <- function(var_type) {
 #' @param name (`character(1)`) the name of the tab.
 #' @return JavaScript expression to be used in `shiny::conditionalPanel()` to determine
 #' if the specified tab is active.
+#' @noRd
 #' @keywords internal
-#'
 is_tab_active_js <- function(id, name) {
   # supporting the bs3 and higher version at the same time
   sprintf(
@@ -273,6 +279,7 @@ select_decorators <- utils::getFromNamespace("select_decorators", "teal")
 #' @param inner_classes (`character`) classes within `chunk_output` that should be modified.
 #' This can be used to only change `recordedplot`, `ggplot2` or other type of objects.
 #' @keywords internal
+#' @noRd
 set_chunk_attrs <- function(teal_card,
                             attributes,
                             n = 1,
@@ -337,6 +344,7 @@ set_chunk_attrs <- function(teal_card,
 #' @return A reactive expression that returns the `teal_card` with updated dimensions
 #'
 #' @keywords internal
+#' @noRd
 set_chunk_dims <- function(pws, q_r, inner_classes = NULL) {
   checkmate::assert_list(pws)
   checkmate::assert_names(names(pws), must.include = "dim")

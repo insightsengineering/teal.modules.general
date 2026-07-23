@@ -7,4 +7,6 @@
 ggplot_themes <- c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void")
 
 #' @importFrom lifecycle deprecated
+#' @importFrom rlang :=
+#' @import tidyselect
 interactive <- NULL

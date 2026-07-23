@@ -108,6 +108,7 @@ StatMosaic <- ggplot2::ggproto( # nolint: object_name_linter.
 #' left or right for y axes, top or bottom for x axes.
 #' @param ... other arguments passed to `continuous_scale()`.
 #' @keywords internal
+#' @noRd
 .scale_x_mosaic <- function(breaks = unique,
                             minor_breaks = NULL,
                             labels = unique,

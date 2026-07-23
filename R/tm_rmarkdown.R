@@ -320,6 +320,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
 #' Creates an object of class `markdown_internal` that contains the
 #' content of a markdown file.
 #'
+#' @details
 #' This package registers S3 methods for `toHTML` and `to_rmd` for this class to
 #' facilitate rendering in `teal.reporter`.
 #'
@@ -329,6 +330,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
 #' @return `markdown_internal` object
 #'
 #' @keywords internal
+#' @noRd
 .markdown_internal <- function(markdown_file, rendered_html) {
   base_file <- basename(markdown_file)
 

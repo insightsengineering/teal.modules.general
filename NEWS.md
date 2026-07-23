@@ -2,6 +2,10 @@
 
 - Fixed missing visualization in `tm_variable_browser` when "Treat variable as factor" is enabled for a numeric variable (#996).
 
+### Enhancements
+
+- Introduced `tm_gtsummary()`, a new module for generating tables using the [gtsummary](https://cran.r-project.org/package=gtsummary) package (#973).
+
 # teal.modules.general 0.7.0
 
 ### Enhancements
