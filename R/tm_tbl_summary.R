@@ -212,12 +212,15 @@ srv_tbl_summary_partial <- function(id,
       q <- req(data())
       summary_args <- req(summary_args_processed())
       validate(
-        need(
+        teal::need_input(
+          c(
+            NS(attr(summary_args, "input_id_list")[["include"]], "variables-selected"),
+            NS(attr(summary_args, "input_id_list")[["by"]], "variables-selected")
+          ),
           is.null(summary_args$include) && is.null(summary_args$by) ||
-            rlang::is_quosure(summary_args$include) ||
-            rlang::is_expression(summary_args$include) ||
             (length(summary_args$include) != 0L && all(!summary_args$include %in% summary_args$by)),
-          "Variables to stratify with and variables to include should be different"
+          "Variables to stratify with and variables to include should be different",
+          session$rootScope()
         )
       )
       q

@@ -173,17 +173,27 @@ srv_gt_template <- function(id,
         validate(
           need(length(datanames) > 0L, "No table selected in the module. Please check inputs")
         )
-        rlang::list2(
-          data = as.name("ANL"),
-          !!!rlang::set_names(
-            sapply(names(selectors), function(x_name) merged$variables()[[x_name]], simplify = FALSE),
-            names(selectors)
+
+        structure(
+          rlang::list2(
+            data = as.name("ANL"),
+            !!!rlang::set_names(
+              sapply(names(selectors), function(x_name) merged$variables()[[x_name]], simplify = FALSE),
+              names(selectors)
+            ),
+            !!!rlang::set_names(
+              sapply(names(opts_values), function(x_name) input[[x_name]], simplify = FALSE),
+              names(opts_values)
+            ),
+            !!!opts_static
           ),
-          !!!rlang::set_names(
-            sapply(names(opts_values), function(x_name) input[[x_name]], simplify = FALSE),
-            names(opts_values)
-          ),
-          !!!opts_static
+          input_id_list = structure(
+            c(
+              vapply(names(selectors), session$ns, character(1L)),
+              vapply(names(opts_values), session$ns, character(1L))
+            ),
+            names = c(names(selectors), names(opts_values))
+          )
         )
       })
     } else {
