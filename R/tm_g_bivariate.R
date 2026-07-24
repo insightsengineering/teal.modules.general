@@ -679,6 +679,7 @@ srv_g_bivariate.default <- function(id,
       }
 
       obj <- merged$anl_q_r()
+
       teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "### Plot")
       teal.code::eval_code(obj, substitute(expr = plot <- cl, env = list(cl = cl)))
     })
@@ -746,12 +747,12 @@ bivariate_plot_call <- function(data_name,
                                 alpha = double(0),
                                 size = 2,
                                 ggplot2_args = teal.widgets::ggplot2_args()) {
-  if (is.null(x)) {
+  if (is.null(x) || length(x) == 0L) {
     x <- x_label <- "-"
   } else {
     x <- if (is.call(x)) x else as.name(x)
   }
-  if (is.null(y)) {
+  if (is.null(y) || length(y) == 0L) {
     y <- y_label <- "-"
   } else {
     y <- if (is.call(y)) y else as.name(y)

@@ -203,7 +203,7 @@ srv_tbl_summary_partial <- function(id,
 
       # Defaults to include all variables if none selected
       if (length(tbl_summary_args$include) == 0L) {
-        tbl_summary_args$include <- character(0L)
+        tbl_summary_args <- tbl_summary_args[names(tbl_summary_args) != "include"]
       }
       tbl_summary_args
     })
@@ -213,11 +213,17 @@ srv_tbl_summary_partial <- function(id,
       summary_args <- req(summary_args_processed())
       validate(
         teal::need_input(
+          NS(attr(summary_args, "input_id_list")[["include"]], "variables-selected"),
+          length(summary_args$include) != 0L,
+          "At least one `Include variable` needs to be selected (that is not the same as `By`) ",
+          session$rootScope()
+        ),
+        teal::need_input(
           c(
             NS(attr(summary_args, "input_id_list")[["include"]], "variables-selected"),
             NS(attr(summary_args, "input_id_list")[["by"]], "variables-selected")
           ),
-          is.null(summary_args$include) && is.null(summary_args$by) ||
+          rlang::is_empty(summary_args$include) || rlang::is_empty(summary_args$by) ||
             (length(summary_args$include) != 0L && all(!summary_args$include %in% summary_args$by)),
           "Variables to stratify with and variables to include should be different",
           session$rootScope()

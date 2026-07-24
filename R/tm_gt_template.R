@@ -228,7 +228,7 @@ srv_gt_template <- function(id,
       id = "decorator",
       data = validated_q,
       transformators = select_decorators(decorators, .decorator_name),
-      expr = substitute(decorator_name, list(decorator_name = as.name(.decorator_name)))
+      expr = reactive(substitute(decorator_name, list(decorator_name = as.name(.decorator_name))))
     )
 
     table_r <- reactive({

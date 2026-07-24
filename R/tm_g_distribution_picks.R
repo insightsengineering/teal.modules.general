@@ -908,7 +908,7 @@ srv_g_distribution.picks <- function(id,
               )
           },
           d_var_name = as.name(variables()$dist_var),
-          strata_vars = c(variables()$group_var, variables()$strata_var),
+          strata_vars = unique(c(variables()$group_var, variables()$strata_var)),
           roundn = roundn
         )
       }

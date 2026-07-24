@@ -162,12 +162,20 @@ srv_t_crosstable.picks <- function(id, data, label, x, y, remove_zero_columns, b
       }
     )
 
+    join_fun_r <- reactive({
+      if (is.null(input$join_fun)) {
+        "dplyr::full_join"
+      } else {
+        input$join_fun
+      }
+    })
+
     merged <- teal.picks::merge_srv(
       "merge",
       data = validated_q,
       selectors = selectors,
       output_name = "anl",
-      join_fun = isolate(input$join_fun) # todo: make reactive
+      join_fun = isolate(join_fun_r()) # todo: make reactive
     )
 
     output_q <- reactive({

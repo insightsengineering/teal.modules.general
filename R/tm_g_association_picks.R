@@ -179,7 +179,7 @@ srv_g_association.picks <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tern");library("ggmosaic")')
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr);library(tern);")
     })
 
     merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
