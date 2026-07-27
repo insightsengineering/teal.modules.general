@@ -81,30 +81,14 @@ testthat::describe("add_facet_labels", {
 testthat::describe("Module with decorators:", {
   # We test it with tm_gtsummary as it requires decorators to be useful to users
   create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, include_selected, ...) {
-    tm_gtsummary(
-      by = teal.transform::data_extract_spec(
-        dataname = "test_data",
-        select = teal.transform::select_spec(
-          choices = teal.transform::variable_choices(
-            data = isolate(data())[["test_data"]],
-            by_vars
-          ),
-          selected = by_selected,
-          multiple = FALSE
-        )
+    tm_tbl_summary(
+      by = teal.picks::picks(
+        teal.picks::datasets("test_data", "test_data"),
+        teal.picks::variables(by_vars, by_selected, multiple = FALSE)
       ),
-      include = list(
-        teal.transform::data_extract_spec(
-          dataname = "test_data",
-          select = teal.transform::select_spec(
-            choices = teal.transform::variable_choices(
-              data = isolate(data())[["test_data"]],
-              include_vars
-            ),
-            selected = include_selected,
-            multiple = TRUE
-          )
-        )
+      include = teal.picks::picks(
+        teal.picks::datasets("test_data", "test_data"),
+        teal.picks::variables(include_vars, include_selected, multiple = TRUE)
       ),
       ...
     )
@@ -130,10 +114,7 @@ testthat::describe("Module with decorators:", {
         mod$server_args
       ),
       {
-        session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "am",
-          "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
-        )
+        .change_selectors(selectors, by = "am", include = c("carb", "cyl"))
         session$flushReact()
         testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
@@ -165,10 +146,7 @@ testthat::describe("Module with decorators:", {
         mod$server_args
       ),
       {
-        session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "am",
-          "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
-        )
+        .change_selectors(selectors, by = "am", include = c("carb", "cyl"))
         session$flushReact()
         testthat::expect_is(tryCatch(session$returned(), error = function(e) e), "shiny.silent.error")
       }
@@ -193,10 +171,7 @@ testthat::describe("Module with decorators:", {
         mod$server_args
       ),
       {
-        session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "am",
-          "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
-        )
+        .change_selectors(selectors, by = "am", include = c("carb", "cyl"))
         session$flushReact()
         testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
@@ -224,10 +199,7 @@ testthat::describe("Module with decorators:", {
         mod$server_args
       ),
       {
-        session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "am",
-          "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
-        )
+        .change_selectors(selectors, by = "am", include = c("carb", "cyl"))
         session$flushReact()
         testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }
@@ -254,10 +226,7 @@ testthat::describe("Module with decorators:", {
         mod$server_args
       ),
       {
-        session$setInputs(
-          "by-dataset_test_data_singleextract-select" = "am",
-          "include-dataset_test_data_singleextract-select" = c("carb", "cyl")
-        )
+        .change_selectors(selectors, by = "am", include = c("carb", "cyl"))
         session$flushReact()
         testthat::expect_true(endsWith(get_code(session$returned()), "table"))
       }

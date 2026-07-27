@@ -217,18 +217,6 @@ testthat::describe("tm_g_response input validation", {
 
 
 testthat::describe("tm_g_response module server behavior", {
-  change_selectors <- function(selectors, ...) {
-    dots <- rlang::dots_list(..., .named = TRUE)
-    for (name in names(dots)) {
-      if (!name %in% names(selectors)) {
-        stop(paste0("Selector '", name, "' not found in selectors."))
-      }
-      sel <- selectors[[name]]()
-      sel$variables$selected <- dots[[name]]
-      selectors[[name]](sel)
-    }
-  }
-
   create_response_module <- function(response_vars, response_selected, x_vars, x_selected, ...) {
     tm_g_response(
       response = teal.picks::picks(
@@ -268,7 +256,7 @@ testthat::describe("tm_g_response module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, response = "response", x = "x_var")
+        .change_selectors(selectors, response = "response", x = "x_var")
         session$setInputs(
           "freq" = TRUE,
           "coord_flip" = FALSE,
@@ -311,7 +299,7 @@ testthat::describe("tm_g_response module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, response = "response", x = "x_var")
+        .change_selectors(selectors, response = "response", x = "x_var")
         session$setInputs(
           "freq" = TRUE,
           "coord_flip" = FALSE,
@@ -354,7 +342,7 @@ testthat::describe("tm_g_response module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, response = "response", x = "x_var")
+        .change_selectors(selectors, response = "response", x = "x_var")
         session$setInputs(
           "freq" = FALSE,
           "coord_flip" = FALSE,

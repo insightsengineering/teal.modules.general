@@ -565,18 +565,6 @@ testthat::describe("tm_g_scatterplot argument validation", {
   })
 })
 
-change_selectors <- function(selectors, ...) {
-  dots <- rlang::dots_list(..., .named = TRUE)
-  for (name in names(dots)) {
-    if (!name %in% names(selectors)) {
-      stop(paste0("Selector '", name, "' not found in selectors."))
-    }
-    sel <- selectors[[name]]()
-    sel$variables$selected <- dots[[name]]
-    selectors[[name]](sel)
-  }
-}
-
 create_scatterplot_module <- function(data, x_vars, y_vars, x_selected, y_selected, ...) {
   tm_g_scatterplot(
     x = teal.picks::picks(
@@ -614,7 +602,7 @@ testthat::describe("tm_g_scatterplot module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "log_x" = FALSE,
           "log_y" = FALSE,
@@ -663,7 +651,7 @@ testthat::describe("tm_g_scatterplot module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "log_x" = TRUE,
           "log_x_base" = "log10",
@@ -722,7 +710,7 @@ testthat::describe("tm_g_scatterplot module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var", color_by = "color_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var", color_by = "color_var")
         session$setInputs(
           "log_x" = FALSE,
           "log_y" = FALSE,
@@ -779,7 +767,7 @@ testthat::describe("tm_g_scatterplot module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var", size_by = "size_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var", size_by = "size_var")
         session$setInputs(
           "log_x" = FALSE,
           "log_y" = FALSE,
@@ -828,7 +816,7 @@ testthat::describe("tm_g_scatterplot module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "log_x" = FALSE,
           "log_y" = FALSE,
@@ -877,7 +865,7 @@ testthat::describe("tm_g_scatterplot module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "log_x" = FALSE,
           "log_y" = FALSE,
@@ -929,7 +917,7 @@ testthat::describe("tm_g_scatterplot module server behavior", {
           mod$server_args
         ),
         expr = {
-          change_selectors(selectors, x = "x_var", y = "y_var")
+          .change_selectors(selectors, x = "x_var", y = "y_var")
           session$setInputs(
             "log_x" = FALSE,
             "log_y" = FALSE,

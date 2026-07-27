@@ -167,7 +167,7 @@ describe("tests for module creation", {
       response = response,
       regressor = regressor
     )
-    ui_regression <- do.call(mod$ui, c(list(id = "test"), mod$ui_args))
+    ui_regression <- do.call(mod$ui, c(list(id = "test"), mod$ui_args), quote = TRUE)
 
     testthat::expect_s3_class(ui_regression, "shiny.tag.list")
   })

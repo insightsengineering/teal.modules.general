@@ -162,30 +162,34 @@ ui_g_distribution.picks <- function(id,
           condition = paste0("input['", ns("tabs"), "'] == 'QQplot'"),
           bslib::accordion_panel(title = "QQ Plot", qq_elem$encodings, collapsed = FALSE)
         ),
-        bslib::accordion_panel( # todo: hide ONLY when frequency is selected for histogram
-          "Theoretical Distribution",
-          teal.widgets::optionalSelectInput(
-            ns("t_dist"),
-            tags$div(
-              tagList(
-                "Distribution:",
-                bslib::tooltip(
-                  icon("circle-info"),
-                  tags$span("Default parameters are optimized with MASS::fitdistr function.")
+        conditionalPanel(
+          condition = paste0("input['", ns("histogram_plot-statistic"), "'] == 'Density'"),
+
+          bslib::accordion_panel( # todo: hide ONLY when frequency is selected for histogram
+            "Theoretical Distribution",
+            teal.widgets::optionalSelectInput(
+              ns("t_dist"),
+              tags$div(
+                tagList(
+                  "Distribution:",
+                  bslib::tooltip(
+                    icon("circle-info"),
+                    tags$span("Default parameters are optimized with MASS::fitdistr function.")
+                  )
                 )
-              )
+              ),
+              choices = c("normal", "lognormal", "gamma", "unif"),
+              selected = NULL,
+              multiple = FALSE
             ),
-            choices = c("normal", "lognormal", "gamma", "unif"),
-            selected = NULL,
-            multiple = FALSE
-          ),
-          conditionalPanel(
-            condition = paste0("input['", ns("t_dist"), "'] != null && input['", ns("t_dist"), "'] != ''"),
-            numericInput(ns("dist_param1"), label = "param1", value = NULL),
-            numericInput(ns("dist_param2"), label = "param2", value = NULL),
-            tags$span(actionButton(ns("params_reset"), "Default params"))
-          ),
-          collapsed = FALSE
+            conditionalPanel(
+              condition = paste0("input['", ns("t_dist"), "'] != null && input['", ns("t_dist"), "'] != ''"),
+              numericInput(ns("dist_param1"), label = "param1", value = NULL),
+              numericInput(ns("dist_param2"), label = "param2", value = NULL),
+              tags$span(actionButton(ns("params_reset"), "Default params"))
+            ),
+            collapsed = FALSE
+          )
         ),
         bslib::accordion_panel(title = "Tests", test_table_elem$encodings),
         bslib::accordion_panel(title = "Statistics Table", summary_table_elem$encodings),
@@ -224,7 +228,6 @@ srv_g_distribution.picks <- function(id,
     setBookmarkExclude("params_reset")
     ns <- session$ns
 
-
     selectors <- teal.picks::picks_srv(
       picks = list(dist_var = dist_var, strata_var = strata_var, group_var = group_var),
       data = data
@@ -243,7 +246,7 @@ srv_g_distribution.picks <- function(id,
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's code")
       )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")')
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr)")
     })
 
     merged <- teal.picks::merge_srv("merge", data = qenv, selectors = selectors, output_name = "anl")
@@ -995,7 +998,7 @@ srv_g_distribution.picks <- function(id,
         g_var_name <- if (!is.null(g_var)) as.name(g_var)
 
         dist_test <- input$dist_test
-        validate(need(length(dist_test) > 0, "Please select a test"))
+        validate(need(length(dist_test) > 0 && !identical(dist_test, ""), "Please select a test"))
 
         if (length(s_var) > 0 || length(g_var) > 0) {
           counts <- anl %>%
@@ -1078,8 +1081,9 @@ srv_g_distribution.picks <- function(id,
 
         teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Distribution Tests table")
 
+        obj <- teal.code::eval_code(obj, "library(broom)")
         obj <- if (length(s_var) == 0 && length(g_var) == 0) {
-          obj <- teal.code::eval_code(obj, 'library("generics")') # nolint quotes
+          obj <- teal.code::eval_code(obj, "library(generics)")
           teal.code::eval_code(
             obj,
             substitute(
@@ -1094,7 +1098,7 @@ srv_g_distribution.picks <- function(id,
           )
         } else {
           # todo: why there is a `library` call when `tidyr::unnest` is prefixed, same for `generics`
-          obj <- teal.code::eval_code(obj, 'library("tidyr")') # nolint quotes
+          obj <- teal.code::eval_code(obj, "library(tidyr)")
           teal.code::eval_code(
             obj,
             substitute(

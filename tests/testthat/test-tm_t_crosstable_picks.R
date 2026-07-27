@@ -145,18 +145,6 @@ testthat::describe("tm_t_crosstable input validation", {
   })
 })
 
-change_selectors <- function(selectors, ...) {
-  dots <- rlang::dots_list(..., .named = TRUE)
-  for (name in names(dots)) {
-    if (!name %in% names(selectors)) {
-      stop(paste0("Selector '", name, "' not found in selectors."))
-    }
-    sel <- selectors[[name]]()
-    sel$variables$selected <- dots[[name]]
-    selectors[[name]](sel)
-  }
-}
-
 create_crosstable_module <- function(data, x_vars, y_vars, x_selected, y_selected, ...) {
   tm_t_crosstable(
     x = teal.picks::picks(
@@ -191,7 +179,7 @@ testthat::describe("tm_t_crosstable module server behavior", {
       mod$server,
       args = c(list(id = "test", data = data), mod$server_args),
       expr = {
-        change_selectors(selectors, x = c("x_var"), y = c("y_var"))
+        .change_selectors(selectors, x = c("x_var"), y = c("y_var"))
         session$setInputs(
           "show_percentage" = TRUE,
           "show_total" = TRUE,
@@ -228,7 +216,7 @@ testthat::describe("tm_t_crosstable module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = c("x_var"), y = c("y_var"))
+        .change_selectors(selectors, x = c("x_var"), y = c("y_var"))
         session$setInputs(
           "show_percentage" = TRUE,
           "show_total" = TRUE,
@@ -264,7 +252,7 @@ testthat::describe("tm_t_crosstable module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = c("x_var"), y = c("y_var"))
+        .change_selectors(selectors, x = c("x_var"), y = c("y_var"))
         session$setInputs(
           "show_percentage" = TRUE,
           "show_total" = TRUE,

@@ -533,18 +533,6 @@ create_bivariate_module <- function(data, x_vars, y_vars, x_selected, y_selected
   )
 }
 
-change_selectors <- function(selectors, ...) {
-  dots <- rlang::dots_list(..., .named = TRUE)
-  for (name in names(dots)) {
-    if (!name %in% names(selectors)) {
-      stop(paste0("Selector '", name, "' not found in selectors."))
-    }
-    sel <- selectors[[name]]()
-    sel$variables$selected <- dots[[name]]
-    selectors[[name]](sel)
-  }
-}
-
 testthat::describe("tm_g_bivariate module server behavior", {
   it("server function executes successfully with numeric variables", {
     data <- create_test_data(data.frame(
@@ -568,7 +556,7 @@ testthat::describe("tm_g_bivariate module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "use_density" = "frequency",
           "rotate_xaxis_labels" = FALSE,
@@ -608,7 +596,7 @@ testthat::describe("tm_g_bivariate module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "use_density" = "frequency",
           "rotate_xaxis_labels" = FALSE,
@@ -646,7 +634,7 @@ testthat::describe("tm_g_bivariate module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "use_density" = "frequency",
           "rotate_xaxis_labels" = FALSE,
@@ -683,7 +671,7 @@ testthat::describe("tm_g_bivariate module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = NULL)
+        .change_selectors(selectors, x = "x_var", y = NULL)
         session$setInputs(
           "use_density" = "density",
           "rotate_xaxis_labels" = FALSE,
@@ -722,7 +710,7 @@ testthat::describe("tm_g_bivariate module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "use_density" = "frequency",
           "rotate_xaxis_labels" = TRUE,
@@ -760,7 +748,7 @@ testthat::describe("tm_g_bivariate module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, x = "x_var", y = "y_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "use_density" = "frequency",
           "rotate_xaxis_labels" = FALSE,
@@ -800,7 +788,7 @@ testthat::describe("tm_g_bivariate module server behavior", {
         mod$server_args
       ),
       expr = {
-        # change_selectors(selectors, x = "x_var", y = "y_var")
+        # .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "use_density" = "frequency",
           "rotate_xaxis_labels" = FALSE,
@@ -841,7 +829,7 @@ testthat::describe("tm_g_bivariate module server behavior", {
           mod$server_args
         ),
         expr = {
-          change_selectors(selectors, x = "x_var", y = "y_var")
+          .change_selectors(selectors, x = "x_var", y = "y_var")
           session$setInputs(
             "use_density" = "frequency",
             "rotate_xaxis_labels" = FALSE,

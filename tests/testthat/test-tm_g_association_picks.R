@@ -237,18 +237,6 @@ create_association_module <- function(data, ref_vars, vars_vars, ref_selected, v
   )
 }
 
-change_selectors <- function(selectors, ...) {
-  dots <- rlang::dots_list(..., .named = TRUE)
-  for (name in names(dots)) {
-    if (!name %in% names(selectors)) {
-      stop(paste0("Selector '", name, "' not found in selectors."))
-    }
-    sel <- selectors[[name]]()
-    sel$variables$selected <- dots[[name]]
-    selectors[[name]](sel)
-  }
-}
-
 testthat::describe("tm_g_association module server behavior", {
   it("server function executes successfully through module interface with factor variables", {
     data <- create_test_data(data.frame(
@@ -272,7 +260,7 @@ testthat::describe("tm_g_association module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, ref = "ref", vars = c("var1", "var2"))
+        .change_selectors(selectors, ref = "ref", vars = c("var1", "var2"))
         session$setInputs(
           "show_dist" = FALSE,
           "association" = TRUE,
@@ -313,7 +301,7 @@ testthat::describe("tm_g_association module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, ref = "ref", vars = "var1")
+        .change_selectors(selectors, ref = "ref", vars = "var1")
         session$setInputs(
           "show_dist" = TRUE,
           "association" = TRUE,
@@ -354,7 +342,7 @@ testthat::describe("tm_g_association module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, ref = "ref", vars = "var1")
+        .change_selectors(selectors, ref = "ref", vars = "var1")
         session$setInputs(
           "show_dist" = FALSE,
           "association" = FALSE,
@@ -396,7 +384,7 @@ testthat::describe("tm_g_association module server behavior", {
           mod$server_args
         ),
         expr = {
-          change_selectors(selectors, ref = "ref", vars = "var1")
+          .change_selectors(selectors, ref = "ref", vars = "var1")
           session$setInputs(
             "show_dist" = FALSE,
             "association" = TRUE,
@@ -435,7 +423,7 @@ testthat::describe("tm_g_association module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, ref = "ref", vars = "var1")
+        .change_selectors(selectors, ref = "ref", vars = "var1")
         session$setInputs(
           "show_dist" = FALSE,
           "association" = TRUE,
@@ -475,7 +463,7 @@ testthat::describe("tm_g_association module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, ref = "ref", vars = "var1")
+        .change_selectors(selectors, ref = "ref", vars = "var1")
         session$setInputs(
           "show_dist" = FALSE,
           "association" = TRUE,
@@ -516,7 +504,7 @@ testthat::describe("tm_g_association module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, ref = "ref", vars = c("var1", "var2"))
+        .change_selectors(selectors, ref = "ref", vars = c("var1", "var2"))
         session$setInputs(
           "show_dist" = FALSE,
           "association" = TRUE,
@@ -559,7 +547,7 @@ testthat::describe("tm_g_association module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, ref = "ref", vars = c("var1", "var2"))
+        .change_selectors(selectors, ref = "ref", vars = c("var1", "var2"))
         session$setInputs(
           "show_dist" = FALSE,
           "association" = TRUE,
@@ -602,7 +590,7 @@ testthat::describe("tm_g_association module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, ref = "ref", vars = c("var1", "var2"))
+        .change_selectors(selectors, ref = "ref", vars = c("var1", "var2"))
         session$setInputs(
           "show_dist" = FALSE,
           "association" = TRUE,

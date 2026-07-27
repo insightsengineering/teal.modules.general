@@ -167,20 +167,8 @@ testthat::describe("tm_g_response module server behavior", {
   data <- within(teal.data::teal_data(), iris <- tibble::rowid_to_column(iris, var = "row_number"))
   teal.data::join_keys(data) <- teal.data::join_keys(teal.data::join_key("iris", "iris", "row_number"))
 
-  change_selectors <- function(selectors, ...) {
-    dots <- rlang::dots_list(..., .named = TRUE)
-    for (name in names(dots)) {
-      if (!name %in% names(selectors)) {
-        stop(paste0("Selector '", name, "' not found in selectors."))
-      }
-      sel <- selectors[[name]]()
-      sel$variables$selected <- dots[[name]]
-      selectors[[name]](sel)
-    }
-  }
-
   set_shared_inputs <- function(session, selectors, dist_var = "Petal.Length", ...) {
-    change_selectors(selectors, dist_var = dist_var, ...)
+    .change_selectors(selectors, dist_var = dist_var, ...)
     session$setInputs(
       "tabs" = "Histogram",
       "histogram_plot-bins" = 30,

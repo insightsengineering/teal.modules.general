@@ -1008,7 +1008,7 @@ srv_g_scatterplot.default <- function(id,
       height = plot_height,
       width = plot_width,
       brushing = TRUE,
-      click = TRUE
+      clicking = TRUE
     )
 
     output$data_table <- DT::renderDataTable({

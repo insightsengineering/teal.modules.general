@@ -152,18 +152,6 @@ create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, in
   )
 }
 
-change_selectors <- function(selectors, ...) {
-  dots <- rlang::dots_list(..., .named = TRUE)
-  for (name in names(dots)) {
-    if (!name %in% names(selectors)) {
-      stop(paste0("Selector '", name, "' not found in selectors."))
-    }
-    sel <- selectors[[name]]()
-    sel$variables$selected <- dots[[name]]
-    selectors[[name]](sel)
-  }
-}
-
 testthat::describe("tm_tbl_summary module server behavior", {
   it("server function executes successfully through module interface", {
     data <- create_test_data(mtcars)
@@ -183,7 +171,7 @@ testthat::describe("tm_tbl_summary module server behavior", {
         mod$server_args
       ),
       {
-        change_selectors(selectors, by = "am", include = c("carb", "cyl"))
+        .change_selectors(selectors, by = "am", include = c("carb", "cyl"))
         session$flushReact()
 
         testthat::expect_true(endsWith(get_code(session$returned()), "table"))
@@ -210,7 +198,7 @@ testthat::describe("tm_tbl_summary module server behavior", {
         mod$server_args
       ),
       {
-        change_selectors(selectors, by = "am", include = NULL)
+        .change_selectors(selectors, by = "am", include = NULL)
         session$flushReact()
 
         testthat::expect_true(endsWith(get_code(session$returned()), "table"))
@@ -239,7 +227,7 @@ testthat::describe("tm_tbl_summary module server behavior", {
         mod$server_args
       ),
       {
-        change_selectors(selectors, by = "am", include = c("carb", "cyl"))
+        .change_selectors(selectors, by = "am", include = c("carb", "cyl"))
         session$flushReact()
         testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         table <- table_r()
@@ -271,7 +259,7 @@ testthat::describe("tm_tbl_summary module server behavior with decorators", {
         mod$server_args
       ),
       {
-        change_selectors(selectors, by = "am", include = c("carb", "cyl"))
+        .change_selectors(selectors, by = "am", include = c("carb", "cyl"))
         session$flushReact()
         testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         testthat::expect_s3_class(table_r(), "gtsummary")
@@ -286,17 +274,16 @@ testthat::describe("tm_tbl_summary module server behavior with decorators", {
       by_vars = c("am", "gear"),
       include_vars = c("carb", "cyl"),
       by_selected = c("am"),
-      include_selected = c("carb", "cyl")
-      # decorators = list(table = teal::teal_transform_module(
-      #   server = function(id, data) {
-      #     reactive({
-      #       within(data(), {
-      #         browser()
-      #         table2 <- table
-      #       })
-      #     })
-      #   }
-      # ))
+      include_selected = c("carb", "cyl"),
+      decorators = list(table = teal::teal_transform_module(
+        server = function(id, data) {
+          reactive({
+            within(data(), {
+              table2 <- table
+            })
+          })
+        }
+      ))
     )
 
     shiny::testServer(
@@ -306,7 +293,8 @@ testthat::describe("tm_tbl_summary module server behavior with decorators", {
         mod$server_args
       ),
       {
-        change_selectors(selectors, by = "am", include = c("carb", "cyl"))
+        .change_selectors(selectors, by = "am", include = c("carb", "cyl"))
+        session$flushReact()
         testthat::expect_true(endsWith(get_code(session$returned()), "table"))
         testthat::expect_true(grepl("table2 <-", get_code(session$returned()), fixed = TRUE))
         testthat::expect_s3_class(session$returned()$table2, "gtsummary")

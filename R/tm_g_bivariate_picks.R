@@ -203,21 +203,35 @@ ui_g_bivariate.picks <- function(id,
           )
         )
       ),
-      if (!is.null(row_facet)) {
-        tags$div(
-          tags$div(
-            tags$strong("Row facetting variable"),
-            teal.picks::picks_ui(id = ns("row_facet"), picks = row_facet),
-            checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales)
-          )
-        )
-      },
-      if (!is.null(col_facet)) {
-        tags$div(
-          tags$div(
-            tags$strong("Column facetting variable"),
-            teal.picks::picks_ui(id = ns("col_facet"), picks = col_facet),
-            checkboxInput(ns("free_y_scales"), "free y scales", value = free_y_scales)
+      if (!is.null(row_facet) || !is.null(col_facet)) {
+        shiny::tagList(
+          bslib::input_switch(
+            id = ns("facetting"),
+            label = "Facetting",
+            value = facet
+          ),
+          conditionalPanel(
+            condition = paste0("input['", ns("facetting"), "']"),
+            shiny::tagList(
+              if (!is.null(row_facet)) {
+                tags$div(
+                  tags$div(
+                    tags$strong("Row facetting variable"),
+                    teal.picks::picks_ui(id = ns("row_facet"), picks = row_facet),
+                    checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales)
+                  )
+                )
+              },
+              if (!is.null(col_facet)) {
+                tags$div(
+                  tags$div(
+                    tags$strong("Column facetting variable"),
+                    teal.picks::picks_ui(id = ns("col_facet"), picks = col_facet),
+                    checkboxInput(ns("free_y_scales"), "free y scales", value = free_y_scales)
+                  )
+                )
+              }
+            )
           )
         )
       },

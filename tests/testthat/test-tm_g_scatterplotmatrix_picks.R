@@ -139,18 +139,6 @@ testthat::describe("tm_g_scatterplotmatrix input validation", {
 })
 
 testthat::describe("tm_g_scatterplotmatrix module server behavior", {
-  change_selectors <- function(selectors, ...) {
-    dots <- rlang::dots_list(..., .named = TRUE)
-    for (name in names(dots)) {
-      if (!name %in% names(selectors)) {
-        stop(paste0("Selector '", name, "' not found in selectors."))
-      }
-      sel <- selectors[[name]]()
-      sel$variables$selected <- dots[[name]]
-      selectors[[name]](sel)
-    }
-  }
-
   create_scatterplotmatrix_mod <- function(data, vars, vars_selected, ...) {
     tm_g_scatterplotmatrix(
       variables = list(
@@ -184,7 +172,7 @@ testthat::describe("tm_g_scatterplotmatrix module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, variables = c("var1", "var2", "var3"))
+        .change_selectors(selectors, variables = c("var1", "var2", "var3"))
         session$setInputs(
           "cor" = FALSE,
           "alpha" = 0.5,
@@ -220,7 +208,7 @@ testthat::describe("tm_g_scatterplotmatrix module server behavior", {
         mod$server_args
       ),
       expr = {
-        change_selectors(selectors, variables = c("var1", "var2"))
+        .change_selectors(selectors, variables = c("var1", "var2"))
         session$setInputs(
           "cor" = FALSE,
           "alpha" = 0.5,

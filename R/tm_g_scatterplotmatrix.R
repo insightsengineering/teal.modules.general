@@ -212,6 +212,7 @@ tm_g_scatterplotmatrix <- function(label = "Scatterplot Matrix",
                                    post_output = NULL,
                                    transformators = list(),
                                    decorators = list()) {
+  if (inherits(variables, "picks") || inherits(variables, "data_extract_spec")) variables <- list(variables)
   UseMethod("tm_g_scatterplotmatrix", variables[[1]])
 }
 
@@ -227,9 +228,6 @@ tm_g_scatterplotmatrix.default <- function(label = "Scatterplot Matrix",
                                            transformators = list(),
                                            decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
-
-  # Normalize the parameters
-  if (inherits(variables, "data_extract_spec")) variables <- list(variables)
 
   # Start of assertions
   checkmate::assert_string(label)
@@ -437,6 +435,7 @@ srv_g_scatterplotmatrix <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r())
 
+      browser()
       qenv <- merged$anl_q_r()
       ANL <- qenv[["ANL"]]
 
@@ -598,7 +597,7 @@ srv_g_scatterplotmatrix <- function(id,
       req(iv_r()$is_valid())
       req(selector_list()$variables())
       ANL <- merged$anl_q_r()[["ANL"]]
-      cols_names <- unique(unname(do.call(c, merged$anl_input_r()$columns_source)))
+      cols_names <- unique(unname(do.call(c, list(merged$anl_input_r()$columns_source$variables))))
       check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {
         is_single <- sum(check_char) == 1
