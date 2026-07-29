@@ -336,7 +336,7 @@ ui_g_distribution.default <- function(id, ...) {
           )
         ),
         conditionalPanel(
-          condition = paste0("input['", ns("main_type"), "'] == 'Density'"),
+          condition = paste0("input['", ns("main_type"), "'] == 'Density' || input['", ns("tabs"), "'] == 'QQplot'"),
           bslib::accordion_panel(
             "Theoretical Distribution",
             teal.widgets::optionalSelectInput(
@@ -575,23 +575,23 @@ srv_g_distribution.default <- function(id,
         selector_list()$dist_i()$select
       ),
       handlerExpr = {
-        params <-
-          if (length(input$t_dist) != 0) {
-            get_dist_params <- function(x, dist) {
-              if (dist == "unif") {
-                return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
-              }
-              tryCatch(
-                MASS::fitdistr(x, densfun = dist)$estimate,
-                error = function(e) c(param1 = NA_real_, param2 = NA_real_)
-              )
+        params <- if (length(input$t_dist) != 0) {
+          get_dist_params <- function(x, dist) {
+            if (dist == "unif") {
+              return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
             }
-
-            ANL <- merged$anl_q_r()[["ANL"]]
-            round(get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var]])), input$t_dist), 2)
-          } else {
-            c("param1" = NA_real_, "param2" = NA_real_)
+            tryCatch(
+              MASS::fitdistr(x, densfun = dist)$estimate,
+              error = function(e) c(param1 = NA_real_, param2 = NA_real_)
+            )
           }
+
+          ANL <- merged$anl_q_r()[["ANL"]]
+          dist_var <- as.vector(merged$anl_input_r()$columns_source$dist_i)
+          round(get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var]])), input$t_dist), 2)
+        } else {
+          c("param1" = NA_real_, "param2" = NA_real_)
+        }
 
         params_vals <- unname(params)
         map_distr_nams <- list(
@@ -996,6 +996,14 @@ srv_g_distribution.default <- function(id,
 
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
+
+        merge_vars_l <- merge_vars()
+        dist_var <- merge_vars_l$dist_var
+        dist_var_name <- merge_vars_l$dist_var_name
+        s_var <- merge_vars_l$s_var
+        s_var_name <- merge_vars_l$s_var_name
+        g_var <- merge_vars_l$g_var
+        g_var_name <- merge_vars_l$g_var_name
 
         teal::validate_inputs(iv_r_dist(), iv_dist)
         t_dist <- req(input$t_dist) # Not validated when tab is not selected

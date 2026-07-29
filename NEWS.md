@@ -4,7 +4,7 @@
 
 ### Enhancements
 
-- Introduced `tm_gtsummary()`, a new module for generating tables using the [gtsummary](https://cran.r-project.org/package=gtsummary) package (#973).
+- Introduced `tm_tbl_summary()`, a new module for generating tables using the [gtsummary](https://cran.r-project.org/package=gtsummary) package (#973).
 
 # teal.modules.general 0.7.0
 

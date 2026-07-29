@@ -79,7 +79,7 @@ testthat::describe("add_facet_labels", {
 })
 
 testthat::describe("Module with decorators:", {
-  # We test it with tm_gtsummary as it requires decorators to be useful to users
+  # We test it with tm_tbl_summary as it requires decorators to be useful to users
   create_gtsummary_module <- function(data, by_vars, include_vars, by_selected, include_selected, ...) {
     tm_tbl_summary(
       by = teal.picks::picks(

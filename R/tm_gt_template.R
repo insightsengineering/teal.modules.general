@@ -126,7 +126,9 @@ ui_gt_template <- function(id,
     )
   })
 
-  encodings <- if (length(picks_ui) > 0L || length(values_ui) > 0L || !is.null(partial_ui_rendered) || length(decorators) > 0L) {
+  encodings <- if (
+    length(picks_ui) > 0L || length(values_ui) > 0L || !is.null(partial_ui_rendered) || length(decorators) > 0L
+  ) {
     tags$div(
       tags$label("Encodings", class = "text-primary"),
       tagList(!!!picks_ui),

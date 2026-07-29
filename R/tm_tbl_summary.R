@@ -30,7 +30,7 @@
 #' See code snippet below:
 #'
 #' ```
-#' tm_gtsummary(
+#' tm_tbl_summary(
 #'    ..., # arguments for module
 #'    decorators = list(
 #'      table = teal_transform_module(...) # applied to the `table` output
@@ -115,7 +115,7 @@ tm_tbl_summary <- function(
   transformators = list(),
   decorators = list()
 ) {
-  message("Initializing tm_gtsummary")
+  message("Initializing tbl_summary")
 
   checkmate::assert_class(by, "picks", null.ok = TRUE)
   if (!is.null(by)) {

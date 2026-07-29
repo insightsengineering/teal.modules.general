@@ -103,7 +103,6 @@ testthat::test_that("e2e - tm_g_distribution: QQ plot encoding inputs produce ou
   app_driver <- app_driver_tm_g_distribution()
 
   # Encodings in the QQplot tab
-  app_driver$set_active_module_input("histogram_plot-statistic", "Density")
   .change_selectpicker(app_driver, app_driver$namespaces()$module("test_table-dist_test"), "Shapiro-Wilk")
 
   app_driver$expect_no_validation_error()

@@ -788,7 +788,7 @@ testthat::describe("tm_g_bivariate module server behavior", {
         mod$server_args
       ),
       expr = {
-        # .change_selectors(selectors, x = "x_var", y = "y_var")
+        .change_selectors(selectors, x = "x_var", y = "y_var")
         session$setInputs(
           "use_density" = "frequency",
           "rotate_xaxis_labels" = FALSE,

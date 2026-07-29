@@ -1,7 +1,7 @@
 app_driver_tm_tbl_summary <- function() {
   init_teal_app_driver(
     teal::init(
-      data = data <- within(teal.data::teal_data(), CO2 <- CO2),
+      data = data <- within(teal.data::teal_data(), CO2 <- CO2), # nolint object_name_linter.
       modules = tm_tbl_summary(
         by = teal.picks::picks(
           teal.picks::datasets("CO2", "CO2"),
