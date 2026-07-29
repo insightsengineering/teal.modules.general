@@ -117,7 +117,7 @@
 #'           datasets("sales"),
 #'           teal.picks::variables(
 #'             choices = c("quantity", "costs", "profit"),
-#'             selected = c("quantity", "costs", "profit"),
+#'             selected = c("quantity", "costs"),
 #'             multiple = TRUE,
 #'             ordered = TRUE
 #'           )
@@ -173,7 +173,7 @@
 #'           datasets("ADRS"),
 #'           teal.picks::variables(
 #'             choices = tidyselect::everything(),
-#'             selected = c("AGE", "AVAL", "ADY"),
+#'             selected = c("AVAL", "ADY"),
 #'             multiple = TRUE,
 #'             ordered = TRUE,
 #'             fixed = FALSE

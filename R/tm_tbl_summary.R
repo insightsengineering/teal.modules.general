@@ -79,6 +79,7 @@
 #' # CDISC data example
 #' data <- within(teal.data::teal_data(), {
 #'   ADSL <- teal.data::rADSL
+#'   ADTTE <- teal.data::rADTTE
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #' app <- init(

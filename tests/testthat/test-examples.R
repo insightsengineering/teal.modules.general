@@ -158,7 +158,12 @@ for (i in rd_files()) {
           testthat::expect_no_error(
             pkgload::run_example(i, run_donttest = TRUE, run_dontrun = FALSE, quiet = TRUE)
           ),
-          "may not be available when loading"
+          paste(
+            sep = "|",
+            "(may not be available when loading)", # https://github.com/insightsengineering/teal.code/issues/194
+            "(Setting explicit `selected` while `choices` are delayed)", # teal.picks eager/delayed choices
+            "(It is not guaranteed that explicitly defined choices)" # teal.picks eager/delayed choices
+          )
         )
       )
     }
