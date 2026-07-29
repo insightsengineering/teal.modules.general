@@ -166,7 +166,6 @@ ui_g_distribution.picks <- function(id,
           condition = paste0(
             "input['", ns("histogram_plot-statistic"), "'] == 'Density' || input['", ns("tabs"), "'] == 'QQplot'"
           ),
-
           bslib::accordion_panel( # todo: hide ONLY when frequency is selected for histogram
             "Theoretical Distribution",
             teal.widgets::optionalSelectInput(

@@ -64,7 +64,7 @@ testthat::test_that("e2e - tm_g_association:
   app_driver$expect_no_validation_error()
 
   app_driver$stop()
-  })
+})
 
 testthat::test_that("e2e - tm_g_association: Module plot is visible.", {
   skip_if_too_deep(5)

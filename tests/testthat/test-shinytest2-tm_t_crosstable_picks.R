@@ -9,7 +9,8 @@ app_driver_tm_t_crosstable <- function() {
           teal.picks::datasets("ADSL", "ADSL"),
           suppressWarnings(
             teal.picks::variables(
-              function(x) !inherits(x, c("Date", "POSIXct", "POSIXlt")), "COUNTRY", multiple = TRUE
+              function(x) !inherits(x, c("Date", "POSIXct", "POSIXlt")), "COUNTRY",
+              multiple = TRUE
             ),
             classes = "picks_delayed"
           )

@@ -170,7 +170,7 @@ srv_g_scatterplotmatrix.picks <- function(id,
 
     merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "ANL")
 
-        # plot
+    # plot
     output_q <- reactive({
       qenv <- merged$data()
       ANL <- qenv[["ANL"]]
