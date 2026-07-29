@@ -10,7 +10,7 @@ testthat::describe("tm_g_association module creation", {
     )
   })
 
-  it("creates a module with datanames taken from data extracts", {
+  it("creates a module with datanames taken from picks", {
     mod <- tm_g_association(
       ref = mock_teal_picks(dataname = "A", select_multiple = FALSE),
       vars = mock_teal_picks(dataname = "B", select_multiple = TRUE)
@@ -44,7 +44,7 @@ testthat::describe("tm_g_association input validation", {
     )
   })
 
-  it("fails when ref is not a data_extract_spec or list", {
+  it("fails when ref is not a picks or list", {
     testthat::expect_error(
       tm_g_association(
         ref = "not a spec",
@@ -64,7 +64,7 @@ testthat::describe("tm_g_association input validation", {
     )
   })
 
-  it("fails when vars is not a data_extract_spec or list", {
+  it("fails when vars is not a picks or list", {
     testthat::expect_error(
       tm_g_association(
         ref = mock_teal_picks(select_multiple = FALSE),

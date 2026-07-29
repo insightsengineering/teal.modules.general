@@ -81,7 +81,7 @@ testthat::test_that("e2e - tm_g_response: deselecting response produces validati
 
   app_driver <- app_driver_tm_g_response()
 
-  set_picks_slot_selected(app_driver, "response", c(), "variables")
+  set_picks_slot_selected(app_driver, "response", "", "variables")
   app_driver$expect_validation_error()
 
   app_driver$stop()

@@ -4,12 +4,15 @@ app_driver_tm_tbl_summary <- function() {
       data = data <- within(teal.data::teal_data(), CO2 <- CO2),
       modules = tm_tbl_summary(
         by = teal.picks::picks(
-          datasets("CO2", "CO2"),
-          variables(selected = "Plant")
+          teal.picks::datasets("CO2", "CO2"),
+          suppressWarnings(teal.picks::variables(selected = "Plant"), classes = "picks_delayed")
         ),
         include = teal.picks::picks(
-          datasets("CO2", "CO2"),
-          variables(selected = c("Type", "Treatment"), multiple = TRUE)
+          teal.picks::datasets("CO2", "CO2"),
+          suppressWarnings(
+            teal.picks::variables(selected = c("Type", "Treatment"), multiple = TRUE),
+            classes = "picks_delayed"
+          )
         )
       )
     )
@@ -57,7 +60,7 @@ test_that("e2e - tm_tbl_summary: Verify default values and settings (data_extrac
 
   # new variable selection
   set_picks_slot_selected(app_driver, "by", "Treatment")
-  set_picks_slot_selected(app_driver, "include", c("Type", "Plant", "conc"))
+  set_picks_slot_selected(app_driver, "include", c("Plant", "Type", "conc"))
   app_driver$expect_no_validation_error()
 
   app_driver$stop()

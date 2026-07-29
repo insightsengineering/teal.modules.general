@@ -6,7 +6,7 @@ testthat::describe("tm_g_distribtuion module creation", {
     )
   })
 
-  it("creates a teal_module object with all data_extract_specs", {
+  it("creates a teal_module object with all picks", {
     testthat::expect_s3_class(
       tm_g_distribution(
         dist_var = mock_teal_picks("iris", "Petal.Length"),
@@ -17,7 +17,7 @@ testthat::describe("tm_g_distribtuion module creation", {
     )
   })
 
-  it("creates a module with datanames taken from data extracts", {
+  it("creates a module with datanames taken from picks", {
     mod <- tm_g_distribution(
       dist_var = mock_teal_picks("iris", "Petal.Length"),
       strata_var = mock_teal_picks("mtcars", "cyl"),
@@ -56,7 +56,7 @@ testthat::describe("tm_g_distribution input validation", {
     )
   })
 
-  it("fails when dist_var is not a list of data_extract_spec", {
+  it("fails when dist_var is not a list of picks", {
     testthat::expect_error(tm_g_distribution(dist_var = "not_a_spec"), "dist_var")
     testthat::expect_error(tm_g_distribution(dist_var = list("not_a_spec")), "dist_var")
   })
@@ -66,14 +66,14 @@ testthat::describe("tm_g_distribution input validation", {
     testthat::expect_warning(tm_g_distribution(dist_var = local_spec), "multiple")
   })
 
-  it("fails when strata_var is not a list of data_extract_spec or NULL", {
+  it("fails when strata_var is not a list of picks or NULL", {
     testthat::expect_error(
       tm_g_distribution(dist_var = spec, strata_var = "not_a_spec"),
       "strata_var"
     )
   })
 
-  it("fails when group_var is not a list of data_extract_spec or NULL", {
+  it("fails when group_var is not a list of picks or NULL", {
     testthat::expect_error(
       tm_g_distribution(dist_var = spec, group_var = "not_a_spec"),
       "group_var"

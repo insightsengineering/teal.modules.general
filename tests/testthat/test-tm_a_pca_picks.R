@@ -345,7 +345,7 @@ testthat::describe("tm_g_response module server behavior", {
           y_axis = "PC2",
           standardization = "none",
           variables = c("AGE", "BMRKR1"),
-          response = "BMRKR1"
+          response = "RACE"
         )
         session$flushReact()
         testthat::expect_s4_class(session$returned(), "teal_report")
@@ -367,7 +367,7 @@ testthat::describe("tm_g_response module server behavior", {
           x_axis = "PC1",
           y_axis = "PC2",
           variables = c("AGE", "BMRKR1"),
-          response = "AGE"
+          response = "RACE"
         )
         session$flushReact()
         testthat::expect_s4_class(session$returned(), "teal_report")

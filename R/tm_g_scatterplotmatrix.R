@@ -435,7 +435,6 @@ srv_g_scatterplotmatrix <- function(id,
     output_q <- reactive({
       teal::validate_inputs(iv_r())
 
-      browser()
       qenv <- merged$anl_q_r()
       ANL <- qenv[["ANL"]]
 

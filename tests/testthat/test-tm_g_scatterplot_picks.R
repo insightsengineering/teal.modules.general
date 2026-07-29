@@ -33,7 +33,7 @@ testthat::describe("tm_g_scatterplot module creation", {
     )
   })
 
-  it("creates a module with datanames taken from data extracts", {
+  it("creates a module with datanames taken from picks", {
     mod <- tm_g_scatterplot(
       "a label",
       mock_teal_picks(dataname = "A", select_multiple = FALSE),
@@ -61,8 +61,8 @@ testthat::describe("tm_g_scatterplot module creation", {
   })
 })
 
-testthat::describe("tm_g_scatterplot data extract spec validation", {
-  it("fails when x is not a data_extract_spec or list", {
+testthat::describe("tm_g_scatterplot picks validation", {
+  it("fails when x is not a picks or list", {
     testthat::expect_error(
       tm_g_scatterplot(
         "a label",
@@ -73,7 +73,7 @@ testthat::describe("tm_g_scatterplot data extract spec validation", {
     )
   })
 
-  it("fails when y is not a data_extract_spec or list", {
+  it("fails when y is not a picks or list", {
     testthat::expect_error(
       tm_g_scatterplot(
         "a label",
@@ -108,7 +108,7 @@ testthat::describe("tm_g_scatterplot data extract spec validation", {
     )
   })
 
-  it("accepts NULL for optional data extract specs", {
+  it("accepts NULL for optional picks", {
     testthat::expect_s3_class(
       tm_g_scatterplot(
         "a label",
@@ -123,7 +123,7 @@ testthat::describe("tm_g_scatterplot data extract spec validation", {
     )
   })
 
-  it("fails when color_by is not a data_extract_spec or list", {
+  it("fails when color_by is not a picks or list", {
     testthat::expect_error(
       tm_g_scatterplot(
         "a label",
@@ -135,7 +135,7 @@ testthat::describe("tm_g_scatterplot data extract spec validation", {
     )
   })
 
-  it("fails when size_by is not a data_extract_spec or list", {
+  it("fails when size_by is not a picks or list", {
     testthat::expect_error(
       tm_g_scatterplot(
         "a label",

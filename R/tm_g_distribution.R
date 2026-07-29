@@ -1236,9 +1236,8 @@ srv_g_distribution.default <- function(id,
           s_var_name = s_var_name
         )
 
-        qenv <- teal.code::eval_code(common_q(), "library(broom)")
+        qenv <- teal.code::eval_code(common_q(), "library(broom);library(generics)")
         if (length(s_var) == 0 && length(g_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, "library(generics)")
           qenv <- teal.code::eval_code(
             qenv,
             substitute(

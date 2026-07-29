@@ -10,14 +10,14 @@ app_driver_tm_g_scatterplotmatrix <- function() { # nolint: object_length_linter
             teal.picks::datasets("ADSL", "ADSL"),
             suppressWarnings(
               teal.picks::variables(selected = c("AGE", "RACE", "SEX"), multiple = TRUE),
-              class = "picks_delayed"
+              classes = "picks_delayed"
             )
           ),
           teal.picks::picks(
             teal.picks::datasets("ADRS", "ADRS"),
             suppressWarnings(
               teal.picks::variables(selected = NULL, multiple = TRUE),
-              class = "picks_delayed"
+              classes = "picks_delayed"
             )
           )
         ),

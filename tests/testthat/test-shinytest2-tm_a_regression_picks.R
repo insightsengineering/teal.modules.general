@@ -55,7 +55,7 @@ testthat::test_that("e2e - tm_a_regression: Data parameter and module label is p
 })
 
 testthat::test_that("e2e - tm_a_regression:
-  Data extract spec elements are initialized with the default values specified by response and regressor arg.", {
+  picks elements are initialized with the default values specified by response and regressor arg.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_regression()

@@ -8,6 +8,7 @@
 #' @import teal
 #' @import teal.transform
 #' @import teal.picks
+#' @importFrom broom glance
 #' @importFrom dplyr %>% .data
 #'
 #' @name teal.modules.general

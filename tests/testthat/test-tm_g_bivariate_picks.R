@@ -32,7 +32,7 @@ testthat::describe("tm_g_bivariate module creation", {
     )
   })
 
-  it("creates a module with datanames taken from data extracts", {
+  it("creates a module with datanames taken from picks", {
     mod <- tm_g_bivariate(
       "a label",
       mock_teal_picks(dataname = "A", select_multiple = FALSE),

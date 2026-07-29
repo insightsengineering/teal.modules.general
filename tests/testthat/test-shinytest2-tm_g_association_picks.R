@@ -51,7 +51,7 @@ testthat::test_that("e2e - tm_g_association: Data parameter and module label is 
 })
 
 testthat::test_that("e2e - tm_g_association:
-  Data extract spec elements are initialized with the default values specified by ref and vars arguments.", {
+  picks elements are initialized with the default values specified by ref and vars arguments.", {
   skip_if_too_deep(5)
   app_driver <- app_driver_tm_g_association()
 

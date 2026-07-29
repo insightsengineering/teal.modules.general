@@ -29,7 +29,7 @@ set_picks_slot_selected <- function(app_driver, id, value, slot_name = c("variab
   # Mock the opening of the picker input
   app_driver$set_input(selected_open_id, TRUE, allow_no_input_binding_ = TRUE)
   # Set the value
-
+  browser()
   tryCatch(
     .change_selectpicker(app_driver, selected_id, value),
     error = function(e) warning(e)
@@ -69,7 +69,8 @@ set_picks_slot_selected <- function(app_driver, id, value, slot_name = c("variab
 #' @param id (`character(1)`) `pickerInput` id.
 #' @param value The value to set using `AppDriver$set_input`
 .change_selectpicker <- function(app_driver, id, value, wait_ = TRUE) {
-  app_driver$run_js(sprintf("$('select#%s').selectpicker('val', %s);", id, jsonlite::toJSON(value, auto_unbox = TRUE)))
+  json_parsed <- if (is.null(value) || length(value) == 0) "" else jsonlite::toJSON(value, auto_unbox = TRUE)
+  app_driver$run_js(sprintf("$('select#%s').selectpicker('val', %s);", id, json_parsed))
   if (wait_) {
     app_driver$wait_for_idle()
   }

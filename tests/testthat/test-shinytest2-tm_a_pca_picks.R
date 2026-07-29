@@ -55,7 +55,7 @@ testthat::test_that("e2e - tm_a_pca: Module is initialised with the specified de
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract selection Murder/Assault on header.", {
+testthat::test_that("e2e - tm_a_pca: Eigenvector table should have picks selection Murder/Assault on header.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()
@@ -72,7 +72,7 @@ testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract 
   app_driver$stop()
 })
 
-testthat::test_that("e2e - tm_a_pca: Eigenvector table should have data extract selection Murder/UrbanPop on header.", {
+testthat::test_that("e2e - tm_a_pca: Eigenvector table should have picks selection Murder/UrbanPop on header.", {
   skip_if_too_deep(5)
 
   app_driver <- app_driver_tm_a_pca()

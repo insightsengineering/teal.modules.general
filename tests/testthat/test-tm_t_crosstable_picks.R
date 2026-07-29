@@ -20,7 +20,7 @@ testthat::describe("tm_t_crosstable module creation", {
     )
   })
 
-  it("creates a module with datanames taken from data extracts", {
+  it("creates a module with datanames taken from picks", {
     mod <- tm_t_crosstable(
       x = mock_teal_picks(dataname = "A", select_multiple = TRUE),
       y = mock_teal_picks(dataname = "B", select_multiple = FALSE)
@@ -54,7 +54,7 @@ testthat::describe("tm_t_crosstable input validation", {
     )
   })
 
-  it("fails when x is not a data_extract_spec or list", {
+  it("fails when x is not a picks or list", {
     testthat::expect_error(
       tm_t_crosstable(
         x = "not a spec",
@@ -64,7 +64,7 @@ testthat::describe("tm_t_crosstable input validation", {
     )
   })
 
-  it("fails when y is not a data_extract_spec or list", {
+  it("fails when y is not a picks or list", {
     testthat::expect_error(
       tm_t_crosstable(
         x = mock_teal_picks(select_multiple = TRUE),

@@ -18,7 +18,7 @@ testthat::describe("tm_g_scatterplotmatrix module creation", {
     )
   })
 
-  it("creates a teal_module object with list of data extract specs", {
+  it("creates a teal_module object with list of picks", {
     testthat::expect_s3_class(
       tm_g_scatterplotmatrix(
         variables = list(
@@ -30,7 +30,7 @@ testthat::describe("tm_g_scatterplotmatrix module creation", {
     )
   })
 
-  it("creates a module with datanames taken from data extracts", {
+  it("creates a module with datanames taken from picks", {
     mod <- tm_g_scatterplotmatrix(
       variables = list(
         a = mock_teal_picks(dataname = "A", select_multiple = TRUE),
@@ -64,7 +64,7 @@ testthat::describe("tm_g_scatterplotmatrix input validation", {
     )
   })
 
-  it("fails when variables is not a data_extract_spec or list", {
+  it("fails when variables is not a picks or list", {
     testthat::expect_error(
       tm_g_scatterplotmatrix(
         variables = "not a spec"
@@ -182,7 +182,7 @@ testthat::describe("tm_g_scatterplotmatrix module server behavior", {
         output_result <- output_q()
         testthat::expect_true(inherits(output_result, "teal_data"))
         plot_result <- plot_r()
-        testthat::expect_s3_class(plot_result, "trellis")
+        testthat::expect_s3_class(plot_result, "ggplot")
       }
     )
   })
@@ -215,10 +215,8 @@ testthat::describe("tm_g_scatterplotmatrix module server behavior", {
           "cex" = 1.5
         )
         testthat::expect_s4_class(validated_q(), "teal_data")
-        output_result <- output_q()
-        testthat::expect_true(inherits(output_result, "teal_data"))
-        plot_result <- plot_r()
-        testthat::expect_s3_class(plot_result, "trellis")
+        testthat::expect_true(inherits(output_q(), "teal_data"))
+        testthat::expect_s3_class(plot_r(), "ggplot")
       }
     )
   })
