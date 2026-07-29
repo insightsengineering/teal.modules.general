@@ -15,6 +15,8 @@ tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
                                          transformators = list(),
                                          decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
+
+  if (inherits(variables, "picks")) variables <- list(variables)
   if (is.null(names(variables))) {
     names(variables) <- sprintf("pick_%s", seq_along(variables))
   }

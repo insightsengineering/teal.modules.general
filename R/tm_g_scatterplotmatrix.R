@@ -229,6 +229,8 @@ tm_g_scatterplotmatrix.default <- function(label = "Scatterplot Matrix",
                                            decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
 
+  if (inherits(variables, "data_extract_spec")) variables <- list(variables)
+
   # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(variables, types = "data_extract_spec")
