@@ -69,8 +69,13 @@ set_picks_slot_selected <- function(app_driver, id, value, slot_name = c("variab
 #' @param id (`character(1)`) `pickerInput` id.
 #' @param value The value to set using `AppDriver$set_input`
 .change_selectpicker <- function(app_driver, id, value, wait_ = TRUE) {
-  json_parsed <- if (is.null(value) || length(value) == 0) "" else jsonlite::toJSON(value, auto_unbox = TRUE)
-  app_driver$run_js(sprintf("$('select#%s').selectpicker('val', %s);", id, json_parsed))
+  if (is.null(value) || length(value) == 0 || identical(value, "")) { # De-select values needs to use shinytest2 API
+    app_driver$set_input(id, "")
+    value <- ""
+  } else {
+    json_parsed <- jsonlite::toJSON(value, auto_unbox = TRUE)
+    app_driver$run_js(sprintf("$('select#%s').selectpicker('val', %s);", id, json_parsed))
+  }
   if (wait_) {
     app_driver$wait_for_idle()
   }
