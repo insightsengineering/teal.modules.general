@@ -135,19 +135,19 @@ tm_outliers <- function(label = "Outliers Module",
 }
 
 #' @export
-tm_outliers.data_extract_spec <- function(label = "Outliers Module",
-                                          outlier_var,
-                                          categorical_var = NULL,
-                                          ggtheme = c(
-                                            "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"
-                                          ),
-                                          ggplot2_args = teal.widgets::ggplot2_args(),
-                                          plot_height = c(600, 200, 2000),
-                                          plot_width = NULL,
-                                          pre_output = NULL,
-                                          post_output = NULL,
-                                          transformators = list(),
-                                          decorators = list()) {
+tm_outliers.default <- function(label = "Outliers Module",
+                                outlier_var,
+                                categorical_var = NULL,
+                                ggtheme = c(
+                                  "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"
+                                ),
+                                ggplot2_args = teal.widgets::ggplot2_args(),
+                                plot_height = c(600, 200, 2000),
+                                plot_width = NULL,
+                                pre_output = NULL,
+                                post_output = NULL,
+                                transformators = list(),
+                                decorators = list()) {
   message("Initializing tm_outliers")
 
   # Normalize the parameters
@@ -215,9 +215,6 @@ tm_outliers.data_extract_spec <- function(label = "Outliers Module",
   attr(ans, "teal_bookmarkable") <- TRUE
   ans
 }
-
-#' @export
-tm_outliers.list <- tm_outliers.data_extract_spec
 
 # UI function for the outliers module
 ui_outliers <- function(id, ...) {
@@ -532,17 +529,6 @@ srv_outliers <- function(id, data, outlier_var,
         input$zscore_slider
       } else if (method == "Percentile") {
         input$percentile_slider
-      }
-
-      # this is utils function that converts a %>% NULL %>% b into a %>% b
-      remove_pipe_null <- function(x) {
-        if (length(x) == 1) {
-          x
-        } else if (identical(x[[1]], as.name("%>%")) && is.null(x[[3]])) {
-          remove_pipe_null(x[[2]])
-        } else {
-          as.call(c(x[[1]], lapply(x[-1], remove_pipe_null)))
-        }
       }
 
       qenv <- teal.code::eval_code(

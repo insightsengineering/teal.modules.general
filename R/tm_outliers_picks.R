@@ -269,23 +269,36 @@ srv_outliers.picks <- function(id, # nolint: object_name_linter.
     outlier_dataname <- reactive(selectors$outlier_var()$datasets$selected)
 
     validated_q <- reactive({
+      obj <- req(data_obj())
+      outlier_dat <- obj[[outlier_dataname()]]
+      outlier_var <- selectors$outlier_var()$variables$selected
+
       teal::validate_input(
         inputId = "outlier_var-variables-selected",
-        condition = length(selectors$outlier_var()$variables$selected) == 1,
+        condition = length(outlier_var) == 1,
         message = "Please select a variable"
       )
       if (!is.null(categorical_var) && length(selectors$categorical_var()$variables$selected) > 0) {
         teal::validate_input(
-          inputId = "categorical_var-variables-selected",
+          inputId = c("categorical_var-variables-selected", "outlier_var-variables-selected"),
           condition = !identical(
-            selectors$outlier_var()$variables$selected,
+            outlier_var,
             selectors$categorical_var()$variables$selected
           ),
           message = "`Variable` and `Categorical factor` cannot be the same"
         )
       }
+      teal::validate_input(
+        inputId = "outlier_var-variables-selected",
+        condition = is.numeric(outlier_dat[[outlier_var]]),
+        message = "`Variable` is not numeric"
+      )
+      teal::validate_input(
+        inputId = "outlier_var-variables-selected",
+        condition = length(unique(outlier_dat[[outlier_var]])) > 1,
+        message = "Variable has no variation, i.e. only one unique value"
+      )
 
-      obj <- req(data_obj())
       teal.reporter::teal_card(obj) <- c(
         teal.reporter::teal_card("# Outliers Module"),
         teal.reporter::teal_card(obj),
@@ -330,8 +343,6 @@ srv_outliers.picks <- function(id, # nolint: object_name_linter.
         complete = TRUE,
         allow_inf = FALSE
       )
-      validate(need(is.numeric(ANL[[outlier_var]]), "`Variable` is not numeric"))
-      validate(need(length(unique(ANL[[outlier_var]])) > 1, "Variable has no variation, i.e. only one unique value"))
 
       # show/hide split_outliers
       if (length(categorical_var) == 0) {
@@ -346,12 +357,13 @@ srv_outliers.picks <- function(id, # nolint: object_name_linter.
           )
         }
       } else {
-        validate(need(
-          is.factor(ANL[[categorical_var]]) ||
+        teal::validate_input(
+          inputId = "categorical_var-variables-selected",
+          condition = is.factor(ANL[[categorical_var]]) ||
             is.character(ANL[[categorical_var]]) ||
             is.integer(ANL[[categorical_var]]),
-          "`Categorical factor` must be `factor`, `character`, or `integer`"
-        ))
+          message = "`Categorical factor` must be `factor`, `character`, or `integer`"
+        )
 
         if (n_outlier_missing() > 0) {
           qenv <- teal.code::eval_code(
@@ -372,17 +384,6 @@ srv_outliers.picks <- function(id, # nolint: object_name_linter.
         input$zscore_slider
       } else if (method == "Percentile") {
         input$percentile_slider
-      }
-
-      # this is utils function that converts a %>% NULL %>% b into a %>% b
-      remove_pipe_null <- function(x) {
-        if (length(x) == 1) {
-          x
-        } else if (identical(x[[1]], as.name("%>%")) && is.null(x[[3]])) {
-          remove_pipe_null(x[[2]])
-        } else {
-          as.call(c(x[[1]], lapply(x[-1], remove_pipe_null)))
-        }
       }
 
       qenv <- teal.code::eval_code(
