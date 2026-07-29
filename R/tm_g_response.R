@@ -71,8 +71,8 @@
 #' data <- within(data, {
 #'   require(nestcolor)
 #'   mtcars <- mtcars
-#'   for (v in c("cyl", "vs", "am", "gear")) {
-#'     mtcars[[v]] <- as.factor(mtcars[[v]])
+#'   for (.v in c("cyl", "vs", "am", "gear")) {
+#'     mtcars[[.v]] <- as.factor(mtcars[[.v]])
 #'   }
 #' })
 #'
