@@ -4,25 +4,13 @@ describe("tests for module creation", {
     CO2 <- CO2 # nolint: object_name_linter.
   })
 
-  response <- data_extract_spec(
-    dataname = "CO2",
-    select = select_spec(
-      label = "Select variable:",
-      choices = "uptake",
-      selected = "uptake",
-      multiple = FALSE,
-      fixed = TRUE
-    )
+  response <- teal.picks::picks(
+    teal.picks::datasets("CO2", "CO2"),
+    teal.picks::variables("uptake", "uptake")
   )
-  regressor <- data_extract_spec(
-    dataname = "CO2",
-    select = select_spec(
-      label = "Select variables:",
-      choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
-      selected = "conc",
-      multiple = TRUE,
-      fixed = FALSE
-    )
+  regressor <- teal.picks::picks(
+    teal.picks::datasets("CO2", "CO2"),
+    teal.picks::variables(c("conc", "Treatment"), "conc", multiple = TRUE)
   )
 
   it("works with default arguments", {
@@ -53,16 +41,6 @@ describe("tests for module creation", {
         labs = list(title = "User default title"),
         theme = list(legend.position = "right", legend.direction = "vertical")
       )
-    )
-
-    testthat::expect_s3_class(mod, "teal_module")
-  })
-
-  it("works when setting default_outlier_label", {
-    mod <- tm_a_regression(
-      response = response,
-      regressor = regressor,
-      default_outlier_label = "uptake"
     )
 
     testthat::expect_s3_class(mod, "teal_module")
@@ -167,7 +145,7 @@ describe("tests for module creation", {
       response = response,
       regressor = regressor
     )
-    ui_regression <- do.call(mod$ui, c(list(id = "test"), mod$ui_args), quote = TRUE)
+    ui_regression <- do.call(mod$ui, c(list(id = "test"), mod$ui_args))
 
     testthat::expect_s3_class(ui_regression, "shiny.tag.list")
   })
@@ -179,25 +157,13 @@ describe("Test for invalidation of arguments", {
     CO2 <- CO2 # nolint: object_name_linter.
   })
 
-  response <- data_extract_spec(
-    dataname = "CO2",
-    select = select_spec(
-      label = "Select variable:",
-      choices = "uptake",
-      selected = "uptake",
-      multiple = FALSE,
-      fixed = TRUE
-    )
+  response <- teal.picks::picks(
+    teal.picks::datasets("CO2", "CO2"),
+    teal.picks::variables("uptake", "uptake")
   )
-  regressor <- data_extract_spec(
-    dataname = "CO2",
-    select = select_spec(
-      label = "Select variables:",
-      choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
-      selected = "conc",
-      multiple = TRUE,
-      fixed = FALSE
-    )
+  regressor <- teal.picks::picks(
+    teal.picks::datasets("CO2", "CO2"),
+    teal.picks::variables(c("conc", "Treatment"), "conc", multiple = TRUE)
   )
 
   it("fails if label is not the expected type", {
@@ -251,31 +217,24 @@ describe("Test for server function", {
     CO2 <- CO2 # nolint: object_name_linter.
   })
 
-  response <- data_extract_spec(
-    dataname = "CO2",
-    select = select_spec(
-      label = "Select variable:",
-      choices = "uptake",
-      selected = "uptake",
-      multiple = FALSE,
-      fixed = TRUE
-    )
+  response <- teal.picks::picks(
+    teal.picks::datasets("CO2", "CO2"),
+    teal.picks::variables("uptake", "uptake")
   )
-  regressor <- data_extract_spec(
-    dataname = "CO2",
-    select = select_spec(
-      label = "Select variables:",
-      choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
-      selected = "conc",
-      multiple = TRUE,
-      fixed = FALSE
-    )
+  regressor <- teal.picks::picks(
+    teal.picks::datasets("CO2", "CO2"),
+    teal.picks::variables(c("conc", "Treatment"), "conc", multiple = TRUE)
   )
 
-  set_default_args <- function(session, plot_type) {
+  set_default_args <- function(session, plot_type, selectors, resp_val = "uptake", regr_val = "Treatment") {
+    resp_sel <- selectors$response()
+    regr_sel <- selectors$regressor()
+    resp_sel$variables$selected <- resp_val
+    regr_sel$variables$selected <- regr_val
+    selectors$response(resp_sel)
+    selectors$regressor(regr_sel)
+
     session$setInputs(
-      "response-dataset_CO2_singleextract-select" = "uptake",
-      "regressor-dataset_CO2_singleextract-select" = "conc",
       "plot_type" = plot_type,
       "show_outlier" = FALSE,
       "ggtheme" = "gray",
@@ -290,13 +249,14 @@ describe("Test for server function", {
       mod$server,
       args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
       expr = {
-        set_default_args(session, "Response vs Regressor")
-        testthat::expect_true(iv_r()$is_valid())
+        set_default_args(session, "Response vs Regressor", selectors)
+        session$flushReact()
+        testthat::expect_s4_class(validated_q(), "teal_data")
         if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
-          testthat::expect_true(inherits(output_result, "teal_data"))
+          testthat::expect_s4_class(output_result, "teal_data")
           plot_result <- plot_r()
-          testthat::expect_true(inherits(plot_result, "ggplot"))
+          testthat::expect_s3_class(plot_result, "ggplot")
         }
       }
     )
@@ -308,13 +268,14 @@ describe("Test for server function", {
       mod$server,
       args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
       expr = {
-        set_default_args(session, "Residuals vs Leverage")
-        testthat::expect_true(iv_r()$is_valid())
+        set_default_args(session, "Residuals vs Leverage", selectors)
+        session$flushReact()
+        testthat::expect_s4_class(validated_q(), "teal_data")
         if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
-          testthat::expect_true(inherits(output_result, "teal_data"))
+          testthat::expect_s4_class(output_result, "teal_data")
           plot_result <- plot_r()
-          testthat::expect_true(inherits(plot_result, "ggplot"))
+          testthat::expect_s3_class(plot_result, "ggplot")
         }
       }
     )
@@ -326,13 +287,14 @@ describe("Test for server function", {
       mod$server,
       args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
       expr = {
-        set_default_args(session, "Residuals vs Fitted")
-        testthat::expect_true(iv_r()$is_valid())
+        set_default_args(session, "Residuals vs Fitted", selectors)
+        session$flushReact()
+        testthat::expect_s4_class(validated_q(), "teal_data")
         if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
-          testthat::expect_true(inherits(output_result, "teal_data"))
+          testthat::expect_s4_class(output_result, "teal_data")
           plot_result <- plot_r()
-          testthat::expect_true(inherits(plot_result, "ggplot"))
+          testthat::expect_s3_class(plot_result, "ggplot")
         }
       }
     )
@@ -344,13 +306,14 @@ describe("Test for server function", {
       mod$server,
       args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
       expr = {
-        set_default_args(session, "Scale-Location")
-        testthat::expect_true(iv_r()$is_valid())
+        set_default_args(session, "Scale-Location", selectors)
+        session$flushReact()
+        testthat::expect_s4_class(validated_q(), "teal_data")
         if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
-          testthat::expect_true(inherits(output_result, "teal_data"))
+          testthat::expect_s4_class(output_result, "teal_data")
           plot_result <- plot_r()
-          testthat::expect_true(inherits(plot_result, "ggplot"))
+          testthat::expect_s3_class(plot_result, "ggplot")
         }
       }
     )
@@ -362,13 +325,14 @@ describe("Test for server function", {
       mod$server,
       args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
       expr = {
-        set_default_args(session, "Cook's distance")
-        testthat::expect_true(iv_r()$is_valid())
+        set_default_args(session, "Cook's distance", selectors)
+        session$flushReact()
+        testthat::expect_s4_class(validated_q(), "teal_data")
         if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
-          testthat::expect_true(inherits(output_result, "teal_data"))
+          testthat::expect_s4_class(output_result, "teal_data")
           plot_result <- plot_r()
-          testthat::expect_true(inherits(plot_result, "ggplot"))
+          testthat::expect_s3_class(plot_result, "ggplot")
         }
       }
     )
@@ -380,13 +344,14 @@ describe("Test for server function", {
       mod$server,
       args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
       expr = {
-        set_default_args(session, "Normal Q-Q")
-        testthat::expect_true(iv_r()$is_valid())
+        set_default_args(session, "Normal Q-Q", selectors)
+        session$flushReact()
+        testthat::expect_s4_class(validated_q(), "teal_data")
         if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
-          testthat::expect_true(inherits(output_result, "teal_data"))
+          testthat::expect_s4_class(output_result, "teal_data")
           plot_result <- plot_r()
-          testthat::expect_true(inherits(plot_result, "ggplot"))
+          testthat::expect_s3_class(plot_result, "ggplot")
         }
       }
     )
@@ -398,13 +363,14 @@ describe("Test for server function", {
       mod$server,
       args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
       expr = {
-        set_default_args(session, "Cook's dist vs Leverage")
-        testthat::expect_true(iv_r()$is_valid())
+        set_default_args(session, "Cook's dist vs Leverage", selectors)
+        session$flushReact()
+        testthat::expect_s4_class(validated_q(), "teal_data")
         if (!isTRUE(as.logical(Sys.getenv("R_COVR", "FALSE")))) {
           output_result <- output_q()
-          testthat::expect_true(inherits(output_result, "teal_data"))
+          testthat::expect_s4_class(output_result, "teal_data")
           plot_result <- plot_r()
-          testthat::expect_true(inherits(plot_result, "ggplot"))
+          testthat::expect_s3_class(plot_result, "ggplot")
         }
       }
     )
@@ -420,13 +386,8 @@ describe("Test for server function", {
         mod$server,
         args = c(list(id = "test", data = non_reactive_data), mod$server_args),
         expr = {
-          session$setInputs(
-            "response-dataset_CO2_singleextract-select" = "uptake",
-            "regressor-dataset_CO2_singleextract-select" = "conc",
-            "plot_type" = "Response vs Regressor",
-            "show_outlier" = FALSE,
-            "ggtheme" = "gray"
-          )
+          set_default_args(session, "Response vs Regressor", selectors, "uptake", "conc")
+          session$flushReact()
         }
       ),
       "Assertion on 'data' failed"
@@ -440,20 +401,12 @@ describe("Test for server function", {
         mod$server,
         args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
         expr = {
-          session$setInputs(
-            "response-dataset_CO2_singleextract-select" = "uptake",
-            "regressor-dataset_CO2_singleextract-select" = "uptake",
-            "plot_type" = "Response vs Regressor",
-            "show_outlier" = FALSE,
-            "ggtheme" = "gray"
-          )
-          testthat::expect_true(iv_r()$is_valid())
-          output_result <- output_q()
-          testthat::expect_true(inherits(output_result, "teal_data"))
-          plot_result <- plot_r()
-          testthat::expect_true(inherits(plot_result, "ggplot"))
+          set_default_args(session, "Response vs Regressor", selectors, "uptake", "uptake")
+          session$flushReact()
+          validated_q()
         }
-      )
+      ),
+      "Response and Regressor must be different"
     )
   })
 
@@ -464,20 +417,12 @@ describe("Test for server function", {
         mod$server,
         args = c(list(id = "test", data = shiny::reactive(data)), mod$server_args),
         expr = {
-          session$setInputs(
-            "response-dataset_CO2_singleextract-select" = c("uptake"),
-            "regressor-dataset_CO2_singleextract-select" = c("conc", "Treatment"),
-            "plot_type" = "Response vs Regressor",
-            "show_outlier" = FALSE,
-            "ggtheme" = "gray"
-          )
-          testthat::expect_true(iv_r()$is_valid())
-          output_result <- output_q()
-          testthat::expect_true(inherits(output_result, "teal_data"))
-          plot_result <- plot_r()
-          testthat::expect_true(inherits(plot_result, "ggplot"))
+          set_default_args(session, "Response vs Regressor", selectors, "uptake", c("conc", "Treatment"))
+          session$flushReact()
+          output_q()
         }
-      )
+      ),
+      "This plot works only with single Regressor variable"
     )
   })
 })

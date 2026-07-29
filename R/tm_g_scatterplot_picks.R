@@ -302,39 +302,34 @@ srv_g_scatterplot.picks <- function(id,
 
 
     validated_q <- reactive({
-      validate_input(
+      teal::validate_input(
         inputId = "x-variables-selected",
         condition = length(selectors$x()$variables$selected) == 1,
         message = "Please select exactly one x var."
       )
-      validate_input(
+      teal::validate_input(
         inputId = "y-variables-selected",
         condition = length(selectors$y()$variables$selected) == 1,
         message = "Please select exactly one y var."
       )
-      validate_input(
-        inputId = c("x-variables-selected", "y-variables-selected"),
-        condition = !any(selectors$x()$variables$selected %in% selectors$y()$variables$selected),
-        message = "X and Y variables must be different."
-      )
-      validate_input(
+      teal::validate_input(
         inputId = "row_facet-variables-selected",
         condition = is.null(row_facet) || length(selectors$row_facet()$variables$selected) < 2,
         message = "Only single Row Facetting variable is allowed."
       )
-      validate_input(
+      teal::validate_input(
         inputId = "col_facet-variables-selected",
         condition = is.null(col_facet) || length(selectors$col_facet()$variables$selected) < 2,
         message = "Only single Column Facetting variable is allowed."
       )
-      validate_input(
+      teal::validate_input(
         inputId = c("row_facet-variables-selected", "col_facet-variables-selected"),
-        condition = is.null(row_facet) || !is.null(col_facet) ||
+        condition = is.null(row_facet) || is.null(col_facet) ||
           !any(selectors$row_facet()$variables$selected %in% selectors$col_facet()$variables$selected),
         message = "Row and Column Facetting variables must be different."
       )
-      validate_input(
-        "add_density",
+      teal::validate_input(
+        inputId = "add_density",
         condition = !(is.null(input$add_density) &&
           (length(selectors$row_facet()$variables$selected) || length(selectors$col_facet()$variables$selected))
         ),
@@ -347,7 +342,7 @@ srv_g_scatterplot.picks <- function(id,
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");')
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr);")
     })
 
     merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
@@ -777,7 +772,7 @@ srv_g_scatterplot.picks <- function(id,
       height = plot_height,
       width = plot_width,
       brushing = TRUE,
-      click = TRUE
+      clicking = TRUE
     )
 
     output$data_table <- DT::renderDataTable({

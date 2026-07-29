@@ -246,11 +246,12 @@ srv_data_table <- function(id,
     # server should be run only once
     modules_run <- reactiveVal()
     modules_to_run <- reactive(setdiff(datanames_r(), isolate(modules_run())))
+    return_data <- reactiveValues()
     observeEvent(modules_to_run(), {
-      lapply(
+      vapply(
         modules_to_run(),
         function(dataname) {
-          srv_dataset_table(
+          result <- srv_dataset_table(
             id = dataname,
             data = data,
             dataname = dataname,
@@ -261,10 +262,13 @@ srv_data_table <- function(id,
             server_rendering = server_rendering,
             filter_panel_api = filter_panel_api
           )
-        }
+          return_data[[dataname]] <- result
+          TRUE
+        }, logical(1)
       )
       modules_run(union(modules_run(), modules_to_run()))
     })
+    return_data
   })
 }
 

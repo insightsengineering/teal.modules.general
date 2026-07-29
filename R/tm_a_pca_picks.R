@@ -231,12 +231,25 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
     teal.logger::log_shiny_input_changes(input, namespace = "teal.modules.general")
 
     selectors <- teal.picks::picks_srv(picks = list(dat = dat), data = data)
+    # Refactor once issue is solved https://github.com/insightsengineering/teal.picks/issues/99
+    selectors$.extended_dat <- reactive({
+      all_vars <- colnames(data()[[selectors$dat()$datasets$selected]])
+      teal.picks::picks(
+        datasets(selectors$dat()$datasets$selected, selectors$dat()$datasets$selected),
+        variables(all_vars, all_vars)
+      )
+    })
 
     qenv <- reactive({
       validate_input(
         "dat-variables-selected",
         length(selectors$dat()$variables$selected) > 1,
         "Please select more than 1 variable to perform PCA."
+      )
+      validate_input(
+        "response",
+        input$plot_type != "Biplot" || !any(input$response %in% selectors$dat()$variables$selected),
+        "Response must not have been used for PCA."
       )
       obj <- req(data())
       teal.reporter::teal_card(obj) <-
@@ -245,7 +258,7 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
           teal.reporter::teal_card(obj),
           teal.reporter::teal_card("## Module's code")
         )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");library("tidyr")')
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr);library(tidyr)")
     })
 
     merged <- teal.picks::merge_srv("merge", data = qenv, selectors = selectors, output_name = "anl")
@@ -297,11 +310,9 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
     })
 
     observeEvent(selected_vars(), {
-      shinyWidgets::updatePickerInput(
-        inputId = "response",
-        choices = selected_vars(),
-        selected = input$response
-      )
+      choices <- merged$variables()$.extended_dat
+      choices <- choices[!choices %in% selected_vars()]
+      shinyWidgets::updatePickerInput(inputId = "response", choices = choices, selected = choices[[1]])
     })
 
     computation <- reactive({
@@ -533,7 +544,7 @@ srv_a_pca.picks <- function(id, data, dat, plot_height, plot_width, ggplot2_args
       validate_xy_axis()
       validate_input(
         "response",
-        condition = length(input$response) == 1,
+        condition = length(input$response) == 1 && input$response %in% colnames(base_q[["anl"]]),
         message = "Please select Response variable to see this visualization."
       )
       qenv <- base_q

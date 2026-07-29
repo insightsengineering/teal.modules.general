@@ -336,7 +336,7 @@ ui_g_distribution.default <- function(id, ...) {
           )
         ),
         conditionalPanel(
-          condition = paste0("input['", ns("main_type"), "'] == 'Density'"),
+          condition = paste0("input['", ns("main_type"), "'] == 'Density' || input['", ns("tabs"), "'] == 'QQplot'"),
           bslib::accordion_panel(
             "Theoretical Distribution",
             teal.widgets::optionalSelectInput(
@@ -575,23 +575,23 @@ srv_g_distribution.default <- function(id,
         selector_list()$dist_i()$select
       ),
       handlerExpr = {
-        params <-
-          if (length(input$t_dist) != 0) {
-            get_dist_params <- function(x, dist) {
-              if (dist == "unif") {
-                return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
-              }
-              tryCatch(
-                MASS::fitdistr(x, densfun = dist)$estimate,
-                error = function(e) c(param1 = NA_real_, param2 = NA_real_)
-              )
+        params <- if (length(input$t_dist) != 0) {
+          get_dist_params <- function(x, dist) {
+            if (dist == "unif") {
+              return(stats::setNames(range(x, na.rm = TRUE), c("min", "max")))
             }
-
-            ANL <- merged$anl_q_r()[["ANL"]]
-            round(get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var]])), input$t_dist), 2)
-          } else {
-            c("param1" = NA_real_, "param2" = NA_real_)
+            tryCatch(
+              MASS::fitdistr(x, densfun = dist)$estimate,
+              error = function(e) c(param1 = NA_real_, param2 = NA_real_)
+            )
           }
+
+          ANL <- merged$anl_q_r()[["ANL"]]
+          dist_var <- as.vector(merged$anl_input_r()$columns_source$dist_i)
+          round(get_dist_params(as.numeric(stats::na.omit(ANL[[dist_var]])), input$t_dist), 2)
+        } else {
+          c("param1" = NA_real_, "param2" = NA_real_)
+        }
 
         params_vals <- unname(params)
         map_distr_nams <- list(
@@ -664,6 +664,12 @@ srv_g_distribution.default <- function(id,
       dist_param2 <- input$dist_param2
       # isolated as dist_param1/dist_param2 already triggered the reactivity
       t_dist <- isolate(input$t_dist)
+
+      merge_vars_l <- merge_vars()
+      dist_var <- merge_vars_l$dist_var
+      dist_var_name <- merge_vars_l$dist_var_name
+      s_var <- merge_vars_l$s_var
+      g_var <- merge_vars_l$g_var
 
       qenv <- obj
 
@@ -746,7 +752,7 @@ srv_g_distribution.default <- function(id,
                 )
             },
             env = list(
-              dist_var_name = as.name(dist_var),
+              dist_var_name = dist_var_name,
               roundn = roundn
             )
           )
@@ -801,6 +807,14 @@ srv_g_distribution.default <- function(id,
         add_dens_var <- input$add_dens
         ggtheme <- input$ggtheme
 
+        merge_vars_l <- merge_vars()
+        dist_var <- merge_vars_l$dist_var
+        dist_var_name <- merge_vars_l$dist_var_name
+        s_var <- merge_vars_l$s_var
+        s_var_name <- merge_vars_l$s_var_name
+        g_var <- merge_vars_l$g_var
+        g_var_name <- merge_vars_l$g_var_name
+
         teal::validate_inputs(iv_dist)
 
         qenv <- common_q()
@@ -813,21 +827,20 @@ srv_g_distribution.default <- function(id,
                 position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type)), bins = bins_var, alpha = 0.3
               ),
             env = list(
-              m_type = as.name(m_type), bins_var = bins_var, dist_var_name = as.name(dist_var)
+              m_type = as.name(m_type), bins_var = bins_var, dist_var_name = dist_var_name
             )
           )
         } else if (length(s_var) != 0 && length(g_var) == 0) {
           substitute(
             expr = ggplot2::ggplot(ANL, ggplot2::aes(dist_var_name, col = s_var_name)) +
               ggplot2::geom_histogram(
-                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var),
+                position = "identity", ggplot2::aes(y = ggplot2::after_stat(m_type), fill = s_var_name),
                 bins = bins_var, alpha = 0.3
               ),
             env = list(
               m_type = as.name(m_type),
               bins_var = bins_var,
               dist_var_name = dist_var_name,
-              s_var = as.name(s_var),
               s_var_name = s_var_name
             )
           )
@@ -983,6 +996,14 @@ srv_g_distribution.default <- function(id,
 
         scales_type <- input$scales_type
         ggtheme <- input$ggtheme
+
+        merge_vars_l <- merge_vars()
+        dist_var <- merge_vars_l$dist_var
+        dist_var_name <- merge_vars_l$dist_var_name
+        s_var <- merge_vars_l$s_var
+        s_var_name <- merge_vars_l$s_var_name
+        g_var <- merge_vars_l$g_var
+        g_var_name <- merge_vars_l$g_var_name
 
         teal::validate_inputs(iv_r_dist(), iv_dist)
         t_dist <- req(input$t_dist) # Not validated when tab is not selected
@@ -1223,10 +1244,8 @@ srv_g_distribution.default <- function(id,
           s_var_name = s_var_name
         )
 
-        qenv <- common_q()
-
+        qenv <- teal.code::eval_code(common_q(), "library(broom);library(generics)")
         if (length(s_var) == 0 && length(g_var) == 0) {
-          qenv <- teal.code::eval_code(qenv, "library(generics)")
           qenv <- teal.code::eval_code(
             qenv,
             substitute(

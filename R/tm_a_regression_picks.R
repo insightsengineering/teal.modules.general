@@ -183,6 +183,7 @@ ui_a_regression.picks <- function(id,
           min = 1, max = 10, value = 9, ticks = FALSE, step = .1
         ),
         tags$div(
+          id = ns("outlier-label"),
           tags$strong("Outlier label"),
           teal.picks::picks_ui(id = ns("outlier"), picks = outlier)
         )
