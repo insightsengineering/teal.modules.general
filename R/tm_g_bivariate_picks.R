@@ -65,6 +65,27 @@ tm_g_bivariate.picks <- function(label = "Bivariate Plots",
     warning("`y`-axis doesn't accept multiple variables. Changing automatically.")
     attr(x$variables, "multiple") <- FALSE
   }
+  if (isTRUE(attr(row_facet$variables, "multiple"))) {
+    warning("`row_facet` doesn't accept multiple variables. Changing automatically.")
+    attr(row_facet$variables, "multiple") <- FALSE
+  }
+  if (isTRUE(attr(col_facet$variables, "multiple"))) {
+    warning("`col_facet` doesn't accept multiple variables. Changing automatically.")
+    attr(col_facet$variables, "multiple") <- FALSE
+  }
+  if (isTRUE(attr(color$variables, "multiple"))) {
+    warning("`color` doesn't accept multiple variables. Changing automatically.")
+    attr(color$variables, "multiple") <- FALSE
+  }
+  if (isTRUE(attr(fill$variables, "multiple"))) {
+    warning("`fill` doesn't accept multiple variables. Changing automatically.")
+    attr(fill$variables, "multiple") <- FALSE
+  }
+  if (isTRUE(attr(size$variables, "multiple"))) {
+    warning("`size` doesn't accept multiple variables. Changing automatically.")
+    attr(size$variables, "multiple") <- FALSE
+  }
+  checkmate::assert_flag(facet)
   checkmate::assert_class(col_facet, "picks", null.ok = TRUE)
   checkmate::assert_class(row_facet, "picks", null.ok = TRUE)
   checkmate::assert_class(color, "picks", null.ok = TRUE)
@@ -182,21 +203,35 @@ ui_g_bivariate.picks <- function(id,
           )
         )
       ),
-      if (!is.null(row_facet)) {
-        tags$div(
-          tags$div(
-            tags$strong("Row facetting variable"),
-            teal.picks::picks_ui(id = ns("row_facet"), picks = row_facet),
-            checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales)
-          )
-        )
-      },
-      if (!is.null(col_facet)) {
-        tags$div(
-          tags$div(
-            tags$strong("Column facetting variable"),
-            teal.picks::picks_ui(id = ns("col_facet"), picks = col_facet),
-            checkboxInput(ns("free_y_scales"), "free y scales", value = free_y_scales)
+      if (!is.null(row_facet) || !is.null(col_facet)) {
+        shiny::tagList(
+          bslib::input_switch(
+            id = ns("facetting"),
+            label = "Facetting",
+            value = facet
+          ),
+          conditionalPanel(
+            condition = paste0("input['", ns("facetting"), "']"),
+            shiny::tagList(
+              if (!is.null(row_facet)) {
+                tags$div(
+                  tags$div(
+                    tags$strong("Row facetting variable"),
+                    teal.picks::picks_ui(id = ns("row_facet"), picks = row_facet),
+                    checkboxInput(ns("free_x_scales"), "free x scales", value = free_x_scales)
+                  )
+                )
+              },
+              if (!is.null(col_facet)) {
+                tags$div(
+                  tags$div(
+                    tags$strong("Column facetting variable"),
+                    teal.picks::picks_ui(id = ns("col_facet"), picks = col_facet),
+                    checkboxInput(ns("free_y_scales"), "free y scales", value = free_y_scales)
+                  )
+                )
+              }
+            )
           )
         )
       },
@@ -209,11 +244,12 @@ ui_g_bivariate.picks <- function(id,
             conditionalPanel(
               condition = paste0("input['", ns("coloring"), "']"),
               tags$div(
-                teal.picks::picks_ui(id = ns("color"), picks = color), # label = "Outline color by variable"
-                teal.picks::picks_ui(id = ns("fill"), picks = fill), # label = "Outline color by variable"
+                teal.picks::picks_ui(id = ns("color"), picks = color), # (label) Outline color by variable
+                teal.picks::picks_ui(id = ns("fill"), picks = fill), # (label) Fill color by variable
                 tags$div(
                   id = ns("size_settings"),
-                  teal.picks::picks_ui(id = ns("size"), picks = size) # label = "Size of points by variable (only if x and y are numeric)"
+                  # (label) Size of points by variable (only if x and y are numeric)"
+                  teal.picks::picks_ui(id = ns("size"), picks = size)
                 )
               )
             )
@@ -296,7 +332,7 @@ srv_g_bivariate.picks <- function(id,
     validated_q <- reactive({
       validate_input(
         inputId = c("x-variables-selected", "y-variables-selected"),
-        condition = length(selectors$x()$variables$selected) && length(selectors$y()$variables$selected),
+        condition = length(selectors$x()$variables$selected) || length(selectors$y()$variables$selected),
         message = "Please select at least one of x-variable or y-variable"
       )
       if (!is.null(col_facet) && !is.null(row_facet)) {
@@ -326,7 +362,6 @@ srv_g_bivariate.picks <- function(id,
       anl <- merged$data()[["anl"]]
       teal::validate_has_data(anl, 3)
 
-
       x_name <- merged$variables()$x
       y_name <- merged$variables()$y
       row_facet_name <- merged$variables()$row_facet
@@ -344,13 +379,13 @@ srv_g_bivariate.picks <- function(id,
 
 
       supported_types <- c("NULL", "numeric", "integer", "factor", "character", "logical", "ordered")
-      x_class <- class(anl[[x_name]])[1]
+      x_class <- if (length(x_name) == 0L) "NULL" else class(anl[[x_name]])[[1]]
       validate_input(
         "x-variables-selected",
         condition = x_class %in% supported_types,
         message = paste0("Data type '", x_class, "' is not supported.")
       )
-      y_class <- class(anl[[y_name]])[[1]]
+      y_class <- if (length(y_name) == 0L) "NULL" else class(anl[[y_name]])[[1]]
       validate_input(
         "x-variables-selected",
         condition = y_class %in% supported_types,
@@ -427,9 +462,9 @@ srv_g_bivariate.picks <- function(id,
           legend_lbls <- substitute(
             expr = labs(color = color_name, fill = fill_name, size = size_name),
             env = list(
-              color_name = varname_w_label(color_name, ANL),
-              fill_name = varname_w_label(fill_name, ANL),
-              size_name = varname_w_label(size_name, ANL)
+              color_name = varname_w_label(color_name, anl),
+              fill_name = varname_w_label(fill_name, anl),
+              size_name = varname_w_label(size_name, anl)
             )
           )
         }

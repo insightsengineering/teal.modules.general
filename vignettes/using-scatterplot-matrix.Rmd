@@ -63,15 +63,11 @@ combinations of data sets.
 # configuration for the single wide dataset
 mod1 <- tm_g_scatterplotmatrix(
   label = "Single wide dataset",
-  variables = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variables:",
-      choices = variable_choices(data[["ADSL"]]),
+  variables = picks(
+    datasets("ADSL", "ADSL"),
+    variables(
       selected = c("AGE", "RACE", "SEX", "BMRKR1", "BMRKR2"),
-      multiple = TRUE,
-      fixed = FALSE,
-      ordered = TRUE
+      multiple = TRUE
     )
   )
 )
@@ -79,15 +75,12 @@ mod1 <- tm_g_scatterplotmatrix(
 # configuration for the one long datasets
 mod2 <- tm_g_scatterplotmatrix(
   "One long dataset",
-  variables = data_extract_spec(
-    dataname = "ADTTE",
-    select = select_spec(
-      choices = variable_choices(data[["ADTTE"]], c("AVAL", "BMRKR1", "BMRKR2")),
-      selected = c("AVAL", "BMRKR1", "BMRKR2"),
-      multiple = TRUE,
-      fixed = FALSE,
-      ordered = TRUE,
-      label = "Select variables:"
+  variables = picks(
+    datasets("ADTTE", "ADTTE"),
+    variables(
+      c("AVAL", "BMRKR1", "BMRKR2"),
+      c("AVAL", "BMRKR1", "BMRKR2"),
+      multiple = TRUE
     )
   )
 )
@@ -96,39 +89,17 @@ mod2 <- tm_g_scatterplotmatrix(
 mod3 <- tm_g_scatterplotmatrix(
   label = "Two long datasets",
   variables = list(
-    data_extract_spec(
-      dataname = "ADRS",
-      select = select_spec(
-        label = "Select variables:",
-        choices = variable_choices(data[["ADRS"]]),
+    picks(
+      datasets("ADRS", "ADRS"),
+      variables(
         selected = c("AVAL", "AVALC"),
-        multiple = TRUE,
-        fixed = FALSE,
-        ordered = TRUE,
-      ),
-      filter = filter_spec(
-        label = "Select endpoints:",
-        vars = c("PARAMCD", "AVISIT"),
-        choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
-        selected = "OVRINV - SCREENING",
-        multiple = FALSE
+        multiple = TRUE
       )
     ),
-    data_extract_spec(
-      dataname = "ADTTE",
-      select = select_spec(
-        label = "Select variables:",
-        choices = variable_choices(data[["ADTTE"]]),
+    picks(
+      datasets("ADTTE", "ADTTE"),
+      variables(
         selected = c("AVAL", "CNSR"),
-        multiple = TRUE,
-        fixed = FALSE,
-        ordered = TRUE
-      ),
-      filter = filter_spec(
-        label = "Select parameters:",
-        vars = "PARAMCD",
-        choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
-        selected = "OS",
         multiple = TRUE
       )
     )

@@ -32,6 +32,7 @@ Depends:
     teal.transform (>= 0.7.0)
 Imports:
     bslib (>= 0.8.0),
+    broom (>= 0.7.10),
     checkmate (>= 2.1.0),
     colourpicker (>= 1.3.0),
     dplyr (>= 1.1.0),
@@ -51,7 +52,7 @@ Imports:
     lifecycle (>= 0.2.0),
     MASS (>= 7.3-60),
     patchwork (>= 1.2.0),
-    rlang,
+    rlang (>= 1.1.0),
     rmarkdown (>= 2.23),
     rtables (>= 0.6.11),
     scales (>= 1.3.0),
@@ -74,6 +75,7 @@ Imports:
     tools,
     utils
 Suggests:
+    gtsummary (>= 2.5.0),
     knitr (>= 1.42),
     logger (>= 0.4.0),
     nestcolor (>= 0.1.0),
@@ -84,7 +86,8 @@ Suggests:
     testthat (>= 3.1.9),
     withr (>= 2.0.0)
 Remotes:
-    insightsengineering/teal.picks
+    insightsengineering/teal.widgets@main,
+    insightsengineering/teal.picks@main
 VignetteBuilder:
     knitr,
     rmarkdown

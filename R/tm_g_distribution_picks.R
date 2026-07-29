@@ -22,7 +22,9 @@ tm_g_distribution.picks <- function(label = "Distribution Module",
                                       teal.picks::values()
                                     ),
                                     freq = FALSE,
-                                    ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                                    ggtheme = c(
+                                      "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"
+                                    ),
                                     ggplot2_args = teal.widgets::ggplot2_args(),
                                     bins = c(30L, 1L, 100L),
                                     plot_height = c(600, 200, 2000),
@@ -160,30 +162,35 @@ ui_g_distribution.picks <- function(id,
           condition = paste0("input['", ns("tabs"), "'] == 'QQplot'"),
           bslib::accordion_panel(title = "QQ Plot", qq_elem$encodings, collapsed = FALSE)
         ),
-        bslib::accordion_panel( # todo: hide ONLY when frequency is selected for histogram
-          "Theoretical Distribution",
-          teal.widgets::optionalSelectInput(
-            ns("t_dist"),
-            tags$div(
-              tagList(
-                "Distribution:",
-                bslib::tooltip(
-                  icon("circle-info"),
-                  tags$span("Default parameters are optimized with MASS::fitdistr function.")
+        conditionalPanel(
+          condition = paste0(
+            "input['", ns("histogram_plot-statistic"), "'] == 'Density' || input['", ns("tabs"), "'] == 'QQplot'"
+          ),
+          bslib::accordion_panel( # todo: hide ONLY when frequency is selected for histogram
+            "Theoretical Distribution",
+            teal.widgets::optionalSelectInput(
+              ns("t_dist"),
+              tags$div(
+                tagList(
+                  "Distribution:",
+                  bslib::tooltip(
+                    icon("circle-info"),
+                    tags$span("Default parameters are optimized with MASS::fitdistr function.")
+                  )
                 )
-              )
+              ),
+              choices = c("normal", "lognormal", "gamma", "unif"),
+              selected = NULL,
+              multiple = FALSE
             ),
-            choices = c("normal", "lognormal", "gamma", "unif"),
-            selected = NULL,
-            multiple = FALSE
-          ),
-          conditionalPanel(
-            condition = paste0("input['", ns("t_dist"), "'] != null && input['", ns("t_dist"), "'] != ''"),
-            numericInput(ns("dist_param1"), label = "param1", value = NULL),
-            numericInput(ns("dist_param2"), label = "param2", value = NULL),
-            tags$span(actionButton(ns("params_reset"), "Default params"))
-          ),
-          collapsed = FALSE
+            conditionalPanel(
+              condition = paste0("input['", ns("t_dist"), "'] != null && input['", ns("t_dist"), "'] != ''"),
+              numericInput(ns("dist_param1"), label = "param1", value = NULL),
+              numericInput(ns("dist_param2"), label = "param2", value = NULL),
+              tags$span(actionButton(ns("params_reset"), "Default params"))
+            ),
+            collapsed = FALSE
+          )
         ),
         bslib::accordion_panel(title = "Tests", test_table_elem$encodings),
         bslib::accordion_panel(title = "Statistics Table", summary_table_elem$encodings),
@@ -222,7 +229,6 @@ srv_g_distribution.picks <- function(id,
     setBookmarkExclude("params_reset")
     ns <- session$ns
 
-
     selectors <- teal.picks::picks_srv(
       picks = list(dist_var = dist_var, strata_var = strata_var, group_var = group_var),
       data = data
@@ -241,7 +247,7 @@ srv_g_distribution.picks <- function(id,
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's code")
       )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr")')
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr)")
     })
 
     merged <- teal.picks::merge_srv("merge", data = qenv, selectors = selectors, output_name = "anl")
@@ -262,7 +268,7 @@ srv_g_distribution.picks <- function(id,
           condition = inherits(anl[[merged$variables()$group_var]], c("integer", "factor", "character")),
           message = "Group by variable must be `factor`, `character`, or `integer`"
         )
-        obj <- within(obj, library("forcats"))
+        obj <- teal.code::eval_code(obj, "library(forcats)")
         obj <- within(
           obj,
           expr = anl[[group_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[group_var]]), "NA"),
@@ -277,7 +283,7 @@ srv_g_distribution.picks <- function(id,
           message = "Stratify by variable must be `factor`, `character`, or `integer`"
         )
 
-        obj <- within(obj, library("forcats"))
+        obj <- teal.code::eval_code(obj, "library(forcats)")
         obj <- within(
           obj,
           expr = anl[[strata_var]] <- forcats::fct_na_value_to_level(as.factor(anl[[strata_var]]), "NA"),
@@ -516,18 +522,15 @@ srv_g_distribution.picks <- function(id,
       decorators = select_decorators(decorators, "Test Table")
     )
 
-    # decorated_output_q <- reactive({
-    #   req(input$tabs, hist_output(), qq_output(), summary_table_output(), output_test_q())
-    #   test_q_out <- output_test_q()
+    decorated_output_q <- reactive({
+      out_q <- switch(req(input$tabs),
+        Histogram = req(hist_output()),
+        QQplot = req(qq_output())
+      )
+      test_q <- tryCatch(test_output(), error = function(err) teal.code::qenv())
 
-    #   # return everything except switch
-    #   out_q <- switch(input$tabs,
-    #     Histogram = hist_output(),
-    #     QQplot = qq_output()
-    #   )
-    #   out_q
-    # })
-    NULL
+      c(out_q, summary_table_output(), test_q)
+    })
   })
 }
 
@@ -546,7 +549,7 @@ srv_g_distribution.picks <- function(id,
         inline = TRUE
       ),
       checkboxInput(ns("add_density"), label = "Overlay Density", value = TRUE),
-      teal::ui_transform_teal_data(ns("decorators"), decorators = decorators)
+      teal::ui_transform_teal_data(ns("decorators"), transformators = decorators)
     ),
     output = teal.widgets::plot_with_settings_ui(id = ns("plot"))
   )
@@ -693,7 +696,7 @@ srv_g_distribution.picks <- function(id,
     decorated_output_q <- teal::srv_transform_teal_data(
       "decorators",
       data = output_q,
-      decorators = decorators,
+      transformators = decorators,
       expr = quote(histogram_plot)
     )
 
@@ -716,7 +719,7 @@ srv_g_distribution.picks <- function(id,
   tagList(
     encodings = tagList(
       checkboxInput(ns("qq_line"), label = "Add diagonal line(s)", TRUE),
-      teal::ui_transform_teal_data(ns("decorators"), decorators = decorators)
+      teal::ui_transform_teal_data(ns("decorators"), transformators = decorators)
     ),
     output = teal.widgets::plot_with_settings_ui(id = ns("plot"))
   )
@@ -835,7 +838,7 @@ srv_g_distribution.picks <- function(id,
 
     decorated_output_q <- teal::srv_transform_teal_data(
       "decorators",
-      decorators = decorators,
+      transformators = decorators,
       data = output_q,
       expr = quote(qq_plot)
     )
@@ -851,7 +854,7 @@ srv_g_distribution.picks <- function(id,
       brushing = FALSE
     )
 
-    # set_chunk_dims(pws, decorated_output_q)
+    set_chunk_dims(pws, decorated_output_q)
   })
 }
 
@@ -860,7 +863,7 @@ srv_g_distribution.picks <- function(id,
   tagList(
     encodings = tagList(
       sliderInput(ns("roundn"), "Round to n digits", min = 0, max = 10, value = 2),
-      teal::ui_transform_teal_data(ns("decorators"), decorators = decorators)
+      teal::ui_transform_teal_data(ns("decorators"), transformators = decorators)
     ),
     output = tags$div(
       tags$h3("Statistics Table"),
@@ -909,26 +912,18 @@ srv_g_distribution.picks <- function(id,
               )
           },
           d_var_name = as.name(variables()$dist_var),
-          strata_vars = c(variables()$group_var, variables()$strata_var),
+          strata_vars = unique(c(variables()$group_var, variables()$strata_var)),
           roundn = roundn
         )
       }
 
       within(obj, summary_table <- rtables::df_to_tt(summary_table_data))
-      # if (iv_r()$is_valid()) {
-
-      # } else {
-      #   within(
-      #     q_common,
-      #     summary_table <- rtables::rtable(header = rtables::rheader(colnames(summary_table_data)))
-      #   )
-      # }
     })
 
     decorated_output_q <- teal::srv_transform_teal_data(
       "decorators",
       data = output_q,
-      decorators = decorators,
+      transformators = decorators,
       expr = quote(summary_table)
     )
 
@@ -976,7 +971,7 @@ srv_g_distribution.picks <- function(id,
           "none-selected-text" = "- Nothing selected -"
         )
       ),
-      teal::ui_transform_teal_data(ns("decorators"), decorators = decorators)
+      teal::ui_transform_teal_data(ns("decorators"), transformators = decorators)
     ),
     output = tagList(
       tags$h3("Tests"),
@@ -1004,7 +999,7 @@ srv_g_distribution.picks <- function(id,
         g_var_name <- if (!is.null(g_var)) as.name(g_var)
 
         dist_test <- input$dist_test
-        validate(need(length(dist_test) > 0, "Please select a test"))
+        validate(need(length(dist_test) > 0 && !identical(dist_test, ""), "Please select a test"))
 
         if (length(s_var) > 0 || length(g_var) > 0) {
           counts <- anl %>%
@@ -1085,11 +1080,11 @@ srv_g_distribution.picks <- function(id,
           s_var_name = s_var_name
         )
 
-
         teal.reporter::teal_card(obj) <- c(teal.reporter::teal_card(obj), "## Distribution Tests table")
 
+        obj <- teal.code::eval_code(obj, "library(broom)")
         obj <- if (length(s_var) == 0 && length(g_var) == 0) {
-          obj <- teal.code::eval_code(obj, 'library("generics")') # nolint quotes
+          obj <- teal.code::eval_code(obj, "library(generics)")
           teal.code::eval_code(
             obj,
             substitute(
@@ -1104,7 +1099,7 @@ srv_g_distribution.picks <- function(id,
           )
         } else {
           # todo: why there is a `library` call when `tidyr::unnest` is prefixed, same for `generics`
-          obj <- teal.code::eval_code(obj, 'library("tidyr")') # nolint quotes
+          obj <- teal.code::eval_code(obj, "library(tidyr)")
           teal.code::eval_code(
             obj,
             substitute(
@@ -1130,7 +1125,7 @@ srv_g_distribution.picks <- function(id,
     decorated_output_q <- teal::srv_transform_teal_data(
       "decorators",
       data = output_q,
-      decorators = decorators,
+      transformators = decorators,
       expr = quote(test_table)
     )
 

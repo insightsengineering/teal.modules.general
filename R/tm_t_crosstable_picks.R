@@ -61,7 +61,15 @@ tm_t_crosstable.picks <- function(label = "Cross Table",
 }
 
 # UI function for the cross-table module
-ui_t_crosstable.picks <- function(id, x, y, show_percentage, show_total, remove_zero_columns, pre_output, post_output, decorators) {
+ui_t_crosstable.picks <- function(id,
+                                  x,
+                                  y,
+                                  show_percentage,
+                                  show_total,
+                                  remove_zero_columns,
+                                  pre_output,
+                                  post_output,
+                                  decorators) {
   ns <- NS(id)
 
   join_default_options <- c(
@@ -154,12 +162,20 @@ srv_t_crosstable.picks <- function(id, data, label, x, y, remove_zero_columns, b
       }
     )
 
+    join_fun_r <- reactive({
+      if (is.null(input$join_fun)) {
+        "dplyr::full_join"
+      } else {
+        input$join_fun
+      }
+    })
+
     merged <- teal.picks::merge_srv(
       "merge",
       data = validated_q,
       selectors = selectors,
       output_name = "anl",
-      join_fun = isolate(input$join_fun) # todo: make reactive
+      join_fun = isolate(join_fun_r()) # todo: make reactive
     )
 
     output_q <- reactive({

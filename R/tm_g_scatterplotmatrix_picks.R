@@ -15,20 +15,18 @@ tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
                                          transformators = list(),
                                          decorators = list()) {
   message("Initializing tm_g_scatterplotmatrix")
+
+  if (inherits(variables, "picks")) variables <- list(variables)
   if (is.null(names(variables))) {
     names(variables) <- sprintf("pick_%s", seq_along(variables))
-  }
-
-  if (!missing("min_n_variables")) {
-    warning("`min_n_variables` argument is not used with the picks.")
-  }
-  if (!missing("max_n_variables")) {
-    warning("`max_n_variables` argument is not used with the picks.")
   }
 
   # Start of assertions
   checkmate::assert_string(label)
   checkmate::assert_list(variables, types = "picks", names = "named")
+  checkmate::assert_count(min_n_variables, positive = TRUE)
+  checkmate::assert_count(max_n_variables, positive = TRUE)
+  checkmate::assert_true(min_n_variables <= max_n_variables)
 
   checkmate::assert_numeric(plot_height, len = 3, any.missing = FALSE, finite = TRUE)
   checkmate::assert_numeric(plot_height[1], lower = plot_height[2], upper = plot_height[3], .var.name = "plot_height")
@@ -61,6 +59,8 @@ tm_g_scatterplotmatrix.picks <- function(label = "Scatterplot Matrix",
 # UI function for the scatterplot matrix module
 ui_g_scatterplotmatrix.picks <- function(id,
                                          variables,
+                                         min_n_variables,
+                                         max_n_variables,
                                          pre_output,
                                          post_output,
                                          decorators) {
@@ -74,12 +74,20 @@ ui_g_scatterplotmatrix.picks <- function(id,
     ),
     encoding = tags$div(
       tags$label("Encodings", class = "text-primary"),
+      tags$br(),
+      tags$strong("Variable selection"),
       tagList(
         lapply(names(variables), function(id) {
           tags$div(
             teal.picks::picks_ui(id = ns(id), picks = variables[[id]])
           )
         })
+      ),
+      helpText(
+        sprintf(
+          "Supports between %d and %d columns.",
+          min_n_variables, max_n_variables
+        )
       ),
       tags$hr(),
       teal::ui_transform_teal_data(ns("decorator"), transformators = select_decorators(decorators, "plot")),
@@ -121,6 +129,8 @@ ui_g_scatterplotmatrix.picks <- function(id,
 srv_g_scatterplotmatrix.picks <- function(id,
                                           data,
                                           variables,
+                                          min_n_variables,
+                                          max_n_variables,
                                           plot_height,
                                           plot_width,
                                           decorators) {
@@ -140,10 +150,16 @@ srv_g_scatterplotmatrix.picks <- function(id,
       obj <- req(data())
       input_ids <- sprintf("%s-variables-selected", names(variables))
       selected_variables <- unname(unlist(lapply(selectors, function(selector) selector()$variables$selected)))
-      validate_input(
+      teal::validate_input(
         inputId = input_ids, # validate all inputs where variable can be selected
-        condition = length(selected_variables) > 1,
-        message = "Please select at least 2 columns"
+        condition = length(selected_variables) >= min_n_variables,
+        message = sprintf("Please select at least %d columns", min_n_variables)
+      )
+
+      teal::validate_input(
+        inputId = input_ids, # validate all inputs where variable can be selected
+        condition = length(selected_variables) <= max_n_variables,
+        message = sprintf("Please select no more than %d columns", max_n_variables)
       )
 
       teal.reporter::teal_card(obj) <- c(
@@ -151,124 +167,154 @@ srv_g_scatterplotmatrix.picks <- function(id,
         teal.reporter::teal_card(obj),
         teal.reporter::teal_card("## Module's code")
       )
-      teal.code::eval_code(obj, 'library("ggplot2");library("dplyr");')
+      teal.code::eval_code(obj, "library(ggplot2);library(dplyr);")
     })
 
-    merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "anl")
+    merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "ANL")
 
     # plot
     output_q <- reactive({
-      qenv <- req(merged$data())
-      anl <- qenv[["anl"]]
+      qenv <- merged$data()
+      ANL <- qenv[["ANL"]]
+
       cols_names <- unname(unlist(merged$variables()))
-      alpha <- input$alpha
+      alpha_val <- input$alpha
       cex <- input$cex
       add_cor <- input$cor
       cor_method <- input$cor_method
       cor_na_omit <- input$cor_na_omit
+      cor_use <- if (isTRUE(cor_na_omit)) "pairwise.complete.obs" else input$cor_use
 
-      cor_na_action <- if (isTruthy(cor_na_omit)) {
-        "na.omit"
-      } else {
-        "na.fail"
-      }
-
-      teal::validate_has_data(anl, 10)
-      teal::validate_has_data(anl[, cols_names, drop = FALSE], 10, complete = TRUE, allow_inf = FALSE)
+      teal::validate_has_data(ANL, 10)
+      teal::validate_has_data(ANL[, cols_names, drop = FALSE], 10, complete = TRUE, allow_inf = FALSE)
 
       # get labels and proper variable names
-      varnames <- varname_w_label(cols_names, anl, wrap_width = 20)
+      varnames <- varname_w_label(cols_names, ANL, wrap_width = 20)
 
       # check character columns. If any, then those are converted to factors
-      check_char <- vapply(anl[, cols_names], is.character, logical(1))
+      check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {
-        qenv <- teal.code::eval_code(
+        qenv <- within(
           qenv,
-          substitute(
-            expr = anl <- anl[, cols_names] %>%
-              dplyr::mutate_if(is.character, as.factor) %>%
-              droplevels(),
-            env = list(cols_names = cols_names)
-          )
+          ANL <- ANL[, cols_names] %>%
+            dplyr::mutate_if(is.character, as.factor) %>%
+            droplevels(),
+          cols_names = cols_names
         )
       } else {
-        qenv <- teal.code::eval_code(
+        qenv <- within(
           qenv,
-          substitute(
-            expr = anl <- anl[, cols_names] %>%
-              droplevels(),
-            env = list(cols_names = cols_names)
-          )
+          ANL <- ANL[, cols_names] %>%
+            droplevels(),
+          cols_names = cols_names
         )
       }
 
-
       # create plot
-      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "## Plot")
+      teal.reporter::teal_card(qenv) <- c(teal.reporter::teal_card(qenv), "### Plot")
 
       if (add_cor) {
         shinyjs::show("cor_method")
-        shinyjs::show("cor_use")
         shinyjs::show("cor_na_omit")
-
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = {
-              plot <- lattice::splom(
-                anl,
-                varnames = varnames_value,
-                panel = function(x, y, ...) {
-                  lattice::panel.splom(x = x, y = y, ...)
-                  cpl <- lattice::current.panel.limits()
-                  lattice::panel.text(
-                    mean(cpl$xlim),
-                    mean(cpl$ylim),
-                    get_scatterplotmatrix_stats(
-                      x,
-                      y,
-                      .f = stats::cor.test,
-                      .f_args = list(method = cor_method, na.action = cor_na_action)
-                    ),
-                    alpha = 0.6,
-                    fontsize = 18,
-                    fontface = "bold"
-                  )
-                },
-                pch = 16,
-                alpha = alpha_value,
-                cex = cex_value
-              )
-            },
-            env = list(
-              varnames_value = varnames,
-              cor_method = cor_method,
-              cor_na_action = cor_na_action,
-              alpha_value = alpha,
-              cex_value = cex
-            )
-          )
-        )
+        if (isTRUE(cor_na_omit)) {
+          shinyjs::hide("cor_use")
+        } else {
+          shinyjs::show("cor_use")
+        }
       } else {
         shinyjs::hide("cor_method")
-        shinyjs::hide("cor_use")
         shinyjs::hide("cor_na_omit")
-        qenv <- teal.code::eval_code(
-          qenv,
-          substitute(
-            expr = {
-              plot <- lattice::splom(
-                anl,
-                varnames = varnames_value,
-                pch = 16,
-                alpha = alpha_value,
-                cex = cex_value
-              )
-            },
-            env = list(varnames_value = varnames, alpha_value = alpha, cex_value = cex)
-          )
-        )
+        shinyjs::hide("cor_use")
       }
+
+      qenv <- within(
+        qenv,
+        {
+          add_cor <- add_cor_value
+          cor_method <- cor_method_value
+          cor_use <- cor_use_value
+          alpha <- alpha_value
+          cex <- cex_value
+          varnames <- varnames_value
+
+          col_names <- names(ANL)
+          n_vars <- length(col_names)
+          base_size <- max(6L, 14L - n_vars)
+
+          num_idx <- which(vapply(ANL, is.numeric, logical(1L)))
+          cor_mat <- if (add_cor && length(num_idx) >= 2L) {
+            tryCatch(
+              stats::cor(ANL[num_idx], method = cor_method, use = cor_use),
+              error = function(e) NULL
+            )
+          }
+
+          make_panel <- function(i, j) {
+            xi <- ANL[[col_names[i]]]
+            xj <- ANL[[col_names[j]]]
+            if (i == j) {
+              p <- ggplot2::ggplot(data.frame(x = xi), ggplot2::aes(x = x)) +
+                ggplot2::labs(x = NULL, y = NULL, title = varnames[i])
+              if (is.numeric(xi)) {
+                p <- p + ggplot2::geom_density(fill = "steelblue", alpha = alpha)
+              } else {
+                p <- p + ggplot2::geom_bar(fill = "steelblue", alpha = alpha)
+              }
+            } else if (i < j && add_cor) {
+              cv <- if (!is.null(cor_mat) && is.numeric(xi) && is.numeric(xj)) cor_mat[col_names[i], col_names[j]] else NA_real_ # nolint line_length_linter.
+              col <- if (is.na(cv)) "grey50" else if (cv > 0) "firebrick" else "steelblue"
+              return(
+                ggplot2::ggplot() +
+                  ggplot2::annotate("text",
+                    x = 0.5, y = 0.5, fontface = "bold", color = col,
+                    label = if (!is.na(cv)) sprintf("%.2f", cv) else if (is.numeric(xi) && is.numeric(xj)) "NA" else "-", # nolint line_length_linter.
+                    size = if (!is.na(cv)) max(3, abs(cv) * 8 + 3) else if (is.numeric(xi) && is.numeric(xj)) 3 else 4 # nolint line_length_linter.
+                  ) +
+                  ggplot2::xlim(0, 1) +
+                  ggplot2::ylim(0, 1) +
+                  ggplot2::theme_void()
+              )
+            } else {
+              p <- ggplot2::ggplot(data.frame(x = xj, y = xi)) +
+                ggplot2::labs(x = NULL, y = NULL)
+              n_num <- is.numeric(xi) + is.numeric(xj)
+              # nolint start: line_length_linter.
+              if (n_num == 2) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_point(color = "steelblue", alpha = alpha, size = cex)
+              if (n_num == 1) p <- p + ggplot2::aes(x = x, y = y) + ggplot2::geom_boxplot(fill = "steelblue", alpha = alpha, outlier.size = cex, linesize = 1)
+              if (n_num == 0) p <- p + ggplot2::aes(x = x, fill = y) + ggplot2::geom_bar(position = "dodge", alpha = alpha) + ggplot2::labs(fill = NULL)
+              # nolint end: line_length_linter.
+            }
+            p <- p + ggplot2::theme_minimal(base_size = base_size)
+            if (i == n_vars) {
+              p <- p + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1))
+              if (!is.numeric(xj)) {
+                p <- p + ggplot2::scale_x_discrete(
+                  labels = function(x) ifelse(nchar(x) > 10, paste0(substr(x, 1, 9), "\u2026"), x)
+                )
+              }
+            } else {
+              p <- p + ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank())
+            }
+            p
+          }
+
+          plot_list <- unlist(
+            lapply(seq_len(n_vars), function(i) lapply(seq_len(n_vars), function(j) make_panel(i, j))),
+            recursive = FALSE
+          )
+          plot <- patchwork::wrap_plots(plot_list, ncol = n_vars, nrow = n_vars) &
+            ggplot2::theme(
+              plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
+              legend.position = "none"
+            )
+        },
+        add_cor_value = add_cor,
+        cor_method_value = cor_method,
+        cor_use_value = cor_use,
+        alpha_value = alpha_val,
+        cex_value = cex,
+        varnames_value = varnames
+      )
       qenv
     })
 
@@ -291,9 +337,11 @@ srv_g_scatterplotmatrix.picks <- function(id,
 
     # show a message if conversion to factors took place
     output$message <- renderText({
-      cols_names <- req(unname(unlist(merged$variables())))
-      anl <- merged$data()[["anl"]]
-      check_char <- vapply(anl[, cols_names], is.character, logical(1))
+      req(validated_q())
+      req(merged$variables())
+      ANL <- merged$data()[["ANL"]]
+      cols_names <- unique(unname(do.call(c, list(unname(unlist(merged$variables()))))))
+      check_char <- vapply(ANL[, cols_names], is.character, logical(1))
       if (any(check_char)) {
         is_single <- sum(check_char) == 1
         paste(
@@ -311,79 +359,4 @@ srv_g_scatterplotmatrix.picks <- function(id,
 
     set_chunk_dims(pws, decorated_output_q)
   })
-}
-
-#' Get stats for x-y pairs in scatterplot matrix
-#'
-#' Uses [stats::cor.test()] per default for all numerical input variables and converts results
-#' to character vector.
-#' Could be extended if different stats for different variable types are needed.
-#' Meant to be called from [lattice::panel.text()].
-#'
-#' Presently we need to use a formula input for `stats::cor.test` because
-#' `na.fail` only gets evaluated when a formula is passed (see below).
-#' ```
-#' x = c(1,3,5,7,NA)
-#' y = c(3,6,7,8,1)
-#' stats::cor.test(x, y, na.action = "na.fail")
-#' stats::cor.test(~ x + y,  na.action = "na.fail")
-#' ```
-#'
-#' @param x,y (`numeric`) vectors of data values. `x` and `y` must have the same length.
-#' @param .f (`function`) function that accepts x and y as formula input `~ x + y`.
-#' Default `stats::cor.test`.
-#' @param .f_args (`list`) of arguments to be passed to `.f`.
-#' @param round_stat (`integer(1)`) optional, number of decimal places to use when rounding the estimate.
-#' @param round_pval (`integer(1)`) optional, number of decimal places to use when rounding the p-value.
-#'
-#' @return Character with stats. For [stats::cor.test()] correlation coefficient and p-value.
-#'
-#' @examples
-#' set.seed(1)
-#' x <- runif(25, 0, 1)
-#' y <- runif(25, 0, 1)
-#' x[c(3, 10, 18)] <- NA
-#'
-#' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(method = "pearson"))
-#' get_scatterplotmatrix_stats(x, y, .f = stats::cor.test, .f_args = list(
-#'   method = "pearson",
-#'   na.action = na.fail
-#' ))
-#'
-#' @noRd
-get_scatterplotmatrix_stats <- function(x, y,
-                                        .f = stats::cor.test,
-                                        .f_args = list(),
-                                        round_stat = 2,
-                                        round_pval = 4) {
-  if (is.numeric(x) && is.numeric(y)) {
-    stat <- tryCatch(do.call(.f, c(list(~ x + y), .f_args)), error = function(e) NA)
-
-    if (anyNA(stat)) {
-      return("NA")
-    } else if (all(c("estimate", "p.value") %in% names(stat))) {
-      return(paste(
-        c(
-          paste0(names(stat$estimate), ":", round(stat$estimate, round_stat)),
-          paste0("P:", round(stat$p.value, round_pval))
-        ),
-        collapse = "\n"
-      ))
-    } else {
-      stop("function not supported")
-    }
-  } else {
-    if ("method" %in% names(.f_args)) {
-      if (.f_args$method == "pearson") {
-        return("cor:-")
-      }
-      if (.f_args$method == "kendall") {
-        return("tau:-")
-      }
-      if (.f_args$method == "spearman") {
-        return("rho:-")
-      }
-    }
-    return("-")
-  }
 }
