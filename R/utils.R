@@ -378,3 +378,14 @@ validate_qenv <- function(qenv) {
     )
   )
 }
+
+# this is utils function that converts a %>% NULL %>% b into a %>% b
+remove_pipe_null <- function(x) {
+  if (length(x) == 1) {
+    x
+  } else if (identical(x[[1]], as.name("%>%")) && is.null(x[[3]])) {
+    remove_pipe_null(x[[2]])
+  } else {
+    as.call(c(x[[1]], lapply(x[-1], remove_pipe_null)))
+  }
+}
