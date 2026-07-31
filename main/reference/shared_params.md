@@ -87,6 +87,14 @@ to avoid repetition by using `inheritParams`.
   included in the module output reported. The decorators are applied to
   the respective output objects.
 
+- table_datanames:
+
+  (`character`) names of the datasets which should be listed below the
+  plot when some data points are selected. Objects named after
+  `table_datanames` will be pulled from `data` so it is important that
+  data actually contains these datasets. Please be aware that table
+  datasets must be linked with `plot_dataname` by the relevant
+  [`join_keys()`](https://insightsengineering.github.io/teal.data/latest-tag/reference/join_keys.html).
   See section "Decorating Module" below for more details.
 
 ## Value

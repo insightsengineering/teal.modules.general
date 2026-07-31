@@ -10,7 +10,8 @@ analyze the variable's distribution.
 ``` r
 tm_g_distribution(
   label = "Distribution Module",
-  dist_var,
+  dist_var = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(is.numeric),
+    teal.picks::values()),
   strata_var = NULL,
   group_var = NULL,
   freq = FALSE,
@@ -35,18 +36,18 @@ tm_g_distribution(
 
 - dist_var:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Variable(s) for which the distribution will be analyzed.
+  (`picks` or `list` of multiple `picks`) Variable(s) for which the
+  distribution will be analyzed.
 
 - strata_var:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Categorical variable used to split the distribution analysis.
+  (`picks` or `list` of multiple `picks`) Categorical variable used to
+  split the distribution analysis.
 
 - group_var:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Variable used for faceting plot into multiple panels.
+  (`picks` or `list` of multiple `picks`) Variable used for faceting
+  plot into multiple panels.
 
 - freq:
 
@@ -122,8 +123,6 @@ tm_g_distribution(
   included in the module output reported. The decorators are applied to
   the respective output objects.
 
-  See section "Decorating Module" below for more details.
-
 ## Value
 
 Object of class `teal_module` to be used in `teal` applications.
@@ -187,12 +186,12 @@ For more information on reporting in `teal`, see the vignettes:
 - example-1:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiSgC+ihBKaKj1KnnsFf4ZugC8A0G4-XxCInUjdKKkfRCVlaQwiRLJtaQ19IKa1v3L-luJWizDo1CJYdvqpImiqHAEi0dHKdDwFwpg1bU-4yWb0qojgIg0F1B4Puj2e7DONSg9BEiQI+SItAIYj6v0aPzkpR+AAU4EEeAAZCgSAr4w7LNpHBm6NptWgmXTsFTkZiWHQ2WzlIGiQoQVgAQXQ7E6ABJBLRSjLQYwdIw2s0lGBmgBdIA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6urSMtKJxVTWiSgC+ihBKaKj1KnnsFf4ZugC8A0G4-XxCInUjdKKkfRCVlaQwiRLJtaQ19IKa1v3L-luJWizDugkYqLQEANaiiIg396KLR0cponCkbwpg1Vq-zk4yWHxWcG411uDyeZxqUHo03YtQwEEE8BqBBBhw+VxesMQZ2ogjEaTBRzalP6bTatBMuhRqmYlh0Nls5TBokKEFYAEF0OxOgASQS0Uoi76MHSMNrNJRgZoAXSAA)
 
 - example-2:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTcIJTRUNpVi9lqQ3N0AXjfw3Fe+IREok+un+wjELwgdTqpBgaQkGR2pEYDEEmmsryhIURaS0LGBmTS0SR6g2olQcAIEMxmMypz0XwUYD6zUZv0h1LqojgIg0wK5PNJ5MpGI5ugIJXGBDEwNxyKg9BEmwltClc0ZzNZYpeTIA4q48LpGQAhACyWAA0lgAIyMuRyNmiqH8inkfjA41my02vAijkwda0OL03QAMXqzQCzgdjtMtCicDdXzDEdc7I5w3T0cxomJ4RxeK+BKJzA0aTJFKpotpsGD6qaLJ9aepJlo1HIjGBLbbMjLQsrjtlQK+4slYjL3JdCf7MdltHlipHKvBdf6BuFTKwJs1jK8AHlHAA5BwATW3YEjAA1bfbfaLnRoE8CD45miym5nb5j-W3AyJgQ4XE-XQM2pG9310CRGCIQRUHzDtC1yQkomJUty2FcC6mreB3SZetWSArt207Vt217CsgLqQdgUXVVxwFKcKKhWd5zgJVRzVXDVyqdd6k3M890PE8z0va8sxje9XRw3itzARiwJjEEAyDf8nFTR0QMxDTgNeYZhloExdHYFR2xJbQ4BsWwanZUQyggVh6nQdh7gAEkEWgqhcrlGB0RhhgGJQwAGS4gA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTdodDaVYvZakNzdAF4X8NxnviERUXeul+wjETwgdTqpBgaQkGR2pEYDEEmmszwhIXhaS0LEBHVQtAIk1E3XxhLmaPRnygojgpHJYD6zQUYDk33BlMhcG4GFJRO62MRUHo-3YBCeYAAQgBZLAAaSwAEZmVVmfUAOKuFmsino7HUQSgmDrWhxPQfABi9WaAWcww52vZ6NECNyWJxHzxBL5iF55MdlMyNLp4sZzIdHM53N9-JYtCFIrFqqwUuVumZXgA8o4AHIOACaqeZNoAGmGqjSRBo4PxAdnHM1mnbKeHKRJGERBKg3YxcVyeNGfV6-RGqUH6aGWWyR56yTHBcLQYmGcnC2BMzn86uS2XdBW4FWax86w2m+jT7om8NhrQTLp2CpyMxLDobLYauzRGUIKx6uh2GhUAAEkEWgqgAwCaUYHRGGGAYlDAAZLiAA)
 
 ## Examples
 
@@ -207,9 +206,10 @@ app <- init(
   data = data,
   modules = list(
     tm_g_distribution(
-      dist_var = data_extract_spec(
-        dataname = "iris",
-        select = select_spec(variable_choices("iris"), "Petal.Length")
+      dist_var = teal.picks::picks(
+        datasets("iris"),
+        teal.picks::variables(is.numeric),
+        teal.picks::values()
       )
     )
   )
@@ -226,44 +226,30 @@ data <- within(data, {
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 
-
 app <- init(
   data = data,
   modules = modules(
     tm_g_distribution(
-      dist_var = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          choices = variable_choices("ADSL", c("AGE", "BMRKR1")),
-          selected = "BMRKR1",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      dist_var = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(c("BMRKR1", "AGE")),
+        values(multiple = FALSE)
       ),
-      strata_var = data_extract_spec(
-        dataname = "ADSL",
-        filter = filter_spec(
-          vars = choices_selected(
-            variable_choices("ADSL", c("ARM", "COUNTRY", "SEX")),
-            selected = NULL
-          ),
-          multiple = TRUE
-        )
+      strata_var = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
       ),
-      group_var = data_extract_spec(
-        dataname = "ADSL",
-        filter = filter_spec(
-          vars = choices_selected(
-            variable_choices("ADSL", c("ARM", "COUNTRY", "SEX")),
-            selected = "ARM"
-          ),
-          multiple = TRUE
-        )
+      group_var = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(c("ARM", "COUNTRY", "SEX"), selected = NULL)
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_g_distribution
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }

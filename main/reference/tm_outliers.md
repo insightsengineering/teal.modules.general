@@ -10,8 +10,11 @@ interpret the outliers.
 ``` r
 tm_outliers(
   label = "Outliers Module",
-  outlier_var,
-  categorical_var = NULL,
+  outlier_var = teal.picks::picks(teal.picks::datasets(),
+    teal.picks::variables(is.numeric, 1L, multiple = FALSE)),
+  categorical_var = teal.picks::picks(teal.picks::datasets(),
+    teal.picks::variables(choices = teal.picks::is_categorical(min.len = 1, max.len =
+    10), selected = 1L, multiple = TRUE)),
   ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
   ggplot2_args = teal.widgets::ggplot2_args(),
   plot_height = c(600, 200, 2000),
@@ -32,14 +35,13 @@ tm_outliers(
 
 - outlier_var:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Specifies variable(s) to be analyzed for outliers.
+  (`picks` or `list` of multiple `picks`) Specifies variable(s) to be
+  analyzed for outliers.
 
 - categorical_var:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  optional, specifies the categorical variable(s) to split the selected
-  outlier variables on.
+  (`picks` or `list` of multiple `picks`) optional, specifies the
+  categorical variable(s) to split the selected outlier variables on.
 
 - ggtheme:
 
@@ -98,8 +100,6 @@ tm_outliers(
   included in the module output reported. The decorators are applied to
   the respective output objects.
 
-  See section "Decorating Module" below for more details.
-
 ## Value
 
 Object of class `teal_module` to be used in `teal` applications.
@@ -157,12 +157,12 @@ For more information on reporting in `teal`, see the vignettes:
 - example-1:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cWhYoiaBAKxwIYiSMxEGjg-HYoN6UHoIiSkOhYguwQ6n3qE3GZQI7C6AAVqFAyO8fmA7KxUHA6V07Iw4EF4LSwNsdko0Kgmip8uSIFVUroALwBTK4Vp8IQicEyxXCXGtKqkGBJIiCUh0GTnTVVXR6g20GRJVHS3R0USkMWm52y4JJcKkZgaOHMskml2ummwPQywnvf0u+FwDS2qPe0S+p0Bl3U+hwfyhsAAZXT0dIulRtHRIkQ4fFyed2NoMJVBZYRYxcCxUOruNSBLAbzAk1J5MIJAIrLAglQwRGQLk8vLFaqcfI-FtXRHY5ZeAjAZgwk0URDugAYgBBAAyWecU5nppMtDCSNth5PrmnyZ2FZfLsnEYIQTgEiIvS-yQ2jK9qOuugbumEnrqKQPrRkmFapNA8CLp2XznjOV7UOQjC2ph2GwX6T4VqitYkehF5VjWtqgtQghNpRbaZB2XY9nWjCiAAJHOSIfkRybcQuMo0XRzY4uc7adKhRLdiSbGcQJvEXlUm5YbQO62g4LhgVUb4Brppr6W+Ow7LQJi6OwKjYdB2hwDYtgVOWohFBArAHug7CChxgi0GUnkzIwOiMDsuxKGAuzjEAA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4ugDCAPIATPEVNYoQSmiodSr57Eq6AZm6ALw9wbhdunxCIqL9owLCYp0Q3d2kMElEgqR0MqLzi4trG7QySVosU4kYqLQEANaiiIiXN9sju92ponCkz2BV1Qp4un+v3+cmGC1eSzg3AuV1u9xOjFoUHoE3YBE6hBIBH+ZX+glQwWucBBuLA+MJxLAoJer3OjzhiBO1EEc0aEOp4N2BCCcAkRER3OSCLOUJ49LuD1hz05r3en2+wIBQJqJJpuzpUvhLCRKLm6P+AAVqFAyDjAWA7KxUJTSXZGFDlhRSCTzUaTc6qWCIZDoeKtczWWrdGzFiHGo1aCZdOwVORmJYdDZbCARqIihBWABBdDsFoAEkEtDK+Y+jB0jEaAF8lGBKwBdIA)
 
 - example-2:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3JD2ioSuw6qE8roALyKiK4BV8IQiImqrXCb4K+qkGDpIiCUh0GTzI31XTmy20GQPFgq3R0USkeUQO2+tVQdIxUjMe6iVBwAjev1+rJfN285pIvC26NUmmkN1piObMMRqPRv3UZnU+NgQLU7O6RnMkSIeEan0F30ksliN3VllwNmtrkRHkIxP86qR3kAcVceF08IAQgBZLAAaSwAEZ4biG03fVnafxSw1x-WUwWYBtaPE9Kqfg0WoFnBvN-UTLRonS3Veb65G02Rt+j3J7824RwBI2IctwLqMG6Hpeke9RZIG0TBkKlLhiOX4FrGsAXlOA4DMm6HRk+AIyG6RGAiheawX6Irtk8AGbi2HJtqqjzUIIXaMZyCx9nCuFJii1QigAJNu5D8P+VFbhWO60WxHHslxMK8XyYACVWTwidJYkSQRx6nuebqgp+D4-gWpm+uZuimSMIy0CYujAqoIaaDoNi2LUjaiOUECsA06DsJCQmCLQ1SBVSjA6DiQxKGAgxXEAA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaKjtKiXsdaF5ugC8rxG4L3xCIqIPro-sIxM8IPV6qQYOkiIJSHQZPMXpDdHCEbQZOktCwgZ1ULQCFNRD0CUTkRDUZCsqI4KRkWB+i0FHhdCymSy5D9KVSOnBuBgycSejjGLQoPQAewCM9GQBxVyslkAIQAslgANJYACMnOq7IVnJRkK5xvqBHCcAkRDFFoyorx-J4QpJiBd4N59RpdIZHKVjOazLApp5VPxhOFiFF4slYPD5J6uy2luttu47BgKgwIghn211RgUGi2YoQO1AAY5CNedWTS8RiNaCZdOwVORmJYdDZbLVKaJyhBWA10Ow7gASQS0arj2mMHSMEaDJRgQZXIA)
 
 ## Examples
 
@@ -170,40 +170,21 @@ For more information on reporting in `teal`, see the vignettes:
 
 # general data example
 data <- teal_data()
-data <- within(data, {
-  CO2 <- CO2
-  CO2[["primary_key"]] <- seq_len(nrow(CO2))
-})
-join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
-
-vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
+data <- within(data, CO2 <- CO2)
 
 app <- init(
   data = data,
   modules = modules(
     tm_outliers(
-      outlier_var = list(
-        data_extract_spec(
-          dataname = "CO2",
-          select = select_spec(
-            label = "Select variable:",
-            choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-            selected = "uptake",
-            multiple = FALSE,
-            fixed = FALSE
-          )
-        )
+      outlier_var = teal.picks::picks(
+        datasets("CO2", "CO2"),
+        teal.picks::variables(c("conc", "uptake"), "uptake"),
+        teal.picks::values()
       ),
-      categorical_var = list(
-        data_extract_spec(
-          dataname = "CO2",
-          filter = filter_spec(
-            vars = vars,
-            choices = value_choices(data[["CO2"]], vars$selected),
-            selected = value_choices(data[["CO2"]], vars$selected),
-            multiple = TRUE
-          )
-        )
+      categorical_var = teal.picks::picks(
+        datasets("CO2", "CO2"),
+        teal.picks::variables(c("Plant", "Type", "Treatment"), "Plant"),
+        teal.picks::values()
       )
     )
   )
@@ -221,36 +202,17 @@ data <- within(data, {
 })
 join_keys(data) <- default_cdisc_join_keys[names(data)]
 
-fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
-vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
-
-
 app <- init(
   data = data,
   modules = modules(
     tm_outliers(
-      outlier_var = list(
-        data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variable:",
-            choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-            selected = "AGE",
-            multiple = FALSE,
-            fixed = FALSE
-          )
-        )
+      outlier_var = teal.picks::picks(
+        datasets("ADSL", "ADSL"),
+        teal.picks::variables(c("AGE", "BMRKR1"), "AGE")
       ),
-      categorical_var = list(
-        data_extract_spec(
-          dataname = "ADSL",
-          filter = filter_spec(
-            vars = vars,
-            choices = value_choices(data[["ADSL"]], vars$selected),
-            selected = value_choices(data[["ADSL"]], vars$selected),
-            multiple = TRUE
-          )
-        )
+      categorical_var = teal.picks::picks(
+        datasets("ADSL", "ADSL"),
+        teal.picks::variables(teal.picks::is_categorical(min.len = 1, max.len = 10))
       )
     )
   )

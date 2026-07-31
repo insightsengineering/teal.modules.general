@@ -38,6 +38,11 @@
 
   `teal` module: R Markdown render
 
+- [`tm_tbl_summary()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_tbl_summary.md)
+  :
+
+  `teal` module: GT Summary table
+
 - [`tm_variable_browser()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_variable_browser.md)
   :
 

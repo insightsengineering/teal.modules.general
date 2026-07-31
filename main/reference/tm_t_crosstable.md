@@ -8,7 +8,9 @@ custom options for showing percentages and sub-totals.
 ``` r
 tm_t_crosstable(
   label = "Cross Table",
-  x,
+  x = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(choices =
+    teal.picks::is_categorical(min.len = 2, max.len = 10), selected = 1L, multiple =
+    TRUE, ordered = TRUE)),
   y,
   show_percentage = TRUE,
   show_total = TRUE,
@@ -30,19 +32,17 @@ tm_t_crosstable(
 
 - x:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`) Object
-  with all available choices with pre-selected option for variable X -
-  row values. In case of `data_extract_spec` use
-  `select_spec(..., ordered = TRUE)` if table elements should be
-  rendered according to selection order.
+  (`picks` or `list` of `picks`) Object with all available choices with
+  pre-selected option for variable X - row values. In case of `picks`
+  use `teal.picks::variables(..., ordered = TRUE)` if table elements
+  should be rendered according to selection order.
 
 - y:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`) Object
-  with all available choices with pre-selected option for variable Y -
-  column values.
+  (`picks` or `list` of multiple `picks`) Object with all available
+  choices with pre-selected option for variable Y - column values.
 
-  `data_extract_spec` must not allow multiple selection in this case.
+  `picks` must not allow multiple selection in this case.
 
 - show_percentage:
 
@@ -95,8 +95,6 @@ tm_t_crosstable(
   included in the module output reported. The decorators are applied to
   the respective output objects.
 
-  See section "Decorating Module" below for more details.
-
 ## Value
 
 Object of class `teal_module` to be used in `teal` applications.
@@ -123,7 +121,7 @@ This module generates the following objects, which can be modified in
 place using decorators:
 
 - `table` (`ElementaryTable` - output of
-  [`rtables::build_table`](https://insightsengineering.github.io/rtables/latest-tag/reference/build_table.html))
+  [`rtables::build_table`](https://rdrr.io/pkg/rtables/man/build_table.html))
 
 A Decorator is applied to the specific output using a named list of
 `teal_transform_module` objects. The name of this list corresponds to
@@ -165,12 +163,12 @@ For more information on reporting in `teal`, see the vignettes:
 - example-1:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6ujCkBCyicVU1dRWmRIy67Fq6KroE7AqErNQDpQNaoiO6A7CTA1IsA3K25RCVldW1jKLAwFoAunsNUOIm6qRt7Bt1O-t7iqu6AL4tV1s7A6iMtDAsrIkA1nBWAMDg1RHAAI6JEQQdgQRhEbKXJpbJZKR73ABWRBUAKBomKGVsWWxuMBrAJpIgeI4A1eEzwUzA9NmYE+31+NMW9yUaFQDRUeX6DxSugAvP4MrgXgJhGJxVVZSICS1KqQYIlSIkCAjRKIgvQRMK1mtqFB6HA-BKBgBhXX1OzmqJ4VVrUIKlKJMKkZgaRKiVBwPquk0paDwBV0lEM6UPE2VcEiDQKxNBrUBoPG+Mms0Wq1MgDKlrTui0LFoTrgiBGIfjBHyOII8olZa+le1DdoTYJKXezOjIL2pWDg2GjLGMaZM3HYHmjG5sezJtTGjg-AVI4IQ1Zc8Wi6X62EmkieglDhc+4PbX4MjXCvPzkvS5MtFCd4lADEAIIAGQLrjjeN7mzOQn0qVgPQyL1Qh9M5-UDYNANDDJw1PJkWRdJC1hXUgU2LP0M0Qg9KlzS1IzAIsk1w1sK0NKsaywk160bZtS3LdtmK7MRCSCPsMIOYd+lHVlxlZadRlnOAFjAJYwPjHD3yZUTMOIqoj1oE8FW-P9H1rE0XzfddP1-f89N0YCgNdCz7nuWgTA6FRyF9TQdBsZYWlEQoIFYL90HYPkABJBFoUpAvBRgdEYe5nggMBHj2IA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6ujCkBCyicVU1dRWmRIy67Fq6KroE7AqErNQDpQNaoiO6A7CTA1IsA3K25RCVldW1jKLAwFoAunsNUOIm6qRt7Bt1O-t7iqu6AL4tV1s7A6iMtDAsrIkA1nBWAMDg1RHAAI6JEQQdgQRhEbKXJpbJZKR73ABWRBUAKBomKGVsWWxuMBrAJpIgeI4A1eEzwUzA9NmYE+31+NMW9yUaFQDRUeX6DxSugAvP4MrgXgJhGJxVVZSICS1KqQYIlSIkCAjRKIgvQRMK1mtqFB6HA-BKBgBhXX1OzmqJ4VVrUIKhIYVC0Aj-USIRDe30qh4myopcGkFXMlEMuTS0Nhz1Bv0BrQsWhOsTGsMmgj5HEEeUS9NfLPags+7Mpd4xzYMg6lPoDAhDVnjVkzRlzOALMBLBO5k3gkQaOD8BXNwbDbtgeaMRaDofrYSaSJ6CUOFxL5dtfgyccKrfOHdDky0UKHiUAMQAggAZADKrkTJvjrpNyZ9qcQ6eogmze5c3fV9dFYD1ex4FN-UDb8Q2XCM4Cjfo62aftT0-SCvTgtMMyzeDl16Ssi3qEs8MNOAK0LasMlrFkwEbXoUNbGdRjADtZy7Nj525DCwxHOAxwna12IZPiTRgVdaHXBU7yfE8PzDc9L2E3Q5OfRTKhA5cv2DXD-0AxSgLWYz7nuWgTA6FRyGYSwdBsZYWlEQoIFYW90HYPkABJBFoUpvPBRgdEYe5nggMBHj2IA)
 
 - example-2:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTdodDaVYvZakNzdAF4X8NxnviERUXeul+wjETwgdTqpBgaQ2BEYRFEonC9BEYIhEOoUHocGogIUYC88MR9ix8Twz3RUUBmTS0VIzA0aVEqDgBDR6IhmVOeg++L6zXx33BHLqohxrNIgLFIkZzNZ7JFdUx2NxvLAAXFGl0WhYtFJcEQgopioIJXGBDEgJ1jD1KLgmzNtAt51ywGAfKaArAl0uVVEgnoYslHzMFk01gu1WNit0tH4VPyAEIdehqBxKrGICUZMVRFVqEQJE7uOwAIxyKps-E+MJwQW6fEABQA8gE-AANDT1putjvUUj4uTDGPoxhwUiCRgQdjcl3hOTAONRS7DkdDIUj3TSiVwfh4gnNxwAOQcAE0jcKYzB1rQ4jz7E5nBuR0RGMsx3uPg4XM+YyZaFEu6AgAYvUzQBK4l4cqu6IVtGuisNSuS0lE9LqBscpVlB6JcrA94ev05LYRC25ah8pEYSyWGbsqOL7hqMqStatoiIaRGbqa5qWh8zH6g6XFzlAboEV6Pp+gGQaAqGlgRgsUbESKS5tCmcTprkVQ7BgqwaK++aFsW1BlkO8EimOE5TjOeGCQuS4riZELrvZoqauQn4Nuqzjthem7Xv2t4iCBYEQb+ir-oBbmgeBkExjBEKxauwzDLQJi6OwKjkAymg6DYtg1MKohlBArD1Og7BoKgAAkgi0FU5UVWKjA6IwwwDEoYADJcQA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpalAF9FCAArIhU0gGs4VlEK3Nt8-jgTKGFSNIJ+WlECNLGJ6dngaHg5zLkAXTdodDaVYvZakNzdAF4X8NxnviERUXeul+wjETwgdTqpBgaQ2BEYRFEonC9BEYIhEOoUHocGogIUYC88MR9ix8Twz3RUUBHVQtAIk1E3Vp9LmFPRnygojgpFZYD6zXxcm+4PZkLg3AwzIZ3S0LFopNBbNFBBK4wIYkBssY8pRcE2qrpoMywGA+P5+MulyqokE9C5pEBZgsmmsF2qStFulo-Cp+QAhLL0NQOJUvRASjJiqIqtQiBI6dx2ABGIW6AhPMA+MJwfFVfEABQA8gE-AANDS53QF4tl6ikQXDT3sxjcwSMCDsU5GhbAb1RS6Npu6IbCoe6LkiDRwfh4gmFxwAOQcAE1cx70TB1rQ4noPg4XKOh0RGMsWzO905nIemyZaFFp4CAGL1ZoBVwi0VC9ftcU8KWMxBZWoQRQUHdEvw-CFWGpX9JTpaVEH-NFPUye1eXNMAIKbGl4IArUdX+ZCmxVNUNQ+fCFX1UjzlyE0zSaAUwEta1bXtR1zEsV0FndSCmz7NpAziENciqHYMFWDRjxjOME2oZM5DAocW1INsOy7GjwjkXsfQHb86hHPTxxxOAp3PKswDfUs1149lNzrbcRCfF832vT1b3vMzn1fd8mywz0cJZGVuBAuZFLqRTB2GYZaBMXR2BUchmEsHQbFsGoRVEMoIFYep0HYNBUAAEkEWgqgKwquUYHRGGGAYlDAAZLiAA)
 
 ## Examples
 
@@ -191,31 +189,33 @@ app <- init(
   modules = modules(
     tm_t_crosstable(
       label = "Cross Table",
-      x = data_extract_spec(
-        dataname = "mtcars",
-        select = select_spec(
-          label = "Select variable:",
+      x = teal.picks::picks(
+        datasets("mtcars"),
+        teal.picks::variables(
           choices = variable_choices(data[["mtcars"]], c("cyl", "vs", "am", "gear")),
           selected = c("cyl", "gear"),
           multiple = TRUE,
           ordered = TRUE,
           fixed = FALSE
-        )
+        ),
+        teal.picks::values()
       ),
-      y = data_extract_spec(
-        dataname = "mtcars",
-        select = select_spec(
-          label = "Select variable:",
+      y = teal.picks::picks(
+        datasets("mtcars"),
+        teal.picks::variables(
           choices = variable_choices(data[["mtcars"]], c("cyl", "vs", "am", "gear")),
           selected = "vs",
           multiple = FALSE,
           fixed = FALSE
-        )
+        ),
+        teal.picks::values()
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_t_crosstable
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -232,10 +232,9 @@ app <- init(
   modules = modules(
     tm_t_crosstable(
       label = "Cross Table",
-      x = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
+      x = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(
           choices = variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- !vapply(data, inherits, logical(1), c("Date", "POSIXct", "POSIXlt"))
             return(names(data)[idx])
@@ -244,12 +243,12 @@ app <- init(
           multiple = TRUE,
           ordered = TRUE,
           fixed = FALSE
-        )
+        ),
+        teal.picks::values()
       ),
-      y = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
+      y = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(
           choices = variable_choices(data[["ADSL"]], subset = function(data) {
             idx <- vapply(data, is.factor, logical(1))
             return(names(data)[idx])
@@ -257,12 +256,15 @@ app <- init(
           selected = "SEX",
           multiple = FALSE,
           fixed = FALSE
-        )
+        ),
+        teal.picks::values()
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_t_crosstable
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
