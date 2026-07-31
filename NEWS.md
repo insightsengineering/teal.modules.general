@@ -1,10 +1,14 @@
 # teal.modules.general 0.7.0.9001
 
-- Fixed missing visualization in `tm_variable_browser` when "Treat variable as factor" is enabled for a numeric variable (#996).
 
 ### Enhancements
 
+- Introduced `teal.picks` as the primary method to select dataset, variables and values in modules.
 - Introduced `tm_tbl_summary()`, a new module for generating tables using the [gtsummary](https://cran.r-project.org/package=gtsummary) package (#973).
+
+### Bug fixes
+
+- Fixed missing visualization in `tm_variable_browser` when "Treat variable as factor" is enabled for a numeric variable (#996).
 
 # teal.modules.general 0.7.0
 
