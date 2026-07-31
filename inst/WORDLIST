@@ -1,7 +1,6 @@
 ElementaryTable
 Hoffmann
 Prebuilt
-Rmarkdown
 Shinylive
 TLG
 UI
@@ -12,13 +11,12 @@ facetting
 funder
 ggmosaic
 ggplot
-pca
 gtsummary
+pca
 pre
 qq
 reportable
 rmarkdown
 sortable
-tabset
 tm
 unchecking
