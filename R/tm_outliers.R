@@ -7,9 +7,9 @@
 #' @inheritParams teal::module
 #' @inheritParams shared_params
 #'
-#' @param outlier_var (`data_extract_spec` or `list` of multiple `data_extract_spec`)
+#' @param outlier_var (`picks` or `list` of multiple `picks`)
 #' Specifies variable(s) to be analyzed for outliers.
-#' @param categorical_var (`data_extract_spec` or `list` of multiple `data_extract_spec`) optional,
+#' @param categorical_var (`picks` or `list` of multiple `picks`) optional,
 #' specifies the categorical variable(s) to split the selected outlier variables on.
 #' @param ggplot2_args `r roxygen_ggplot2_args_param("Boxplot", "Density Plot", "Cumulative Distribution Plot")`
 #'
@@ -53,40 +53,21 @@
 #'
 #' # general data example
 #' data <- teal_data()
-#' data <- within(data, {
-#'   CO2 <- CO2
-#'   CO2[["primary_key"]] <- seq_len(nrow(CO2))
-#' })
-#' join_keys(data) <- join_keys(join_key("CO2", "CO2", "primary_key"))
-#'
-#' vars <- choices_selected(variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")))
+#' data <- within(data, CO2 <- CO2)
 #'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_outliers(
-#'       outlier_var = list(
-#'         data_extract_spec(
-#'           dataname = "CO2",
-#'           select = select_spec(
-#'             label = "Select variable:",
-#'             choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-#'             selected = "uptake",
-#'             multiple = FALSE,
-#'             fixed = FALSE
-#'           )
-#'         )
+#'       outlier_var = teal.picks::picks(
+#'         datasets("CO2", "CO2"),
+#'         teal.picks::variables(c("conc", "uptake"), "uptake"),
+#'         teal.picks::values()
 #'       ),
-#'       categorical_var = list(
-#'         data_extract_spec(
-#'           dataname = "CO2",
-#'           filter = filter_spec(
-#'             vars = vars,
-#'             choices = value_choices(data[["CO2"]], vars$selected),
-#'             selected = value_choices(data[["CO2"]], vars$selected),
-#'             multiple = TRUE
-#'           )
-#'         )
+#'       categorical_var = teal.picks::picks(
+#'         datasets("CO2", "CO2"),
+#'         teal.picks::variables(c("Plant", "Type", "Treatment"), "Plant"),
+#'         teal.picks::values()
 #'       )
 #'     )
 #'   )
@@ -108,36 +89,17 @@
 #' })
 #' join_keys(data) <- default_cdisc_join_keys[names(data)]
 #'
-#' fact_vars_adsl <- names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
-#' vars <- choices_selected(variable_choices(data[["ADSL"]], fact_vars_adsl))
-#'
-#'
 #' app <- init(
 #'   data = data,
 #'   modules = modules(
 #'     tm_outliers(
-#'       outlier_var = list(
-#'         data_extract_spec(
-#'           dataname = "ADSL",
-#'           select = select_spec(
-#'             label = "Select variable:",
-#'             choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-#'             selected = "AGE",
-#'             multiple = FALSE,
-#'             fixed = FALSE
-#'           )
-#'         )
+#'       outlier_var = teal.picks::picks(
+#'         datasets("ADSL", "ADSL"),
+#'         teal.picks::variables(c("AGE", "BMRKR1"), "AGE")
 #'       ),
-#'       categorical_var = list(
-#'         data_extract_spec(
-#'           dataname = "ADSL",
-#'           filter = filter_spec(
-#'             vars = vars,
-#'             choices = value_choices(data[["ADSL"]], vars$selected),
-#'             selected = value_choices(data[["ADSL"]], vars$selected),
-#'             multiple = TRUE
-#'           )
-#'         )
+#'       categorical_var = teal.picks::picks(
+#'         datasets("ADSL", "ADSL"),
+#'         teal.picks::variables(teal.picks::is_categorical(min.len = 1, max.len = 10))
 #'       )
 #'     )
 #'   )
@@ -149,8 +111,18 @@
 #' @export
 #'
 tm_outliers <- function(label = "Outliers Module",
-                        outlier_var,
-                        categorical_var = NULL,
+                        outlier_var = teal.picks::picks(
+                          teal.picks::datasets(),
+                          teal.picks::variables(is.numeric, 1L, multiple = FALSE)
+                        ),
+                        categorical_var = teal.picks::picks(
+                          teal.picks::datasets(),
+                          teal.picks::variables(
+                            choices = teal.picks::is_categorical(min.len = 1, max.len = 10),
+                            selected = 1L,
+                            multiple = TRUE
+                          )
+                        ),
                         ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
                         ggplot2_args = teal.widgets::ggplot2_args(),
                         plot_height = c(600, 200, 2000),
@@ -159,6 +131,23 @@ tm_outliers <- function(label = "Outliers Module",
                         post_output = NULL,
                         transformators = list(),
                         decorators = list()) {
+  UseMethod("tm_outliers", outlier_var)
+}
+
+#' @export
+tm_outliers.default <- function(label = "Outliers Module",
+                                outlier_var,
+                                categorical_var = NULL,
+                                ggtheme = c(
+                                  "gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"
+                                ),
+                                ggplot2_args = teal.widgets::ggplot2_args(),
+                                plot_height = c(600, 200, 2000),
+                                plot_width = NULL,
+                                pre_output = NULL,
+                                post_output = NULL,
+                                transformators = list(),
+                                decorators = list()) {
   message("Initializing tm_outliers")
 
   # Normalize the parameters
@@ -540,17 +529,6 @@ srv_outliers <- function(id, data, outlier_var,
         input$zscore_slider
       } else if (method == "Percentile") {
         input$percentile_slider
-      }
-
-      # this is utils function that converts a %>% NULL %>% b into a %>% b
-      remove_pipe_null <- function(x) {
-        if (length(x) == 1) {
-          x
-        } else if (identical(x[[1]], as.name("%>%")) && is.null(x[[3]])) {
-          remove_pipe_null(x[[2]])
-        } else {
-          as.call(c(x[[1]], lapply(x[-1], remove_pipe_null)))
-        }
       }
 
       qenv <- teal.code::eval_code(

@@ -11,6 +11,16 @@ mock_data_extract_spec <- function(dataname = "MOCK_DATASET",
   )
 }
 
+# Create a mock data extact spec for tests
+mock_teal_picks <- function(dataname = "MOCK_DATASET",
+                            select_choices = sample(LETTERS, sample(2:10, 1)),
+                            select_multiple = FALSE) {
+  teal.picks::picks(
+    teal.picks::datasets(dataname, dataname),
+    teal.picks::variables(select_choices, multiple = select_multiple)
+  )
+}
+
 normalize_math_italic_text <- function(text) {
   # Unicode range for mathematical italic (uppercase/lowercase)
   math_italic <- intToUtf8(seq(0x1D434, 0x1D467)) # A-z

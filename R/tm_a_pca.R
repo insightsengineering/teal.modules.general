@@ -7,8 +7,7 @@
 #'
 #' @inheritParams teal::module
 #' @inheritParams shared_params
-#' @param dat (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-#' specifying columns used to compute PCA.
+#' @param dat (`picks`) specifying columns used to compute PCA.
 #' @param font_size (`numeric`) optional, specifies font size.
 #' It controls the font size for plot titles, axis labels, and legends.
 #' - If vector of `length == 1` then the font sizes will have a fixed size.
@@ -67,16 +66,13 @@
 #'   modules = modules(
 #'     tm_a_pca(
 #'       "PCA",
-#'       dat = data_extract_spec(
-#'         dataname = "USArrests",
-#'         select = select_spec(
-#'           choices = variable_choices(
-#'             data = data[["USArrests"]], c("Murder", "Assault", "UrbanPop", "Rape")
-#'           ),
+#'       dat = teal.picks::picks(
+#'         datasets("USArrests"),
+#'         teal.picks::variables(
+#'           choices = c("Murder", "Assault", "UrbanPop", "Rape"),
 #'           selected = c("Murder", "Assault"),
 #'           multiple = TRUE
-#'         ),
-#'         filter = NULL
+#'         )
 #'       )
 #'     )
 #'   )
@@ -103,17 +99,13 @@
 #'   data = data,
 #'   modules = modules(
 #'     tm_a_pca(
-#'       "PCA",
-#'       dat = data_extract_spec(
-#'         dataname = "ADSL",
-#'         select = select_spec(
-#'           choices = variable_choices(
-#'             data = data[["ADSL"]], c("BMRKR1", "AGE", "EOSDY")
-#'           ),
+#'       dat = teal.picks::picks(
+#'         datasets("ADSL"),
+#'         teal.picks::variables(
+#'           choices = c("BMRKR1", "AGE", "EOSDY"),
 #'           selected = c("BMRKR1", "AGE"),
 #'           multiple = TRUE
-#'         ),
-#'         filter = NULL
+#'         )
 #'       )
 #'     )
 #'   )
@@ -125,7 +117,14 @@
 #' @export
 #'
 tm_a_pca <- function(label = "Principal Component Analysis",
-                     dat,
+                     dat = teal.picks::picks(
+                       teal.picks::datasets(),
+                       teal.picks::variables(
+                         choices = tidyselect::where(~ is.numeric(.x) && all(!is.na(.x))),
+                         selected = tidyselect::everything(),
+                         multiple = TRUE
+                       )
+                     ),
                      plot_height = c(600, 200, 2000),
                      plot_width = NULL,
                      ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
@@ -138,6 +137,24 @@ tm_a_pca <- function(label = "Principal Component Analysis",
                      post_output = NULL,
                      transformators = list(),
                      decorators = list()) {
+  UseMethod("tm_a_pca", dat)
+}
+
+#' @export
+tm_a_pca.default <- function(label = "Principal Component Analysis",
+                             dat,
+                             plot_height = c(600, 200, 2000),
+                             plot_width = NULL,
+                             ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
+                             ggplot2_args = teal.widgets::ggplot2_args(),
+                             rotate_xaxis_labels = FALSE,
+                             font_size = c(12, 8, 20),
+                             alpha = c(1, 0, 1),
+                             size = c(2, 1, 8),
+                             pre_output = NULL,
+                             post_output = NULL,
+                             transformators = list(),
+                             decorators = list()) {
   message("Initializing tm_a_pca")
 
   # Normalize the parameters
@@ -198,8 +215,8 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 
   ans <- module(
     label = label,
-    server = srv_a_pca,
-    ui = ui_a_pca,
+    server = srv_a_pca.default,
+    ui = ui_a_pca.default,
     ui_args = args,
     server_args = c(
       data_extract_list,
@@ -218,7 +235,7 @@ tm_a_pca <- function(label = "Principal Component Analysis",
 }
 
 # UI function for the PCA module
-ui_a_pca <- function(id, ...) {
+ui_a_pca.default <- function(id, ...) {
   ns <- NS(id)
   args <- list(...)
   is_single_dataset_value <- teal.transform::is_single_dataset(args$dat)
@@ -347,7 +364,7 @@ ui_a_pca <- function(id, ...) {
 }
 
 # Server function for the PCA module
-srv_a_pca <- function(id, data, dat, plot_height, plot_width, ggplot2_args, decorators) {
+srv_a_pca.default <- function(id, data, dat, plot_height, plot_width, ggplot2_args, decorators) {
   checkmate::assert_class(data, "reactive")
   checkmate::assert_class(isolate(data()), "teal_data")
   moduleServer(id, function(input, output, session) {

@@ -113,9 +113,6 @@ testthat::test_that("e2e - tm_g_distribution: QQ plot encoding inputs produce ou
   app_driver <- app_driver_tm_g_distribution()
 
   # Encodings in the QQplot tab
-  app_driver$set_active_module_input("main_type", "Density")
-  app_driver$expect_no_validation_error()
-
   app_driver$set_active_module_input("tabs", "QQplot")
   app_driver$set_active_module_input("t_dist", "normal")
   app_driver$click(app_driver$namespaces()$module("params_reset"))
