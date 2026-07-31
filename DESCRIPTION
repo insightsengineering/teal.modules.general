@@ -1,7 +1,7 @@
 Type: Package
 Package: teal.modules.general
 Title: General Modules for 'teal' Applications
-Version: 0.7.0.9002
+Version: 0.8.0
 Date: 2026-07-31
 Authors@R: c(
     person("Dony", "Unardi", , "unardid@gene.com", role = c("aut", "cre")),
@@ -88,9 +88,6 @@ Suggests:
 VignetteBuilder:
     knitr,
     rmarkdown
-Remotes:
-    insightsengineering/teal.picks@main,
-    insightsengineering/teal.widgets@main
 Config/Needs/verdepcheck: haleyjeppson/ggmosaic, tidyverse/ggplot2,
     rstudio/shiny, insightsengineering/teal,
     insightsengineering/teal.transform, mllg/checkmate, tidyverse/dplyr,
