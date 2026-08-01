@@ -8,7 +8,7 @@
 #' @return `numeric(1)` the testing depth.
 #'
 get_testing_depth <- function() {
-  default_depth <- 5
+  default_depth <- if (identical(Sys.getenv("NOT_CRAN"), "true")) 5 else 3
   depth <- getOption("TESTING_DEPTH", Sys.getenv("TESTING_DEPTH", default_depth))
   depth <- tryCatch(
     as.numeric(depth),
