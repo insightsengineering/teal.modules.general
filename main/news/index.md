@@ -1,6 +1,10 @@
 # Changelog
 
-## teal.modules.general 0.7.0.9002
+## teal.modules.general 0.8.0.9000
+
+## teal.modules.general 0.8.0
+
+CRAN release: 2026-08-01
 
 #### Enhancements
 
