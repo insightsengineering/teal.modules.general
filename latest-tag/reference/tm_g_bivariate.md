@@ -9,11 +9,13 @@ between two variables.
 ``` r
 tm_g_bivariate(
   label = "Bivariate Plots",
-  x,
+  x = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(choices =
+    is.numeric | teal.picks::is_categorical(min.len = 2, max.len = 10), selected = 1L),
+    teal.picks::values()),
   y,
-  row_facet = NULL,
-  col_facet = NULL,
-  facet = !is.null(row_facet) || !is.null(col_facet),
+  row_facet,
+  col_facet,
+  facet,
   color = NULL,
   fill = NULL,
   size = NULL,
@@ -43,27 +45,27 @@ tm_g_bivariate(
 
 - x:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Variable names selected to plot along the x-axis by default. Can be
-  numeric, factor or character. No empty selections are allowed.
+  (`picks`) Variable specification for the x-axis. Created using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html).
+  Can be numeric, factor or character. No empty selections are allowed.
 
 - y:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Variable names selected to plot along the y-axis by default. Can be
-  numeric, factor or character.
+  (`picks`) Variable specification for the y-axis. Created using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html).
+  Can be numeric, factor or character.
 
 - row_facet:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  optional, specification of the data variable(s) to use for faceting
-  rows.
+  (`picks`) optional, specification of the data variable(s) to use for
+  faceting rows. Created using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html).
 
 - col_facet:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  optional, specification of the data variable(s) to use for faceting
-  columns.
+  (`picks`) optional, specification of the data variable(s) to use for
+  faceting columns. Created using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html).
 
 - facet:
 
@@ -73,24 +75,24 @@ tm_g_bivariate(
 
 - color:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  optional, specification of the data variable(s) selected for the
-  outline color inside the coloring settings. It will be applied when
-  `color_settings` is set to `TRUE`.
+  (`picks`) optional, specification of the data variable(s) selected for
+  the outline color inside the coloring settings. It will be applied
+  when `color_settings` is set to `TRUE`. Created using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html).
 
 - fill:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  optional, specification of the data variable(s) selected for the fill
-  color inside the coloring settings. It will be applied when
-  `color_settings` is set to `TRUE`.
+  (`picks`) optional, specification of the data variable(s) selected for
+  the fill color inside the coloring settings. It will be applied when
+  `color_settings` is set to `TRUE`. Created using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html).
 
 - size:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  optional, specification of the data variable(s) selected for the size
-  of `geom_point` plots inside the coloring settings. It will be applied
-  when `color_settings` is set to `TRUE`.
+  (`picks`) optional, specification of the data variable(s) selected for
+  the size of `geom_point` plots inside the coloring settings. It will
+  be applied when `color_settings` is set to `TRUE`. Created using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html).
 
 - use_density:
 
@@ -175,8 +177,6 @@ tm_g_bivariate(
   included in the module output reported. The decorators are applied to
   the respective output objects.
 
-  See section "Decorating Module" below for more details.
-
 ## Value
 
 Object of class `teal_module` to be used in `teal` applications.
@@ -237,12 +237,12 @@ For more information on reporting in `teal`, see the vignettes:
 - example-1:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHH+GRgmzPDs-QNdAL5dSmiowyp57BUjsQC8m1C4G3xCIqK6O6QwiRKJ9NostIFw692VuqGnu4lhpMwaiaKocAITxeLxS0Hg7wUYGmUP2zxBojgIg070RyNIfwBQI2IMq1Cg9CRkLAAGUkYDSLotHcCSJELCcbiCPkiLQCGJ3tTGPd6CJEszWezRMUMsBgFCYWAALpSuRw3EvNEUuD8YnECwM+G4ky0UIq94AMQAggAZEmuLWVLoguWM1jvFKfULfdQY-6A4G4sGwPQ7CWDTUKpUonbBt1Yz0K-GEvx+0nklFcnl0wMK3QCtkcnZJ2lwfkszPClJi-0DKEy22WxUJ8iquOCVBBADWcFTCpgwk0kV9umNZuc8rTOr1dd7pvNjKtjMrIMYRGyiRM6jglJ2jq+P3DHsnu3BPdLber6NRNcx26reIJRLjZOPOd5cHpeB3lQzQs5NIf+cFYhFQRL0IBtKsqDkGNb6nGdisACh4gsOEFjv2O7Wi8M4vG0i7LquHwbq6Z7YlW3oQnGkqgUeFInui+GRri0bXroUK3hR94ps+F7pgW77Zp+fJvr+xbioBZbAWhYHoghUJ2NUgTwGQsEvPBo59hOVYoVOzxdF0tAmLo7AqOQm7aI8ci2OUzyiIUECsEa6DsEsAAk9SlA5iKMDonRKLMShgLMUpAA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHH+GRgmzPDs-QNdAL5dSmiowyp57BUjsQC8m1C4G3xCIqK6O6QwiRKJ9NostIFw692VutRQ9HB+OwpgAEK3jHu5F0AAV2qRRD99s9KqFTroEhhULQCABrUSIRDItGiJ4vF4pURwCHrMDTH5yaH4yqI7HozFaO7vY7sIkiDRwfjwn7ECwUjaVSkC3SseG0lH0rES3HCyqE4kysmDClU6ninEMpn0FlsuAcrnfMCCVBBVFwfkw3RCy2MIjZRImdTEsVwbhI6WYukyy1yjJEkk-clga3UhGunhezWA5liVmfPXkA26H52Vioc3B4Uhl5tB1O0gut2RqU4vHU+UBpUDFWysNFj2IRnR7Wx3X67lgOzVQLwMgW-FdQVKLq0Ey6dgqcjMSw6Gy2crPUSFCCsACC6HYSwAJPVStuiYwdJ0lLMlGBZgBdIA)
 
 - example-2:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIZMYGkJGl6NoWLQwnBgQM6rookjMmloqRmBo0qJUHACHiCQTMm89JCFGAFqM2TD8QzRHARBokXyBZdqbT6QyCdQoPR+Ui2QF+bTSLotFiZSJEFyQZLdAQShsCGIkWrGNj6CIrgbaEaPrlgMA2Ry2V8vnJubq6sLlXB+PL2QBxVx4HWSky0KK+pEAMUGowCrh5BP6DPdodYxNypKi5PUoppdNDdSZsBZuidI05IaTXqVgsh3spYsLNalMrlrLAipFqvVFrgWurnr11ttJr7lv1hrEB3CDorizArrTrdrIqjnYTAA1tavdDALrQ4mXY-HnB7PeHI37IaeE0XdCnkxe6owiAU0mcjSrISSyRT83FB8S3gf1nSHSVGx-XQoKpAsJV1aVZWof1u2VXszQ1Add2HKcbWNSFTXNSdRxnTJ53ZSsXTdF9ILrcgb3LdksAAWRwy8Iw3XQ70TXUnzqFcGW6T91DgaC-xzAC4KA1sQLLBcq1otd0IbejpJbYckI7Ji0MFIisMHJSCTwsdCInOArWnO050dSjF2XIzlI0Li2S8AB5RwADkHAATXY3Ury4niH34x8QX6fpaBMXR2BUcgAO0XE5FsGp8VEMoIFYQZ0HYNBUAAEhaKo8vyvlGB0PpliUMAli+IA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIZMYGkJGl6NoWLQwnBgQM6rpqFB6HBqEiFGAAEKYxjY8i6AAKPVIogpMPxdSiSKmqFoBC2olmvP5+xBBKhUFEcBZwLAC1GFLk7PFdR5fIFsy0WOJCPYUpEGjg-HJcoA4q4wP1xUqxbpWNy4NwMMKNYgXaKOQTMlKZRT5YrlSq1SLNdr6Lr9XBDcbIRSAs4ABqK202z2MIgFNJnAjSh1O91C9UelUSn2iuUjBWWwPi4OurW0nViPWkqPkGO6P1YACyyc9qfF3Sz6lzkLrgrdRbxJe90vL-urttVjp4BcQDex4ebkejJq8AHlHAA5BwATT71pB-X6tBMunYKnIzEsOhsthq+NEZQgrEG6HYaCoAAJC0VSAUBUqMDofTLEoYBLF8QA)
 
 ## Examples
 
@@ -257,46 +257,34 @@ data <- within(data, {
 app <- init(
   data = data,
   modules = tm_g_bivariate(
-    x = data_extract_spec(
-      dataname = "CO2",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["CO2"]]),
-        selected = "conc",
-        fixed = FALSE
-      )
+    label = "Bivariate Plots",
+    x = teal.picks::picks(
+      datasets("CO2"),
+      teal.picks::variables(selected = "conc")
     ),
-    y = data_extract_spec(
-      dataname = "CO2",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["CO2"]]),
-        selected = "uptake",
-        multiple = FALSE,
-        fixed = FALSE
-      )
+    y = teal.picks::picks(
+      datasets("CO2"),
+      teal.picks::variables(selected = "uptake")
     ),
-    row_facet = data_extract_spec(
-      dataname = "CO2",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["CO2"]]),
-        selected = "Type",
-        fixed = FALSE
-      )
+    row_facet = teal.picks::picks(
+      datasets("CO2"),
+      teal.picks::variables(selected = "Type")
     ),
-    col_facet = data_extract_spec(
-      dataname = "CO2",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["CO2"]]),
-        selected = "Treatment",
-        fixed = FALSE
-      )
+    col_facet = teal.picks::picks(
+      datasets("CO2"),
+      teal.picks::variables(selected = "Treatment")
     )
   )
 )
+#> Warning: teal.picks::variables(selected = "conc")
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 #> Initializing tm_g_bivariate
+#> Warning: teal.picks::variables(selected = "uptake")
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
+#> Warning: teal.picks::variables(selected = "Type")
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
+#> Warning: teal.picks::variables(selected = "Treatment")
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -312,46 +300,34 @@ join_keys(data) <- default_cdisc_join_keys[names(data)]
 app <- init(
   data = data,
   modules = tm_g_bivariate(
-    x = data_extract_spec(
-      dataname = "ADSL",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["ADSL"]]),
-        selected = "AGE",
-        fixed = FALSE
-      )
+    label = "Bivariate Plots",
+    x = teal.picks::picks(
+      datasets("ADSL"),
+      teal.picks::variables(selected = "AGE")
     ),
-    y = data_extract_spec(
-      dataname = "ADSL",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["ADSL"]]),
-        selected = "SEX",
-        multiple = FALSE,
-        fixed = FALSE
-      )
+    y = teal.picks::picks(
+      datasets("ADSL"),
+      teal.picks::variables(selected = "SEX")
     ),
-    row_facet = data_extract_spec(
-      dataname = "ADSL",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["ADSL"]]),
-        selected = "ARM",
-        fixed = FALSE
-      )
+    row_facet = teal.picks::picks(
+      datasets("ADSL"),
+      teal.picks::variables(selected = "ARM")
     ),
-    col_facet = data_extract_spec(
-      dataname = "ADSL",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["ADSL"]]),
-        selected = "COUNTRY",
-        fixed = FALSE
-      )
+    col_facet = teal.picks::picks(
+      datasets("ADSL"),
+      teal.picks::variables(selected = "COUNTRY")
     )
   )
 )
+#> Warning: teal.picks::variables(selected = "AGE")
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 #> Initializing tm_g_bivariate
+#> Warning: teal.picks::variables(selected = "SEX")
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
+#> Warning: teal.picks::variables(selected = "ARM")
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
+#> Warning: teal.picks::variables(selected = "COUNTRY")
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }

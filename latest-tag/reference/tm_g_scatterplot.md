@@ -11,7 +11,8 @@ through UI controls.
 ``` r
 tm_g_scatterplot(
   label = "Scatterplot",
-  x,
+  x = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(is.numeric),
+    teal.picks::values()),
   y,
   color_by = NULL,
   size_by = NULL,
@@ -43,35 +44,34 @@ tm_g_scatterplot(
 
 - x:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Specifies variable names selected to plot along the x-axis by default.
+  (`picks` or `list` of multiple `picks`) Specifies variable names
+  selected to plot along the x-axis by default.
 
 - y:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Specifies variable names selected to plot along the y-axis by default.
+  (`picks` or `list` of multiple `picks`) Specifies variable names
+  selected to plot along the y-axis by default.
 
 - color_by:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  optional, defines the color encoding. If `NULL` then no color encoding
-  option will be displayed.
+  (`picks` or `list` of multiple `picks`) optional, defines the color
+  encoding. If `NULL` then no color encoding option will be displayed.
 
 - size_by:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  optional, defines the point size encoding. If `NULL` then no size
-  encoding option will be displayed.
+  (`picks` or `list` of multiple `picks`) optional, defines the point
+  size encoding. If `NULL` then no size encoding option will be
+  displayed.
 
 - row_facet:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  optional, specifies the variable(s) for faceting rows.
+  (`picks` or `list` of multiple `picks`) optional, specifies the
+  variable(s) for faceting rows.
 
 - col_facet:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  optional, specifies the variable(s) for faceting columns.
+  (`picks` or `list` of multiple `picks`) optional, specifies the
+  variable(s) for faceting columns.
 
 - plot_height:
 
@@ -168,8 +168,6 @@ tm_g_scatterplot(
   included in the module output reported. The decorators are applied to
   the respective output objects.
 
-  See section "Decorating Module" below for more details.
-
 ## Value
 
 Object of class `teal_module` to be used in `teal` applications.
@@ -226,12 +224,12 @@ For more information on reporting in `teal`, see the vignettes:
 - example-1:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QNKAL5dSmiowyp57BX+GboAvMtBuEt8QiKia7o7wmKL3ZW6pDCJEomiBIHkjJFEpKfn59RQ9HB+6wpgAGV7qRHs9SCN8kRaAQxP8tmd3qEDilEmFSMwNLdUHACG93ucUtB4Ad-qM4Ut8bpRD8ceD1tSRJjRNjcRTKbpPt9frp-gCaRpdFoWLQviJEOSEeyCJDoWIDkLGCL6CJEtKoTDRMUMsBgKTBv8ALoG0qswgkAhwnlgQSoIIAazg-zkcnh7PODNpcH4JLNFglbsqMGEmkienWADEAIIAGQBzldAZMtFCXoOUdjrkl7y6lJdbMqrGRGVRoXR6lIWJxeMphNgYatZLw+fd-LpVNbldZWfxnJ+Pr5jPBCqVYv9AbVsv262HorgqplGq1QR1erGYCNJsWvoteCtNvtjrAzoTbo9GlTf2ttqgDrHbqD1BDIjTMbjJ-ZSZT3ojr8zbpz+J5t2bQdIk9CFusKJohiFbMlWzaVLWxKXo277vGebYYZ21bsr23K8q2grCrO4pNt27wThq8rEcqc6UScCH4ikK5gI2G6MRRW4AAqfGQlr-HYrDYvxYB2NUgTwHxu7-MQfrSVeB5OhxuhAQG7aDheugAHKONG0ZofiD5PvW6Zvspn6aaZf7sgB2YGaItAAF5zuBRZBCWZZMiyOHvEh9arne+IYQcWFwV2al4f2hEzrRpEGRRC5ytONEqvRmrMbqrH6uuxq6Kask7qU-z7jeh7HspGGacV163mRalGbQoYvhm8XnBZ366FZjG2ecqn4owRDZIkJjqHAbZQaWMHYYxfk+qhjHBfSHZhT5PZfH2l4DrSRGKiRgWUml1G7bR87qicGUBTlm7-DxUBSUVolCYeD1iXAEkUKQTp9aeraaTpemtYGwaNc+P4teZyaWb+3XNt95xtMNo3jcW0HltN5EbHddZzdlrWLeptLoxF634YC0UpXAcXKYdyXHaliXpdqmVsblpq3fdVqCcJ8mve9UnlRjlSVR1-36cpDVNWDZmC6YkMdV1GM9ZUPUAV0XS0CYujsCojzltocA2LY5RnKIhQQKwkboOwMwACT1KUtvUowOidBMShgOMBpAA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QNKAL5dSmiowyp57BX+GboAvMtBuEt8QiKia7o7wmKL3ZW6pDCJEomiBIHkjJFEpKfn59RQ9HB+6wpgAGV7qRHs9SCN8kRaAQxP8tmd3qEDgkMKhoQBrUSIRBogiYt7vc4pURwUiiRZgUb-OTwwnnFG4zHYrQsWhfPYEumVAiQ6FiA4ECnECxw3T-QSoILouDU2lcyokkQaOD8A7-YUEf5LOk07WEhkYrGIFnUQQnLo6uXvVjIuDcVGG7GM8l697E0kuymDWWu+l2njO5ms9knX3vHlQmH7daC9UkTV4MVgCVSmVgXUIrmKuDK1V-ZOSqDSrWZ94Z+UGvFGk1m8kWwnlwltDqJeg29aVpk4w2cwnuskUqnpq36-0OqtBxhs+gcsPnCN86O6WNgAAKnzIov+dlYqDTpW31UC8E3ibjIrPBdTPtLhOzuYOADlHAAZF9zxt0zvV7i1tK3z9zlEWgAC84FbdsLjHQNuyrXs3QyEkB3+IdAPeb9J2nDkFyjAUhXjLcryLNMaV0e9yDzJMU2Im8K2gx1jV-c1fTQqoiGyRITHUUlbXtGDnXgolEI9QdvWHOcMMYqcQxdW9w15XCYwpdcoFPA8wB3PdCLsI9LgoUhaPlMifhzCin1fd85N0VjKkkmtmIAkduSIJIuJhcEO3oidYPxOd+09VCnL9PiGJZaSZxOHD+SU-4VLUpNNP3BLdJPAzh2MpUzPWZ83xsqCQu8+y6xYvV6y6LpaBMXR2BUR51E0HQbFscozlEQoIFYABBdB2BmAASepSn6klGB0ToJiUMBxgAXSAA)
 
 - example-2:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0ncwuRGHEiKR0ZjMdQoPQ4NQkQowAECASZMTSN4ShsCGJ6TCMeSokjMmloqRmBo8ag4AQyeTMZk3npIfSFqMeSDZbpRDSpWzIVqROLRJLpeqNbpKdTaUqGdqNLotCxaFSRIg1XyzQQObQuYjIQ7GE76CIrl6fQdwsBgMqRqqwF8vlUTWBBgBxVx4XT0gBCAFksABpLAARh5mbAuYLWAATPS5HJeWbMfqdXB+HTk2m3Y26jALrQ4ordAAxQajALOBvdky0KKtpEjseud3k-oa+umuqsQW5YVRUXqS5GqUyjXy2CD6OLPAbpu23Wau8S4838kWmntgJ3+2O51wV3X5dZU9TkxCRf1A2DYDvTRTJI0vWN40TYEO3TKpszzQsSwzdDKxrMA60nRtmw0OdrQrTCu27XtqE0Ad51HcdCLNadZzbSEF3HF9dFXWV10A7pejSegt0hIURTFQ9jRPWUz3gdsVUojViPvZSnxNQDXypd9rU-A02XA39-yYjUoJ9MCfyDOAQxA-YuPJWCo2TGN6UQuzMSTVNULLcji1LHDCzwtCwCwQYvC8+ksGcFM-AAeQAOSwnjGz47sHz00jdDixxRlGYzZWo2iRHoxc8vJFiMo4pdkpvFLZVEWgAC8rOE7dwl3fdDSkrjZIvJyr1KtKdSRVSj3U1K3ytMtdKGgzLKMtzTNAv0LMg0MYNyOC+oQhNdA8ztsPLDDfPw2qiLvDLlX2gaez7Oj2IYic3PKtjhweriksxU7MUYIgCjSM4uXvMS9wktTpPs3IFXk5yALOvThsfUbwdlCaPy-WaXUUj01t9b8A1-azoI+DbHIUuMdqTHzArLEKwr84KotihLay+pTzperKcuu5FbqK+6SqemcKrejTuJqvLun+9Q4CBndxIPMHush89of6rjlIRvTFdFupUZ09GVr-LGTJx8z8cswmwwc+CXIp5Cqfp2nwoZ6L4sS1m6vZpFOdytyCv7PnXoFnXTCFl7KvemrTR4-p+loExdHYFRCQPbQ4BsWwagxUQyggVhBnQdg0FQAASFoqmLkutUYHQ+mWJQwCWL4gA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0ncwuRGHEiKR0ZjMdQoPQ4NQkQowAECASZMTSN4ShsCGJ6TCMeSokipqhaAQtqJZsLRfsQeS6plRHBSNKwAtRvS5LzZZihSKxbMtCxaFSEewCByRWIkQRgSqAOKuPC6ekAIQAslgANJYACMPKdYDdnqwACZ1VUFSINHB+HS7Q6NTLZTqpfruII0f0tQm+ZjWIK4NwMJK9Yhi9Kc+T5Yrlaqw4nycmSwbGEb6CazZzLZDrfTBva-S73V7fY7B0HQ2ANboI3AozHIWPh3WK9qCzwy6nqOn9pnZdmtd1eml6HnIY3xaXdeWtXLcgqlTba5PNTfz6mW8a0T24wOA0Ofb+gZehOVT0lggxeA6oFgFgzi2n4ADyAByI5TjOc5IkhjijKM+6vmuRZXpu27ZCueHkqItAAF5wMep6TARG6XlKZI3lWD69iMarPvWq6Fkxzatu25pcoi3aPv2o5-kGqHhjSs7kPO-p9vGL5am+iAGluGa8eRmKMEQBRpGcXJsmejFEcxYqsVq7E1lxy43gx-GWYJn77B2Fpibo35ASGv7gZBAVwYhKFhtO8kYZCWE4XpDYWSmmlpjpZFqZi3TGeoir5i5iVljZsp2Y+Dk8SudQaW5bZfiJXY+Tafkgf6gVQU1IXIbJEWRopmHYbhaXxblTbJTuumJru-T9LQJi6OwKiEuomg6DYtg1BiohlBArCDOg7BoKgAAkLRVHt+0KowOh9MsShgEsXxAA)
 
 ## Examples
 
@@ -248,73 +246,58 @@ app <- init(
   modules = modules(
     tm_g_scatterplot(
       label = "Scatterplot Choices",
-      x = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-          selected = "conc",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      x = teal.picks::picks(
+        datasets("CO2"),
+        teal.picks::variables(
+          choices = c("conc", "uptake"),
+          selected = "conc"
+        ),
+        teal.picks::values()
       ),
-      y = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-          selected = "uptake",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      y = teal.picks::picks(
+        datasets("CO2"),
+        teal.picks::variables(
+          choices = c("conc", "uptake"),
+          selected = "uptake"
+        ),
+        teal.picks::values()
       ),
-      color_by = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(
-            data[["CO2"]],
-            c("Plant", "Type", "Treatment", "conc", "uptake")
-          ),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      color_by = teal.picks::picks(
+        datasets("CO2"),
+        teal.picks::variables(
+          choices = c("Plant", "Type", "Treatment", "conc", "uptake"),
+          selected = NULL
+        ),
+        teal.picks::values()
       ),
-      size_by = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("conc", "uptake")),
-          selected = "uptake",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      size_by = teal.picks::picks(
+        datasets("CO2"),
+        teal.picks::variables(choices = c("conc", "uptake"), selected = "uptake"),
+        teal.picks::values()
       ),
-      row_facet = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      row_facet = teal.picks::picks(
+        datasets("CO2"),
+        teal.picks::variables(
+          choices = c("Plant", "Type", "Treatment"),
+          selected = NULL
+        ),
+        teal.picks::values()
       ),
-      col_facet = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      col_facet = teal.picks::picks(
+        datasets("CO2"),
+        teal.picks::variables(choices = c("Plant", "Type", "Treatment"), selected = NULL),
+        teal.picks::values()
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_g_scatterplot
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -332,73 +315,46 @@ app <- init(
   modules = modules(
     tm_g_scatterplot(
       label = "Scatterplot Choices",
-      x = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2")),
-          selected = "AGE",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      x = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "AGE"),
+        teal.picks::values()
       ),
-      y = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1", "BMRKR2")),
-          selected = "BMRKR1",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      y = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(choices = c("AGE", "BMRKR1", "BMRKR2"), selected = "BMRKR1"),
+        teal.picks::values()
       ),
-      color_by = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(
-            data[["ADSL"]],
-            c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1")
-          ),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      color_by = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(c("AGE", "BMRKR1", "BMRKR2", "RACE", "REGION1"), selected = NULL),
+        teal.picks::values()
       ),
-      size_by = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-          selected = "AGE",
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      size_by = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(choices = c("AGE", "BMRKR1"), selected = "AGE"),
+        teal.picks::values()
       ),
-      row_facet = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["ADSL"]], c("BMRKR2", "RACE", "REGION1")),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      row_facet = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+        teal.picks::values()
       ),
-      col_facet = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["ADSL"]], c("BMRKR2", "RACE", "REGION1")),
-          selected = NULL,
-          multiple = FALSE,
-          fixed = FALSE
-        )
+      col_facet = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(choices = c("BMRKR2", "RACE", "REGION1"), selected = NULL),
+        teal.picks::values()
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_g_scatterplot
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }

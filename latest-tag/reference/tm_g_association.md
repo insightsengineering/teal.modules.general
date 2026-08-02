@@ -10,7 +10,9 @@ show associations.
 ``` r
 tm_g_association(
   label = "Association",
-  ref,
+  ref = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(choices =
+    is.numeric | teal.picks::is_categorical(min.len = 2, max.len = 10), selected = 1L),
+    teal.picks::values()),
   vars,
   show_association = TRUE,
   plot_height = c(600, 400, 5000),
@@ -36,14 +38,14 @@ tm_g_association(
 
 - ref:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Reference variable, must accepts a `data_extract_spec` with
-  `select_spec(multiple = FALSE)` to ensure single selection option.
+  (`picks`) Reference variable specification created using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html).
 
 - vars:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Variables to be associated with the reference variable.
+  (`picks`) Variables to be associated with the reference variable,
+  specified using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html).
 
 - show_association:
 
@@ -107,8 +109,6 @@ tm_g_association(
   included in the module output reported. The decorators are applied to
   the respective output objects.
 
-  See section "Decorating Module" below for more details.
-
 ## Value
 
 Object of class `teal_module` to be used in `teal` applications.
@@ -166,12 +166,12 @@ For more information on reporting in `teal`, see the vignettes:
 - example-1:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QMVpuqkHaLD0PCi7ABitNTkjOy0og4upVpokRyjpZsYJpMdpe0StATc7ACMADJyL129g8BnGtMAusPU+2ohw+XymjFEP1KUHEBHyLEmMi6AF8ukp9sMVHl2OMUroALz+DK4cZ8IQiGYE0nCMTY7qVXSkGCJCSJaGiIgEWiBKwQWn0+nVEz4wlBRJhUjMDSJUSoOAEPn8+kpOZ6AkKMCjdXEumK3SiOAiDTC-WG0jS2Xy8a6yoA+gG4XqgDKBrlpF0e0YXPoIkQWqt1thRBuYmFHq9IkSgeDCxSwGA6s1YB+kN0lrAAAUAWQtbp1XZWLKc3nqoF4NmwC9tdb6SbXXB+A6M1nSH6ddaTLRQvXhYsAIKPR2uNv8t6KuRVxUeikiqBi0ISybmuUK3XK2Cq3Mawat6u1o0EvdmmXL-26232tVgZ2m90scNiX14U+KqMEEMEsNQb1wSP5INvmMMjjBNtyTFM00zKBy1KPMCzgIswDsEtGQoFsK3HZ9+UPbtLyQuBS1Qndq10GBhE0SIN22ZwJ2rDsuwbAk+wHIdq1HEd-VHLouloIUNlUSVNB0GxbHKOlREKCBWF7dB2H2AASeooXQOT9UYHROiUJElDAJEfiAA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlQDCAPIATHG6-QMVpuqkHaLD0PCi7ABitNTkjOy0og4upVpokRyjpZsYJpMdpe0StATc7ACMADJyL129g8BnGtMAusPU+2ohw+XymjFEP1KUHEBHyLEmMi6AF8ukp9sMVHl2OMUroALz+DK4cZ8IQiGYE0nCMTY7qVXSkGCJCSJaGiIgEWiBKwQWn0+nVEz4hlwbgYVA3ADWokQiAlBGlfP59JSojgpAWCjAoy1cmJdOVIrF8ulsr2jC59HJSsNlVhRBuYmFBGxYAACgCyFrSlq7KxUHBvbpfdVAvAvWA9eNbbo1SINHB+MKtR6oBHo8q3pn9YbzRSjTwTTK5VLNQblar1ZrtYNdTnbQlxaWzSxLdaM4b7Y78y6U57SEHff7A3hg2A7KHGRQB5H6zG43AE0mCSHRVOI3PbTBhJpInoCdtXOX+VmTxms10urQhRtVMxLDobLZynTRIUIKwAILodj7AAk9RQugf5qowOidEoSJKGASI-EAA)
 
 - example-2:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0lBRKIiARaGErBB0ZjMQ0TEjMmloqRmBo0qJUHACBTKZjMm89JCFGAFqMBTCMVzdKI4CINEjJdLLqz2ZzxXVqFB6FKkQKAlL2aRdFoWCT6CJECKQSrdAQShsCGIkYbGMaRFcbbQ7fsLZaoVBgMABUKBV8vqLvZiOdrnAANEW6AVYQZeVx4ONgLwAeUcADkHABNWMBrAAWQLYACDkGdkGAEZS+WE1WAEylvx2OwAMWFKYFACEi1gANJYZtgfphuSh71yvVwfhasAJpPmsUqky0KKzpHtwajAKuFeUsdcideuqOxGQukMpkKtkRg-c3K8+eBvCnzHTmWQz+3pXvylqhq1Dzjq8oGka6oImab4PpS1q2vakKOs6cCughnqwVymR+gGIxdsGk5hhGZbRqWi7JlUAoZtmealoMxZ1hWVa1t2ZZMYMI6UWArYdl2XF9oOw4CkelonphdQ-pu-JgAJQ6cf+mIwBctBxHy9hOM4hGruuUm6Nuu77qJ74iboR79P0tA0uwKjkDe2hwDYtg1BiohlBArCDOg7BoKgAAkLRVD5vmSowOh9MsShgEsXxAA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0lBRKIiARaGErBB0ZjMQ0TEipqhaAQtqJZvTGfsQZS6plRHBSOywAtRgowHIYRjOZM4NwMKymbMtCwSfQERSJZiCCUNgQxEiCMCwAFnAANYVVYVYQZeVx4XTCrwAeUcADkHABNU22gVYACyHuFAQcgzsgwAjH6DYHgwAmcN+Ox2ABiQptwoAQt6sABpLAxkVitWYnkiDRwfhI82W60czn9CWi6t1BWMRGQukMuWIWXs8Wc7m8-mC4X1nuUtts+WKqDKtENzkarU6yF6-3G8MWq3hh3Ot3hwY+8MBi3BsMpiNHwa5s1gOOJ5NX9NZnND-MF3RFuAlsuQtMZ7OX2eUjAFy0HEeiQg4LgAbotY1tWMH9P0tA0uwKjkMwlg6DYtg1BiohlBArCDOg7BoKgAAkLRVKRZE8owOh9MsShgEsXxAA)
 
 ## Examples
 
@@ -189,29 +189,27 @@ app <- init(
   data = data,
   modules = modules(
     tm_g_association(
-      ref = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
-          selected = "Plant",
-          fixed = FALSE
+      ref = teal.picks::picks(
+        datasets("CO2"),
+        teal.picks::variables(
+          choices = c("Plant", "Type", "Treatment"),
+          selected = "Plant"
         )
       ),
-      vars = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variables:",
-          choices = variable_choices(data[["CO2"]], c("Plant", "Type", "Treatment")),
+      vars = teal.picks::picks(
+        datasets("CO2"),
+        teal.picks::variables(
+          choices = c("Plant", "Type", "Treatment"),
           selected = "Treatment",
-          multiple = TRUE,
-          fixed = FALSE
+          multiple = TRUE
         )
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_g_association
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -228,35 +226,27 @@ app <- init(
   data = data,
   modules = modules(
     tm_g_association(
-      ref = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = variable_choices(
-            data[["ADSL"]],
-            c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
-          ),
-          selected = "RACE",
-          fixed = FALSE
+      ref = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(
+          choices = c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2"),
+          selected = "RACE"
         )
       ),
-      vars = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variables:",
-          choices = variable_choices(
-            data[["ADSL"]],
-            c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2")
-          ),
+      vars = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(
+          choices = c("SEX", "RACE", "COUNTRY", "ARM", "STRATA1", "STRATA2", "ITTFL", "BMRKR2"),
           selected = "BMRKR2",
-          multiple = TRUE,
-          fixed = FALSE
+          multiple = TRUE
         )
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_g_association
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }

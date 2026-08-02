@@ -31,7 +31,7 @@ font size, through UI inputs.">
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,6 +72,7 @@ font size, through UI inputs.">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.8.0">v0.8.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0">v0.7.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0-rc1">v0.7.0-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0">v0.6.0</a>
@@ -109,7 +110,7 @@ font size, through UI inputs.">
 
       <h1>
 <code>teal</code> module: Principal component analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.7.0/R/tm_a_pca.R" class="external-link"><code>R/tm_a_pca.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.8.0/R/tm_a_pca.R" class="external-link"><code>R/tm_a_pca.R</code></a></small>
       <div class="d-none name"><code>tm_a_pca.Rd</code></div>
     </div>
 
@@ -125,7 +126,9 @@ font size, through UI inputs.</p>
 </h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tm_a_pca</span><span class="op">(</span></span>
 <span>  label <span class="op">=</span> <span class="st">"Principal Component Analysis"</span>,</span>
-<span>  <span class="va">dat</span>,</span>
+<span>  dat <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span><span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">datasets</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span>choices <span class="op">=</span></span>
+<span>    <span class="fu">tidyselect</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/where.html" class="external-link">where</a></span><span class="op">(</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, selected <span class="op">=</span></span>
+<span>    <span class="fu">tidyselect</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span>, multiple <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  plot_height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">600</span>, <span class="fl">200</span>, <span class="fl">2000</span><span class="op">)</span>,</span>
 <span>  plot_width <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ggtheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="st">"bw"</span>, <span class="st">"linedraw"</span>, <span class="st">"light"</span>, <span class="st">"dark"</span>, <span class="st">"minimal"</span>, <span class="st">"classic"</span>, <span class="st">"void"</span><span class="op">)</span>,</span>
@@ -155,8 +158,7 @@ For <code>modules()</code> defaults to <code>"root"</code>. See <code>Details</c
 
 <dt id="arg-dat">dat<a class="anchor" aria-label="anchor" href="#arg-dat"></a>
 </dt>
-<dd><p>(<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>)
-specifying columns used to compute PCA.</p></dd>
+<dd><p>(<code>picks</code>) specifying columns used to compute PCA.</p></dd>
 
 
 <dt id="arg-plot-height">plot_height<a class="anchor" aria-label="anchor" href="#arg-plot-height"></a>
@@ -248,13 +250,10 @@ To learn more check <code><a href="https://insightsengineering.github.io/teal/la
 
 <dt id="arg-decorators">decorators<a class="anchor" aria-label="anchor" href="#arg-decorators"></a>
 </dt>
-<dd>
-<p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>
 (named <code>list</code> of lists of <code>teal_transform_module</code>) optional,
 decorator for tables or plots included in the module output reported.
-The decorators are applied to the respective output objects.</p>
-<p>See section "Decorating Module" below for more details.</p>
-</dd>
+The decorators are applied to the respective output objects.</p></dd>
 
 </dl>
 </div>
@@ -319,13 +318,13 @@ the reporting functionality will be turned on automatically by the <code>teal</c
 
 <dl>
 <dt>example-1</dt>
-<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFWOAMoAgow1raLxuv1DI6SiSgC+3UpoqOMq+eyVAZm6ALxbwbibfEIiY3vHwmIbPVW6pDBJUEmoBGmbt7oKYAAKAMIDX0ONw+sV2+ye4VIzA0SVEqDgBGuHxBmWg8DBX0mwzEM0B72RojgIg0YMJxNIsPhiPxyN0BAKRFoBDEYK0LFoUHoIiS9MZzNESNpyNSYNSwGAmMG2NGXwAurKytSwABZQSMfgyQGfMADUSiKDCUhazGMehQCDfIioY1gLBoOBfbpC25yIHOqpkhHkfhgpWq9WavDa3X6w2Ot3umCG2hRPR7BwuGkuiO0ky0ajkRhggByjgAMnmk06XZtut1aCZdOwVJn1JodDZbBUbqIihBWAN0OxlgASBplXuExg6LrzJRgOayoA" class="external-link">Open in Shinylive</a>
-    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFWOAMoAgow1raLxuv1DI6SiSgC+3UpoqOMq+eyVAZm6ALxbwbibfEIiY3vHwmIbPVW6pDBJUEmoBGmbt7oKYAAKAMIDX0ONw+sV2+ye4VIzA0SVEqDgBGuHxBmWg8DBX0mwzEM0B72RojgIg0YMJxNIsPhiPxyN0BAKRFoBDEYK0LFoUHoIiS9MZzNESNpyNSYNSwGAmMG2NGXwAurKytSwABZQSMfgyQGfMADUSiKDCUhazGMehQCDfIioY1gLBoOBfbpC25yIHOqpkhHkfhgpWq9WavDa3X6w2Ot3umCG2hRPR7BwuGkuiO0ky0ajkRhggByjgAMnmk06XZtut1aCZdOwVJn1JodDZbBUbqIihBWAN0OxlgASBplXuExg6LrzJRgOayoA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
+<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFWOAMoAgow1raLxuv1DI6SiSgC+3UpoqOMq+eyVAZm6ALxbwbibfEIiY3vHwmIbPVW6pDBJUEmoBGmbt7oKYAAKAMIDX0ONw+sV2dzg3AwqFoBAA1qJEIhoXDRNcPiDMqI4DMNmBJsMxDMvnIgejbokoTD4YitCxaFB6Kc0WTbgQCkQYWIwQRcQBZQSMfgyQGfMADUSiKDCUgir6ORj0KAQb5EVCysBYNBwYmkllVLEiDRwfjcvkCoWMdXiyXSnXvFkwaW0KJ6PYOFz2j7dMne26+7rdWgmXTsFTkZiWHQ2WwVG6iIoQVgDdDsZYAEgaZXTWMYOi68yUYDmAF0gA" class="external-link">Open in Shinylive</a>
+    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFWOAMoAgow1raLxuv1DI6SiSgC+3UpoqOMq+eyVAZm6ALxbwbibfEIiY3vHwmIbPVW6pDBJUEmoBGmbt7oKYAAKAMIDX0ONw+sV2dzg3AwqFoBAA1qJEIhoXDRNcPiDMqI4DMNmBJsMxDMvnIgejbokoTD4YitCxaFB6Kc0WTbgQCkQYWIwQRcQBZQSMfgyQGfMADUSiKDCUgir6ORj0KAQb5EVCysBYNBwYmkllVLEiDRwfjcvkCoWMdXiyXSnXvFkwaW0KJ6PYOFz2j7dMne26+7rdWgmXTsFTkZiWHQ2WwVG6iIoQVgDdDsZYAEgaZXTWMYOi68yUYDmAF0gA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
     <a style="height: 800px; display: block;"></a></p></dd>
 
   <dt>example-2</dt>
-<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY3QKMAABW8QzJsMxJKSyKy6RipGYGnSolQcAIGJJ9Ly7z0ULJizGNOJfNEcBEGmRUplV053N5fJJBFKmwIYmRWhYtCg9BE1w1tC1BwlqvqWUZeWAwBFozFYG+32qPLJACEALJYADSWAAjDTSWAhgBxVx4EPOADygV8AE0yQNLVi5LTU-V5dzyPxke6wN6-YHgyKI8mM5mYJdaPEhfYnK46Xz0xasSZaNRyIxkQA5RxjMXN+optOggYDWgmXTsFTd9SaHQ2Wy1TGicoQVhDdDsf4AEla1X3UsYOn6KyUYGW3yAA" class="external-link">Open in Shinylive</a>
-    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY3QKMAABW8QzJsMxJKSyKy6RipGYGnSolQcAIGJJ9Ly7z0ULJizGNOJfNEcBEGmRUplV053N5fJJBFKmwIYmRWhYtCg9BE1w1tC1BwlqvqWUZeWAwBFozFYG+32qPLJACEALJYADSWAAjDTSWAhgBxVx4EPOADygV8AE0yQNLVi5LTU-V5dzyPxke6wN6-YHgyKI8mM5mYJdaPEhfYnK46Xz0xasSZaNRyIxkQA5RxjMXN+optOggYDWgmXTsFTd9SaHQ2Wy1TGicoQVhDdDsf4AEla1X3UsYOn6KyUYGW3yAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
+<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY6HI6aoWgEbaiOYUqkHYkk6FQURwUgMsCLMYKMByWGYplTODcDB06lzLQsWhQeiIjGCkkEUqbAhiZEEEFgABCAFksABpLAARh51R5QwA4q48Loec4APKBXwATR5fMZgtZIg0cH46s1uoNxtNts5Vrd-IVWJgl1o8T0UIcLg9WIGgrTqdBAwGtBMunYKnIzEsOhstlqmNE5QgrCG6HY-wAJK1qk3WYwdP0VkowMtvkA" class="external-link">Open in Shinylive</a>
+    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY6HI6aoWgEbaiOYUqkHYkk6FQURwUgMsCLMYKMByWGYplTODcDB06lzLQsWhQeiIjGCkkEUqbAhiZEEEFgABCAFksABpLAARh51R5QwA4q48Loec4APKBXwATR5fMZgtZIg0cH46s1uoNxtNts5Vrd-IVWJgl1o8T0UIcLg9WIGgrTqdBAwGtBMunYKnIzEsOhstlqmNE5QgrCG6HY-wAJK1qk3WYwdP0VkowMtvkA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
     <a style="height: 800px; display: block;"></a></p></dd>
 
 
@@ -348,20 +347,18 @@ the reporting functionality will be turned on automatically by the <code>teal</c
 <span class="r-in"><span>  modules <span class="op">=</span> <span class="fu">modules</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fu">tm_a_pca</span><span class="op">(</span></span></span>
 <span class="r-in"><span>      <span class="st">"PCA"</span>,</span></span>
-<span class="r-in"><span>      dat <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>        dataname <span class="op">=</span> <span class="st">"USArrests"</span>,</span></span>
-<span class="r-in"><span>        select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span></span></span>
-<span class="r-in"><span>            data <span class="op">=</span> <span class="va">data</span><span class="op">[[</span><span class="st">"USArrests"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Murder"</span>, <span class="st">"Assault"</span>, <span class="st">"UrbanPop"</span>, <span class="st">"Rape"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>          <span class="op">)</span>,</span></span>
+<span class="r-in"><span>      dat <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">datasets</span><span class="op">(</span><span class="st">"USArrests"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Murder"</span>, <span class="st">"Assault"</span>, <span class="st">"UrbanPop"</span>, <span class="st">"Rape"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>          selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Murder"</span>, <span class="st">"Assault"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>          multiple <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>        <span class="op">)</span>,</span></span>
-<span class="r-in"><span>        filter <span class="op">=</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span>        <span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Initializing tm_a_pca</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span></span>
@@ -380,21 +377,18 @@ the reporting functionality will be turned on automatically by the <code>teal</c
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">data</span>,</span></span>
 <span class="r-in"><span>  modules <span class="op">=</span> <span class="fu">modules</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fu">tm_a_pca</span><span class="op">(</span></span></span>
-<span class="r-in"><span>      <span class="st">"PCA"</span>,</span></span>
-<span class="r-in"><span>      dat <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>        dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span></span>
-<span class="r-in"><span>        select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span></span></span>
-<span class="r-in"><span>            data <span class="op">=</span> <span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BMRKR1"</span>, <span class="st">"AGE"</span>, <span class="st">"EOSDY"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>          <span class="op">)</span>,</span></span>
+<span class="r-in"><span>      dat <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">datasets</span><span class="op">(</span><span class="st">"ADSL"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BMRKR1"</span>, <span class="st">"AGE"</span>, <span class="st">"EOSDY"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>          selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BMRKR1"</span>, <span class="st">"AGE"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>          multiple <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>        <span class="op">)</span>,</span></span>
-<span class="r-in"><span>        filter <span class="op">=</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span>        <span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Initializing tm_a_pca</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span></span>

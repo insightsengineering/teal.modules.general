@@ -35,7 +35,7 @@ as frequency or density.">
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,6 +76,7 @@ as frequency or density.">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.8.0">v0.8.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0">v0.7.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0-rc1">v0.7.0-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0">v0.6.0</a>
@@ -113,7 +114,7 @@ as frequency or density.">
 
       <h1>
 <code>teal</code> module: Response plot</h1>
-      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.7.0/R/tm_g_response.R" class="external-link"><code>R/tm_g_response.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.8.0/R/tm_g_response.R" class="external-link"><code>R/tm_g_response.R</code></a></small>
       <div class="d-none name"><code>tm_g_response.Rd</code></div>
     </div>
 
@@ -131,7 +132,8 @@ as frequency or density.</p>
 </h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tm_g_response</span><span class="op">(</span></span>
 <span>  label <span class="op">=</span> <span class="st">"Response Plot"</span>,</span>
-<span>  <span class="va">response</span>,</span>
+<span>  response <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span><span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">datasets</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span>choices <span class="op">=</span></span>
+<span>    <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/tidyselectors.html" class="external-link">is_categorical</a></span><span class="op">(</span>min.len <span class="op">=</span> <span class="fl">2</span>, max.len <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span>, <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">values</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="va">x</span>,</span>
 <span>  row_facet <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  col_facet <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -164,33 +166,27 @@ For <code>modules()</code> defaults to <code>"root"</code>. See <code>Details</c
 
 <dt id="arg-response">response<a class="anchor" aria-label="anchor" href="#arg-response"></a>
 </dt>
-<dd>
-<p>(<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>)
+<dd><p>(<code>picks</code>)
 Which variable to use as the response.
-You can define one fixed column by setting <code>fixed = TRUE</code> inside the <code>select_spec</code>.</p>
-<p>The <code>data_extract_spec</code> must not allow multiple selection in this case.</p>
-</dd>
+The <code>picks</code> must not allow multiple variable selection in this case.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a>
 </dt>
-<dd>
-<p>(<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>)
+<dd><p>(<code>picks</code> )
 Specifies which variable to use on the X-axis of the response plot.
-Allow the user to select multiple columns from the <code>data</code> allowed in teal.</p>
-<p>The <code>data_extract_spec</code> must not allow multiple selection in this case.</p>
-</dd>
+The <code>picks</code> must not allow multiple selection in this case.</p></dd>
 
 
 <dt id="arg-row-facet">row_facet<a class="anchor" aria-label="anchor" href="#arg-row-facet"></a>
 </dt>
-<dd><p>(<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>)
+<dd><p>(<code>picks</code>)
 optional specification of the data variable(s) to use for faceting rows.</p></dd>
 
 
 <dt id="arg-col-facet">col_facet<a class="anchor" aria-label="anchor" href="#arg-col-facet"></a>
 </dt>
-<dd><p>(<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>)
+<dd><p>(<code>picks</code>)
 optional specification of the data variable(s) to use for faceting columns.</p></dd>
 
 
@@ -270,13 +266,10 @@ To learn more check <code><a href="https://insightsengineering.github.io/teal/la
 
 <dt id="arg-decorators">decorators<a class="anchor" aria-label="anchor" href="#arg-decorators"></a>
 </dt>
-<dd>
-<p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>
 (named <code>list</code> of lists of <code>teal_transform_module</code>) optional,
 decorator for tables or plots included in the module output reported.
-The decorators are applied to the respective output objects.</p>
-<p>See section "Decorating Module" below for more details.</p>
-</dd>
+The decorators are applied to the respective output objects.</p></dd>
 
 </dl>
 </div>
@@ -341,13 +334,13 @@ the reporting functionality will be turned on automatically by the <code>teal</c
 
 <dl>
 <dt>example-1</dt>
-<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsWroqugTsCoSs1Iuli1qiq7qLsFuLUiyLcrbl3ZVDfYyiwMBaALp3g1DiJuqkHezD-Tf3d12VAF8lACuko0KhBio8gszildABefwZXBjPhCEQDRFo4RiGHnXSkGCJCSJaqiVAkURwPH43TUKD0OB+RGLLBiCkQKm6AAK7VImzwY3xZI5XMRKUSYVIzA0iXJcHmQtpKWg8AR2zAXyuqyV+KpIg06v1CtIctQCpptPO9MZzI1AGUmSbdFoWLQGSJEDqzlbKgR8kRaAQxOrXYx3fQRIl-YHg6JihkbostQKHqVFUsVngNQdGEc5Cifb7jRo4Px1YsCMtvb7zjBhJpInpEQAxACCABl7c5C7XKiZaKEy+r213XEX8f9aQXdbpQuqJVKZab5YqJ+cVbBmxqUzXi07DYiSyvzWu+3SGUyK2BHQbSC63R64F7Bev8TGgyHEWGI1GP3GEyCJNNUuVM7nTBYwA2PYUBgfNez7Y9hxZKCBQQ2t62oRsRBHTtu3Q30ByHctWzw8daynSclSnLouloExJhUchl20aljjKMZREKCBWDbdB2HBAASepSiEqlGB0TpgSUMAATuIA" class="external-link">Open in Shinylive</a>
-    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsWroqugTsCoSs1Iuli1qiq7qLsFuLUiyLcrbl3ZVDfYyiwMBaALp3g1DiJuqkHezD-Tf3d12VAF8lACuko0KhBio8gszildABefwZXBjPhCEQDRFo4RiGHnXSkGCJCSJaqiVAkURwPH43TUKD0OB+RGLLBiCkQKm6AAK7VImzwY3xZI5XMRKUSYVIzA0iXJcHmQtpKWg8AR2zAXyuqyV+KpIg06v1CtIctQCpptPO9MZzI1AGUmSbdFoWLQGSJEDqzlbKgR8kRaAQxOrXYx3fQRIl-YHg6JihkbostQKHqVFUsVngNQdGEc5Cifb7jRo4Px1YsCMtvb7zjBhJpInpEQAxACCABl7c5C7XKiZaKEy+r213XEX8f9aQXdbpQuqJVKZab5YqJ+cVbBmxqUzXi07DYiSyvzWu+3SGUyK2BHQbSC63R64F7Bev8TGgyHEWGI1GP3GEyCJNNUuVM7nTBYwA2PYUBgfNez7Y9hxZKCBQQ2t62oRsRBHTtu3Q30ByHctWzw8daynSclSnLouloExJhUchl20aljjKMZREKCBWDbdB2HBAASepSiEqlGB0TpgSUMAATuIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
+<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsGFq6KroE7AqErNRLpUtaomu6S7DbS1IsS3K25d2VQ32MosDA0wC694NQ4ibqpB3sw-23D-ddlQAvkpAV0lGhUIMVHlFucUroALz+DK4MZ8IQiAZI9HCMSwi66UgwRISRLVUSoEiiOD4gm6ahQehwPxIpZYMSUiDU3QABXapC2eDGBPJnO5SISGFQtAIAGtRIhENK5aJaXTCXBuFKZfLFSlqQLFmBvtdjqjzurJcrdYgtCxaIzMWr1fN8kQZWJEfMjQQVvswIdGGbhS7qSINHB+F6lr7VkKLS6YMJNJE9EiAGIAQQAMgBlZzml0XEy0UKRr1ZvOuBMEuSFl1WnUK23cQR4gF0ushyqhL2NlWK62q7sXfVwQ1LE2Crs1i79m12xgO+hOkcEghuj1Y70bQXrFAwYOzglhuARqOssCbNZri5J6gpkQVnP5+tFktli+6Sv528zovzs2drUG2qodrWIYdl0XS0CYkwqOQzCWDoNinGMoiFBArCZug7AQgAJPUpQEdSjA6J0IJKGAgL3EAA" class="external-link">Open in Shinylive</a>
+    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6uoxwAI6CtNXsPqKkxNREjIoQlTCtLKJxur0E-RWmHbrsGFq6KroE7AqErNRLpUtaomu6S7DbS1IsS3K25d2VQ32MosDA0wC694NQ4ibqpB3sw-23D-ddlQAvkpAV0lGhUIMVHlFucUroALz+DK4MZ8IQiAZI9HCMSwi66UgwRISRLVUSoEiiOD4gm6ahQehwPxIpZYMSUiDU3QABXapC2eDGBPJnO5SISGFQtAIAGtRIhENK5aJaXTCXBuFKZfLFSlqQLFmBvtdjqjzurJcrdYgtCxaIzMWr1fN8kQZWJEfMjQQVvswIdGGbhS7qSINHB+F6lr7VkKLS6YMJNJE9EiAGIAQQAMgBlZzml0XEy0UKRr1ZvOuBMEuSFl1WnUK23cQR4gF0ushyqhL2NlWK62q7sXfVwQ1LE2Crs1i79m12xgO+hOkcEghuj1Y70bQXrFAwYOzglhuARqOssCbNZri5J6gpkQVnP5+tFktli+6Sv528zovzs2drUG2qodrWIYdl0XS0CYkwqOQzCWDoNinGMoiFBArCZug7AQgAJPUpQEdSjA6J0IJKGAgL3EAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
     <a style="height: 800px; display: block;"></a></p></dd>
 
   <dt>example-2</dt>
-<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0g1RKgSKI4OjMZjqFB6HBqEiFGAsGJCRBiboAAo9UiiOkwjFk-FMlmQzJpaKkZgaNIEuAEUlkzGZN56SF0hajbkguW6YkiDRI7XSy5SmUazW6ClUmnKsABakG3RaFi0SkiRDq3mmgglDYEMRIh2MJ30ERXL20H0fXLAYAqkZqsBfL5VY1gABCAFksABpLAAJm5ujpXgA8o4AHIOACadLkch5psx+o0cH4tNTGezebwJs1MAutDiSt0ADFBqMAs46-XTLQos2kSOx653WT+pra93dFEkcLReLDahpbLNQrYIOY4su8uG7bdZDG-vDxuyebqa2bTrSPbHc64K7L1PdE9b1fUhf1A2DICwzRTIo3POMEyTYFrWcAANfM6SwQYvFcMAa0net7znK1MOwt0AN7ahNAHedR3HfDTRMGciOHWil3rVc5Q4uoOP6fpaBMXR2BUcg920Eka2qEFRDKCBWEGdB2DQVAABIWiqJTlOJRgdD6ZYlDAJYviAA" class="external-link">Open in Shinylive</a>
-    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0g1RKgSKI4OjMZjqFB6HBqEiFGAsGJCRBiboAAo9UiiOkwjFk-FMlmQzJpaKkZgaNIEuAEUlkzGZN56SF0hajbkguW6YkiDRI7XSy5SmUazW6ClUmnKsABakG3RaFi0SkiRDq3mmgglDYEMRIh2MJ30ERXL20H0fXLAYAqkZqsBfL5VY1gABCAFksABpLAAJm5ujpXgA8o4AHIOACadLkch5psx+o0cH4tNTGezebwJs1MAutDiSt0ADFBqMAs46-XTLQos2kSOx653WT+pra93dFEkcLReLDahpbLNQrYIOY4su8uG7bdZDG-vDxuyebqa2bTrSPbHc64K7L1PdE9b1fUhf1A2DICwzRTIo3POMEyTYFrWcAANfM6SwQYvFcMAa0net7znK1MOwt0AN7ahNAHedR3HfDTRMGciOHWil3rVc5Q4uoOP6fpaBMXR2BUcg920Eka2qEFRDKCBWEGdB2DQVAABIWiqJTlOJRgdD6ZYlDAJYviAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
+<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0g1RKgSKI4OjMZjqFB6HBqEiFGAsGJCRBiboAAo9UiiOkwjFk-FMlmQqaoWgELaiWYisX7EFkuqZYmc4FgBajOlyHlyzHC0Xi2ZaFi0SkI0lazEEEobAhiJEEZUAIQAslgANJYABM3N0dK8AHlHAA5BwATXVmrNdWJIg0cH4tLATtdHrpsrlGtTZJ10v13EEaP6WvTvMxUSRWb1iCl4tNWoVcCVdNVYYz2rg3AwVYliANjCN9BNLbJFqtNshdrpAWcAA0vXSsIMvK4wEWI5HqXAY3HIXOF0vB7oV2by12DdQ8-sC2nU5f+v1aCZdOwVORmJYdDZbDUMaIyhBWIN0HYNBUAAEhaKpgJA4lGB0PpliUMAli+IA" class="external-link">Open in Shinylive</a>
+    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0hI0g1RKgSKI4OjMZjqFB6HBqEiFGAsGJCRBiboAAo9UiiOkwjFk-FMlmQqaoWgELaiWYisX7EFkuqZYmc4FgBajOlyHlyzHC0Xi2ZaFi0SkI0lazEEEobAhiJEEZUAIQAslgANJYABM3N0dK8AHlHAA5BwATXVmrNdWJIg0cH4tLATtdHrpsrlGtTZJ10v13EEaP6WvTvMxUSRWb1iCl4tNWoVcCVdNVYYz2rg3AwVYliANjCN9BNLbJFqtNshdrpAWcAA0vXSsIMvK4wEWI5HqXAY3HIXOF0vB7oV2by12DdQ8-sC2nU5f+v1aCZdOwVORmJYdDZbDUMaIyhBWIN0HYNBUAAEhaKpgJA4lGB0PpliUMAli+IA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
     <a style="height: 800px; display: block;"></a></p></dd>
 
 
@@ -362,8 +355,8 @@ the reporting functionality will be turned on automatically by the <code>teal</c
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://insightsengineering.github.io/nestcolor/" class="external-link">nestcolor</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="va">mtcars</span> <span class="op">&lt;-</span> <span class="va">mtcars</span></span></span>
-<span class="r-in"><span>  <span class="kw">for</span> <span class="op">(</span><span class="va">v</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cyl"</span>, <span class="st">"vs"</span>, <span class="st">"am"</span>, <span class="st">"gear"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>    <span class="va">mtcars</span><span class="op">[[</span><span class="va">v</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">[[</span><span class="va">v</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw">for</span> <span class="op">(</span><span class="va">.v</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cyl"</span>, <span class="st">"vs"</span>, <span class="st">"am"</span>, <span class="st">"gear"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">mtcars</span><span class="op">[[</span><span class="va">.v</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">[[</span><span class="va">.v</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -372,30 +365,32 @@ the reporting functionality will be turned on automatically by the <code>teal</c
 <span class="r-in"><span>  modules <span class="op">=</span> <span class="fu">modules</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fu">tm_g_response</span><span class="op">(</span></span></span>
 <span class="r-in"><span>      label <span class="op">=</span> <span class="st">"Response Plots"</span>,</span></span>
-<span class="r-in"><span>      response <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>        dataname <span class="op">=</span> <span class="st">"mtcars"</span>,</span></span>
-<span class="r-in"><span>        select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span></span>
-<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"mtcars"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cyl"</span>, <span class="st">"gear"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      response <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">datasets</a></span><span class="op">(</span><span class="st">"mtcars"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cyl"</span>, <span class="st">"gear"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>          selected <span class="op">=</span> <span class="st">"cyl"</span>,</span></span>
 <span class="r-in"><span>          multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>          fixed <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>        <span class="op">)</span></span></span>
+<span class="r-in"><span>        <span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">values</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span>,</span></span>
-<span class="r-in"><span>      x <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>        dataname <span class="op">=</span> <span class="st">"mtcars"</span>,</span></span>
-<span class="r-in"><span>        select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span></span>
-<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"mtcars"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vs"</span>, <span class="st">"am"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      x <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">datasets</span><span class="op">(</span><span class="st">"mtcars"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vs"</span>, <span class="st">"am"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>          selected <span class="op">=</span> <span class="st">"vs"</span>,</span></span>
 <span class="r-in"><span>          multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>          fixed <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>        <span class="op">)</span></span></span>
+<span class="r-in"><span>        <span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">values</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Initializing tm_g_response</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
@@ -413,30 +408,28 @@ the reporting functionality will be turned on automatically by the <code>teal</c
 <span class="r-in"><span>  modules <span class="op">=</span> <span class="fu">modules</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fu">tm_g_response</span><span class="op">(</span></span></span>
 <span class="r-in"><span>      label <span class="op">=</span> <span class="st">"Response Plots"</span>,</span></span>
-<span class="r-in"><span>      response <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>        dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span></span>
-<span class="r-in"><span>        select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span></span>
-<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BMRKR2"</span>, <span class="st">"COUNTRY"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>          selected <span class="op">=</span> <span class="st">"BMRKR2"</span>,</span></span>
-<span class="r-in"><span>          multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>          fixed <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>        <span class="op">)</span></span></span>
+<span class="r-in"><span>      response <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">datasets</span><span class="op">(</span><span class="st">"ADSL"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BMRKR2"</span>, <span class="st">"COUNTRY"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>          selected <span class="op">=</span> <span class="st">"BMRKR2"</span></span></span>
+<span class="r-in"><span>        <span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">values</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span>,</span></span>
-<span class="r-in"><span>      x <span class="op">=</span> <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>        dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span></span>
-<span class="r-in"><span>        select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span></span>
-<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SEX"</span>, <span class="st">"RACE"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>          selected <span class="op">=</span> <span class="st">"RACE"</span>,</span></span>
-<span class="r-in"><span>          multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>          fixed <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>        <span class="op">)</span></span></span>
+<span class="r-in"><span>      x <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">datasets</span><span class="op">(</span><span class="st">"ADSL"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>          choices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SEX"</span>, <span class="st">"RACE"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>          selected <span class="op">=</span> <span class="st">"RACE"</span></span></span>
+<span class="r-in"><span>        <span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">values</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Initializing tm_g_response</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>

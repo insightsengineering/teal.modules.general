@@ -29,7 +29,7 @@ box plots, density plots, and cumulative distribution plots to help interpret th
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,6 +70,7 @@ box plots, density plots, and cumulative distribution plots to help interpret th
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.8.0">v0.8.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0">v0.7.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0-rc1">v0.7.0-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.6.0">v0.6.0</a>
@@ -107,7 +108,7 @@ box plots, density plots, and cumulative distribution plots to help interpret th
 
       <h1>
 <code>teal</code> module: Outliers analysis</h1>
-      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.7.0/R/tm_outliers.R" class="external-link"><code>R/tm_outliers.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.8.0/R/tm_outliers.R" class="external-link"><code>R/tm_outliers.R</code></a></small>
       <div class="d-none name"><code>tm_outliers.Rd</code></div>
     </div>
 
@@ -122,8 +123,11 @@ box plots, density plots, and cumulative distribution plots to help interpret th
 </h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">tm_outliers</span><span class="op">(</span></span>
 <span>  label <span class="op">=</span> <span class="st">"Outliers Module"</span>,</span>
-<span>  <span class="va">outlier_var</span>,</span>
-<span>  categorical_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  outlier_var <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span><span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">datasets</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span><span class="va">is.numeric</span>, <span class="fl">1L</span>, multiple <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  categorical_var <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span><span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">datasets</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span>choices <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/tidyselectors.html" class="external-link">is_categorical</a></span><span class="op">(</span>min.len <span class="op">=</span> <span class="fl">1</span>, max.len <span class="op">=</span></span>
+<span>    <span class="fl">10</span><span class="op">)</span>, selected <span class="op">=</span> <span class="fl">1L</span>, multiple <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  ggtheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gray"</span>, <span class="st">"bw"</span>, <span class="st">"linedraw"</span>, <span class="st">"light"</span>, <span class="st">"dark"</span>, <span class="st">"minimal"</span>, <span class="st">"classic"</span>, <span class="st">"void"</span><span class="op">)</span>,</span>
 <span>  ggplot2_args <span class="op">=</span> <span class="fu">teal.widgets</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.widgets/latest-tag/reference/ggplot2_args.html" class="external-link">ggplot2_args</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  plot_height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">600</span>, <span class="fl">200</span>, <span class="fl">2000</span><span class="op">)</span>,</span>
@@ -149,13 +153,13 @@ For <code>modules()</code> defaults to <code>"root"</code>. See <code>Details</c
 
 <dt id="arg-outlier-var">outlier_var<a class="anchor" aria-label="anchor" href="#arg-outlier-var"></a>
 </dt>
-<dd><p>(<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>)
+<dd><p>(<code>picks</code> or <code>list</code> of multiple <code>picks</code>)
 Specifies variable(s) to be analyzed for outliers.</p></dd>
 
 
 <dt id="arg-categorical-var">categorical_var<a class="anchor" aria-label="anchor" href="#arg-categorical-var"></a>
 </dt>
-<dd><p>(<code>data_extract_spec</code> or <code>list</code> of multiple <code>data_extract_spec</code>) optional,
+<dd><p>(<code>picks</code> or <code>list</code> of multiple <code>picks</code>) optional,
 specifies the categorical variable(s) to split the selected outlier variables on.</p></dd>
 
 
@@ -206,13 +210,10 @@ To learn more check <code><a href="https://insightsengineering.github.io/teal/la
 
 <dt id="arg-decorators">decorators<a class="anchor" aria-label="anchor" href="#arg-decorators"></a>
 </dt>
-<dd>
-<p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>
 (named <code>list</code> of lists of <code>teal_transform_module</code>) optional,
 decorator for tables or plots included in the module output reported.
-The decorators are applied to the respective output objects.</p>
-<p>See section "Decorating Module" below for more details.</p>
-</dd>
+The decorators are applied to the respective output objects.</p></dd>
 
 </dl>
 </div>
@@ -275,13 +276,13 @@ the reporting functionality will be turned on automatically by the <code>teal</c
 
 <dl>
 <dt>example-1</dt>
-<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cWhYoiaBAKxwIYiSMxEGjg-HYoN6UHoIiSkOhYguwQ6n3qE3GZQI7C6AAVqFAyO8fmA7KxUHA6V07Iw4EF4LSwNsdko0Kgmip8uSIFVUroALwBTK4Vp8IQicEyxXCXGtKqkGBJIiCUh0GTnTVVXR6g20GRJVHS3R0USkMWm52y4JJcKkZgaOHMskml2ummwPQywnvf0u+FwDS2qPe0S+p0Bl3U+hwfyhsAAZXT0dIulRtHRIkQ4fFyed2NoMJVBZYRYxcCxUOruNSBLAbzAk1J5MIJAIrLAglQwRGQLk8vLFaqcfI-FtXRHY5ZeAjAZgwk0URDugAYgBBAAyWecU5nppMtDCSNth5PrmnyZ2FZfLsnEYIQTgEiIvS-yQ2jK9qOuugbumEnrqKQPrRkmFapNA8CLp2XznjOV7UOQjC2ph2GwX6T4VqitYkehF5VjWtqgtQghNpRbaZB2XY9nWjCiAAJHOSIfkRybcQuMo0XRzY4uc7adKhRLdiSbGcQJvEXlUm5YbQO62g4LhgVUb4Brppr6W+Ow7LQJi6OwKjYdB2hwDYtgVOWohFBArAHug7CChxgi0GUnkzIwOiMDsuxKGAuzjEAA" class="external-link">Open in Shinylive</a>
-    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKuroAwgDyAEzxNQ2VzfXAwApgqIy0MCysSQDWcKxdALrjTaJwAI5JIhDsEIxEOex19XKKEAC+OwBWRCrDo6IlmbbZRycjrOc3EKccXZtdZa8teLpdPX0Dzy623cWhYoiaBAKxwIYiSMxEGjg-HYoN6UHoIiSkOhYguwQ6n3qE3GZQI7C6AAVqFAyO8fmA7KxUHA6V07Iw4EF4LSwNsdko0Kgmip8uSIFVUroALwBTK4Vp8IQicEyxXCXGtKqkGBJIiCUh0GTnTVVXR6g20GRJVHS3R0USkMWm52y4JJcKkZgaOHMskml2ummwPQywnvf0u+FwDS2qPe0S+p0Bl3U+hwfyhsAAZXT0dIulRtHRIkQ4fFyed2NoMJVBZYRYxcCxUOruNSBLAbzAk1J5MIJAIrLAglQwRGQLk8vLFaqcfI-FtXRHY5ZeAjAZgwk0URDugAYgBBAAyWecU5nppMtDCSNth5PrmnyZ2FZfLsnEYIQTgEiIvS-yQ2jK9qOuugbumEnrqKQPrRkmFapNA8CLp2XznjOV7UOQjC2ph2GwX6T4VqitYkehF5VjWtqgtQghNpRbaZB2XY9nWjCiAAJHOSIfkRybcQuMo0XRzY4uc7adKhRLdiSbGcQJvEXlUm5YbQO62g4LhgVUb4Brppr6W+Ow7LQJi6OwKjYdB2hwDYtgVOWohFBArAHug7CChxgi0GUnkzIwOiMDsuxKGAuzjEAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
+<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4ugDCAPIATPEVNYoQSmiodSr57Eq6AZm6ALw9wbhdunxCIqL9owLCYp0Q3d2kMElEgqR0MqLzi4trG7QySVosU4kYqLQEANaiiIiXN9sju92ponCkz2BV1Qp4un+v3+cmGC1eSzg3AuV1u9xOjFoUHoE3YBE6hBIBH+ZX+glQwWucBBuLA+MJxLAoJer3OjzhiBO1EEc0aEOp4N2BCCcAkRER3OSCLOUJ49LuD1hz05r3en2+wIBQJqJJpuzpUvhLCRKLm6P+AAVqFAyDjAWA7KxUJTSXZGFDlhRSCTzUaTc6qWCIZDoeKtczWWrdGzFiHGo1aCZdOwVORmJYdDZbCARqIihBWABBdDsFoAEkEtDK+Y+jB0jEaAF8lGBKwBdIA" class="external-link">Open in Shinylive</a>
+    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4ugDCAPIATPEVNYoQSmiodSr57Eq6AZm6ALw9wbhdunxCIqL9owLCYp0Q3d2kMElEgqR0MqLzi4trG7QySVosU4kYqLQEANaiiIiXN9sju92ponCkz2BV1Qp4un+v3+cmGC1eSzg3AuV1u9xOjFoUHoE3YBE6hBIBH+ZX+glQwWucBBuLA+MJxLAoJer3OjzhiBO1EEc0aEOp4N2BCCcAkRER3OSCLOUJ49LuD1hz05r3en2+wIBQJqJJpuzpUvhLCRKLm6P+AAVqFAyDjAWA7KxUJTSXZGFDlhRSCTzUaTc6qWCIZDoeKtczWWrdGzFiHGo1aCZdOwVORmJYdDZbCARqIihBWABBdDsFoAEkEtDK+Y+jB0jEaAF8lGBKwBdIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
     <a style="height: 800px; display: block;"></a></p></dd>
 
   <dt>example-2</dt>
-<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3JD2ioSuw6qE8roALyKiK4BV8IQiImqrXCb4K+qkGDpIiCUh0GTzI31XTmy20GQPFgq3R0USkeUQO2+tVQdIxUjMe6iVBwAjev1+rJfN285pIvC26NUmmkN1piObMMRqPRv3UZnU+NgQLU7O6RnMkSIeEan0F30ksliN3VllwNmtrkRHkIxP86qR3kAcVceF08IAQgBZLAAaSwAEZ4biG03fVnafxSw1x-WUwWYBtaPE9Kqfg0WoFnBvN-UTLRonS3Veb65G02Rt+j3J7824RwBI2IctwLqMG6Hpeke9RZIG0TBkKlLhiOX4FrGsAXlOA4DMm6HRk+AIyG6RGAiheawX6Irtk8AGbi2HJtqqjzUIIXaMZyCx9nCuFJii1QigAJNu5D8P+VFbhWO60WxHHslxMK8XyYACVWTwidJYkSQRx6nuebqgp+D4-gWpm+uZuimSMIy0CYujAqoIaaDoNi2LUjaiOUECsA06DsJCQmCLQ1SBVSjA6DiQxKGAgxXEAA" class="external-link">Open in Shinylive</a>
-    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaxrpWiyi6VD8otTtZ2LsAGK01ORGOxdg4XNVRGh4hwssBgAowP0WvCrldqrsMHdSERGHJcUpHoxRO0CKUJgQxOlRHARBo4Px2ATaFB6CItqTaOSLnlYfDEcjUaZ1JsCc9Xu88RB3JD2ioSuw6qE8roALyKiK4BV8IQiImqrXCb4K+qkGDpIiCUh0GTzI31XTmy20GQPFgq3R0USkeUQO2+tVQdIxUjMe6iVBwAjev1+rJfN285pIvC26NUmmkN1piObMMRqPRv3UZnU+NgQLU7O6RnMkSIeEan0F30ksliN3VllwNmtrkRHkIxP86qR3kAcVceF08IAQgBZLAAaSwAEZ4biG03fVnafxSw1x-WUwWYBtaPE9Kqfg0WoFnBvN-UTLRonS3Veb65G02Rt+j3J7824RwBI2IctwLqMG6Hpeke9RZIG0TBkKlLhiOX4FrGsAXlOA4DMm6HRk+AIyG6RGAiheawX6Irtk8AGbi2HJtqqjzUIIXaMZyCx9nCuFJii1QigAJNu5D8P+VFbhWO60WxHHslxMK8XyYACVWTwidJYkSQRx6nuebqgp+D4-gWpm+uZuimSMIy0CYujAqoIaaDoNi2LUjaiOUECsA06DsJCQmCLQ1SBVSjA6DiQxKGAgxXEAA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
+<dd><p><a href="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaKjtKiXsdaF5ugC8rxG4L3xCIqIPro-sIxM8IPV6qQYOkiIJSHQZPMXpDdHCEbQZOktCwgZ1ULQCFNRD0CUTkRDUZCsqI4KRkWB+i0FHhdCymSy5D9KVSOnBuBgycSejjGLQoPQAewCM9GQBxVyslkAIQAslgANJYACMnOq7IVnJRkK5xvqBHCcAkRDFFoyorx-J4QpJiBd4N59RpdIZHKVjOazLApp5VPxhOFiFF4slYPD5J6uy2luttu47BgKgwIghn211RgUGi2YoQO1AAY5CNedWTS8RiNaCZdOwVORmJYdDZbLVKaJyhBWA10Ow7gASQS0arj2mMHSMEaDJRgQZXIA" class="external-link">Open in Shinylive</a>
+    <iframe class="iframe_shinylive" src="https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKuroAgr6BADIpumkYWYiIjE2tSgC+ihAAVkQq6QDWcKyilXm2BfxwJlDCpOkE-LSiBOnjkzNzwNDw81lyALruaKjtKiXsdaF5ugC8rxG4L3xCIqIPro-sIxM8IPV6qQYOkiIJSHQZPMXpDdHCEbQZOktCwgZ1ULQCFNRD0CUTkRDUZCsqI4KRkWB+i0FHhdCymSy5D9KVSOnBuBgycSejjGLQoPQAewCM9GQBxVyslkAIQAslgANJYACMnOq7IVnJRkK5xvqBHCcAkRDFFoyorx-J4QpJiBd4N59RpdIZHKVjOazLApp5VPxhOFiFF4slYPD5J6uy2luttu47BgKgwIghn211RgUGi2YoQO1AAY5CNedWTS8RiNaCZdOwVORmJYdDZbLVKaJyhBWA10Ow7gASQS0arj2mMHSMEaDJRgQZXIA" style="height: 800px; width: 100vw; max-width: 1400px; border: 1px solid rgba(0,0,0,0.175); border-radius: .375rem; position: absolute; left: 50%; margin-top: 30px; transform: translateX(-50%); z-index: 1"></iframe>
     <a style="height: 800px; display: block;"></a></p></dd>
 
 
@@ -294,40 +295,21 @@ the reporting functionality will be turned on automatically by the <code>teal</c
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># general data example</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">teal_data</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">CO2</span> <span class="op">&lt;-</span> <span class="va">CO2</span></span></span>
-<span class="r-in"><span>  <span class="va">CO2</span><span class="op">[[</span><span class="st">"primary_key"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">CO2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu">join_keys</span><span class="op">(</span><span class="fu">join_key</span><span class="op">(</span><span class="st">"CO2"</span>, <span class="st">"CO2"</span>, <span class="st">"primary_key"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu">choices_selected</span><span class="op">(</span><span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"CO2"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Plant"</span>, <span class="st">"Type"</span>, <span class="st">"Treatment"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">CO2</span> <span class="op">&lt;-</span> <span class="va">CO2</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">init</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">data</span>,</span></span>
 <span class="r-in"><span>  modules <span class="op">=</span> <span class="fu">modules</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fu">tm_outliers</span><span class="op">(</span></span></span>
-<span class="r-in"><span>      outlier_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>        <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          dataname <span class="op">=</span> <span class="st">"CO2"</span>,</span></span>
-<span class="r-in"><span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span></span>
-<span class="r-in"><span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"CO2"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"conc"</span>, <span class="st">"uptake"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>            selected <span class="op">=</span> <span class="st">"uptake"</span>,</span></span>
-<span class="r-in"><span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>          <span class="op">)</span></span></span>
-<span class="r-in"><span>        <span class="op">)</span></span></span>
+<span class="r-in"><span>      outlier_var <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">datasets</span><span class="op">(</span><span class="st">"CO2"</span>, <span class="st">"CO2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"conc"</span>, <span class="st">"uptake"</span><span class="op">)</span>, <span class="st">"uptake"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">values</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span>,</span></span>
-<span class="r-in"><span>      categorical_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>        <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          dataname <span class="op">=</span> <span class="st">"CO2"</span>,</span></span>
-<span class="r-in"><span>          filter <span class="op">=</span> <span class="fu">filter_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>            vars <span class="op">=</span> <span class="va">vars</span>,</span></span>
-<span class="r-in"><span>            choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"CO2"</span><span class="op">]</span><span class="op">]</span>, <span class="va">vars</span><span class="op">$</span><span class="va">selected</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>            selected <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"CO2"</span><span class="op">]</span><span class="op">]</span>, <span class="va">vars</span><span class="op">$</span><span class="va">selected</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>            multiple <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>          <span class="op">)</span></span></span>
-<span class="r-in"><span>        <span class="op">)</span></span></span>
+<span class="r-in"><span>      categorical_var <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">datasets</span><span class="op">(</span><span class="st">"CO2"</span>, <span class="st">"CO2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Plant"</span>, <span class="st">"Type"</span>, <span class="st">"Treatment"</span><span class="op">)</span>, <span class="st">"Plant"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">values</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
@@ -345,36 +327,17 @@ the reporting functionality will be turned on automatically by the <code>teal</c
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">join_keys</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">default_cdisc_join_keys</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">fact_vars_adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/funprog.html" class="external-link">Filter</a></span><span class="op">(</span><span class="va">isTRUE</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="va">is.factor</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu">choices_selected</span><span class="op">(</span><span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="va">fact_vars_adsl</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">app</span> <span class="op">&lt;-</span> <span class="fu">init</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  data <span class="op">=</span> <span class="va">data</span>,</span></span>
 <span class="r-in"><span>  modules <span class="op">=</span> <span class="fu">modules</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fu">tm_outliers</span><span class="op">(</span></span></span>
-<span class="r-in"><span>      outlier_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>        <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span></span>
-<span class="r-in"><span>          select <span class="op">=</span> <span class="fu">select_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>            label <span class="op">=</span> <span class="st">"Select variable:"</span>,</span></span>
-<span class="r-in"><span>            choices <span class="op">=</span> <span class="fu">variable_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>            selected <span class="op">=</span> <span class="st">"AGE"</span>,</span></span>
-<span class="r-in"><span>            multiple <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>            fixed <span class="op">=</span> <span class="cn">FALSE</span></span></span>
-<span class="r-in"><span>          <span class="op">)</span></span></span>
-<span class="r-in"><span>        <span class="op">)</span></span></span>
+<span class="r-in"><span>      outlier_var <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">datasets</span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="st">"ADSL"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGE"</span>, <span class="st">"BMRKR1"</span><span class="op">)</span>, <span class="st">"AGE"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span>,</span></span>
-<span class="r-in"><span>      categorical_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>        <span class="fu">data_extract_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>          dataname <span class="op">=</span> <span class="st">"ADSL"</span>,</span></span>
-<span class="r-in"><span>          filter <span class="op">=</span> <span class="fu">filter_spec</span><span class="op">(</span></span></span>
-<span class="r-in"><span>            vars <span class="op">=</span> <span class="va">vars</span>,</span></span>
-<span class="r-in"><span>            choices <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="va">vars</span><span class="op">$</span><span class="va">selected</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>            selected <span class="op">=</span> <span class="fu">value_choices</span><span class="op">(</span><span class="va">data</span><span class="op">[[</span><span class="st">"ADSL"</span><span class="op">]</span><span class="op">]</span>, <span class="va">vars</span><span class="op">$</span><span class="va">selected</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>            multiple <span class="op">=</span> <span class="cn">TRUE</span></span></span>
-<span class="r-in"><span>          <span class="op">)</span></span></span>
-<span class="r-in"><span>        <span class="op">)</span></span></span>
+<span class="r-in"><span>      categorical_var <span class="op">=</span> <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">picks</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        <span class="fu">datasets</span><span class="op">(</span><span class="st">"ADSL"</span>, <span class="st">"ADSL"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        <span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html" class="external-link">variables</a></span><span class="op">(</span><span class="fu">teal.picks</span><span class="fu">::</span><span class="fu"><a href="https://insightsengineering.github.io/teal.picks/latest-tag/reference/tidyselectors.html" class="external-link">is_categorical</a></span><span class="op">(</span>min.len <span class="op">=</span> <span class="fl">1</span>, max.len <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>      <span class="op">)</span></span></span>
 <span class="r-in"><span>    <span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>

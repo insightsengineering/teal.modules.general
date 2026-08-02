@@ -1,5 +1,25 @@
 # Changelog
 
+## teal.modules.general 0.8.0
+
+CRAN release: 2026-08-01
+
+#### Enhancements
+
+- Introduced `teal.picks` as the primary method to select dataset,
+  variables and values in modules.
+- Introduced
+  [`tm_tbl_summary()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_tbl_summary.md),
+  a new module for generating tables using the
+  [gtsummary](https://cran.r-project.org/package=gtsummary) package
+  ([\#973](https://github.com/insightsengineering/teal.modules.general/issues/973)).
+
+#### Bug fixes
+
+- Fixed missing visualization in `tm_variable_browser` when “Treat
+  variable as factor” is enabled for a numeric variable
+  ([\#996](https://github.com/insightsengineering/teal.modules.general/issues/996)).
+
 ## teal.modules.general 0.7.0
 
 CRAN release: 2026-07-01
@@ -117,7 +137,7 @@ CRAN release: 2025-08-20
 - Improved the layout and appearance of the app using `bslib`
   components.
 - Fixed deprecation warning for
-  [`tern::stack_grobs`](https://insightsengineering.github.io/tern/latest-tag/reference/stack_grobs.html)
+  [`tern::stack_grobs`](https://rdrr.io/pkg/tern/man/stack_grobs.html)
   in `tm_g_association`
   ([\#903](https://github.com/insightsengineering/teal.modules.general/issues/903)).
 - Allow search feature in `tm_file_viewer`
@@ -330,7 +350,7 @@ CRAN release: 2024-03-05
   [`ggplot2::theme`](https://ggplot2.tidyverse.org/reference/theme.html)
   in plot based modules.
 - Added support for custom arguments for
-  [`rtables::basic_table`](https://insightsengineering.github.io/rtables/latest-tag/reference/basic_table.html)
+  [`rtables::basic_table`](https://rdrr.io/pkg/rtables/man/basic_table.html)
   in `tm_t_crosstable`.
 - Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`,
   and `tm_t_crosstable` modules to adopt the new

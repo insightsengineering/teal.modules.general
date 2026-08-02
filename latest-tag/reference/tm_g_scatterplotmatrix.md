@@ -10,7 +10,8 @@ across selected data.
 ``` r
 tm_g_scatterplotmatrix(
   label = "Scatterplot Matrix",
-  variables,
+  variables = list(teal.picks::picks(teal.picks::datasets(),
+    teal.picks::variables(selected = seq(1L, 5L), multiple = TRUE))),
   min_n_variables = 2L,
   max_n_variables = 5L,
   plot_height = c(600, 200, 2000),
@@ -31,11 +32,10 @@ tm_g_scatterplotmatrix(
 
 - variables:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Specifies plotting variables from an incoming dataset with filtering
-  and selecting. In case of `data_extract_spec` use
-  `select_spec(..., ordered = TRUE)` if plot elements should be rendered
-  according to selection order.
+  (`picks` or `list` of `picks`) Specifies plotting variables from an
+  incoming dataset with filtering and selecting. In case of `picks` use
+  `teal.picks::variables(..., ordered = TRUE)` if plot elements should
+  be rendered according to selection order.
 
 - min_n_variables:
 
@@ -82,8 +82,6 @@ tm_g_scatterplotmatrix(
   `teal_transform_module`) optional, decorator for tables or plots
   included in the module output reported. The decorators are applied to
   the respective output objects.
-
-  See section "Decorating Module" below for more details.
 
 ## Value
 
@@ -149,12 +147,12 @@ For more information on reporting in `teal`, see the vignettes:
 - example-1:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6usTmpIy0YnH+GRgmzPDsFZW6tPy6ALxVHWAAIq54ugpgAGJYk6WTAJJ2cxNgzgDKK5MACsvjkwDis-tgAHIAMltgAEJj82DnjlcAgntyuJ2VEkQ6jBDwZH6pnUpCIjA6EC6XQI7AATKV4bpEQBGBFo3SojGlTGw96fLrUKD0ODUURAmGTACyJBYBHyrCuWDgqEE9DoBEmikhXTx3MqhIgEkEUCkiRMsFo1FYQPFGjBEKhlRhmIAzKU1boNRqUdj1djeYrdITiaTyUMDjIYFBlByTgAJEkiG2MohWixwTn4g1dVBEFmEzQkM0ADg1ADYAOylMMABlKABYoxi4xjMcik8jMTGMGHSgBOb2VFhwYIDGEqgCsSYrFdVMcxFZjFfzKJViPjdYROdKocLXn4qDNKow8a7SdhGDTI9K2Y12cR2aT2ebumzWZHff4cHopDNE5xGG106R3ZPR9HZ67F4n565lTvulE3AaWRSLTacAVXR6QORiEbHx8lURA1GwiQ-gMT4wJEn74kqQyjFcMxXEsVwbFcuxXEcVwXFctxXI8LxvIBhqiLQABeegDABcG6IwzKEgQVH2E4rhAX2rAlowQKiGCpDsFBMFwvWMaILCMbiaUAF0Qx6jMQ4LhyH2OgQIIzGCSI7AUmAohWtQ1BXPA-C0IIMBXISjBSFcJB0D4nJSSm9GRHJQIKc4fYENaTH6XAvSQREmkwm5pRTM85zrO5DmlE5jHyaxfYAI7CmQeTSgMfxgjA7DSciMYpuJHlEKIpBkulECZdlKbBvlMZ9qgjBECYeRAhljBZdJknJg+XIAL5cgAVkQKiJAA1nArCiMUGS2Fkg3DWNE1fnNECjeNQzVGQdRiFcG21PUohXD09mdMtq0cJMT4iAdJyXdtJxHWA3qnQt60gZt+1XLd12lNpD1ApMu1gQ9SlKFyShoIOWQqHkX4pECJSdHwQhXUCSPCGIX6VKQMCJBIiSiJ5pDkIwkRENjgR1KEmMEkSJL-WA6yE8TpO7lae2hHMtFaCwtBEijAx0MV1NQikiRhLUIL46gcAUkBhopNA8D04DH14LRUKiCSMu7pBWsaFLMvC4aRq034AyTOseu7tzdR82IiCc3Lxt0kNTGlboNu82ycCJC7tBu1NQTAMAANvXtd0ALoR32xuPlbvlmpMxZQFcEgDlcW47sdTuGjAwiaDBrmsSRsddGCW70X5LEuCXpemLQoQJwMoXhWxdcPoaMddKL4vMProjS7LdcK7AzEXc+33q10TXUMTMqSsTBtD3XJsmvTlsiBoHs83bDtqznio2+7oegaw4H8I7K9VPkrsNAM3PUGpvs3-7GMpMH49XZMUf3IDZ-A7XUumtN7kCrtpRCJxkInFQicTCJxsInFwicfCJxCInFeNnK+edZ60ELgMNyU97yANIlbHiVsl5G0NMaOm5sGakM9nbUQe9iHOxfm7IEDDvbP1vpNd+IcdIT2-hHH6QwkrWk0KQBkJxiDFW+qseqjU8ici7iQkBTdBiTDESlSRO0iolSuAopqpBMEr2wQXEQRca6ELLowCu6jgrWMqE1RuVcW4RWsR3RUnj7xek6FyLktATC6HYCoYmIJtCfiUmUToohCgQFYM8dA7AIYABJBC0FKKkzWjBfi9SUGAHqEcgA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXVIhrqu-lCkULpwAB6wqCJKAUEGxlzUAPoxUDbRgcFGugDutKQAFirsKbi6IEq6usTmpIy0YnH+GRgmzPDsFZW6tPy6ALxVHWAAIq54ugpgAGJYk6WTAJJ2cxNgzgDKK5MACsvjkwDis-tgAHIAMltgAEJj82DnjlcAgntyuJ2VEkQ6jBDwZH6pnUpCIjA6EC6XQI7AATKV4bpEQBGBFo3SojGlTGw96fLrUKD0ODUURAmGTACyJBYBHyrCuWDgqEE9DoBEmikhXTx3MqhIgEkEUCkiRMsFo1FYQPFGjBEKhlRhmIAzKU1boNRqUdj1djeYrdITiaTyUMDjIYFBlByTgAJEkiG2MohWixwTn4g1dVBEFmEzQkM0ADg1ADYAOylMMABlKABYoxi4xjMcik8jMTGMGHSgBOb2VFhwYIDGEqgCsSYrFdVMcxFZjFfzKJViPjdYROdKocLXn4qDNKow8a7SdhGDTI9K2Y12cR2aT2ebumzWZHff4cHopDNE5xGG106R3ZPR9HZ67F4n565lTvulE3AaWRSLTacAVXR6QORiEbHx8lURA1GwiQ-gMT4wJEn74kqQyjFcMxXEsVwbFcuxXEcVwXFctxXI8LxvIBhqiLQABeegDABcG6IwzKEgQVH2E4rhAX2rAlowQKiGCpDsFBMFwvWMaILCMbiaUAF0Qx6jMQ4LhyH2OgQIIzGCSI7AUmAohWtQ1BXPA-C0IIMBXISjBSFcJB0D4nJSSm9GRHJQIKc4fYENaTH6XAvSQREmkwm5pRTM85zrO5DmlE5jHyaxfYAI7CmQeTSgMfxgjA7DSciMYpuJHlEKIpBkulECZdlKbBvlMZ9qgjBECYeRAhljBZdJknJg+XIAL5cgAVkQKiJAA1nArCiMUGS2Fkg3DWNE1fnNECjeNQzVGQdRiFcG21PUohXD09mdMtq0cJMT4iAdJyXdtJxHWA3qnQt60gZt+1XLd12lNpD1ApMu1gQ9SlKFyShoIOWQqHkX4pECJSdHwQhXUCSPCGIX6VKQMCJBIiSiJ5pDkIwkRENjgR1KEmMEkSJL-WA6yE8TpO7lae2hHMtFaCwtBEijAx0MV1NQgkGCoLQBAjaIiCIOLkuTbRUIpKIcAla9oEfY9JGGl0oty1LMvc3UfMY4rip0kNTGlbomj8BNJJwBoMtwL8rAFCoEg2NrOtdCrIgaL5ZqTMWUBXBIA5XFuO7HUBPswMImgwa5rHez7uhglu9F+SxLhm-eqeGnrEsG4g3PUGpk0PoafYiyWPD69LsvFwrseKsrqsKzpz7XTXipF-Lhs8ybLdp9C+SWw0ZZDEl1qaKQDInMQxXfas9WNXkMej5UfuO+Q2faTPKXzztRUlZvW-x9QiciMnLgFzrGcyIHAxuXnuhV4qH-57RtTWqIJiZUCGCa2gt+JmwSIkX+EB-6ZTFJKYmws+51zFs3GWDdEGGnbmrC63dz6j37iXI2vM2Sm0IG9WorBwL8DwWnAhjcy4VzSK3KEX8eS0Q-t1UGShaAmF0OwFQxMQTaE-EpMonRRCFAgKwZ46B2AQwACSCFoKUBRKtGC-F6koMAPUAC6QA)
 
 - example-2:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpbahp8sALaOrp7G4aUAX0UIACsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI0xeW1jeBoeE3MuQBdN2h0NpVi9gHM3QAvCFcrgBnwhCJRIDdODhGJfhA6nVSDA0hI0hcwuRGHEiCiwoxaFEEUikdQoPQ4NRoQowAECFiZLjSDCCUTaaDEaTdFoWLQKZDoXRRKQSdy6pk0tFSMwNBjUHACGLxRLcg89EDaX1mhyBirdKIqYqWUDDSI5aIFUq9frdOTKdTNXSjRoeXyBWJELqubbdAQSksCGJobzCR6TgHaEGnrlgMAtU0dWAXi85JzfXUzca4PxodawPUAOKuPC6WlYepeEtVWkBZwADVpaZt+pgR1ocQ19icznTGaIjD2jBz0IcLj7vpMRJHQIAYvVmnWW9y5vrmz7uZLpbLjpbFcqVZl1TSC0MAt7J7RqNjoVPrzJ5fvl+L7VSTwEXSyKPxUEsyKIvTwZ9uVDKEgXzAAFeoKwAWV8DkywLAA1QI-DsJsJ1tf1A2DIFeWoQQ4AjHCY3COMEymZMXiqSDoPqOCfAQrUUICNCML9X4wCg2CmOQ1D0LAOR1wzA1PxnRC-AAOSQ5w7F0YxnEknxdAAeVnXQpJ8RwvDsPwVMki8Mzba8OxEUce2AuphNtLNXVNT9H2tDd9VfR1EI-c0WVDfl6EhQDMP1bCo1wt0w18oigujLYyPjU9KJTazfVs8hc3Azii2rRD6iQhdeMaABNDDLKRYzNE7czx2KuoByHcSx17KrTGnVLdHnRdXGcldgNXLqNx6uY5loExdHYFRsXUTQdBsWwai5UQyggVh6nQdg0FQAASQRaCqNb1sNRgdEYOZpiUMBpheIA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXQBBHwCAGWTdVIxMxERGRpbahp8sALaOrp7G4aUAX0UIACsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI0xeW1jeBoeE3MuQBdN2h0NpVi9gHM3QAvCFcrgBnwhCJRIDdODhGJfhA6nVSDA0hI0hcwuRGHEiCiwoxaFEEUikdQoPQ4NRoQowAECFiZLjSDCCUTaaDEaTdFoWLQKZDoXRRKQSdzkXBuBhULQCCtRN0ZXLNgNxXVMqI4KQVWA+s1aXJOWqkR0lfLurzCQL4arjboCCUlgQxNDNPwNlS4BpunAdGxSioJDYjXa6pqRBo4PxoQRfrqAOKuPC6WlYepeJNVWkBZwADQNIdDMCOtDieiBDhchbtREYe0YUehlec1eNJiJjaBADF6s0c7bxYaB9zTbLzYhedRBPC5sah1zxaPlYqxyqF2qNVqdZMAgXh6Sl+PLfz6JCxaGHU6XUC3R6I6QfX7WAGIEH56Gw57I9GgbHafUADVew5FNdR8ABNPd12NYtqE0MsmycFt925Wt607ewkNbNV2yiDCez7VxoO5Wc1VI0l3xHZgIFEExaxgMJayhIFhVFFDUjSUhqNo+i0nbOCZHPNVDwVRAzTXD92klHhxO6TdtTjHcoMkkSLT5a0dQABXqNMAFlfGUj9VInbhp02cMvXIH9QIAIWcAJhk0vwDRQupyJI4d3NIuY5loExdHYFRsXUTQdBsWwai5UQyggVh6nQdg0FQAASQRaCqJLks1Rg-TmaYlDAaYXiAA)
 
 ## Examples
 
@@ -204,40 +202,43 @@ app <- init(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       variables = list(
-        data_extract_spec(
-          dataname = "countries",
-          select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["countries"]]),
+        teal.picks::picks(
+          datasets("countries"),
+          teal.picks::variables(
+            choices = tidyselect::everything(),
             selected = c("area", "gdp", "debt"),
             multiple = TRUE,
-            ordered = TRUE,
-            fixed = FALSE
-          )
-        ),
-        data_extract_spec(
-          dataname = "sales",
-          filter = filter_spec(
-            label = "Select variable:",
-            vars = "country_id",
-            choices = value_choices(data[["sales"]], "country_id"),
-            selected = c("DE", "FR", "IT", "PT", "GR", "NL", "BE", "LU", "AT"),
-            multiple = TRUE
+            ordered = TRUE
           ),
-          select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["sales"]], c("quantity", "costs", "profit")),
-            selected = c("quantity", "costs", "profit"),
+          teal.picks::values()
+        ),
+        teal.picks::picks(
+          datasets("sales"),
+          teal.picks::variables(
+            choices = c("quantity", "costs", "profit"),
+            selected = c("quantity", "costs"),
             multiple = TRUE,
-            ordered = TRUE,
-            fixed = FALSE
+            ordered = TRUE
+          )
+        )
+      ),
+      transformators = list(
+        teal_transform_filter(
+          teal.picks::picks(
+            datasets("sales"),
+            teal.picks::variables("country_id"),
+            teal.picks::values()
           )
         )
       )
     )
   )
 )
+#> Warning: teal.picks::variables(choices = tidyselect::everything(), selected = c("area", "gdp", "debt"), multiple = TRUE, ordered = TRUE)
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_g_scatterplotmatrix
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -256,40 +257,48 @@ app <- init(
     tm_g_scatterplotmatrix(
       label = "Scatterplot matrix",
       variables = list(
-        data_extract_spec(
-          dataname = "ADSL",
-          select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["ADSL"]]),
+        teal.picks::picks(
+          datasets("ADSL"),
+          teal.picks::variables(
+            choices = tidyselect::everything(),
             selected = c("AGE", "RACE", "SEX"),
             multiple = TRUE,
             ordered = TRUE,
             fixed = FALSE
-          )
-        ),
-        data_extract_spec(
-          dataname = "ADRS",
-          filter = filter_spec(
-            label = "Select endpoints:",
-            vars = c("PARAMCD", "AVISIT"),
-            choices = value_choices(data[["ADRS"]], c("PARAMCD", "AVISIT"), c("PARAM", "AVISIT")),
-            selected = "INVET - END OF INDUCTION",
-            multiple = TRUE
           ),
-          select = select_spec(
-            label = "Select variables:",
-            choices = variable_choices(data[["ADRS"]]),
-            selected = c("AGE", "AVAL", "ADY"),
+          teal.picks::values()
+        ),
+        teal.picks::picks(
+          datasets("ADRS"),
+          teal.picks::variables(
+            choices = tidyselect::everything(),
+            selected = c("AVAL", "ADY"),
             multiple = TRUE,
             ordered = TRUE,
             fixed = FALSE
+          )
+        )
+      ),
+      transformators = list(
+        teal_transform_filter(
+          teal.picks::picks(
+            teal.picks::datasets("ADRS"),
+            teal.picks::variables("PARAMCD"),
+            teal.picks::values(selected = "BESRSPI")
           )
         )
       )
     )
   )
 )
+#> Warning: teal.picks::variables(choices = tidyselect::everything(), selected = c("AGE", "RACE", "SEX"), multiple = TRUE, ordered = TRUE, fixed = FALSE)
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
+#> Warning: teal.picks::variables(choices = tidyselect::everything(), selected = c("AVAL", "ADY"), multiple = TRUE, ordered = TRUE, fixed = FALSE)
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 #> Initializing tm_g_scatterplotmatrix
+#> Warning: rlang::dots_list(..., .ignore_empty = "trailing")
+#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }

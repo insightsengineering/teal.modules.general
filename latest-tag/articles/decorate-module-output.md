@@ -63,7 +63,7 @@ session to quickly iterate the decoration you want.
 
 Here’s an example to showcase how you can edit an output of class
 `ElementaryTable`. `rtables` modifiers like
-[`rtables::insert_rrow`](https://insightsengineering.github.io/rtables/latest-tag/reference/insert_rrow.html)
+[`rtables::insert_rrow`](https://rdrr.io/pkg/rtables/man/insert_rrow.html)
 can be applied to modify this object.
 
 ``` r
