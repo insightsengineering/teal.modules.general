@@ -779,6 +779,7 @@ testthat::describe("testServer for data exceptions", {
   })
 
   it("server function handles different ggplot themes", {
+    skip_if_too_deep(5)
     data <- create_test_data(data.frame(
       var1 = rnorm(50),
       var2 = factor(rep(c("A", "B"), 25))
@@ -813,6 +814,7 @@ testthat::describe("testServer for data exceptions", {
   })
 
   it("server function handles different font sizes", {
+    skip_if_too_deep(5)
     data <- create_test_data(data.frame(
       var1 = rnorm(50)
     ))
@@ -846,6 +848,7 @@ testthat::describe("testServer for data exceptions", {
   })
 
   it("server function handles different label rotations", {
+    skip_if_too_deep(5)
     data <- create_test_data(data.frame(
       var1 = rnorm(50)
     ))
@@ -879,6 +882,7 @@ testthat::describe("testServer for data exceptions", {
   })
 
   it("server function handles switching between different variables", {
+    skip_if_too_deep(5)
     data <- create_test_data(data.frame(
       numeric_var = rnorm(50),
       factor_var = factor(rep(c("A", "B", "C"), length.out = 50)),
@@ -1096,6 +1100,7 @@ testthat::describe("UI switches and controls", {
   })
 
   it("server handles different outlier definition thresholds", {
+    skip_if_too_deep(5)
     data <- create_test_data(data.frame(
       numeric_var = c(rnorm(95), 50, 60, 70, -50, -60) # with outliers
     ))
