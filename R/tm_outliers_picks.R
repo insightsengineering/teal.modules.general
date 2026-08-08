@@ -268,6 +268,17 @@ srv_outliers.picks <- function(id, # nolint: object_name_linter.
     # dataset holding the outlier variable, used to fetch additional columns
     outlier_dataname <- reactive(selectors$outlier_var()$datasets$selected)
 
+    # Keep the full primary key so outlier rows can be joined back to the source
+    # dataset without falling back to a non-unique foreign key.
+    outlier_join_keys <- reactive({
+      dataname <- outlier_dataname()
+      primary_keys <- as.character(teal.data::join_keys(data_obj())[dataname, dataname])
+      teal.picks::picks(
+        teal.picks::datasets(dataname, dataname),
+        teal.picks::variables(primary_keys, primary_keys, multiple = TRUE)
+      )
+    })
+
     validated_q <- reactive({
       obj <- req(data_obj())
       outlier_dat <- obj[[outlier_dataname()]]
@@ -307,7 +318,12 @@ srv_outliers.picks <- function(id, # nolint: object_name_linter.
       teal.code::eval_code(obj, "library(dplyr);library(tidyr);library(tibble);library(ggplot2)")
     })
 
-    merged <- teal.picks::merge_srv("merge", data = validated_q, selectors = selectors, output_name = "ANL")
+    merged <- teal.picks::merge_srv(
+      "merge",
+      data = validated_q,
+      selectors = c(selectors, list(outlier_join_keys = outlier_join_keys)),
+      output_name = "ANL"
+    )
 
     n_outlier_missing <- reactive({
       req(merged$data())

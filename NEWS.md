@@ -1,5 +1,9 @@
 # teal.modules.general 0.8.0.9000
 
+### Bug fixes
+
+- `tm_outliers()` now preserves compound primary keys when analyzing a child dataset with `picks()` (#1011).
+
 # teal.modules.general 0.8.0
 
 ### Enhancements
