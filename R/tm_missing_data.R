@@ -1322,7 +1322,7 @@ srv_missing_data <- function(id,
               # order columns by decreasing percent of missing values
               ordered_columns <- summary_plot_patients %>%
                 dplyr::select(-"id", -dplyr::all_of(parent_keys)) %>%
-                dplyr::summarise(
+                dplyr::reframe(
                   column = create_cols_labels(colnames(.)),
                   na_count = apply(., MARGIN = 2, FUN = sum),
                   na_percent = na_count / nrow(.) * 100
