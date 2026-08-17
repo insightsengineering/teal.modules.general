@@ -1,5 +1,9 @@
 # teal.modules.general 0.8.0.9000
 
+### Bug fixes
+
+- Fixed `tm_missing_data` failing with `dplyr (>= 1.1.0)` when grouping by subject, which raised a "must be size 1" error (#1013).
+
 # teal.modules.general 0.8.0
 
 ### Enhancements
