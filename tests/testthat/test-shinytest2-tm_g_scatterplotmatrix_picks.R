@@ -62,7 +62,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Verify default values and settings (dat
 
   # default variable selection
   testthat::expect_equal(
-    app_driver$get_values()$export[[app_driver$namespaces()$module("pick_1-picks_resolved")]]$dataset$selected,
+    app_driver$get_values()$export[[app_driver$namespaces()$module("pick_1-picks_resolved")]]$datasets$selected,
     "ADSL"
   )
   testthat::expect_equal(
