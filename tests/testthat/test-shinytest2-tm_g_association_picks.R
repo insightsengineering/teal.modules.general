@@ -56,11 +56,11 @@ testthat::test_that("e2e - tm_g_association:
   app_driver <- app_driver_tm_g_association()
 
   testthat::expect_identical(app_driver$get_active_module_input("ref-variables-selected"), "Plant")
-  set_picks_slot_selected(app_driver, "ref", "Type")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "ref", "variables", "Type")
   app_driver$expect_no_validation_error()
 
   testthat::expect_identical(app_driver$get_active_module_input("vars-variables-selected"), "Treatment")
-  set_picks_slot_selected(app_driver, "vars", "Plant")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "vars", "variables", "Plant")
   app_driver$expect_no_validation_error()
 
   app_driver$stop()

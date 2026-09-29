@@ -52,10 +52,10 @@ testthat::test_that("e2e - tm_g_response: encoding inputs produce output without
 
   app_driver <- app_driver_tm_g_response()
 
-  set_picks_slot_selected(app_driver, "response", "COUNTRY", "variables")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "response", "variables", "COUNTRY")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "x", "SEX", "variables")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "x", "variables", "SEX")
   app_driver$expect_no_validation_error()
 
   app_driver$set_active_module_input("freq", "frequency")
@@ -81,7 +81,7 @@ testthat::test_that("e2e - tm_g_response: deselecting response produces validati
 
   app_driver <- app_driver_tm_g_response()
 
-  set_picks_slot_selected(app_driver, "response", "", "variables")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "response", "variables", "")
   app_driver$expect_validation_error()
 
   app_driver$stop()
@@ -92,7 +92,7 @@ testthat::test_that("e2e - tm_g_response: deselecting x produces validation erro
 
   app_driver <- app_driver_tm_g_response()
 
-  set_picks_slot_selected(app_driver, "x", c(), "variables")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "x", "variables", c())
   app_driver$expect_validation_error()
 
   app_driver$stop()

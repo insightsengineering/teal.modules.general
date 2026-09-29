@@ -129,25 +129,25 @@ testthat::test_that("e2e - tm_g_bivariate: Setting encoding inputs produces outp
   app_driver$set_active_module_input("add_lines", TRUE)
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "x", "Plant")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "x", "variables", "Plant")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "y", "conc")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "y", "variables", "conc")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "row_facet", "Plant")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "row_facet", "variables", "Plant")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "col_facet", "Type")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "col_facet", "variables", "Type")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "color", "Type")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "color", "variables", "Type")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "size", "Type")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "size", "variables", "Type")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "fill", "Plant")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "fill", "variables", "Plant")
   app_driver$expect_no_validation_error()
 
   app_driver$set_active_module_input("free_x_scales", TRUE)

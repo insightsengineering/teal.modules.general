@@ -59,8 +59,8 @@ test_that("e2e - tm_tbl_summary: Verify default values and settings (data_extrac
   )
 
   # new variable selection
-  set_picks_slot_selected(app_driver, "by", "Treatment")
-  set_picks_slot_selected(app_driver, "include", c("Plant", "Type", "conc"))
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "by", "variables", "Treatment")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "include", "variables", c("Plant", "Type", "conc"))
   app_driver$expect_no_validation_error()
 
   app_driver$stop()
