@@ -85,7 +85,7 @@ testthat::test_that("e2e - tm_g_distribution: Histogram encoding inputs produce 
   teal.picks::app_driver_set_teal_picks_slot(app_driver, "strata_var", "variables", "SEX")
   app_driver$expect_no_validation_error()
 
-  teal.picks::app_driver_set_teal_picks_slot(app_driver, "strata_var", "values", c("F"))
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "strata_var", "values", "F")
   app_driver$expect_no_validation_error()
 
   app_driver$set_active_module_input("histogram_plot-bins", 50)

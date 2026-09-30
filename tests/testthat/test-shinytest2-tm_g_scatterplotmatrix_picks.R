@@ -73,6 +73,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Verify default values and settings (dat
   # new variable selection
   teal.picks::app_driver_set_teal_picks_slot(app_driver, "pick_1", "variables", NULL)
   teal.picks::app_driver_set_teal_picks_slot(app_driver, "pick_2", "variables", c("SEX", "RACE", "ETHNIC"))
+  app_driver$wait_for idle()
   app_driver$expect_no_validation_error()
 
   app_driver$stop()
