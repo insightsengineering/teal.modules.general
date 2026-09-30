@@ -49,9 +49,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Verify module displays data table", {
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
   # table
-  app_driver$expect_visible(
-    app_driver$namespaces(TRUE)$module("myplot-plot_out_main .shiny-plot-output")
-  )
+  app_driver$expect_visible(app_driver$namespaces(TRUE)$module("myplot-plot_out_main .shiny-plot-output"))
 
   app_driver$stop()
 })
@@ -65,10 +63,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Verify default values and settings (dat
     app_driver$get_values()$export[[app_driver$namespaces()$module("pick_1-picks_resolved")]]$datasets$selected,
     "ADSL"
   )
-  expect_equal(
-    app_driver$get_active_module_input("pick_1-variables-selected"),
-    c("AGE", "SEX", "RACE")
-  )
+  expect_equal(app_driver$get_active_module_input("pick_1-variables-selected"), c("AGE", "SEX", "RACE"))
 
   # new variable selection
   teal.picks::app_driver_set_teal_picks_slot(app_driver, "pick_1", "variables", NULL)
