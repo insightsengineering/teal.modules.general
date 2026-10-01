@@ -14,11 +14,9 @@ matrix module
 
 ### 1 - Load libraries
 
-``` r
-
-library(teal.modules.general) # used to create the app
-library(dplyr) # used to modify data sets
-```
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`teal.modules.general`](https://insightsengineering.github.io/teal.modules.general/)`)`` ``# used to create the app`\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`dplyr`](https://dplyr.tidyverse.org)`)`` ``# used to modify data sets`
 
 ### 2 - Create data sets
 
@@ -30,23 +28,21 @@ Inside this app 4 datasets will be used
 3.  `ADTTE` A long data set with time to event data
 4.  `ADLB` A long data set with lab measurements for each subject
 
-``` r
-
-data <- teal_data()
-data <- within(data, {
-  ADSL <- teal.data::rADSL %>%
-    mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-  ADRS <- teal.data::rADRS
-  ADTTE <- teal.data::rADTTE
-  ADLB <- teal.data::rADLB %>%
-    mutate(CHGC = as.factor(case_when(
-      CHG < 1 ~ "N",
-      CHG > 1 ~ "P",
-      TRUE ~ "-"
-    )))
-})
-join_keys(data) <- default_cdisc_join_keys[names(data)]
-```
+\
+`data`` ``<-`` ``teal_data``(``)`\
+`data`` ``<-`` `[`within`](https://rdrr.io/r/base/with.html)`(``data``, ``{`\
+`  ``ADSL`` ``<-`` ``teal.data``::`[`rADSL`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)` `[`%>%`](https://magrittr.tidyverse.org/reference/pipe.html)\
+`    `[`mutate`](https://dplyr.tidyverse.org/reference/mutate.html)`(``TRTDUR ``=`` `[`round`](https://rdrr.io/r/base/Round.html)`(`[`as.numeric`](https://rdrr.io/r/base/numeric.html)`(``TRTEDTM`` ``-`` ``TRTSDTM``)``, ``1``)``)`\
+`  ``ADRS`` ``<-`` ``teal.data``::`[`rADRS`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)\
+`  ``ADTTE`` ``<-`` ``teal.data``::`[`rADTTE`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)\
+`  ``ADLB`` ``<-`` ``teal.data``::`[`rADLB`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)` `[`%>%`](https://magrittr.tidyverse.org/reference/pipe.html)\
+`    `[`mutate`](https://dplyr.tidyverse.org/reference/mutate.html)`(``CHGC ``=`` `[`as.factor`](https://rdrr.io/r/base/factor.html)`(`[`case_when`](https://dplyr.tidyverse.org/reference/case-and-replace-when.html)`(`\
+`      ``CHG`` ``<`` ``1`` ``~`` ``"N"``,`\
+`      ``CHG`` ``>`` ``1`` ``~`` ``"P"``,`\
+`      ``TRUE`` ``~`` ``"-"`\
+`    ``)``)``)`\
+`}``)`\
+`join_keys``(``data``)`` ``<-`` ``default_cdisc_join_keys``[`[`names`](https://rdrr.io/r/base/names.html)`(``data``)``]`
 
 ### 3 - Create an `app` variable
 
@@ -58,67 +54,65 @@ The app itself will be constructed by multiple calls of
 [`tm_g_scatterplotmatrix()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_scatterplotmatrix.md)
 using different combinations of data sets.
 
-``` r
-
-# configuration for the single wide dataset
-mod1 <- tm_g_scatterplotmatrix(
-  label = "Single wide dataset",
-  variables = picks(
-    datasets("ADSL", "ADSL"),
-    variables(
-      selected = c("AGE", "RACE", "SEX", "BMRKR1", "BMRKR2"),
-      multiple = TRUE
-    )
-  )
-)
-
-# configuration for the one long datasets
-mod2 <- tm_g_scatterplotmatrix(
-  "One long dataset",
-  variables = picks(
-    datasets("ADTTE", "ADTTE"),
-    variables(
-      c("AVAL", "BMRKR1", "BMRKR2"),
-      c("AVAL", "BMRKR1", "BMRKR2"),
-      multiple = TRUE
-    )
-  )
-)
-
-# configuration for the two long datasets
-mod3 <- tm_g_scatterplotmatrix(
-  label = "Two long datasets",
-  variables = list(
-    picks(
-      datasets("ADRS", "ADRS"),
-      variables(
-        selected = c("AVAL", "AVALC"),
-        multiple = TRUE
-      )
-    ),
-    picks(
-      datasets("ADTTE", "ADTTE"),
-      variables(
-        selected = c("AVAL", "CNSR"),
-        multiple = TRUE
-      )
-    )
-  )
-)
-
-# initialize the app
-app <- init(
-  data = data,
-  modules = modules(
-    modules(
-      label = "Scatterplot matrix",
-      mod1,
-      mod2,
-      mod3
-    )
-  )
-)
-```
+\
+`# configuration for the single wide dataset`\
+`mod1`` ``<-`` `[`tm_g_scatterplotmatrix`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_scatterplotmatrix.md)`(`\
+`  label ``=`` ``"Single wide dataset"``,`\
+`  variables ``=`` ``picks``(`\
+`    ``datasets``(``"ADSL"``, ``"ADSL"``)``,`\
+`    ``variables``(`\
+`      selected ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"AGE"``, ``"RACE"``, ``"SEX"``, ``"BMRKR1"``, ``"BMRKR2"``)``,`\
+`      multiple ``=`` ``TRUE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the one long datasets`\
+`mod2`` ``<-`` `[`tm_g_scatterplotmatrix`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_scatterplotmatrix.md)`(`\
+`  ``"One long dataset"``,`\
+`  variables ``=`` ``picks``(`\
+`    ``datasets``(``"ADTTE"``, ``"ADTTE"``)``,`\
+`    ``variables``(`\
+`      `[`c`](https://rdrr.io/r/base/c.html)`(``"AVAL"``, ``"BMRKR1"``, ``"BMRKR2"``)``,`\
+`      `[`c`](https://rdrr.io/r/base/c.html)`(``"AVAL"``, ``"BMRKR1"``, ``"BMRKR2"``)``,`\
+`      multiple ``=`` ``TRUE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the two long datasets`\
+`mod3`` ``<-`` `[`tm_g_scatterplotmatrix`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_scatterplotmatrix.md)`(`\
+`  label ``=`` ``"Two long datasets"``,`\
+`  variables ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`    ``picks``(`\
+`      ``datasets``(``"ADRS"``, ``"ADRS"``)``,`\
+`      ``variables``(`\
+`        selected ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"AVAL"``, ``"AVALC"``)``,`\
+`        multiple ``=`` ``TRUE`\
+`      ``)`\
+`    ``)``,`\
+`    ``picks``(`\
+`      ``datasets``(``"ADTTE"``, ``"ADTTE"``)``,`\
+`      ``variables``(`\
+`        selected ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"AVAL"``, ``"CNSR"``)``,`\
+`        multiple ``=`` ``TRUE`\
+`      ``)`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# initialize the app`\
+`app`` ``<-`` ``init``(`\
+`  data ``=`` ``data``,`\
+`  modules ``=`` ``modules``(`\
+`    ``modules``(`\
+`      label ``=`` ``"Scatterplot matrix"``,`\
+`      ``mod1``,`\
+`      ``mod2``,`\
+`      ``mod3`\
+`    ``)`\
+`  ``)`\
+`)`
 
 ### 4 - Run the app
 
@@ -127,10 +121,8 @@ A simple
 will let you run the app. Note that app is only displayed when running
 this code inside an `R` session.
 
-``` r
-
-shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
-```
+\
+`shinyApp``(``app``$``ui``, ``app``$``server``, options ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``height ``=`` ``1024``, width ``=`` ``1024``)``)`
 
 ### 5 - Try it out in Shinylive
 

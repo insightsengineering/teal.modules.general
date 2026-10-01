@@ -13,12 +13,10 @@ application using various types of datasets using the cross table module
 
 ### 1 - Load libraries
 
-``` r
-
-library(teal.modules.general) # used to create the app
-library(dplyr) # used to modify data sets
-library(rtables)
-```
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`teal.modules.general`](https://insightsengineering.github.io/teal.modules.general/)`)`` ``# used to create the app`\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`dplyr`](https://dplyr.tidyverse.org)`)`` ``# used to modify data sets`\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`rtables`](https://github.com/pharmaverse/rtables)`)`
 
 ### 2 - Create data sets
 
@@ -27,19 +25,17 @@ Inside this app 2 datasets will be used
 1.  `ADSL` A wide data set with subject data
 2.  `ADLB` A long data set with lab measurements for each subject
 
-``` r
-
-data <- within(data, {
-  ADSL <- teal.data::rADSL
-  ADLB <- teal.data::rADLB %>%
-    mutate(CHGC = as.factor(case_when(
-      CHG < 1 ~ "N",
-      CHG > 1 ~ "P",
-      TRUE ~ "-"
-    )))
-})
-join_keys(data) <- default_cdisc_join_keys[names(data)]
-```
+\
+`data`` ``<-`` `[`within`](https://rdrr.io/r/base/with.html)`(``data``, ``{`\
+`  ``ADSL`` ``<-`` ``teal.data``::`[`rADSL`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)\
+`  ``ADLB`` ``<-`` ``teal.data``::`[`rADLB`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)` `[`%>%`](https://magrittr.tidyverse.org/reference/pipe.html)\
+`    `[`mutate`](https://dplyr.tidyverse.org/reference/mutate.html)`(``CHGC ``=`` `[`as.factor`](https://rdrr.io/r/base/factor.html)`(`[`case_when`](https://dplyr.tidyverse.org/reference/case-and-replace-when.html)`(`\
+`      ``CHG`` ``<`` ``1`` ``~`` ``"N"``,`\
+`      ``CHG`` ``>`` ``1`` ``~`` ``"P"``,`\
+`      ``TRUE`` ``~`` ``"-"`\
+`    ``)``)``)`\
+`}``)`\
+`join_keys``(``data``)`` ``<-`` ``default_cdisc_join_keys``[`[`names`](https://rdrr.io/r/base/names.html)`(``data``)``]`
 
 ### 3 - Create an `app` variable
 
@@ -51,84 +47,82 @@ The app itself will be constructed by multiple calls of
 [`tm_t_crosstable()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_t_crosstable.md)
 using different combinations of data sets.
 
-``` r
-
-# configuration for the single wide dataset
-mod1 <- tm_t_crosstable(
-  label = "Single wide dataset",
-  x = data_extract_spec(
-    "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADSL"]]),
-      selected = names(data[["ADSL"]])[5],
-      multiple = TRUE,
-      fixed = FALSE,
-      ordered = TRUE
-    )
-  ),
-  y = data_extract_spec(
-    "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADSL"]]),
-      selected = names(data[["ADSL"]])[6],
-      multiple = FALSE,
-      fixed = FALSE
-    )
-  )
-)
-
-# configuration for the same long datasets (different subsets)
-mod2 <- tm_t_crosstable(
-  label = "Same long datasets (different subsets)",
-  x = data_extract_spec(
-    dataname = "ADLB",
-    filter = filter_spec(
-      vars = "PARAMCD",
-      choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
-      selected = levels(data[["ADLB"]]$PARAMCD)[1],
-      multiple = FALSE
-    ),
-    select = select_spec(
-      choices = variable_choices(data[["ADLB"]]),
-      selected = "AVISIT",
-      multiple = TRUE,
-      fixed = FALSE,
-      ordered = TRUE,
-      label = "Select variable:"
-    )
-  ),
-  y = data_extract_spec(
-    dataname = "ADLB",
-    filter = filter_spec(
-      vars = "PARAMCD",
-      choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
-      selected = levels(data[["ADLB"]]$PARAMCD)[1],
-      multiple = FALSE
-    ),
-    select = select_spec(
-      choices = variable_choices(data[["ADLB"]]),
-      selected = "LOQFL",
-      multiple = FALSE,
-      fixed = FALSE,
-      label = "Select variable:"
-    )
-  )
-)
-
-# initialize the app
-app <- init(
-  data = data,
-  modules = modules(
-    modules(
-      label = "Cross table",
-      mod1,
-      mod2
-    )
-  )
-)
-```
+\
+`# configuration for the single wide dataset`\
+`mod1`` ``<-`` `[`tm_t_crosstable`](https://insightsengineering.github.io/teal.modules.general/reference/tm_t_crosstable.md)`(`\
+`  label ``=`` ``"Single wide dataset"``,`\
+`  x ``=`` ``data_extract_spec``(`\
+`    ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``)``,`\
+`      selected ``=`` `[`names`](https://rdrr.io/r/base/names.html)`(``data``[[``"ADSL"``]``]``)``[``5``]``,`\
+`      multiple ``=`` ``TRUE``,`\
+`      fixed ``=`` ``FALSE``,`\
+`      ordered ``=`` ``TRUE`\
+`    ``)`\
+`  ``)``,`\
+`  y ``=`` ``data_extract_spec``(`\
+`    ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``)``,`\
+`      selected ``=`` `[`names`](https://rdrr.io/r/base/names.html)`(``data``[[``"ADSL"``]``]``)``[``6``]``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the same long datasets (different subsets)`\
+`mod2`` ``<-`` `[`tm_t_crosstable`](https://insightsengineering.github.io/teal.modules.general/reference/tm_t_crosstable.md)`(`\
+`  label ``=`` ``"Same long datasets (different subsets)"``,`\
+`  x ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` ``filter_spec``(`\
+`      vars ``=`` ``"PARAMCD"``,`\
+`      choices ``=`` ``value_choices``(``data``[[``"ADLB"``]``]``, ``"PARAMCD"``, ``"PARAM"``)``,`\
+`      selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``1``]``,`\
+`      multiple ``=`` ``FALSE`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADLB"``]``]``)``,`\
+`      selected ``=`` ``"AVISIT"``,`\
+`      multiple ``=`` ``TRUE``,`\
+`      fixed ``=`` ``FALSE``,`\
+`      ordered ``=`` ``TRUE``,`\
+`      label ``=`` ``"Select variable:"`\
+`    ``)`\
+`  ``)``,`\
+`  y ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` ``filter_spec``(`\
+`      vars ``=`` ``"PARAMCD"``,`\
+`      choices ``=`` ``value_choices``(``data``[[``"ADLB"``]``]``, ``"PARAMCD"``, ``"PARAM"``)``,`\
+`      selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``1``]``,`\
+`      multiple ``=`` ``FALSE`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADLB"``]``]``)``,`\
+`      selected ``=`` ``"LOQFL"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE``,`\
+`      label ``=`` ``"Select variable:"`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# initialize the app`\
+`app`` ``<-`` ``init``(`\
+`  data ``=`` ``data``,`\
+`  modules ``=`` ``modules``(`\
+`    ``modules``(`\
+`      label ``=`` ``"Cross table"``,`\
+`      ``mod1``,`\
+`      ``mod2`\
+`    ``)`\
+`  ``)`\
+`)`
 
 ### 4 - Run the app
 
@@ -137,10 +131,8 @@ A simple
 will let you run the app. Note that app is only displayed when running
 this code inside an `R` session.
 
-``` r
-
-shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
-```
+\
+`shinyApp``(``app``$``ui``, ``app``$``server``, options ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``height ``=`` ``1024``, width ``=`` ``1024``)``)`
 
 ### 5 - Try it out in Shinylive
 
