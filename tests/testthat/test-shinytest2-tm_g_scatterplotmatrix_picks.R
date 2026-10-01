@@ -36,10 +36,10 @@ test_that("e2e - tm_g_scatterplotmatrix: Initializes without errors", {
 
   app_driver$expect_no_shiny_error()
 
-  testthat::expect_equal(app_driver$get_text(".teal-modules-tree .active"), "Scatterplot matrix")
+  expect_equal(app_driver$get_text(".teal-modules-tree .active"), "Scatterplot matrix")
 
   encoding_dataset <- trimws(app_driver$get_text(".badge-dropdown-label"))
-  testthat::expect_match(encoding_dataset, "^(ADSL|ADRS)[[:space:]]")
+  expect_match(encoding_dataset, "^(ADSL|ADRS)[[:space:]]")
 
   app_driver$stop()
 })
@@ -49,9 +49,7 @@ test_that("e2e - tm_g_scatterplotmatrix: Verify module displays data table", {
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
   # table
-  app_driver$expect_visible(
-    app_driver$namespaces(TRUE)$module("myplot-plot_out_main .shiny-plot-output")
-  )
+  app_driver$expect_visible(app_driver$namespaces(TRUE)$module("myplot-plot_out_main .shiny-plot-output"))
 
   app_driver$stop()
 })
@@ -61,18 +59,16 @@ test_that("e2e - tm_g_scatterplotmatrix: Verify default values and settings (dat
   app_driver <- app_driver_tm_g_scatterplotmatrix()
 
   # default variable selection
-  testthat::expect_equal(
-    app_driver$get_values()$export[[app_driver$namespaces()$module("pick_1-picks_resolved")]]$dataset$selected,
+  expect_equal(
+    app_driver$get_values()$export[[app_driver$namespaces()$module("pick_1-picks_resolved")]]$datasets$selected,
     "ADSL"
   )
-  testthat::expect_equal(
-    app_driver$get_active_module_input("pick_1-variables-selected"),
-    c("AGE", "SEX", "RACE")
-  )
+  expect_equal(app_driver$get_active_module_input("pick_1-variables-selected"), c("AGE", "SEX", "RACE"))
 
   # new variable selection
-  set_picks_slot_selected(app_driver, "pick_1", NULL)
-  set_picks_slot_selected(app_driver, "pick_2", c("SEX", "RACE", "ETHNIC"))
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "pick_1", "variables", NULL)
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "pick_2", "variables", c("SEX", "RACE", "ETHNIC"))
+  app_driver$wait_for_idle()
   app_driver$expect_no_validation_error()
 
   app_driver$stop()

@@ -71,21 +71,21 @@ testthat::test_that("e2e - tm_g_distribution: Histogram encoding inputs produce 
   .change_selectpicker(app_driver, app_driver$namespaces()$module("test_table-dist_test"), "Shapiro-Wilk")
 
   # Encodings in the Histogram tab
-  set_picks_slot_selected(app_driver, "group_var", "ARM")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "group_var", "variables", "ARM")
   app_driver$expect_no_validation_error()
 
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "group_var", c("A: Drug X", "C: Combination"), "values")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "group_var", "values", c("A: Drug X", "C: Combination"))
   app_driver$expect_no_validation_error()
 
   app_driver$set_active_module_input("scales_type", "Free")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "strata_var", "SEX")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "strata_var", "variables", "SEX")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "strata_var", c("F"), "values")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "strata_var", "values", "F")
   app_driver$expect_no_validation_error()
 
   app_driver$set_active_module_input("histogram_plot-bins", 50)

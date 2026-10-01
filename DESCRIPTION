@@ -28,7 +28,7 @@ Depends:
     R (>= 4.1),
     shiny (>= 1.8.1),
     teal (>= 1.2.0),
-    teal.picks (>= 0.1.0),
+    teal.picks (>= 0.3.0),
     teal.transform (>= 0.7.0)
 Imports:
     broom (>= 0.7.10),

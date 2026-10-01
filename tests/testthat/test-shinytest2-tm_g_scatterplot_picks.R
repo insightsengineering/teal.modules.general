@@ -97,14 +97,14 @@ testthat::test_that("e2e - tm_g_scatterplot: The log transform is only possible 
 
   app_driver <- app_driver_tm_g_scatterplot()
 
-  set_picks_slot_selected(app_driver, "x", "BMRKR2")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "x", "variables", "BMRKR2")
   app_driver$set_active_module_input("log_x", TRUE)
   app_driver$expect_validation_error()
 
-  set_picks_slot_selected(app_driver, "x", "BMRKR1")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "x", "variables", "BMRKR1")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "y", "BMRKR2")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "y", "variables", "BMRKR2")
   app_driver$set_active_module_input("log_y", TRUE)
   app_driver$expect_validation_error()
 
@@ -116,8 +116,8 @@ testthat::test_that("e2e - tm_g_scatterplot: Get validation error when facetting
 
   app_driver <- app_driver_tm_g_scatterplot()
 
-  set_picks_slot_selected(app_driver, "row_facet", "RACE")
-  set_picks_slot_selected(app_driver, "col_facet", "RACE")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "row_facet", "variables", "RACE")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "col_facet", "variables", "RACE")
   app_driver$expect_validation_error()
 
   app_driver$stop()
@@ -128,16 +128,16 @@ testthat::test_that("e2e - tm_g_scatterplot: The encoding inputs are set without
 
   app_driver <- app_driver_tm_g_scatterplot()
 
-  set_picks_slot_selected(app_driver, "color_by", "REGION1")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "color_by", "variables", "REGION1")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "size_by", "BMRKR1")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "size_by", "variables", "BMRKR1")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "row_facet", "RACE")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "row_facet", "variables", "RACE")
   app_driver$expect_no_validation_error()
 
-  set_picks_slot_selected(app_driver, "col_facet", "BMRKR2")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "col_facet", "variables", "BMRKR2")
   app_driver$expect_no_validation_error()
 
   app_driver$set_active_module_input("alpha", 0.5)

@@ -71,8 +71,8 @@ test_that("e2e - tm_t_crosstable: Verify default values and settings (data_extra
   )
 
   # new variable selection
-  set_picks_slot_selected(app_driver, "x", c("SEX", "RACE", "COUNTRY"))
-  set_picks_slot_selected(app_driver, "y", "ETHNIC")
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "x", "variables", c("SEX", "RACE", "COUNTRY"))
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "y", "variables", "ETHNIC")
   app_driver$expect_no_validation_error()
 
   app_driver$stop()

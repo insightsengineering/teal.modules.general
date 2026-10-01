@@ -61,7 +61,7 @@ testthat::test_that("e2e - tm_a_pca: Eigenvector table should have picks selecti
   app_driver <- app_driver_tm_a_pca()
 
   # Data selection (adds rows to tables)
-  set_picks_slot_selected(app_driver, "dat", c("Murder", "Assault"))
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "dat", "variables", c("Murder", "Assault"))
   app_driver$expect_no_validation_error()
 
   testthat::expect_match(app_driver$get_active_module_output("tbl_eigenvector"), "Assault")
@@ -79,7 +79,7 @@ testthat::test_that("e2e - tm_a_pca: Eigenvector table should have picks selecti
 
   app_driver$set_active_module_input("plot_type", "Circle plot")
 
-  set_picks_slot_selected(app_driver, "dat", c("Murder", "UrbanPop"))
+  teal.picks::app_driver_set_teal_picks_slot(app_driver, "dat", "variables", c("Murder", "UrbanPop"))
   app_driver$expect_no_validation_error()
 
   testthat::expect_match(app_driver$get_active_module_output("tbl_eigenvector"), "UrbanPop")
