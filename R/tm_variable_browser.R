@@ -809,8 +809,7 @@ plot_var_summary <- function(qenv,
     qenv_plot
   } else if (inherits(var, "Date") || inherits(var, "POSIXct") || inherits(var, "POSIXlt")) {
     binwidth <- get_bin_width(as.numeric(var), 1)
-    scale <- switch(
-      class(var)[1],
+    scale <- switch(class(var)[1],
       "Date" = "scale_x_date",
       "POSIXct" = "scale_x_datetime",
       "POSIXlt" = "scale_x_datetime"
