@@ -814,9 +814,18 @@ plot_var_summary <- function(qenv,
       "POSIXct" = "scale_x_datetime",
       "POSIXlt" = "scale_x_datetime"
     )
+
+    transformation <- switch(
+      class(var)[1],
+      "Date" = "as.Date",
+      "POSIXct" = "as.POSIXct",
+      "POSIXlt" = "as.POSIXct"
+    )
+
     within(qenv,
       {
         col_label <- attr(ANL[[var]], "label")
+        ANL[[var]] <- transformation(ANL[[var]])
         attr(ANL[[var]], "label") <- col_label
 
         plot <- ANL %>%
@@ -827,7 +836,8 @@ plot_var_summary <- function(qenv,
       binwidth = binwidth,
       var = var_name,
       var_name = as.name(var_name),
-      scale = rlang::call2(scale, .ns = "ggplot2")
+      scale = rlang::call2(scale, .ns = "ggplot2"),
+      transformation = as.name(transformation)
     )
   } else {
     qenv_plot <- within(qenv,
