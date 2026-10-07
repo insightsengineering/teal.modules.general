@@ -808,20 +808,27 @@ plot_var_summary <- function(qenv,
     }
     qenv_plot
   } else if (inherits(var, "Date") || inherits(var, "POSIXct") || inherits(var, "POSIXlt")) {
-    var_num <- as.numeric(var)
-    binwidth <- get_bin_width(var_num, 1)
-    qenv_plot <- within(qenv,
+    binwidth <- get_bin_width(as.numeric(var), 1)
+    scale <- switch(
+      class(var)[1],
+      "Date" = "scale_x_date",
+      "POSIXct" = "scale_x_datetime",
+      "POSIXlt" = "scale_x_datetime"
+    )
+    within(qenv,
       {
         col_label <- attr(ANL[[var]], "label")
-        ANL[[var]] <- as.numeric(ANL[[var]])
         attr(ANL[[var]], "label") <- col_label
+
         plot <- ANL %>%
           ggplot2::ggplot(ggplot2::aes(x = var_name, y = ggplot2::after_stat(count))) +
+          scale +
           ggplot2::geom_histogram(binwidth = binwidth)
       },
       binwidth = binwidth,
       var = var_name,
-      var_name = as.name(var_name)
+      var_name = as.name(var_name),
+      scale = rlang::call2(scale, .ns = "ggplot2")
     )
   } else {
     qenv_plot <- within(qenv,
