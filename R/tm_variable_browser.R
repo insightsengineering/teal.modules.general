@@ -815,8 +815,7 @@ plot_var_summary <- function(qenv,
       "POSIXlt" = "scale_x_datetime"
     )
 
-    transformation <- switch(
-      class(var)[1],
+    transformation <- switch(class(var)[1],
       "Date" = "as.Date",
       "POSIXct" = "as.POSIXct",
       "POSIXlt" = "as.POSIXct"
