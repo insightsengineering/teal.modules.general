@@ -622,7 +622,6 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @param records_for_factor (`numeric`) if the number of factor levels is >= than this value then
 #'   a graph of the factors isn't shown, only a list of values
-#' @param ggtheme (`character`) name of the `ggplot2` theme to apply (e.g. `"light"` for `ggplot2::theme_light()`)
 #'
 #' @return plot
 #' @keywords internal
@@ -1174,11 +1173,10 @@ filter_outliers <- function(var, outlier_definition) {
 #' @param bar_spacing `numeric` the spacing between the bars (in pixels)
 #' @param bar_width `numeric` the width of the bars (in pixels)
 #' @param ... `list` additional options passed to bar plots of `jquery.sparkline`;
-#'                   see [`jquery.sparkline docs`](https://omnipotent.net/jquery.sparkline/#common)
+#' see [`jquery.sparkline docs`](https://omnipotent.net/jquery.sparkline/#common)
 #'
 #' @return Character string containing HTML code of the `sparkline` HTML widget.
 #' @keywords internal
-#' @noRd
 create_sparklines <- function(arr, width = 150, ...) {
   if (all(is.null(arr))) {
     return("")
