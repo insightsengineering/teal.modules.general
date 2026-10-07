@@ -56,12 +56,16 @@ import(teal.picks)
 import(teal.transform)
 import(tidyselect)
 importFrom(broom,glance)
-importFrom(dplyr,"%>%")
-importFrom(dplyr,.data)
-importFrom(lattice,current.panel.limits)
-importFrom(lattice,panel.splom)
-importFrom(lattice,panel.text)
-importFrom(lattice,splom)
+importFrom(dplyr,
+  "%>%",
+  .data
+)
+importFrom(lattice,
+  current.panel.limits,
+  panel.splom,
+  panel.text,
+  splom
+)
 importFrom(lifecycle,deprecated)
 importFrom(rlang,":=")
 importFrom(teal,validate_input)

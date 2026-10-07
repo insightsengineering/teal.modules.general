@@ -23,9 +23,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-# nolint start: line_length_linter.
 #' @examples
-# nolint end: line_length_linter.
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -52,9 +50,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-# nolint start: line_length_linter.
 #' @examples
-# nolint end: line_length_linter.
 #' # CDISC example data
 #' library(sparkline)
 #' data <- teal_data()
@@ -488,7 +484,8 @@ srv_variable_browser <- function(id,
         display_density = display_density,
         outlier_definition = outlier_definition,
         records_for_factor = .unique_records_for_factor,
-        ggplot2_args = all_ggplot2_args()
+        ggplot2_args = all_ggplot2_args(),
+        ggtheme = input$ggplot_theme
       )
     })
 
@@ -625,6 +622,7 @@ var_summary_table <- function(x, numeric_as_factor, dt_rows, outlier_definition)
 #'   outliers (those more than outlier_definition*IQR below/above Q1/Q3 be removed)
 #' @param records_for_factor (`numeric`) if the number of factor levels is >= than this value then
 #'   a graph of the factors isn't shown, only a list of values
+#' @param ggtheme (`character`) name of the `ggplot2` theme to apply (e.g. `"light"` for `ggplot2::theme_light()`)
 #'
 #' @return plot
 #' @keywords internal
@@ -637,7 +635,8 @@ plot_var_summary <- function(qenv,
                              remove_NA_hist = FALSE, # nolint: object_name.
                              outlier_definition,
                              records_for_factor,
-                             ggplot2_args) {
+                             ggplot2_args,
+                             ggtheme = "light") {
   checkmate::assert_numeric(wrap_character, null.ok = TRUE)
   checkmate::assert_flag(numeric_as_factor)
   checkmate::assert_flag(display_density)
@@ -645,6 +644,7 @@ plot_var_summary <- function(qenv,
   checkmate::assert_number(outlier_definition, lower = 0, finite = TRUE)
   checkmate::assert_integerish(records_for_factor, lower = 0, len = 1, any.missing = FALSE)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
+  checkmate::assert_string(ggtheme)
 
   var_name <- names(qenv$ANL)
 
@@ -854,10 +854,13 @@ plot_var_summary <- function(qenv,
     qenv_plot <- within(qenv_plot,
       {
         plot <- plot +
-          theme_light() +
-          labs
+          ggtheme +
+          labs +
+          ggplot2::theme(axis.text.x = ggplot2::element_text(angle = angle, hjust = 1))
       },
-      labs = do.call("labs", all_ggplot2_args$labs)
+      ggtheme = as.call(list(call("::", as.name("ggplot2"), as.name(sprintf("theme_%s", ggtheme))))),
+      labs = do.call("labs", all_ggplot2_args$labs),
+      angle = ggplot2_args[["theme"]][["axis.text.x"]][["angle"]]
     )
   }
   qenv_plot <- within(qenv_plot, {
