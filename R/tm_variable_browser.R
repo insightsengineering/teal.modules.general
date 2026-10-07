@@ -177,7 +177,7 @@ ui_variable_browser <- function(id,
                     label = tags$span("font size", bslib::tooltip(
                       trigger = icon("circle-question"),
                       tags$span(
-                        "Change the font size of the plot title."
+                        "Change the font size of the plot title. Other text elements will scale accordingly."
                       )
                     )),
                     min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
@@ -882,6 +882,9 @@ plot_var_summary <- function(qenv,
   )
 
   if (inherits(qenv_plot$plot, "ggplot")) {
+    title_size <- as.numeric(ggplot2_args[["theme"]][["text"]][["size"]] %||% 15)
+    base_size <- 11 * (title_size / 15.)
+
     qenv_plot <- within(qenv_plot,
       {
         plot <- plot +
@@ -889,7 +892,7 @@ plot_var_summary <- function(qenv,
           labs +
           ggplot2::theme(axis.text.x = ggplot2::element_text(angle = angle, hjust = 1))
       },
-      ggtheme = rlang::call2(sprintf("theme_%s", ggtheme), .ns = "ggplot2"),
+      ggtheme = rlang::call2(sprintf("theme_%s", ggtheme), base_size = base_size, .ns = "ggplot2"),
       labs = rlang::call2("labs", .ns = "ggplot2", !!!all_ggplot2_args$labs),
       angle = ggplot2_args[["theme"]][["axis.text.x"]][["angle"]]
     )
