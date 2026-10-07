@@ -160,18 +160,36 @@ ui_variable_browser <- function(id,
               bslib::accordion_panel(
                 title = "Plot settings",
                 selectInput(
-                  inputId = ns("ggplot_theme"), label = "ggplot2 theme",
+                  inputId = ns("ggplot_theme"),
+                  label = tags$span("ggplot2 theme", bslib::tooltip(
+                    trigger = icon("circle-question"),
+                    tags$span(
+                      "Change the theme of the plot."
+                    )
+                  )),
                   choices = ggplot_themes,
                   selected = "grey"
                 ),
                 bslib::layout_columns(
                   col_widths = c(6, 6),
                   sliderInput(
-                    inputId = ns("font_size"), label = "font size",
+                    inputId = ns("font_size"),
+                    label = tags$span("font size", bslib::tooltip(
+                      trigger = icon("circle-question"),
+                      tags$span(
+                        "Change the font size of the plot title."
+                      )
+                    )),
                     min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
                   ),
                   sliderInput(
-                    inputId = ns("label_rotation"), label = "rotate x labels",
+                    inputId = ns("label_rotation"),
+                    label = tags$span("rotate x labels", bslib::tooltip(
+                      trigger = icon("circle-question"),
+                      tags$span(
+                        "Change the rotation of the x axis labels."
+                      )
+                    )),
                     min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE
                   )
                 )
@@ -855,7 +873,7 @@ plot_var_summary <- function(qenv,
   }
 
   dev_ggplot2_args <- teal.widgets::ggplot2_args(
-    labs = list(x = teal.data::col_labels(qenv$ANL))
+    labs = list(x = teal.data::col_labels(qenv$ANL, fill = TRUE))
   )
 
   all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
@@ -871,8 +889,8 @@ plot_var_summary <- function(qenv,
           labs +
           ggplot2::theme(axis.text.x = ggplot2::element_text(angle = angle, hjust = 1))
       },
-      ggtheme = as.call(list(call("::", as.name("ggplot2"), as.name(sprintf("theme_%s", ggtheme))))),
-      labs = do.call("labs", all_ggplot2_args$labs),
+      ggtheme = rlang::call2(sprintf("theme_%s", ggtheme), .ns = "ggplot2"),
+      labs = rlang::call2("labs", .ns = "ggplot2", !!!all_ggplot2_args$labs),
       angle = ggplot2_args[["theme"]][["axis.text.x"]][["angle"]]
     )
   }
