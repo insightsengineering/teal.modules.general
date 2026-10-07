@@ -1440,7 +1440,6 @@ describe("ggplot argument changes the plot", {
         session$flushReact()
 
         plot_built <- ggplot2::ggplot_build(plot_r())
-        browser()
         expect_equal(plot_built@plot@theme$text$size, 11)
 
         session$setInputs("font_size" = 20)
