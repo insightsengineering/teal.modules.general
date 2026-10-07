@@ -826,7 +826,6 @@ plot_var_summary <- function(qenv,
         col_label <- attr(ANL[[var]], "label")
         ANL[[var]] <- transformation(ANL[[var]])
         attr(ANL[[var]], "label") <- col_label
-
         plot <- ANL %>%
           ggplot2::ggplot(ggplot2::aes(x = var_name, y = ggplot2::after_stat(count))) +
           scale +
