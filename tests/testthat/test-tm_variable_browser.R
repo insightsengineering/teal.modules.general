@@ -1,4 +1,4 @@
-testthat::describe("tests for create_sparklines exported S3 methods", {
+describe("tests for create_sparklines exported S3 methods", {
   it("creates sparkline for numeric vectors", {
     var <- c(1, 2, 3, 4, 5)
     result <- create_sparklines(var)
@@ -16,8 +16,8 @@ testthat::describe("tests for create_sparklines exported S3 methods", {
   it("creates sparkline for logical vectors", {
     var <- c(TRUE, FALSE, TRUE, FALSE)
     result <- create_sparklines(var)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    expect_type(result, "character")
+    expect_true(nchar(result) > 0)
   })
 
   it("creates sparkline for character vectors", {
@@ -51,128 +51,128 @@ testthat::describe("tests for create_sparklines exported S3 methods", {
   it("handles factors with many levels", {
     var <- factor(rep(1:100, 2))
     result <- create_sparklines(var)
-    testthat::expect_match(result, "&gt; 99 levels")
+    expect_match(result, "&gt; 99 levels")
   })
 
   it("handles factors with no levels", {
     var <- factor(character(0))
     result <- create_sparklines(var)
-    testthat::expect_match(result, "no levels")
+    expect_match(result, "no levels")
   })
 
   it("handles factors with one level", {
     var <- factor(rep("A", 10))
     result <- create_sparklines(var)
-    testthat::expect_match(result, "one level")
+    expect_match(result, "one level")
   })
 
   it("handles infinite values in numeric vectors", {
     var <- c(1, 2, Inf, 4, 5)
     result <- create_sparklines(var)
-    testthat::expect_match(result, "infinite values")
+    expect_match(result, "infinite values")
   })
 
   it("handles numeric vectors with NA values", {
     var <- c(1, 2, NA, 4, 5, NA, 7, 8)
     result <- create_sparklines(var)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    expect_type(result, "character")
+    expect_true(nchar(result) > 0)
   })
 
   it("handles very large numeric vectors", {
     var <- 1:100001
     result <- create_sparklines(var)
-    testthat::expect_match(result, "Too many rows")
+    expect_match(result, "Too many rows")
   })
 
   it("handles Date vectors with only NA", {
     var <- as.Date(c(NA, NA, NA))
     suppressWarnings(result <- create_sparklines(var))
-    testthat::expect_match(result, "only NA")
+    expect_match(result, "only NA")
   })
 
   it("handles Date vectors with one unique date", {
     var <- as.Date(rep("2020-01-01", 10))
     result <- create_sparklines(var)
     # With only one unique date, bins calculation may result in "only NA" message
-    testthat::expect_match(result, "only NA|one date")
+    expect_match(result, "only NA|one date")
   })
 
   it("handles POSIXct vectors with only NA", {
     var <- as.POSIXct(c(NA, NA, NA))
     suppressWarnings(result <- create_sparklines(var))
-    testthat::expect_match(result, "only NA")
+    expect_match(result, "only NA")
   })
 
   it("handles POSIXct vectors with one unique datetime", {
     var <- as.POSIXct(rep("2020-01-01 12:00:00", 10))
     result <- create_sparklines(var)
     # With only one unique datetime, bins calculation may result in "only NA" message
-    testthat::expect_match(result, "only NA|one date-time")
+    expect_match(result, "only NA|one date-time")
   })
 
   it("handles POSIXlt vectors with only NA", {
     var <- as.POSIXlt(c(NA, NA, NA))
     suppressWarnings(result <- create_sparklines(var))
-    testthat::expect_match(result, "only NA")
+    expect_match(result, "only NA")
   })
 
   it("handles POSIXlt vectors with one unique datetime", {
     var <- as.POSIXlt(rep("2020-01-01 12:00:00", 10))
     result <- create_sparklines(var)
     # With only one unique datetime, bins calculation may result in "only NA" message
-    testthat::expect_match(result, "only NA|one date-time")
+    expect_match(result, "only NA|one date-time")
   })
 
   it("handles unsupported types with default method", {
     var <- list(a = 1, b = 2)
     result <- create_sparklines(var)
-    testthat::expect_match(result, "unsupported variable type")
+    expect_match(result, "unsupported variable type")
   })
 
   it("accepts custom width parameter for numeric", {
     var <- c(1, 2, 3, 4, 5)
     result <- create_sparklines(var, width = 200)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    expect_type(result, "character")
+    expect_true(nchar(result) > 0)
   })
 
   it("accepts custom width parameter for factor", {
     var <- factor(c("A", "B", "A", "B", "C"))
     result <- create_sparklines(var, width = 200)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    expect_type(result, "character")
+    expect_true(nchar(result) > 0)
   })
 
   it("accepts custom bar_spacing parameter for factor", {
     var <- factor(c("A", "B", "A", "B", "C"))
     result <- create_sparklines(var, bar_spacing = 10)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    expect_type(result, "character")
+    expect_true(nchar(result) > 0)
   })
 
   it("accepts custom bar_width parameter for factor", {
     var <- factor(c("A", "B", "A", "B", "C"))
     result <- create_sparklines(var, bar_width = 30)
-    testthat::expect_type(result, "character")
-    testthat::expect_true(nchar(result) > 0)
+    expect_type(result, "character")
+    expect_true(nchar(result) > 0)
   })
 })
 
 
-testthat::describe("tests for module creation", {
+describe("tests for module creation", {
   it("creates a teal_module object", {
-    testthat::expect_s3_class(tm_variable_browser(), "teal_module")
+    expect_s3_class(tm_variable_browser(), "teal_module")
   })
 
   it("uses non default datanames", {
-    testthat::expect_s3_class(
+    expect_s3_class(
       tm_variable_browser(datanames = "my-dataset"), "teal_module"
     )
   })
 
   it("uses non parent_datanames", {
-    testthat::expect_s3_class(
+    expect_s3_class(
       tm_variable_browser(parent_dataname = "my-parent_dataset"), "teal_module"
     )
   })
@@ -180,19 +180,19 @@ testthat::describe("tests for module creation", {
   it("creates a teal_module object with pre_output", {
     pre_output <- shiny::actionButton("pre_output", "My pre output")
     default_mod <- tm_variable_browser()
-    testthat::expect_null(default_mod$ui_args$pre_output)
+    expect_null(default_mod$ui_args$pre_output)
 
     pre_output_mod <- tm_variable_browser(pre_output = pre_output)
-    testthat::expect_equal(pre_output_mod$ui_args$pre_output, pre_output)
+    expect_equal(pre_output_mod$ui_args$pre_output, pre_output)
   })
 
   it("creates a teal_module object with post_output", {
     post_output <- shiny::actionButton("post_output", "My post output")
     default_mod <- tm_missing_data()
-    testthat::expect_null(default_mod$ui_args$post_output)
+    expect_null(default_mod$ui_args$post_output)
 
     post_output_mod <- tm_variable_browser(post_output = post_output)
-    testthat::expect_equal(post_output_mod$ui_args$post_output, post_output)
+    expect_equal(post_output_mod$ui_args$post_output, post_output)
   })
 
   it("accepts a transformator", {
@@ -217,14 +217,14 @@ testthat::describe("tests for module creation", {
       }
     )
 
-    testthat::expect_s3_class(
+    expect_s3_class(
       tm_variable_browser(transformators = list(teal::teal_transform_module())),
       "teal_module"
     )
   })
 
   it("accepts valid ggplot2_args", {
-    testthat::expect_s3_class(
+    expect_s3_class(
       tm_variable_browser(
         ggplot2_args = teal.widgets::ggplot2_args(
           labs = list(title = "User default title"),
@@ -237,61 +237,61 @@ testthat::describe("tests for module creation", {
 
   it("creates a module that is not bookmarkable", {
     mod <- tm_variable_browser()
-    testthat::expect_null(attr(mod, "teal_bookmarkable"))
+    expect_null(attr(mod, "teal_bookmarkable"))
   })
 
   it("contains the expected class in the ui component", {
     mod <- tm_variable_browser()
-    testthat::expect_s3_class(mod$ui("my-id"), "shiny.tag")
+    expect_s3_class(mod$ui("my-id"), "shiny.tag")
   })
 })
 
-testthat::describe("tests for input validation", {
+describe("tests for input validation", {
   it("fails if label is not a string", {
-    testthat::expect_error(
+    expect_error(
       tm_variable_browser(label = 123),
       "Assertion on 'label' failed"
     )
   })
 
   it("errors for deprecated parameter datasets_selected", {
-    testthat::expect_error(tm_variable_browser(datasets_selected = "my-dataset"))
+    expect_error(tm_variable_browser(datasets_selected = "my-dataset"))
   })
 
   it("fails if datanames is not a character", {
-    testthat::expect_error(
+    expect_error(
       tm_variable_browser(datanames = 123),
       "Assertion on 'datanames' failed"
     )
   })
 
   it("fails if datanames is not a character", {
-    testthat::expect_error(
+    expect_error(
       tm_variable_browser(parent_dataname = 123),
       "Assertion on 'parent_dataname' failed"
     )
   })
 
   it("fails if pre_output is not a valid shiny object", {
-    testthat::expect_error(
+    expect_error(
       tm_variable_browser(pre_output = "wrong type"),
       "Assertion on 'pre_output' failed"
     )
   })
 
   it("fails if post_output is not a valid shiny object", {
-    testthat::expect_error(
+    expect_error(
       tm_variable_browser(post_output = "wrong type"),
       "Assertion on 'post_output' failed"
     )
   })
 
   it("fails if ggplot2_args is not of the valid type", {
-    testthat::expect_error(tm_variable_browser(ggplot2_args = "wrong type"))
+    expect_error(tm_variable_browser(ggplot2_args = "wrong type"))
   })
 })
 
-testthat::describe("tm_variable_browser module server behavior", {
+describe("tm_variable_browser module server behavior", {
   it("server function executes successfully with numeric data", {
     data <- create_test_data(data.frame(
       num_var1 = rnorm(50),
@@ -321,9 +321,9 @@ testthat::describe("tm_variable_browser module server behavior", {
         )
         session$flushReact()
 
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -356,9 +356,9 @@ testthat::describe("tm_variable_browser module server behavior", {
 
         session$flushReact()
 
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -391,9 +391,9 @@ testthat::describe("tm_variable_browser module server behavior", {
         session$flushReact()
 
         # Access outputs to trigger rendering and verify they don't error
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -429,9 +429,9 @@ testthat::describe("tm_variable_browser module server behavior", {
         session$flushReact()
 
         # Access outputs to trigger rendering and verify they don't error
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -472,9 +472,9 @@ testthat::describe("tm_variable_browser module server behavior", {
         })
 
         # Access outputs to trigger rendering and verify they don't error
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -509,9 +509,9 @@ testthat::describe("tm_variable_browser module server behavior", {
 
         session$flushReact()
         # Access outputs to trigger rendering and verify they don't error
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_dataset2)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_dataset2)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -549,9 +549,9 @@ testthat::describe("tm_variable_browser module server behavior", {
 
         session$flushReact()
         # Access outputs to trigger rendering and verify they don't error
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_ADSL)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_ADSL)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -590,9 +590,9 @@ testthat::describe("tm_variable_browser module server behavior", {
         session$flushReact()
 
         # Access outputs to trigger rendering and verify they don't error
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -631,9 +631,9 @@ testthat::describe("tm_variable_browser module server behavior", {
         session$flushReact()
 
         # Access outputs to trigger rendering and verify they don't error
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -677,15 +677,15 @@ testthat::describe("tm_variable_browser module server behavior", {
         session$flushReact()
 
         # Access outputs to trigger rendering and verify they don't error
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
 })
 
-testthat::describe("testServer for data exceptions", {
+describe("testServer for data exceptions", {
   it("server function handles empty dataframes", {
     data <- create_test_data(data.frame())
 
@@ -701,8 +701,8 @@ testthat::describe("testServer for data exceptions", {
         session$setInputs("tabset_panel" = "test_data")
         session$flushReact()
 
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
       }
     )
   })
@@ -738,9 +738,9 @@ testthat::describe("testServer for data exceptions", {
         })
 
 
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -771,9 +771,9 @@ testthat::describe("testServer for data exceptions", {
 
         session$flushReact()
 
-        testthat::expect_no_error(output$ui_variable_browser)
-        testthat::expect_no_error(output$dataset_summary_test_data)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$dataset_summary_test_data)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -807,7 +807,7 @@ testthat::describe("testServer for data exceptions", {
           )
           session$flushReact()
 
-          testthat::expect_no_error(output$variable_summary_table)
+          expect_no_error(output$variable_summary_table)
         }
       }
     )
@@ -841,7 +841,7 @@ testthat::describe("testServer for data exceptions", {
           )
           session$flushReact()
 
-          testthat::expect_no_error(output$variable_summary_table)
+          expect_no_error(output$variable_summary_table)
         }
       }
     )
@@ -875,7 +875,7 @@ testthat::describe("testServer for data exceptions", {
           )
           session$flushReact()
 
-          testthat::expect_no_error(output$variable_summary_table)
+          expect_no_error(output$variable_summary_table)
         }
       }
     )
@@ -915,7 +915,7 @@ testthat::describe("testServer for data exceptions", {
           )
           session$flushReact()
 
-          testthat::expect_no_error(output$variable_summary_table)
+          expect_no_error(output$variable_summary_table)
         }
       }
     )
@@ -950,7 +950,7 @@ testthat::describe("testServer for data exceptions", {
 
         session$flushReact()
 
-        testthat::expect_no_error(output$ui_variable_browser)
+        expect_no_error(output$ui_variable_browser)
       }
     )
   })
@@ -982,7 +982,7 @@ testthat::describe("testServer for data exceptions", {
 
         session$flushReact()
 
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -1015,13 +1015,13 @@ testthat::describe("testServer for data exceptions", {
 
         session$flushReact()
 
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
 })
 
-testthat::describe("UI switches and controls", {
+describe("UI switches and controls", {
   set_shared_inputs <- function(session) {
     session$setInputs(
       "ggplot_theme" = "grey",
@@ -1053,12 +1053,12 @@ testthat::describe("UI switches and controls", {
         # Toggle density display OFF
         session$setInputs("display_density" = FALSE)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
 
         # Toggle density display ON
         session$setInputs("display_density" = TRUE)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -1089,12 +1089,12 @@ testthat::describe("UI switches and controls", {
         # Toggle remove NA OFF
         session$setInputs("remove_NA_hist" = FALSE)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
 
         # Toggle remove NA ON
         session$setInputs("remove_NA_hist" = TRUE)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -1128,13 +1128,13 @@ testthat::describe("UI switches and controls", {
         for (threshold in c(1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5)) {
           session$setInputs("outlier_definition_slider" = threshold)
           session$flushReact()
-          testthat::expect_no_error(output$variable_summary_table)
+          expect_no_error(output$variable_summary_table)
         }
 
         # Disable outlier removal
         session$setInputs("remove_outliers" = FALSE)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -1163,13 +1163,13 @@ testthat::describe("UI switches and controls", {
         # Treat as continuous (numeric_as_factor = FALSE)
         session$setInputs("numeric_as_factor" = FALSE)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
         expect_s3_class(plot_r(), "ggplot")
 
         # Treat as factor (numeric_as_factor = TRUE)
         session$setInputs("numeric_as_factor" = TRUE)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
         # Regression test for #996: factor plot must be produced (was assigned
         # to `p` instead of `plot`, so no visualization was rendered).
         expect_s3_class(plot_r(), "ggplot")
@@ -1179,11 +1179,11 @@ testthat::describe("UI switches and controls", {
         session$flushReact()
         session$setInputs("display_density" = TRUE)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
 
         session$setInputs("display_density" = FALSE)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -1215,17 +1215,17 @@ testthat::describe("UI switches and controls", {
         # Test very discrete (should default to factor)
         session$setInputs("variable_browser_test_data_rows_selected" = 1)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
 
         # Test somewhat discrete (user can toggle)
         session$setInputs("variable_browser_test_data_rows_selected" = 2)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
 
         # Test continuous (no factor option)
         session$setInputs("variable_browser_test_data_rows_selected" = 3)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -1253,8 +1253,8 @@ testthat::describe("UI switches and controls", {
         session$flushReact()
 
         # Should not show remove_NA_hist option for many levels
-        testthat::expect_no_error(output$variable_summary_table)
-        testthat::expect_no_error(output$ui_histogram_display)
+        expect_no_error(output$variable_summary_table)
+        expect_no_error(output$ui_histogram_display)
       }
     )
   })
@@ -1285,8 +1285,8 @@ testthat::describe("UI switches and controls", {
         session$setInputs("variable_browser_dataset1_rows_selected" = 1)
         session$flushReact()
 
-        testthat::expect_no_error(output$dataset_summary_dataset1)
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$dataset_summary_dataset1)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -1317,21 +1317,21 @@ testthat::describe("UI switches and controls", {
           session$setInputs("variable_browser_test_data_rows_selected" = 1)
           session$flushReact()
         })
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
 
         # Test all NA character
         suppressWarnings({
           session$setInputs("variable_browser_test_data_rows_selected" = 2)
           session$flushReact()
         })
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
 
         # Test all NA factor
         suppressWarnings({
           session$setInputs("variable_browser_test_data_rows_selected" = 3)
           session$flushReact()
         })
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -1362,7 +1362,7 @@ testthat::describe("UI switches and controls", {
         session$setInputs("variable_browser_test_data_rows_selected" = 1)
         session$flushReact()
 
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
       }
     )
   })
@@ -1395,12 +1395,12 @@ testthat::describe("UI switches and controls", {
           "display_density" = TRUE
         )
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
 
         # Outliers ON, density OFF
         session$setInputs("display_density" = FALSE)
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
 
         # Outliers OFF, density ON
         session$setInputs(
@@ -1408,7 +1408,121 @@ testthat::describe("UI switches and controls", {
           "display_density" = TRUE
         )
         session$flushReact()
-        testthat::expect_no_error(output$variable_summary_table)
+        expect_no_error(output$variable_summary_table)
+      }
+    )
+  })
+})
+
+describe("ggplot argument changes the plot", {
+  it("with font_size", {
+    # use testserver and ggplot2::ggplot_build to check that font size is applied to the plot
+    data <- create_test_data(data.frame(
+      var1 = rnorm(50)
+    ))
+    mod <- tm_variable_browser(datanames = "test_data")
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "variable_browser_test_data_rows_selected" = 1,
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+        session$flushReact()
+
+        plot_built <- ggplot2::ggplot_build(plot_r())
+        browser()
+        expect_equal(plot_built@plot@theme$text$size, 11)
+
+        session$setInputs("font_size" = 20)
+        session$flushReact()
+
+        # Check that the font size is applied to the plot's theme
+        plot_built <- ggplot2::ggplot_build(plot_r())
+        expect_equal(plot_built@plot@theme$text$size, 20 / 15. * 11)
+      }
+    )
+  })
+
+  it("with theme", {
+    # use testserver and ggplot2::ggplot_build to check that font size is applied to the plot
+    data <- create_test_data(data.frame(
+      var1 = rnorm(50)
+    ))
+    mod <- tm_variable_browser(datanames = "test_data")
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "variable_browser_test_data_rows_selected" = 1,
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+        session$flushReact()
+
+        plot_built <- ggplot2::ggplot_build(plot_r())
+        expect_s7_class(plot_built@plot@theme$panel.border, ggplot2::element_blank)
+
+        session$setInputs("ggplot_theme" = "bw")
+        session$flushReact()
+
+        # Check that the font size is applied to the plot's theme
+        plot_built <- ggplot2::ggplot_build(plot_r())
+        expect_s7_class(plot_built@plot@theme$panel.border, ggplot2::element_rect)
+      }
+    )
+  })
+
+  it("with rotate x axis", {
+    # use testserver and ggplot2::ggplot_build to check that font size is applied to the plot
+    data <- create_test_data(data.frame(
+      var1 = rnorm(50)
+    ))
+    mod <- tm_variable_browser(datanames = "test_data")
+    shiny::testServer(
+      mod$server,
+      args = c(
+        list(id = "test", data = data),
+        mod$server_args
+      ),
+      expr = {
+        session$setInputs("tabset_panel" = "test_data")
+        session$flushReact()
+
+        session$setInputs(
+          "variable_browser_test_data_rows_selected" = 1,
+          "ggplot_theme" = "grey",
+          "font_size" = 15,
+          "label_rotation" = 45
+        )
+        session$flushReact()
+
+        plot_built <- ggplot2::ggplot_build(plot_r())
+        expect_equal(plot_built@plot@theme$axis.text.x@angle, 45)
+
+        session$setInputs("label_rotation" = 90)
+        session$flushReact()
+
+        # Check that the font size is applied to the plot's theme
+        plot_built <- ggplot2::ggplot_build(plot_r())
+        expect_equal(plot_built@plot@theme$axis.text.x@angle, 90)
       }
     )
   })

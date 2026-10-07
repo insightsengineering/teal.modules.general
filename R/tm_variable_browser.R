@@ -177,7 +177,7 @@ ui_variable_browser <- function(id,
                     label = tags$span("font size", bslib::tooltip(
                       trigger = icon("circle-question"),
                       tags$span(
-                        "Change the font size of the plot title. Other text elements will scale accordingly."
+                        "Change the font size of the annotation. Other text elements will scale accordingly."
                       )
                     )),
                     min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
@@ -831,17 +831,9 @@ plot_var_summary <- function(qenv,
       "POSIXct" = "scale_x_datetime",
       "POSIXlt" = "scale_x_datetime"
     )
-
-    transformation <- switch(class(var)[1],
-      "Date" = "as.Date",
-      "POSIXct" = "as.POSIXct",
-      "POSIXlt" = "as.POSIXct"
-    )
-
     within(qenv,
       {
         col_label <- attr(ANL[[var]], "label")
-        ANL[[var]] <- transformation(ANL[[var]])
         attr(ANL[[var]], "label") <- col_label
         plot <- ANL %>%
           ggplot2::ggplot(ggplot2::aes(x = var_name, y = ggplot2::after_stat(count))) +
@@ -851,8 +843,7 @@ plot_var_summary <- function(qenv,
       binwidth = binwidth,
       var = var_name,
       var_name = as.name(var_name),
-      scale = rlang::call2(scale, .ns = "ggplot2"),
-      transformation = as.name(transformation)
+      scale = rlang::call2(scale, .ns = "ggplot2")
     )
   } else {
     qenv_plot <- within(qenv,
