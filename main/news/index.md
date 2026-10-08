@@ -1,12 +1,20 @@
 # Changelog
 
-## teal.modules.general 0.8.0.9002
+## teal.modules.general 0.8.0.9003
 
 #### Bug fixes
 
 - Fixed `tm_missing_data` failing with `dplyr (>= 1.1.0)` when grouping
   by subject, which raised a “must be size 1” error
   ([\#1013](https://github.com/insightsengineering/teal.modules.general/issues/1013)).
+- Fixed “rotate x labels” and “ggplot2 theme” plot settings in
+  `tm_variable_browser` having no effect on the summary plot, which
+  always used
+  [`theme_light()`](https://ggplot2.tidyverse.org/reference/ggtheme.html)
+  with a fixed label angle
+  ([\#1015](https://github.com/insightsengineering/teal.modules.general/issues/1015)).
+- Fixed plot ticks for Date types in `tm_variable_browser` data type
+  ([\#1015](https://github.com/insightsengineering/teal.modules.general/issues/1015)).
 
 ## teal.modules.general 0.8.0
 
