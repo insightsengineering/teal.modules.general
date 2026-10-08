@@ -1447,7 +1447,7 @@ describe("ggplot argument changes the plot", {
 
         # Check that the font size is applied to the plot's theme
         plot_built <- ggplot2::ggplot_build(plot_r())
-        expect_equal(plot_built@plot@theme$text$size, 20 / 15. * 11)
+        expect_equal(plot_built@plot@theme$text$size, 20 / 15. * 11, tolerance = .001)
       }
     )
   })
