@@ -23,9 +23,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-# nolint start: line_length_linter.
 #' @examples
-# nolint end: line_length_linter.
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -52,9 +50,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-# nolint start: line_length_linter.
 #' @examples
-# nolint end: line_length_linter.
 #' # CDISC example data
 #' library(sparkline)
 #' data <- teal_data()
@@ -164,18 +160,36 @@ ui_variable_browser <- function(id,
               bslib::accordion_panel(
                 title = "Plot settings",
                 selectInput(
-                  inputId = ns("ggplot_theme"), label = "ggplot2 theme",
+                  inputId = ns("ggplot_theme"),
+                  label = tags$span("ggplot2 theme", bslib::tooltip(
+                    trigger = icon("circle-question"),
+                    tags$span(
+                      "Change the theme of the plot."
+                    )
+                  )),
                   choices = ggplot_themes,
                   selected = "grey"
                 ),
                 bslib::layout_columns(
                   col_widths = c(6, 6),
                   sliderInput(
-                    inputId = ns("font_size"), label = "font size",
+                    inputId = ns("font_size"),
+                    label = tags$span("font size", bslib::tooltip(
+                      trigger = icon("circle-question"),
+                      tags$span(
+                        "Change the font size of the annotations. Other text elements will scale proportionally."
+                      )
+                    )),
                     min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
                   ),
                   sliderInput(
-                    inputId = ns("label_rotation"), label = "rotate x labels",
+                    inputId = ns("label_rotation"),
+                    label = tags$span("rotate x labels", bslib::tooltip(
+                      trigger = icon("circle-question"),
+                      tags$span(
+                        "Change the rotation of the x axis labels."
+                      )
+                    )),
                     min = 0L, max = 90L, value = 45L, step = 1, ticks = FALSE
                   )
                 )
@@ -488,7 +502,8 @@ srv_variable_browser <- function(id,
         display_density = display_density,
         outlier_definition = outlier_definition,
         records_for_factor = .unique_records_for_factor,
-        ggplot2_args = all_ggplot2_args()
+        ggplot2_args = all_ggplot2_args(),
+        ggtheme = input$ggplot_theme
       )
     })
 
@@ -637,7 +652,8 @@ plot_var_summary <- function(qenv,
                              remove_NA_hist = FALSE, # nolint: object_name.
                              outlier_definition,
                              records_for_factor,
-                             ggplot2_args) {
+                             ggplot2_args,
+                             ggtheme = "light") {
   checkmate::assert_numeric(wrap_character, null.ok = TRUE)
   checkmate::assert_flag(numeric_as_factor)
   checkmate::assert_flag(display_density)
@@ -645,6 +661,7 @@ plot_var_summary <- function(qenv,
   checkmate::assert_number(outlier_definition, lower = 0, finite = TRUE)
   checkmate::assert_integerish(records_for_factor, lower = 0, len = 1, any.missing = FALSE)
   checkmate::assert_class(ggplot2_args, "ggplot2_args")
+  checkmate::assert_string(ggtheme)
 
   var_name <- names(qenv$ANL)
 
@@ -808,20 +825,23 @@ plot_var_summary <- function(qenv,
     }
     qenv_plot
   } else if (inherits(var, "Date") || inherits(var, "POSIXct") || inherits(var, "POSIXlt")) {
-    var_num <- as.numeric(var)
-    binwidth <- get_bin_width(var_num, 1)
-    qenv_plot <- within(qenv,
+    binwidth <- get_bin_width(as.numeric(var), 1)
+    scale <- switch(class(var)[1],
+      "Date" = "scale_x_date",
+      "POSIXct" = "scale_x_datetime",
+      "POSIXlt" = "scale_x_datetime"
+    )
+    within(qenv,
       {
-        col_label <- attr(ANL[[var]], "label")
-        ANL[[var]] <- as.numeric(ANL[[var]])
-        attr(ANL[[var]], "label") <- col_label
         plot <- ANL %>%
           ggplot2::ggplot(ggplot2::aes(x = var_name, y = ggplot2::after_stat(count))) +
+          scale +
           ggplot2::geom_histogram(binwidth = binwidth)
       },
       binwidth = binwidth,
       var = var_name,
-      var_name = as.name(var_name)
+      var_name = as.name(var_name),
+      scale = rlang::call2(scale, .ns = "ggplot2")
     )
   } else {
     qenv_plot <- within(qenv,
@@ -842,7 +862,7 @@ plot_var_summary <- function(qenv,
   }
 
   dev_ggplot2_args <- teal.widgets::ggplot2_args(
-    labs = list(x = teal.data::col_labels(qenv$ANL))
+    labs = list(x = teal.data::col_labels(qenv$ANL, fill = TRUE))
   )
 
   all_ggplot2_args <- teal.widgets::resolve_ggplot2_args(
@@ -851,13 +871,19 @@ plot_var_summary <- function(qenv,
   )
 
   if (inherits(qenv_plot$plot, "ggplot")) {
+    title_size <- as.numeric(ggplot2_args[["theme"]][["text"]][["size"]] %||% 15)
+    base_size <- round(11 * (title_size / 15.), digits = 2)
+
     qenv_plot <- within(qenv_plot,
       {
         plot <- plot +
-          theme_light() +
-          labs
+          ggtheme +
+          labs +
+          ggplot2::theme(axis.text.x = ggplot2::element_text(angle = angle, hjust = 1))
       },
-      labs = do.call("labs", all_ggplot2_args$labs)
+      ggtheme = rlang::call2(sprintf("theme_%s", ggtheme), base_size = base_size, .ns = "ggplot2"),
+      labs = rlang::call2("labs", .ns = "ggplot2", !!!all_ggplot2_args$labs),
+      angle = ggplot2_args[["theme"]][["axis.text.x"]][["angle"]]
     )
   }
   qenv_plot <- within(qenv_plot, {
@@ -1157,11 +1183,10 @@ filter_outliers <- function(var, outlier_definition) {
 #' @param bar_spacing `numeric` the spacing between the bars (in pixels)
 #' @param bar_width `numeric` the width of the bars (in pixels)
 #' @param ... `list` additional options passed to bar plots of `jquery.sparkline`;
-#'                   see [`jquery.sparkline docs`](https://omnipotent.net/jquery.sparkline/#common)
+#' see [`jquery.sparkline docs`](https://omnipotent.net/jquery.sparkline/#common)
 #'
 #' @return Character string containing HTML code of the `sparkline` HTML widget.
 #' @keywords internal
-#' @noRd
 create_sparklines <- function(arr, width = 150, ...) {
   if (all(is.null(arr))) {
     return("")

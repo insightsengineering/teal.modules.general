@@ -344,8 +344,7 @@ srv_rmarkdown <- function(id, data, rmd_content, allow_download, extra_transform
   )
 }
 
-#' @describeIn dot-markdown_internal Custom [tools::toHTML()] method for markdown_internal class that
-#' uses a cached rendering of the module.
+#' @noRd
 #' @inheritParams tools::toHTML
 #' @param ... Arguments that will be passed to the next method.
 #' @exportS3Method tools::toHTML
@@ -357,8 +356,7 @@ toHTML.markdown_internal <- function(x, ...) {
   NextMethod(unclass(x), ...)
 }
 
-#' @describeIn dot-markdown_internal Custom [teal.reporter::to_rmd()] method for `markdown_internal`
-#' object will be used to render the report.
+#' @noRd
 #' @inheritParams teal.reporter::to_rmd
 #' @param figures_dir (`character(1)`) directory where the R markdown auxiliary files will be saved.
 #' @exportS3Method teal.reporter::to_rmd

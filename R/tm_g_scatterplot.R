@@ -60,9 +60,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-# nolint start: line_length_linter.
 #' @examples
-# nolint end: line_length_linter.
 #' # general data example
 #' data <- teal_data()
 #' data <- within(data, {
@@ -128,9 +126,7 @@
 #' library(teal.modules.general)
 #' interactive <- function() TRUE
 #' {{ next_example }}
-# nolint start: line_length_linter.
 #' @examples
-# nolint end: line_length_linter.
 #' # CDISC data example
 #' data <- teal_data()
 #' data <- within(data, {
