@@ -177,7 +177,7 @@ ui_variable_browser <- function(id,
                     label = tags$span("font size", bslib::tooltip(
                       trigger = icon("circle-question"),
                       tags$span(
-                        "Change the font size of the annotation. Other text elements will scale accordingly."
+                        "Change the font size of the annotations. Other text elements will scale proportionally."
                       )
                     )),
                     min = 5L, max = 30L, value = 15L, step = 1L, ticks = FALSE
