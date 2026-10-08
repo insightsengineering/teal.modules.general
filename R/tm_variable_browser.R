@@ -872,7 +872,7 @@ plot_var_summary <- function(qenv,
 
   if (inherits(qenv_plot$plot, "ggplot")) {
     title_size <- as.numeric(ggplot2_args[["theme"]][["text"]][["size"]] %||% 15)
-    base_size <- 11 * (title_size / 15.)
+    base_size <- round(11 * (title_size / 15.), digits = 2)
 
     qenv_plot <- within(qenv_plot,
       {
