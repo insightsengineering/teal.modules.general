@@ -11,7 +11,9 @@ and font size, through UI inputs.
 ``` r
 tm_a_pca(
   label = "Principal Component Analysis",
-  dat,
+  dat = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(choices =
+    tidyselect::where(~is.numeric(.x) && all(!is.na(.x))), selected =
+    tidyselect::everything(), multiple = TRUE)),
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   ggtheme = c("gray", "bw", "linedraw", "light", "dark", "minimal", "classic", "void"),
@@ -36,8 +38,7 @@ tm_a_pca(
 
 - dat:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  specifying columns used to compute PCA.
+  (`picks`) specifying columns used to compute PCA.
 
 - plot_height:
 
@@ -131,8 +132,6 @@ tm_a_pca(
   included in the module output reported. The decorators are applied to
   the respective output objects.
 
-  See section "Decorating Module" below for more details.
-
 ## Value
 
 Object of class `teal_module` to be used in `teal` applications.
@@ -193,12 +192,12 @@ For more information on reporting in `teal`, see the vignettes:
 - example-1:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFWOAMoAgow1raLxuv1DI6SiSgC+3UpoqOMq+eyVAZm6ALxbwbibfEIiY3vHwmIbPVW6pDBJUEmoBGmbt7oKYAAKAMIDX0ONw+sV2+ye4VIzA0SVEqDgBGuHxBmWg8DBX0mwzEM0B72RojgIg0YMJxNIsPhiPxyN0BAKRFoBDEYK0LFoUHoIiS9MZzNESNpyNSYNSwGAmMG2NGXwAurKytSwABZQSMfgyQGfMADUSiKDCUhazGMehQCDfIioY1gLBoOBfbpC25yIHOqpkhHkfhgpWq9WavDa3X6w2Ot3umCG2hRPR7BwuGkuiO0ky0ajkRhggByjgAMnmk06XZtut1aCZdOwVJn1JodDZbBUbqIihBWAN0OxlgASBplXuExg6LrzJRgOayoA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFWOAMoAgow1raLxuv1DI6SiSgC+3UpoqOMq+eyVAZm6ALxbwbibfEIiY3vHwmIbPVW6pDBJUEmoBGmbt7oKYAAKAMIDX0ONw+sV2dzg3AwqFoBAA1qJEIhoXDRNcPiDMqI4DMNmBJsMxDMvnIgejbokoTD4YitCxaFB6Kc0WTbgQCkQYWIwQRcQBZQSMfgyQGfMADUSiKDCUgir6ORj0KAQb5EVCysBYNBwYmkllVLEiDRwfjcvkCoWMdXiyXSnXvFkwaW0KJ6PYOFz2j7dMne26+7rdWgmXTsFTkZiWHQ2WwVG6iIoQVgDdDsZYAEgaZXTWMYOi68yUYDmAF0gA)
 
 - example-2:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY3QKMAABW8QzJsMxJKSyKy6RipGYGnSolQcAIGJJ9Ly7z0ULJizGNOJfNEcBEGmRUplV053N5fJJBFKmwIYmRWhYtCg9BE1w1tC1BwlqvqWUZeWAwBFozFYG+32qPLJACEALJYADSWAAjDTSWAhgBxVx4EPOADygV8AE0yQNLVi5LTU-V5dzyPxke6wN6-YHgyKI8mM5mYJdaPEhfYnK46Xz0xasSZaNRyIxkQA5RxjMXN+optOggYDWgmXTsFTd9SaHQ2Wy1TGicoQVhDdDsf4AEla1X3UsYOn6KyUYGW3yAA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLoDCAEQCSAMreuvxQpFC6cAAesKgiSmERBsZc1AD6SVA2ieGRRroA7rSkABYq7Fm4uiBKurqMcACOgrSN7BBipMTURIyKEPUAgr6BADIpumkYWYiIjCPjSgC+AwBWRCrpANZwrKKVebYF-HAmUMKk6QT8tKIE6Rtbu-vA0PAHWXIAuu5oqJMVCV2HVQnldABeMERXCgvhCESiSG6eHCMQgwb1KYwdJQdKoAjZUFY6HI6aoWgEbaiOYUqkHYkk6FQURwUgMsCLMYKMByWGYplTODcDB06lzLQsWhQeiIjGCkkEUqbAhiZEEEFgABCAFksABpLAARh51R5QwA4q48Loec4APKBXwATR5fMZgtZIg0cH46s1uoNxtNts5Vrd-IVWJgl1o8T0UIcLg9WIGgrTqdBAwGtBMunYKnIzEsOhstlqmNE5QgrCG6HY-wAJK1qk3WYwdP0VkowMtvkA)
 
 ## Examples
 
@@ -216,20 +215,18 @@ app <- init(
   modules = modules(
     tm_a_pca(
       "PCA",
-      dat = data_extract_spec(
-        dataname = "USArrests",
-        select = select_spec(
-          choices = variable_choices(
-            data = data[["USArrests"]], c("Murder", "Assault", "UrbanPop", "Rape")
-          ),
+      dat = teal.picks::picks(
+        datasets("USArrests"),
+        teal.picks::variables(
+          choices = c("Murder", "Assault", "UrbanPop", "Rape"),
           selected = c("Murder", "Assault"),
           multiple = TRUE
-        ),
-        filter = NULL
+        )
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_a_pca
 if (interactive()) {
   shinyApp(app$ui, app$server)
@@ -248,21 +245,18 @@ app <- init(
   data = data,
   modules = modules(
     tm_a_pca(
-      "PCA",
-      dat = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          choices = variable_choices(
-            data = data[["ADSL"]], c("BMRKR1", "AGE", "EOSDY")
-          ),
+      dat = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(
+          choices = c("BMRKR1", "AGE", "EOSDY"),
           selected = c("BMRKR1", "AGE"),
           multiple = TRUE
-        ),
-        filter = NULL
+        )
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_a_pca
 if (interactive()) {
   shinyApp(app$ui, app$server)

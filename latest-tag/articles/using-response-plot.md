@@ -14,11 +14,9 @@ module
 
 ### 1 - Load libraries
 
-``` r
-
-library(teal.modules.general) # used to create the app
-library(dplyr) # used to modify data sets
-```
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`teal.modules.general`](https://insightsengineering.github.io/teal.modules.general/)`)`` ``# used to create the app`\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`dplyr`](https://dplyr.tidyverse.org)`)`` ``# used to modify data sets`
 
 ### 2 - Create data sets
 
@@ -30,23 +28,21 @@ Inside this app 4 datasets will be used
 3.  `ADTTE` A long data set with time to event data
 4.  `ADLB` A long data set with lab measurements for each subject
 
-``` r
-
-data <- teal_data()
-data <- within(data, {
-  ADSL <- teal.data::rADSL %>%
-    mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-  ADRS <- teal.data::rADRS
-  ADTTE <- teal.data::rADTTE
-  ADLB <- teal.data::rADLB %>%
-    mutate(CHGC = as.factor(case_when(
-      CHG < 1 ~ "N",
-      CHG > 1 ~ "P",
-      TRUE ~ "-"
-    )))
-})
-join_keys(data) <- default_cdisc_join_keys[names(data)]
-```
+\
+`data`` ``<-`` ``teal_data``(``)`\
+`data`` ``<-`` `[`within`](https://rdrr.io/r/base/with.html)`(``data``, ``{`\
+`  ``ADSL`` ``<-`` ``teal.data``::`[`rADSL`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)` `[`%>%`](https://magrittr.tidyverse.org/reference/pipe.html)\
+`    `[`mutate`](https://dplyr.tidyverse.org/reference/mutate.html)`(``TRTDUR ``=`` `[`round`](https://rdrr.io/r/base/Round.html)`(`[`as.numeric`](https://rdrr.io/r/base/numeric.html)`(``TRTEDTM`` ``-`` ``TRTSDTM``)``, ``1``)``)`\
+`  ``ADRS`` ``<-`` ``teal.data``::`[`rADRS`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)\
+`  ``ADTTE`` ``<-`` ``teal.data``::`[`rADTTE`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)\
+`  ``ADLB`` ``<-`` ``teal.data``::`[`rADLB`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)` `[`%>%`](https://magrittr.tidyverse.org/reference/pipe.html)\
+`    `[`mutate`](https://dplyr.tidyverse.org/reference/mutate.html)`(``CHGC ``=`` `[`as.factor`](https://rdrr.io/r/base/factor.html)`(`[`case_when`](https://dplyr.tidyverse.org/reference/case-and-replace-when.html)`(`\
+`      ``CHG`` ``<`` ``1`` ``~`` ``"N"``,`\
+`      ``CHG`` ``>`` ``1`` ``~`` ``"P"``,`\
+`      ``TRUE`` ``~`` ``"-"`\
+`    ``)``)``)`\
+`}``)`\
+`join_keys``(``data``)`` ``<-`` ``default_cdisc_join_keys``[`[`names`](https://rdrr.io/r/base/names.html)`(``data``)``]`
 
 ### 3 - Create an `app` variable
 
@@ -58,319 +54,317 @@ The app itself will be constructed by multiple calls of
 [`tm_g_response()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_response.md)
 using different combinations of data sets.
 
-``` r
-
-# configuration for the single wide dataset
-mod1 <- tm_g_response(
-  label = "Single wide dataset",
-  response = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADSL"]], c("BMRKR2", "ITTFL", "BEP01FL")),
-      selected = "BMRKR2",
-      multiple = FALSE,
-      fixed = FALSE
-    )
-  ),
-  x = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADSL"]], c("SEX", "RACE", "COUNTRY", "ARMCD", "STRATA1")),
-      selected = "ARMCD",
-      multiple = FALSE,
-      fixed = FALSE
-    )
-  )
-)
-
-# configuration for the two wide datasets
-mod2 <- tm_g_response(
-  label = "Two wide datasets",
-  response = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADSL"]], c("BMRKR2", "ITTFL", "BEP01FL")),
-      selected = "BMRKR2",
-      multiple = FALSE
-    )
-  ),
-  x = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = c("SEX", "COUNTRY", "RACE", "STRATA1", "ARMCD"),
-      selected = "ARMCD",
-      multiple = FALSE
-    )
-  )
-)
-
-# configuration for the multiple long datasets
-mod3 <- tm_g_response(
-  label = "Multiple long datasets",
-  response = data_extract_spec(
-    dataname = "ADLB",
-    filter = list(
-      filter_spec(
-        label = "Select parameter:",
-        vars = "PARAMCD",
-        choices = levels(data[["ADLB"]]$PARAMCD),
-        selected = levels(data[["ADLB"]]$PARAMCD)[1],
-        multiple = FALSE
-      ),
-      filter_spec(
-        label = "Select visit:",
-        vars = "AVISIT",
-        choices = levels(data[["ADLB"]]$AVISIT),
-        selected = levels(data[["ADLB"]]$AVISIT)[1],
-        multiple = FALSE
-      )
-    ),
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADLB"]], c("BMRKR2", "ITTFL", "BEP01FL")),
-      selected = "BMRKR2",
-      multiple = FALSE
-    )
-  ),
-  x = data_extract_spec(
-    dataname = "ADRS",
-    filter = list(
-      filter_spec(
-        label = "Select parameter:",
-        vars = "PARAMCD",
-        choices = levels(data[["ADRS"]]$PARAMCD),
-        selected = levels(data[["ADRS"]]$PARAMCD)[3],
-        multiple = FALSE
-      ),
-      filter_spec(
-        label = "Select visit:",
-        vars = "AVISIT",
-        choices = levels(data[["ADRS"]]$AVISIT),
-        selected = levels(data[["ADRS"]]$AVISIT)[3],
-        multiple = FALSE
-      )
-    ),
-    select = select_spec(
-      choices = c("AVALC", "ITTFL", "BEP01FL"),
-      selected = "AVALC",
-      multiple = FALSE,
-      fixed = TRUE
-    )
-  ),
-  row_facet = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = "SEX",
-      selected = NULL,
-      multiple = FALSE
-    )
-  ),
-  col_facet = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADSL"]], c("SEX", "COUNTRY")),
-      selected = NULL,
-      multiple = FALSE
-    )
-  )
-)
-
-# configuration for the wide and long dataset
-mod4 <- tm_g_response(
-  label = "Wide and long dataset",
-  response = data_extract_spec(
-    dataname = "ADLB",
-    filter = list(
-      filter_spec(
-        vars = "PARAMCD",
-        choices = levels(data[["ADLB"]]$PARAMCD),
-        selected = levels(data[["ADLB"]]$PARAMCD)[2],
-        multiple = TRUE,
-        label = "Select measurement:"
-      ),
-      filter_spec(
-        vars = "AVISIT",
-        choices = levels(data[["ADLB"]]$AVISIT),
-        selected = levels(data[["ADLB"]]$AVISIT)[2],
-        multiple = TRUE,
-        label = "Select visit:"
-      )
-    ),
-    select = select_spec(
-      choices = variable_choices(data[["ADLB"]], c("BMRKR2", "ITTFL", "BEP01FL")),
-      selected = "BMRKR2",
-      multiple = FALSE,
-      fixed = FALSE,
-      label = "Select variable:"
-    )
-  ),
-  x = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      choices = variable_choices(data[["ADSL"]], c("ARMCD", "BMRKR1", "BMRKR2", "BEP01FL")),
-      selected = "BMRKR2",
-      multiple = FALSE,
-      fixed = FALSE
-    )
-  )
-)
-
-# configuration for the same long datasets (same subsets)
-mod5 <- tm_g_response(
-  label = "Same long datasets (same subsets)",
-  response = data_extract_spec(
-    dataname = "ADRS",
-    select = select_spec(
-      choices = variable_choices(data[["ADRS"]], c("BMRKR2", "AVALC", "BEP01FL")),
-      selected = "AVALC",
-      multiple = FALSE,
-      fixed = TRUE,
-      label = "Select variable:"
-    )
-  ),
-  x = data_extract_spec(
-    dataname = "ADRS",
-    select = select_spec(
-      choices = variable_choices(data[["ADRS"]], c("AVALC", "AGE", "SEX", "ARMCD", "STRATA1")),
-      selected = "ARMCD",
-      multiple = FALSE,
-      fixed = FALSE,
-      label = "Select variable:"
-    )
-  ),
-  row_facet = data_extract_spec(
-    dataname = "ADRS",
-    select = select_spec(
-      choices = "PARAMCD",
-      selected = "PARAMCD",
-      multiple = FALSE,
-      fixed = FALSE,
-      label = "Select variable:"
-    )
-  ),
-  col_facet = data_extract_spec(
-    dataname = "ADRS",
-    select = select_spec(
-      choices = "AVISIT",
-      selected = "AVISIT",
-      multiple = FALSE,
-      fixed = FALSE,
-      label = "Select variable:"
-    )
-  )
-)
-
-# configuration for the same long datasets (different subsets)
-mod6 <- tm_g_response(
-  label = "Same long datasets (different subsets)",
-  response = data_extract_spec(
-    dataname = "ADLB",
-    filter = filter_spec(
-      vars = "PARAMCD",
-      choices = levels(data[["ADLB"]]$PARAMCD),
-      selected = levels(data[["ADLB"]]$PARAMCD)[2],
-      multiple = FALSE,
-      label = "Select lab:"
-    ),
-    select = select_spec(
-      choices = "BMRKR2",
-      selected = "BMRKR2",
-      multiple = FALSE,
-      fixed = TRUE
-    )
-  ),
-  x = data_extract_spec(
-    dataname = "ADLB",
-    filter = filter_spec(
-      vars = "PARAMCD",
-      choices = levels(data[["ADLB"]]$PARAMCD),
-      selected = levels(data[["ADLB"]]$PARAMCD)[1],
-      multiple = FALSE,
-      label = "Select lab:"
-    ),
-    select = select_spec(
-      choices = variable_choices(data[["ADLB"]], c("AVISIT", "PARAMCD", "BEP01FL")),
-      selected = "AVISIT",
-      multiple = FALSE,
-      fixed = TRUE
-    )
-  ),
-  row_facet = data_extract_spec(
-    dataname = "ADLB",
-    filter = list(
-      filter_spec(
-        vars = "PARAMCD",
-        choices = levels(data[["ADLB"]]$PARAMCD),
-        selected = levels(data[["ADLB"]]$PARAMCD)[1],
-        multiple = FALSE,
-        label = "Select lab:"
-      ),
-      filter_spec(
-        vars = "AVISIT",
-        choices = levels(data[["ADLB"]]$AVISIT),
-        selected = levels(data[["ADLB"]]$AVISIT)[1],
-        multiple = FALSE,
-        label = "Select visit:"
-      )
-    ),
-    select = select_spec(
-      choices = variable_choices(data[["ADLB"]], c("SEX", "RACE", "ARMCD")),
-      selected = NULL,
-      multiple = FALSE,
-      fixed = FALSE,
-      label = "Select Variable"
-    )
-  ),
-  col_facet = data_extract_spec(
-    dataname = "ADLB",
-    filter = list(
-      filter_spec(
-        vars = "PARAMCD",
-        choices = levels(data[["ADLB"]]$PARAMCD),
-        selected = levels(data[["ADLB"]]$PARAMCD)[1],
-        multiple = FALSE,
-        label = "Select lab:"
-      ),
-      filter_spec(
-        vars = "AVISIT",
-        choices = levels(data[["ADLB"]]$AVISIT),
-        selected = levels(data[["ADLB"]]$AVISIT)[1],
-        multiple = FALSE,
-        label = "Select visit:"
-      )
-    ),
-    select = select_spec(
-      choices = variable_choices(data[["ADLB"]], c("SEX", "RACE", "ARMCD")),
-      selected = NULL,
-      multiple = FALSE,
-      fixed = FALSE,
-      label = "Select variable:"
-    )
-  )
-)
-
-# initialize the app
-app <- init(
-  data = data,
-  modules = modules(
-    modules(
-      label = "Response plot",
-      mod1,
-      mod2,
-      mod3,
-      mod4,
-      mod5,
-      mod6
-    )
-  )
-)
-```
+\
+`# configuration for the single wide dataset`\
+`mod1`` ``<-`` `[`tm_g_response`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_response.md)`(`\
+`  label ``=`` ``"Single wide dataset"``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"BMRKR2"``, ``"ITTFL"``, ``"BEP01FL"``)``)``,`\
+`      selected ``=`` ``"BMRKR2"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)``,`\
+`  x ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"SEX"``, ``"RACE"``, ``"COUNTRY"``, ``"ARMCD"``, ``"STRATA1"``)``)``,`\
+`      selected ``=`` ``"ARMCD"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the two wide datasets`\
+`mod2`` ``<-`` `[`tm_g_response`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_response.md)`(`\
+`  label ``=`` ``"Two wide datasets"``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"BMRKR2"``, ``"ITTFL"``, ``"BEP01FL"``)``)``,`\
+`      selected ``=`` ``"BMRKR2"``,`\
+`      multiple ``=`` ``FALSE`\
+`    ``)`\
+`  ``)``,`\
+`  x ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"SEX"``, ``"COUNTRY"``, ``"RACE"``, ``"STRATA1"``, ``"ARMCD"``)``,`\
+`      selected ``=`` ``"ARMCD"``,`\
+`      multiple ``=`` ``FALSE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the multiple long datasets`\
+`mod3`` ``<-`` `[`tm_g_response`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_response.md)`(`\
+`  label ``=`` ``"Multiple long datasets"``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`      ``filter_spec``(`\
+`        label ``=`` ``"Select parameter:"``,`\
+`        vars ``=`` ``"PARAMCD"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``1``]``,`\
+`        multiple ``=`` ``FALSE`\
+`      ``)``,`\
+`      ``filter_spec``(`\
+`        label ``=`` ``"Select visit:"``,`\
+`        vars ``=`` ``"AVISIT"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``[``1``]``,`\
+`        multiple ``=`` ``FALSE`\
+`      ``)`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADLB"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"BMRKR2"``, ``"ITTFL"``, ``"BEP01FL"``)``)``,`\
+`      selected ``=`` ``"BMRKR2"``,`\
+`      multiple ``=`` ``FALSE`\
+`    ``)`\
+`  ``)``,`\
+`  x ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADRS"``,`\
+`    filter ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`      ``filter_spec``(`\
+`        label ``=`` ``"Select parameter:"``,`\
+`        vars ``=`` ``"PARAMCD"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADRS"``]``]``$``PARAMCD``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADRS"``]``]``$``PARAMCD``)``[``3``]``,`\
+`        multiple ``=`` ``FALSE`\
+`      ``)``,`\
+`      ``filter_spec``(`\
+`        label ``=`` ``"Select visit:"``,`\
+`        vars ``=`` ``"AVISIT"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADRS"``]``]``$``AVISIT``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADRS"``]``]``$``AVISIT``)``[``3``]``,`\
+`        multiple ``=`` ``FALSE`\
+`      ``)`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"AVALC"``, ``"ITTFL"``, ``"BEP01FL"``)``,`\
+`      selected ``=`` ``"AVALC"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``TRUE`\
+`    ``)`\
+`  ``)``,`\
+`  row_facet ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``"SEX"``,`\
+`      selected ``=`` ``NULL``,`\
+`      multiple ``=`` ``FALSE`\
+`    ``)`\
+`  ``)``,`\
+`  col_facet ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"SEX"``, ``"COUNTRY"``)``)``,`\
+`      selected ``=`` ``NULL``,`\
+`      multiple ``=`` ``FALSE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the wide and long dataset`\
+`mod4`` ``<-`` `[`tm_g_response`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_response.md)`(`\
+`  label ``=`` ``"Wide and long dataset"``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"PARAMCD"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``2``]``,`\
+`        multiple ``=`` ``TRUE``,`\
+`        label ``=`` ``"Select measurement:"`\
+`      ``)``,`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"AVISIT"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``[``2``]``,`\
+`        multiple ``=`` ``TRUE``,`\
+`        label ``=`` ``"Select visit:"`\
+`      ``)`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADLB"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"BMRKR2"``, ``"ITTFL"``, ``"BEP01FL"``)``)``,`\
+`      selected ``=`` ``"BMRKR2"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE``,`\
+`      label ``=`` ``"Select variable:"`\
+`    ``)`\
+`  ``)``,`\
+`  x ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"ARMCD"``, ``"BMRKR1"``, ``"BMRKR2"``, ``"BEP01FL"``)``)``,`\
+`      selected ``=`` ``"BMRKR2"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the same long datasets (same subsets)`\
+`mod5`` ``<-`` `[`tm_g_response`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_response.md)`(`\
+`  label ``=`` ``"Same long datasets (same subsets)"``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADRS"``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADRS"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"BMRKR2"``, ``"AVALC"``, ``"BEP01FL"``)``)``,`\
+`      selected ``=`` ``"AVALC"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``TRUE``,`\
+`      label ``=`` ``"Select variable:"`\
+`    ``)`\
+`  ``)``,`\
+`  x ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADRS"``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADRS"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AVALC"``, ``"AGE"``, ``"SEX"``, ``"ARMCD"``, ``"STRATA1"``)``)``,`\
+`      selected ``=`` ``"ARMCD"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE``,`\
+`      label ``=`` ``"Select variable:"`\
+`    ``)`\
+`  ``)``,`\
+`  row_facet ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADRS"``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``"PARAMCD"``,`\
+`      selected ``=`` ``"PARAMCD"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE``,`\
+`      label ``=`` ``"Select variable:"`\
+`    ``)`\
+`  ``)``,`\
+`  col_facet ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADRS"``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``"AVISIT"``,`\
+`      selected ``=`` ``"AVISIT"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE``,`\
+`      label ``=`` ``"Select variable:"`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the same long datasets (different subsets)`\
+`mod6`` ``<-`` `[`tm_g_response`](https://insightsengineering.github.io/teal.modules.general/reference/tm_g_response.md)`(`\
+`  label ``=`` ``"Same long datasets (different subsets)"``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` ``filter_spec``(`\
+`      vars ``=`` ``"PARAMCD"``,`\
+`      choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``,`\
+`      selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``2``]``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      label ``=`` ``"Select lab:"`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``"BMRKR2"``,`\
+`      selected ``=`` ``"BMRKR2"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``TRUE`\
+`    ``)`\
+`  ``)``,`\
+`  x ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` ``filter_spec``(`\
+`      vars ``=`` ``"PARAMCD"``,`\
+`      choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``,`\
+`      selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``1``]``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      label ``=`` ``"Select lab:"`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADLB"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AVISIT"``, ``"PARAMCD"``, ``"BEP01FL"``)``)``,`\
+`      selected ``=`` ``"AVISIT"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``TRUE`\
+`    ``)`\
+`  ``)``,`\
+`  row_facet ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"PARAMCD"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``1``]``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        label ``=`` ``"Select lab:"`\
+`      ``)``,`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"AVISIT"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``[``1``]``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        label ``=`` ``"Select visit:"`\
+`      ``)`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADLB"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"SEX"``, ``"RACE"``, ``"ARMCD"``)``)``,`\
+`      selected ``=`` ``NULL``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE``,`\
+`      label ``=`` ``"Select Variable"`\
+`    ``)`\
+`  ``)``,`\
+`  col_facet ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"PARAMCD"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``1``]``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        label ``=`` ``"Select lab:"`\
+`      ``)``,`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"AVISIT"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``[``1``]``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        label ``=`` ``"Select visit:"`\
+`      ``)`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADLB"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"SEX"``, ``"RACE"``, ``"ARMCD"``)``)``,`\
+`      selected ``=`` ``NULL``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE``,`\
+`      label ``=`` ``"Select variable:"`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# initialize the app`\
+`app`` ``<-`` ``init``(`\
+`  data ``=`` ``data``,`\
+`  modules ``=`` ``modules``(`\
+`    ``modules``(`\
+`      label ``=`` ``"Response plot"``,`\
+`      ``mod1``,`\
+`      ``mod2``,`\
+`      ``mod3``,`\
+`      ``mod4``,`\
+`      ``mod5``,`\
+`      ``mod6`\
+`    ``)`\
+`  ``)`\
+`)`
 
 ### 4 - Run the app
 
@@ -379,10 +373,8 @@ A simple
 will let you run the app. Note that app is only displayed when running
 this code inside an `R` session.
 
-``` r
-
-shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
-```
+\
+`shinyApp``(``app``$``ui``, ``app``$``server``, options ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``height ``=`` ``1024``, width ``=`` ``1024``)``)`
 
 ### 5 - Try it out in Shinylive
 

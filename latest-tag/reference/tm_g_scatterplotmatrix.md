@@ -234,8 +234,6 @@ app <- init(
     )
   )
 )
-#> Warning: teal.picks::variables(choices = tidyselect::everything(), selected = c("area", "gdp", "debt"), multiple = TRUE, ordered = TRUE)
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 #> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_g_scatterplotmatrix
 #> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
@@ -291,13 +289,7 @@ app <- init(
     )
   )
 )
-#> Warning: teal.picks::variables(choices = tidyselect::everything(), selected = c("AGE", "RACE", "SEX"), multiple = TRUE, ordered = TRUE, fixed = FALSE)
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
-#> Warning: teal.picks::variables(choices = tidyselect::everything(), selected = c("AVAL", "ADY"), multiple = TRUE, ordered = TRUE, fixed = FALSE)
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 #> Initializing tm_g_scatterplotmatrix
-#> Warning: rlang::dots_list(..., .ignore_empty = "trailing")
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 #> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)

@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">teal.modules.general</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
     <div style="width: 140px; margin-left: 0.5rem;"> <small class="nav-text text-muted me-auto">part of</small> <img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/nest.png?raw=true" alt="NEST" style="height: 30px;"><a href="https://pharmaverse.org/" class="external-link"><img src="https://github.com/insightsengineering/hex-stickers/blob/main/PNG/pharmaverse.png?raw=true" alt="pharmaverse" style="height: 28px;"></a> </div>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,8 @@
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/release-candidate">release-candidate</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/latest-tag">latest-tag</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.9.0">v0.9.0</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.9.0-rc1">v0.9.0-rc1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.8.0">v0.8.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0">v0.7.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://insightsengineering.github.io/teal.modules.general/v0.7.0-rc1">v0.7.0-rc1</a>
@@ -104,7 +106,7 @@
 
       <h1>
 <code>teal</code> module: GT Summary table</h1>
-      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.8.0/R/tm_tbl_summary.R" class="external-link"><code>R/tm_tbl_summary.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/insightsengineering/teal.modules.general/blob/v0.9.0/R/tm_tbl_summary.R" class="external-link"><code>R/tm_tbl_summary.R</code></a></small>
       <div class="d-none name"><code>tm_tbl_summary.Rd</code></div>
     </div>
 
@@ -179,7 +181,7 @@ via <code>assign_summary_digits()</code>. See below for details.</p></dd>
 
     <dt><code>type</code></dt>
 <dd><p>(<code><a href="https://www.danieldsjoberg.com/gtsummary/reference/syntax.html" class="external-link">formula-list-selector</a></code>)<br>
-Specifies the summary type. Accepted value are
+Specifies the summary type. Accepted values are
 <code>c("continuous", "continuous2", "categorical", "dichotomous")</code>.
 If not specified, default type is assigned via
 <code>assign_summary_type()</code>. See below for details.</p></dd>
@@ -194,7 +196,12 @@ with this argument. Default is <code>NULL</code>. See below for details.</p></dd
 <dd>
 <p>Arguments dictating how and if missing values are presented:</p>
 <ul>
-<li><p><code>missing</code>: must be one of <code>c("ifany", "no", "always")</code>.</p></li>
+<li><p><code>missing</code>: specifies whether to include a row of missing/<code>NA</code> counts.
+Provide a (<code><a href="https://www.danieldsjoberg.com/gtsummary/reference/syntax.html" class="external-link">formula-list-selector</a></code>) where each variable is
+assigned one of <code>c("ifany", "no", "always")</code> (e.g.
+<code>missing = list(age ~ "always", grade ~ "no")</code> or
+<code>missing = everything() ~ "no"</code>). The default is <code>everything() ~ "ifany"</code>,
+which adds a missing row only for variables that have missing values.</p></li>
 <li><p><code>missing_text</code>: string indicating text shown on missing row. Default is <code>"Unknown"</code>.</p></li>
 <li><p><code>missing_stat</code>: statistic to show on missing row. Default is <code>"{N_miss}"</code>.
 Possible values are <code>N_miss</code>, <code>N_obs</code>, <code>N_nonmiss</code>, <code>p_miss</code>, <code>p_nonmiss</code>.</p></li>
@@ -320,7 +327,7 @@ display.</p>
 
 
 
-<p>The digits argument specifies the the number of digits (or formatting function)
+<p>The digits argument specifies the number of digits (or formatting function)
 statistics are rounded to.</p>
 <p>The values passed can either be a single integer, a vector of integers, a
 function, or a list of functions. If a single integer or function is passed,
@@ -411,10 +418,6 @@ the reporting functionality will be turned on automatically by the <code>teal</c
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Initializing tbl_summary</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>variables(selected = "Plant")</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>variables(selected = c("Type", "Treatment"), multiple = TRUE)</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">shinyApp</span><span class="op">(</span><span class="va">app</span><span class="op">$</span><span class="va">ui</span>, <span class="va">app</span><span class="op">$</span><span class="va">server</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>

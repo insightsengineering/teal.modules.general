@@ -55,53 +55,61 @@ tm_tbl_summary(
 
   `statistic`
 
-  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
-      Specifies summary statistics to display for each variable. The
-      default is
-      `list(all_continuous() ~ "{median} ({p25}, {p75})", all_categorical() ~ "{n} ({p}%)")`.
-      See below for details.
+  : ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
+    Specifies summary statistics to display for each variable. The
+    default is
+    `list(all_continuous() ~ "{median} ({p25}, {p75})", all_categorical() ~ "{n} ({p}%)")`.
+    See below for details.
 
   `digits`
 
-  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
-      Specifies how summary statistics are rounded. Values may be either
-      integer(s) or function(s). If not specified, default formatting is
-      assigned via `assign_summary_digits()`. See below for details.
+  : ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
+    Specifies how summary statistics are rounded. Values may be either
+    integer(s) or function(s). If not specified, default formatting is
+    assigned via `assign_summary_digits()`. See below for details.
 
   `type`
 
-  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
-      Specifies the summary type. Accepted value are
-      `c("continuous", "continuous2", "categorical", "dichotomous")`. If
-      not specified, default type is assigned via
-      `assign_summary_type()`. See below for details.
+  : ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
+    Specifies the summary type. Accepted values are
+    `c("continuous", "continuous2", "categorical", "dichotomous")`. If
+    not specified, default type is assigned via `assign_summary_type()`.
+    See below for details.
 
   `value`
 
-  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
-      Specifies the level of a variable to display on a single row. The
-      gtsummary type selectors, e.g. `all_dichotomous()`, cannot be used
-      with this argument. Default is `NULL`. See below for details.
+  : ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
+    Specifies the level of a variable to display on a single row. The
+    gtsummary type selectors, e.g. `all_dichotomous()`, cannot be used
+    with this argument. Default is `NULL`. See below for details.
 
   `missing,missing_text,missing_stat`
 
-  :   Arguments dictating how and if missing values are presented:
+  : Arguments dictating how and if missing values are presented:
 
-      - `missing`: must be one of `c("ifany", "no", "always")`.
+    - `missing`: specifies whether to include a row of missing/`NA`
+      counts. Provide a
+      ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))
+      where each variable is assigned one of
+      `c("ifany", "no", "always")` (e.g.
+      `missing = list(age ~ "always", grade ~ "no")` or
+      `missing = everything() ~ "no"`). The default is
+      `everything() ~ "ifany"`, which adds a missing row only for
+      variables that have missing values.
 
-      - `missing_text`: string indicating text shown on missing row.
-        Default is `"Unknown"`.
+    - `missing_text`: string indicating text shown on missing row.
+      Default is `"Unknown"`.
 
-      - `missing_stat`: statistic to show on missing row. Default is
-        `"{N_miss}"`. Possible values are `N_miss`, `N_obs`,
-        `N_nonmiss`, `p_miss`, `p_nonmiss`.
+    - `missing_stat`: statistic to show on missing row. Default is
+      `"{N_miss}"`. Possible values are `N_miss`, `N_obs`, `N_nonmiss`,
+      `p_miss`, `p_nonmiss`.
 
   `sort`
 
-  :   ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
-      Specifies sorting to perform for categorical variables. Values
-      must be one of `c("alphanumeric", "frequency")`. Default is
-      `all_categorical(FALSE) ~ "alphanumeric"`.
+  : ([`formula-list-selector`](https://www.danieldsjoberg.com/gtsummary/reference/syntax.html))\
+    Specifies sorting to perform for categorical variables. Values must
+    be one of `c("alphanumeric", "frequency")`. Default is
+    `all_categorical(FALSE) ~ "alphanumeric"`.
 
 - col_label:
 
@@ -213,7 +221,7 @@ available to display.
 
 ## digits argument
 
-The digits argument specifies the the number of digits (or formatting
+The digits argument specifies the number of digits (or formatting
 function) statistics are rounded to.
 
 The values passed can either be a single integer, a vector of integers,
@@ -297,10 +305,6 @@ app <- init(
   )
 )
 #> Initializing tbl_summary
-#> Warning: variables(selected = "Plant")
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
-#> Warning: variables(selected = c("Type", "Treatment"), multiple = TRUE)
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }

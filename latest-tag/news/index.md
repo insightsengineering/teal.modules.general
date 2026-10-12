@@ -1,5 +1,25 @@
 # Changelog
 
+## teal.modules.general 0.9.0
+
+CRAN release: 2026-10-10
+
+#### Bug fixes
+
+- Fixed `tm_missing_data` failing with `dplyr (>= 1.1.0)` when grouping
+  by subject, which raised a “must be size 1” error
+  ([\#1013](https://github.com/insightsengineering/teal.modules.general/issues/1013)).
+- Fixed “rotate x labels” and “ggplot2 theme” plot settings in
+  `tm_variable_browser` having no effect on the summary plot, which
+  always used
+  [`theme_light()`](https://ggplot2.tidyverse.org/reference/ggtheme.html)
+  with a fixed label angle
+  ([\#1015](https://github.com/insightsengineering/teal.modules.general/issues/1015)).
+- Fixed plot ticks for Date types in `tm_variable_browser` data type
+  ([\#1015](https://github.com/insightsengineering/teal.modules.general/issues/1015)).
+- Fixed integration tests
+  ([\#1018](https://github.com/insightsengineering/teal.modules.general/issues/1018))
+
 ## teal.modules.general 0.8.0
 
 CRAN release: 2026-08-01
@@ -137,7 +157,7 @@ CRAN release: 2025-08-20
 - Improved the layout and appearance of the app using `bslib`
   components.
 - Fixed deprecation warning for
-  [`tern::stack_grobs`](https://rdrr.io/pkg/tern/man/stack_grobs.html)
+  [`tern::stack_grobs`](https://pharmaverse.github.io/tern/latest-tag/reference/stack_grobs.html)
   in `tm_g_association`
   ([\#903](https://github.com/insightsengineering/teal.modules.general/issues/903)).
 - Allow search feature in `tm_file_viewer`
@@ -350,7 +370,7 @@ CRAN release: 2024-03-05
   [`ggplot2::theme`](https://ggplot2.tidyverse.org/reference/theme.html)
   in plot based modules.
 - Added support for custom arguments for
-  [`rtables::basic_table`](https://rdrr.io/pkg/rtables/man/basic_table.html)
+  [`rtables::basic_table`](https://insightsengineering.github.io/rtables/latest-tag/reference/basic_table.html)
   in `tm_t_crosstable`.
 - Updated `tm_outliers`, `tm_g_scatterplotmatrix`, `tm_g_association`,
   and `tm_t_crosstable` modules to adopt the new

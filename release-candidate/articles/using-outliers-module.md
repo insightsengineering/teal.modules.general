@@ -13,11 +13,9 @@ application using various types of datasets using the outliers module
 
 ### 1 - Load libraries
 
-``` r
-
-library(teal.modules.general) # used to create the app
-library(dplyr) # used to modify data sets
-```
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`teal.modules.general`](https://insightsengineering.github.io/teal.modules.general/)`)`` ``# used to create the app`\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`dplyr`](https://dplyr.tidyverse.org)`)`` ``# used to modify data sets`
 
 ### 2 - Create data sets
 
@@ -28,16 +26,14 @@ Inside this app 3 datasets will be used
     time points of the study
 3.  `ADLB` A long data set with lab measurements for each subject
 
-``` r
-
-data <- teal_data()
-data <- within(data, {
-  ADSL <- teal.data::rADSL
-  ADRS <- teal.data::rADRS
-  ADLB <- teal.data::rADLB
-})
-join_keys(data) <- default_cdisc_join_keys[names(data)]
-```
+\
+`data`` ``<-`` ``teal_data``(``)`\
+`data`` ``<-`` `[`within`](https://rdrr.io/r/base/with.html)`(``data``, ``{`\
+`  ``ADSL`` ``<-`` ``teal.data``::`[`rADSL`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)\
+`  ``ADRS`` ``<-`` ``teal.data``::`[`rADRS`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)\
+`  ``ADLB`` ``<-`` ``teal.data``::`[`rADLB`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)\
+`}``)`\
+`join_keys``(``data``)`` ``<-`` ``default_cdisc_join_keys``[`[`names`](https://rdrr.io/r/base/names.html)`(``data``)``]`
 
 ### 3 - Create an `app` variable
 
@@ -49,140 +45,138 @@ The app itself will be constructed by multiple calls of
 [`tm_outliers()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_outliers.md)
 using different combinations of data sets.
 
-``` r
-
-# configuration for the single wide dataset
-mod1 <- tm_outliers(
-  label = "Single wide dataset",
-  outlier_var = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-      selected = "AGE",
-      fixed = FALSE
-    )
-  ),
-  categorical_var = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variables:",
-      choices = variable_choices(
-        data[["ADSL"]],
-        subset = names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
-      ),
-      selected = "RACE",
-      multiple = FALSE,
-      fixed = FALSE
-    )
-  )
-)
-
-# configuration for the wide and long datasets
-mod2 <- tm_outliers(
-  label = "Wide and long datasets",
-  outlier_var = list(
-    data_extract_spec(
-      dataname = "ADSL",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["ADSL"]], c("AGE", "BMRKR1")),
-        selected = "AGE",
-        fixed = FALSE
-      )
-    ),
-    data_extract_spec(
-      dataname = "ADLB",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["ADLB"]], c("AVAL", "CHG2")),
-        selected = "AVAL",
-        multiple = FALSE,
-        fixed = FALSE
-      )
-    )
-  ),
-  categorical_var =
-    data_extract_spec(
-      dataname = "ADSL",
-      select = select_spec(
-        label = "Select variables:",
-        choices = variable_choices(
-          data[["ADSL"]],
-          subset = names(Filter(isTRUE, sapply(data[["ADSL"]], is.factor)))
-        ),
-        selected = "RACE",
-        multiple = FALSE,
-        fixed = FALSE
-      )
-    )
-)
-
-# configuration for the multiple long datasets
-mod3 <- tm_outliers(
-  label = "Multiple long datasets",
-  outlier_var = list(
-    data_extract_spec(
-      dataname = "ADRS",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["ADRS"]], c("ADY", "EOSDY")),
-        selected = "ADY",
-        fixed = FALSE
-      )
-    ),
-    data_extract_spec(
-      dataname = "ADLB",
-      select = select_spec(
-        label = "Select variable:",
-        choices = variable_choices(data[["ADLB"]], c("AVAL", "CHG2")),
-        selected = "AVAL",
-        multiple = FALSE,
-        fixed = FALSE
-      )
-    )
-  ),
-  categorical_var = list(
-    data_extract_spec(
-      dataname = "ADRS",
-      select = select_spec(
-        label = "Select variables:",
-        choices = variable_choices(data[["ADRS"]], c("ARM", "ACTARM")),
-        selected = "ARM",
-        multiple = FALSE,
-        fixed = FALSE
-      )
-    ),
-    data_extract_spec(
-      dataname = "ADLB",
-      select = select_spec(
-        label = "Select variables:",
-        choices = variable_choices(
-          data[["ADLB"]],
-          subset = names(Filter(isTRUE, sapply(data[["ADLB"]], is.factor)))
-        ),
-        selected = "RACE",
-        multiple = FALSE,
-        fixed = FALSE
-      )
-    )
-  )
-)
-
-# initialize the app
-app <- init(
-  data = data,
-  modules = modules(
-    # tm_outliers ----
-    modules(
-      label = "Outliers module",
-      mod1,
-      mod2,
-      mod3
-    )
-  )
-)
-```
+\
+`# configuration for the single wide dataset`\
+`mod1`` ``<-`` `[`tm_outliers`](https://insightsengineering.github.io/teal.modules.general/reference/tm_outliers.md)`(`\
+`  label ``=`` ``"Single wide dataset"``,`\
+`  outlier_var ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AGE"``, ``"BMRKR1"``)``)``,`\
+`      selected ``=`` ``"AGE"``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)``,`\
+`  categorical_var ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variables:"``,`\
+`      choices ``=`` ``variable_choices``(`\
+`        ``data``[[``"ADSL"``]``]``,`\
+`        subset ``=`` `[`names`](https://rdrr.io/r/base/names.html)`(`[`Filter`](https://rdrr.io/r/base/funprog.html)`(``isTRUE``, `[`sapply`](https://rdrr.io/r/base/lapply.html)`(``data``[[``"ADSL"``]``]``, ``is.factor``)``)``)`\
+`      ``)``,`\
+`      selected ``=`` ``"RACE"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the wide and long datasets`\
+`mod2`` ``<-`` `[`tm_outliers`](https://insightsengineering.github.io/teal.modules.general/reference/tm_outliers.md)`(`\
+`  label ``=`` ``"Wide and long datasets"``,`\
+`  outlier_var ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`    ``data_extract_spec``(`\
+`      dataname ``=`` ``"ADSL"``,`\
+`      select ``=`` ``select_spec``(`\
+`        label ``=`` ``"Select variable:"``,`\
+`        choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AGE"``, ``"BMRKR1"``)``)``,`\
+`        selected ``=`` ``"AGE"``,`\
+`        fixed ``=`` ``FALSE`\
+`      ``)`\
+`    ``)``,`\
+`    ``data_extract_spec``(`\
+`      dataname ``=`` ``"ADLB"``,`\
+`      select ``=`` ``select_spec``(`\
+`        label ``=`` ``"Select variable:"``,`\
+`        choices ``=`` ``variable_choices``(``data``[[``"ADLB"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AVAL"``, ``"CHG2"``)``)``,`\
+`        selected ``=`` ``"AVAL"``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        fixed ``=`` ``FALSE`\
+`      ``)`\
+`    ``)`\
+`  ``)``,`\
+`  categorical_var ``=`\
+`    ``data_extract_spec``(`\
+`      dataname ``=`` ``"ADSL"``,`\
+`      select ``=`` ``select_spec``(`\
+`        label ``=`` ``"Select variables:"``,`\
+`        choices ``=`` ``variable_choices``(`\
+`          ``data``[[``"ADSL"``]``]``,`\
+`          subset ``=`` `[`names`](https://rdrr.io/r/base/names.html)`(`[`Filter`](https://rdrr.io/r/base/funprog.html)`(``isTRUE``, `[`sapply`](https://rdrr.io/r/base/lapply.html)`(``data``[[``"ADSL"``]``]``, ``is.factor``)``)``)`\
+`        ``)``,`\
+`        selected ``=`` ``"RACE"``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        fixed ``=`` ``FALSE`\
+`      ``)`\
+`    ``)`\
+`)`\
+\
+`# configuration for the multiple long datasets`\
+`mod3`` ``<-`` `[`tm_outliers`](https://insightsengineering.github.io/teal.modules.general/reference/tm_outliers.md)`(`\
+`  label ``=`` ``"Multiple long datasets"``,`\
+`  outlier_var ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`    ``data_extract_spec``(`\
+`      dataname ``=`` ``"ADRS"``,`\
+`      select ``=`` ``select_spec``(`\
+`        label ``=`` ``"Select variable:"``,`\
+`        choices ``=`` ``variable_choices``(``data``[[``"ADRS"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"ADY"``, ``"EOSDY"``)``)``,`\
+`        selected ``=`` ``"ADY"``,`\
+`        fixed ``=`` ``FALSE`\
+`      ``)`\
+`    ``)``,`\
+`    ``data_extract_spec``(`\
+`      dataname ``=`` ``"ADLB"``,`\
+`      select ``=`` ``select_spec``(`\
+`        label ``=`` ``"Select variable:"``,`\
+`        choices ``=`` ``variable_choices``(``data``[[``"ADLB"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AVAL"``, ``"CHG2"``)``)``,`\
+`        selected ``=`` ``"AVAL"``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        fixed ``=`` ``FALSE`\
+`      ``)`\
+`    ``)`\
+`  ``)``,`\
+`  categorical_var ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`    ``data_extract_spec``(`\
+`      dataname ``=`` ``"ADRS"``,`\
+`      select ``=`` ``select_spec``(`\
+`        label ``=`` ``"Select variables:"``,`\
+`        choices ``=`` ``variable_choices``(``data``[[``"ADRS"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"ARM"``, ``"ACTARM"``)``)``,`\
+`        selected ``=`` ``"ARM"``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        fixed ``=`` ``FALSE`\
+`      ``)`\
+`    ``)``,`\
+`    ``data_extract_spec``(`\
+`      dataname ``=`` ``"ADLB"``,`\
+`      select ``=`` ``select_spec``(`\
+`        label ``=`` ``"Select variables:"``,`\
+`        choices ``=`` ``variable_choices``(`\
+`          ``data``[[``"ADLB"``]``]``,`\
+`          subset ``=`` `[`names`](https://rdrr.io/r/base/names.html)`(`[`Filter`](https://rdrr.io/r/base/funprog.html)`(``isTRUE``, `[`sapply`](https://rdrr.io/r/base/lapply.html)`(``data``[[``"ADLB"``]``]``, ``is.factor``)``)``)`\
+`        ``)``,`\
+`        selected ``=`` ``"RACE"``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        fixed ``=`` ``FALSE`\
+`      ``)`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# initialize the app`\
+`app`` ``<-`` ``init``(`\
+`  data ``=`` ``data``,`\
+`  modules ``=`` ``modules``(`\
+`    ``# tm_outliers ----`\
+`    ``modules``(`\
+`      label ``=`` ``"Outliers module"``,`\
+`      ``mod1``,`\
+`      ``mod2``,`\
+`      ``mod3`\
+`    ``)`\
+`  ``)`\
+`)`
 
 ### 4 - Run the app
 
@@ -191,10 +185,8 @@ A simple
 will let you run the app. Note that app is only displayed when running
 this code inside an `R` session.
 
-``` r
-
-shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
-```
+\
+`shinyApp``(``app``$``ui``, ``app``$``server``, options ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``height ``=`` ``1024``, width ``=`` ``1024``)``)`
 
 ### 5 - Try it out in Shinylive
 

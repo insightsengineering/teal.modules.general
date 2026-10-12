@@ -108,8 +108,6 @@ tm_missing_data(
   included in the module output reported. The decorators are applied to
   the respective output objects.
 
-  See section "Decorating Module" below for more details.
-
 ## Value
 
 Object of class `teal_module` to be used in `teal` applications.

@@ -10,8 +10,10 @@ visualize residuals, and identify outliers.
 ``` r
 tm_a_regression(
   label = "Regression Analysis",
-  regressor,
+  regressor = teal.picks::picks(teal.picks::datasets(), teal.picks::variables(choices =
+    is.numeric, selected = tidyselect::last_col(), multiple = TRUE)),
   response,
+  outlier,
   plot_height = c(600, 200, 2000),
   plot_width = NULL,
   alpha = c(1, 0, 1),
@@ -37,15 +39,27 @@ tm_a_regression(
 
 - regressor:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Regressor variables from an incoming dataset with filtering and
-  selecting.
+  (`picks`) Specification for regressor variables selection. Created
+  using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html),
+  which allows selecting variables to use as regressors in the
+  regression model. `teal.picks::variables(multiple = TRUE)` allowed.
 
 - response:
 
-  (`data_extract_spec` or `list` of multiple `data_extract_spec`)
-  Response variables from an incoming dataset with filtering and
-  selecting.
+  (`picks`) Specification for response variable selection. Created using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html),
+  which allows selecting a single numeric variable to use as the
+  response in the regression model.
+  `teal.picks::variables(multiple = TRUE)` not allowed.
+
+- outlier:
+
+  (`picks`) Optional specification for outlier label variable selection.
+  Created using
+  [`teal.picks::picks()`](https://insightsengineering.github.io/teal.picks/latest-tag/reference/picks.html),
+  which allows selecting a factor or character variable to label outlier
+  points on the plots.
 
 - plot_height:
 
@@ -168,8 +182,6 @@ tm_a_regression(
   included in the module output reported. The decorators are applied to
   the respective output objects.
 
-  See section "Decorating Module" below for more details.
-
 ## Value
 
 Object of class `teal_module` to be used in `teal` applications.
@@ -226,12 +238,12 @@ For more information on reporting in `teal`, see the vignettes:
 - example-1:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFUAwgDyAEzxugODSgC+3UpoqCMq+eyVAZm6ALwrwbjLfEIiouu6u8JiSz1VuqQwSVBJNRI1oqJWEGcXF9RQ9HD+GwpgWDgDzEzxI-2253ej1QJFEeg2qSS4VIzA0SVEqDgBDe7wuqWg8EO-zG4OWuN0cJEGkOlKxpHRmOxZPJuk+31+un+AGUfnTdFoWLQviJEKTISyCAUiLQCGIiWBBKhggBrOBilkXWkaOD8eWKlVqvDM8kwYSaKLw3QAMQAggAZLnOCEaqomWhhHWHBwuY0XbrkuTO3H3R6iTqHRHI1H0jFYnHk-GwS3Eobqlla0g03lo2NM8Xktk-eU8qmZgWMIX0faio353GS6Wyg4bcuVkRJBsy06pYDAFPjMAAXUHZSZhBIBHBnLAdhqQXgZH+ckDvveGc9f3HFjTGtN1HNIi9Tidq4ubo9uo2todrjrVX9uIf9+W3W6tBMunYKnI0e0cBstgVOcohFBArA2ug7CzAAJA0ZQwXCjA6F0kxKGAEyDkAA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokrcQAxLqkQ11XfxQpFC6cAAesKgiSoHBBsZc1AD6sVA2MUEhRroA7rSkABYq7Km4uiBKurqMcACOgrQ17L6ipMTURIyKEFUAwgDyAEzxugODSgC+3UpoqCMq+eyVAZm6ALwrwbjLfEIiouu6u8JiSz1VuqQwSVBJNRI1oqJWEGcXF9RQ9HD+GwpgWDgDzEzxI-2253ej1QJFEeg2iQwqFoBAA1qJEIhkWjRG93hdUnDSLj-mN-nIIfiLojsejMVoWLQvvt2AQCkQUWJDv9BKhgqi4ODdHCRBo4PxuWBefzBWBulSKcsoUDHqJOocaSi6VitSTIfjCXBiUswGS5ZSqZc4Nwkbr6Yzmac2RyCFyNgQTcQLEL-nYakF4GRyWURXAxRK-oQSAQhTBhJoovD7E5nPL8Wmqmnut1aCZdOwVORmJYdDZbBVzqIihBWABBdDsWYAEgaZWbcMYOi6kyUYAmAF0gA)
 
 - example-2:
 
   [Open in
-  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0lA0g0JA1RKIrBB0ZjMdQoPQ4NQkQowFg4ASxMSSPSYRjyYTUCRRHpIZk0tFSMwNGlRKg4AQyeTMZk3vzdPSFqN2SDZbo+SINEitVLLhKpTKNXVKdTaZD6QEafrdFoWLQqSJEGrOSaCCUNgQxHSwAAhACyWAA0lgAIyuk2YvUaOD8X2BkPhyNR5EXWhxRUAMUGowCzg5qdMtCicaRDhc6tl-Q1ckLsvxhNEvSRguFooNkulVfJ8tgiuVI1VeB70ZtOshMc7RtH5LNNN91u1pDtDqdYhdI7dGo9Xp9kPtjEd9BEV09tG9H1ywGAg8WYC+Xyq3bAgwA4q48EqwPmABrs78sEGLxPzkOtZzHZcy0tV8PxTKMYHTTNyycAsILqEwS2g3QczzVxt0xGtqyrIj+n6WgTF0dgVHIDttDgGxbBqDFRDKCBWEGdB2DQVAABIWiqHjeL5RgdD6ZYlDAJYviAA)
+  Shinylive](https://shinylive.io/r/app/#code=NobwRAdghgtgpmAXGKAHVA6ASmANGAYwHsIAXOMpMAGwEsAjAJykYE8AKcqajGIgEwCu1OAGcMAcwpxm1AJQAdCLTIyoBUrQBucAAQAeALS6AZoIgbaJdnN0AVLAFUAokqUBiXQGEAIgEkAZS9dfihSKF04AA9YVBElUPCDYy5qAH1EqBsEsIijXQB3WlIACxV2TNxdECVdXUY4AEdBWgb2CDFSYmoiRkUIOoBBHwCAGWTdVIxMxERGYbGlAF9+gCsiFTSAazhWUQrc23z+OBMoYVI0gn5aUQI09c2dveBoeH3MuQBdN2h0CZUxXYtRCuV0AF5QeFcCC+EIRKIIbo4cIxMCBnVJjA0lA0g0JA1RKIrBB0ZjMdQoPQ4NQkQowFg4ASxMSSPSYRjyYTUCRRHpIVNULQCFtRLMhSL9iDyXVMnzSFKwAtRvS5ByZZjBcLRbMtCxaFSEewCCUNgQxHSwAAhACyWAA0lgAIzs3R8kQaOD8S22h3O1XSzFqwN1fGE0S9JFayXi7VSzkyuVwBXApUjFVgYMJ8nRnWIPWMA30I0ms0WyEEVODADirjwunpAWcAA1XfSsIMvHW1W6aXBPd7IfSa3WqjALrQ4vz7E5nP0NfOgyD+v1aCZdOwVORmJYdDZbDUMaIyhBWIN0Ow0KgACQtKpX698xg6PrLJRgJZfIA)
 
 ## Examples
 
@@ -249,30 +261,20 @@ app <- init(
   modules = modules(
     tm_a_regression(
       label = "Regression",
-      response = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variable:",
-          choices = "uptake",
-          selected = "uptake",
-          multiple = FALSE,
-          fixed = TRUE
-        )
+      response = teal.picks::picks(
+        datasets("CO2"),
+        teal.picks::variables(choices = "uptake", selected = "uptake")
       ),
-      regressor = data_extract_spec(
-        dataname = "CO2",
-        select = select_spec(
-          label = "Select variables:",
-          choices = variable_choices(data[["CO2"]], c("conc", "Treatment")),
-          selected = "conc",
-          multiple = TRUE,
-          fixed = FALSE
-        )
+      regressor = teal.picks::picks(
+        datasets("CO2"),
+        teal.picks::variables(choices = c("conc", "Treatment"), selected = "conc", multiple = TRUE)
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_a_regression
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -290,30 +292,20 @@ app <- init(
   modules = modules(
     tm_a_regression(
       label = "Regression",
-      response = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variable:",
-          choices = "BMRKR1",
-          selected = "BMRKR1",
-          multiple = FALSE,
-          fixed = TRUE
-        )
+      response = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(choices = "BMRKR1", selected = "BMRKR1")
       ),
-      regressor = data_extract_spec(
-        dataname = "ADSL",
-        select = select_spec(
-          label = "Select variables:",
-          choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
-          selected = "AGE",
-          multiple = TRUE,
-          fixed = FALSE
-        )
+      regressor = teal.picks::picks(
+        datasets("ADSL"),
+        teal.picks::variables(choices = c("AGE", "SEX", "RACE"), selected = "AGE", multiple = TRUE)
       )
     )
   )
 )
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 #> Initializing tm_a_regression
+#> Warning: variables has eager choices (character) while datasets has dynamic choices. It is not guaranteed that explicitly defined choices will be a subset of data selected in a previous element.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }

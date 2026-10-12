@@ -14,11 +14,9 @@ module
 
 ### 1 - Load libraries
 
-``` r
-
-library(teal.modules.general) # used to create the app
-library(dplyr) # used to modify data sets
-```
+\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`teal.modules.general`](https://insightsengineering.github.io/teal.modules.general/)`)`` ``# used to create the app`\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`dplyr`](https://dplyr.tidyverse.org)`)`` ``# used to modify data sets`
 
 ### 2 - Create data sets
 
@@ -30,23 +28,21 @@ Inside this app 4 datasets will be used
 3.  `ADTTE` A long data set with time to event data
 4.  `ADLB` A long data set with lab measurements for each subject
 
-``` r
-
-data <- teal_data()
-data <- within(data, {
-  ADSL <- teal.data::rADSL %>%
-    mutate(TRTDUR = round(as.numeric(TRTEDTM - TRTSDTM), 1))
-  ADRS <- teal.data::rADRS
-  ADTTE <- teal.data::rADTTE
-  ADLB <- teal.data::rADLB %>%
-    mutate(CHGC = as.factor(case_when(
-      CHG < 1 ~ "N",
-      CHG > 1 ~ "P",
-      TRUE ~ "-"
-    )))
-})
-join_keys(data) <- default_cdisc_join_keys[names(data)]
-```
+\
+`data`` ``<-`` ``teal_data``(``)`\
+`data`` ``<-`` `[`within`](https://rdrr.io/r/base/with.html)`(``data``, ``{`\
+`  ``ADSL`` ``<-`` ``teal.data``::`[`rADSL`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)` `[`%>%`](https://magrittr.tidyverse.org/reference/pipe.html)\
+`    `[`mutate`](https://dplyr.tidyverse.org/reference/mutate.html)`(``TRTDUR ``=`` `[`round`](https://rdrr.io/r/base/Round.html)`(`[`as.numeric`](https://rdrr.io/r/base/numeric.html)`(``TRTEDTM`` ``-`` ``TRTSDTM``)``, ``1``)``)`\
+`  ``ADRS`` ``<-`` ``teal.data``::`[`rADRS`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)\
+`  ``ADTTE`` ``<-`` ``teal.data``::`[`rADTTE`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)\
+`  ``ADLB`` ``<-`` ``teal.data``::`[`rADLB`](https://insightsengineering.github.io/teal.data/latest-tag/reference/random_cdisc_data.html)` `[`%>%`](https://magrittr.tidyverse.org/reference/pipe.html)\
+`    `[`mutate`](https://dplyr.tidyverse.org/reference/mutate.html)`(``CHGC ``=`` `[`as.factor`](https://rdrr.io/r/base/factor.html)`(`[`case_when`](https://dplyr.tidyverse.org/reference/case-and-replace-when.html)`(`\
+`      ``CHG`` ``<`` ``1`` ``~`` ``"N"``,`\
+`      ``CHG`` ``>`` ``1`` ``~`` ``"P"``,`\
+`      ``TRUE`` ``~`` ``"-"`\
+`    ``)``)``)`\
+`}``)`\
+`join_keys``(``data``)`` ``<-`` ``default_cdisc_join_keys``[`[`names`](https://rdrr.io/r/base/names.html)`(``data``)``]`
 
 ### 3 - Create an `app` variable
 
@@ -58,209 +54,207 @@ The app itself will be constructed by multiple calls of
 [`tm_a_regression()`](https://insightsengineering.github.io/teal.modules.general/reference/tm_a_regression.md)
 using different combinations of data sets.
 
-``` r
-
-# configuration for the single wide dataset
-mod1 <- tm_a_regression(
-  label = "Single wide dataset",
-  response = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2")),
-      selected = "BMRKR1",
-      multiple = FALSE,
-      fixed = FALSE
-    )
-  ),
-  regressor = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variables:",
-      choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
-      selected = "AGE",
-      multiple = TRUE,
-      fixed = FALSE
-    )
-  )
-)
-
-# configuration for the two wide datasets
-mod2 <- tm_a_regression(
-  label = "Two wide datasets",
-  default_plot_type = 2,
-  response = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2")),
-      selected = "BMRKR1",
-      multiple = FALSE,
-      fixed = FALSE
-    )
-  ),
-  regressor = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variables:",
-      choices = variable_choices(data[["ADSL"]], c("AGE", "SEX", "RACE")),
-      selected = c("AGE", "RACE"),
-      multiple = TRUE,
-      fixed = FALSE
-    )
-  )
-)
-
-# configuration for the same long datasets (same subset)
-mod3 <- tm_a_regression(
-  label = "Same long datasets (same subset)",
-  default_plot_type = 2,
-  response = data_extract_spec(
-    dataname = "ADTTE",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADTTE"]], c("AVAL", "CNSR")),
-      selected = "AVAL",
-      multiple = FALSE,
-      fixed = FALSE
-    ),
-    filter = filter_spec(
-      label = "Select parameter:",
-      vars = "PARAMCD",
-      choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
-      selected = "PFS",
-      multiple = FALSE
-    )
-  ),
-  regressor = data_extract_spec(
-    dataname = "ADTTE",
-    select = select_spec(
-      label = "Select variable:",
-      choices = variable_choices(data[["ADTTE"]], c("AGE", "CNSR", "SEX")),
-      selected = c("AGE", "CNSR", "SEX"),
-      multiple = TRUE
-    ),
-    filter = filter_spec(
-      label = "Select parameter:",
-      vars = "PARAMCD",
-      choices = value_choices(data[["ADTTE"]], "PARAMCD", "PARAM"),
-      selected = "PFS",
-      multiple = FALSE
-    )
-  )
-)
-
-# configuration for the wide and long datasets
-mod4 <- tm_a_regression(
-  label = "Wide and long datasets",
-  response = data_extract_spec(
-    dataname = "ADLB",
-    filter = list(
-      filter_spec(
-        vars = "PARAMCD",
-        choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
-        selected = levels(data[["ADLB"]]$PARAMCD)[2],
-        multiple = TRUE,
-        label = "Select measurement:"
-      ),
-      filter_spec(
-        vars = "AVISIT",
-        choices = levels(data[["ADLB"]]$AVISIT),
-        selected = levels(data[["ADLB"]]$AVISIT)[2],
-        multiple = TRUE,
-        label = "Select visit:"
-      )
-    ),
-    select = select_spec(
-      label = "Select variable:",
-      choices = "AVAL",
-      selected = "AVAL",
-      multiple = FALSE,
-      fixed = TRUE
-    )
-  ),
-  regressor = data_extract_spec(
-    dataname = "ADSL",
-    select = select_spec(
-      label = "Select variables:",
-      choices = variable_choices(data[["ADSL"]], c("BMRKR1", "BMRKR2", "AGE")),
-      selected = "AGE",
-      multiple = TRUE,
-      fixed = FALSE
-    )
-  )
-)
-
-# configuration for the same long datasets (different subsets)
-mod5 <- tm_a_regression(
-  label = "Same long datasets (different subsets)",
-  default_plot_type = 2,
-  response = data_extract_spec(
-    dataname = "ADLB",
-    filter = list(
-      filter_spec(
-        vars = "PARAMCD",
-        choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
-        selected = levels(data[["ADLB"]]$PARAMCD)[1],
-        multiple = TRUE,
-        label = "Select lab:"
-      ),
-      filter_spec(
-        vars = "AVISIT",
-        choices = levels(data[["ADLB"]]$AVISIT),
-        selected = levels(data[["ADLB"]]$AVISIT)[1],
-        multiple = TRUE,
-        label = "Select visit:"
-      )
-    ),
-    select = select_spec(
-      choices = "AVAL",
-      selected = "AVAL",
-      multiple = FALSE,
-      fixed = TRUE
-    )
-  ),
-  regressor = data_extract_spec(
-    dataname = "ADLB",
-    filter = list(
-      filter_spec(
-        vars = "PARAMCD",
-        choices = value_choices(data[["ADLB"]], "PARAMCD", "PARAM"),
-        selected = levels(data[["ADLB"]]$PARAMCD)[1],
-        multiple = FALSE,
-        label = "Select labs:"
-      ),
-      filter_spec(
-        vars = "AVISIT",
-        choices = levels(data[["ADLB"]]$AVISIT),
-        selected = levels(data[["ADLB"]]$AVISIT)[1],
-        multiple = FALSE,
-        label = "Select visit:"
-      )
-    ),
-    select = select_spec(
-      choices = variable_choices(data[["ADLB"]], c("AVAL", "AGE", "BMRKR1", "BMRKR2", "SEX", "ARM")),
-      selected = c("AVAL", "BMRKR1"),
-      multiple = TRUE
-    )
-  )
-)
-
-# initialize the app
-app <- init(
-  data = data,
-  modules = modules(
-    modules(
-      label = "Regression plots",
-      mod1,
-      mod2,
-      mod3,
-      mod4,
-      mod5
-    )
-  )
-)
-```
+\
+`# configuration for the single wide dataset`\
+`mod1`` ``<-`` `[`tm_a_regression`](https://insightsengineering.github.io/teal.modules.general/reference/tm_a_regression.md)`(`\
+`  label ``=`` ``"Single wide dataset"``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"BMRKR1"``, ``"BMRKR2"``)``)``,`\
+`      selected ``=`` ``"BMRKR1"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)``,`\
+`  regressor ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variables:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AGE"``, ``"SEX"``, ``"RACE"``)``)``,`\
+`      selected ``=`` ``"AGE"``,`\
+`      multiple ``=`` ``TRUE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the two wide datasets`\
+`mod2`` ``<-`` `[`tm_a_regression`](https://insightsengineering.github.io/teal.modules.general/reference/tm_a_regression.md)`(`\
+`  label ``=`` ``"Two wide datasets"``,`\
+`  default_plot_type ``=`` ``2``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"BMRKR1"``, ``"BMRKR2"``)``)``,`\
+`      selected ``=`` ``"BMRKR1"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)``,`\
+`  regressor ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variables:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AGE"``, ``"SEX"``, ``"RACE"``)``)``,`\
+`      selected ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"AGE"``, ``"RACE"``)``,`\
+`      multiple ``=`` ``TRUE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the same long datasets (same subset)`\
+`mod3`` ``<-`` `[`tm_a_regression`](https://insightsengineering.github.io/teal.modules.general/reference/tm_a_regression.md)`(`\
+`  label ``=`` ``"Same long datasets (same subset)"``,`\
+`  default_plot_type ``=`` ``2``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADTTE"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADTTE"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AVAL"``, ``"CNSR"``)``)``,`\
+`      selected ``=`` ``"AVAL"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)``,`\
+`    filter ``=`` ``filter_spec``(`\
+`      label ``=`` ``"Select parameter:"``,`\
+`      vars ``=`` ``"PARAMCD"``,`\
+`      choices ``=`` ``value_choices``(``data``[[``"ADTTE"``]``]``, ``"PARAMCD"``, ``"PARAM"``)``,`\
+`      selected ``=`` ``"PFS"``,`\
+`      multiple ``=`` ``FALSE`\
+`    ``)`\
+`  ``)``,`\
+`  regressor ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADTTE"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADTTE"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AGE"``, ``"CNSR"``, ``"SEX"``)``)``,`\
+`      selected ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"AGE"``, ``"CNSR"``, ``"SEX"``)``,`\
+`      multiple ``=`` ``TRUE`\
+`    ``)``,`\
+`    filter ``=`` ``filter_spec``(`\
+`      label ``=`` ``"Select parameter:"``,`\
+`      vars ``=`` ``"PARAMCD"``,`\
+`      choices ``=`` ``value_choices``(``data``[[``"ADTTE"``]``]``, ``"PARAMCD"``, ``"PARAM"``)``,`\
+`      selected ``=`` ``"PFS"``,`\
+`      multiple ``=`` ``FALSE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the wide and long datasets`\
+`mod4`` ``<-`` `[`tm_a_regression`](https://insightsengineering.github.io/teal.modules.general/reference/tm_a_regression.md)`(`\
+`  label ``=`` ``"Wide and long datasets"``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"PARAMCD"``,`\
+`        choices ``=`` ``value_choices``(``data``[[``"ADLB"``]``]``, ``"PARAMCD"``, ``"PARAM"``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``2``]``,`\
+`        multiple ``=`` ``TRUE``,`\
+`        label ``=`` ``"Select measurement:"`\
+`      ``)``,`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"AVISIT"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``[``2``]``,`\
+`        multiple ``=`` ``TRUE``,`\
+`        label ``=`` ``"Select visit:"`\
+`      ``)`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variable:"``,`\
+`      choices ``=`` ``"AVAL"``,`\
+`      selected ``=`` ``"AVAL"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``TRUE`\
+`    ``)`\
+`  ``)``,`\
+`  regressor ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADSL"``,`\
+`    select ``=`` ``select_spec``(`\
+`      label ``=`` ``"Select variables:"``,`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADSL"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"BMRKR1"``, ``"BMRKR2"``, ``"AGE"``)``)``,`\
+`      selected ``=`` ``"AGE"``,`\
+`      multiple ``=`` ``TRUE``,`\
+`      fixed ``=`` ``FALSE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# configuration for the same long datasets (different subsets)`\
+`mod5`` ``<-`` `[`tm_a_regression`](https://insightsengineering.github.io/teal.modules.general/reference/tm_a_regression.md)`(`\
+`  label ``=`` ``"Same long datasets (different subsets)"``,`\
+`  default_plot_type ``=`` ``2``,`\
+`  response ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"PARAMCD"``,`\
+`        choices ``=`` ``value_choices``(``data``[[``"ADLB"``]``]``, ``"PARAMCD"``, ``"PARAM"``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``1``]``,`\
+`        multiple ``=`` ``TRUE``,`\
+`        label ``=`` ``"Select lab:"`\
+`      ``)``,`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"AVISIT"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``[``1``]``,`\
+`        multiple ``=`` ``TRUE``,`\
+`        label ``=`` ``"Select visit:"`\
+`      ``)`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``"AVAL"``,`\
+`      selected ``=`` ``"AVAL"``,`\
+`      multiple ``=`` ``FALSE``,`\
+`      fixed ``=`` ``TRUE`\
+`    ``)`\
+`  ``)``,`\
+`  regressor ``=`` ``data_extract_spec``(`\
+`    dataname ``=`` ``"ADLB"``,`\
+`    filter ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"PARAMCD"``,`\
+`        choices ``=`` ``value_choices``(``data``[[``"ADLB"``]``]``, ``"PARAMCD"``, ``"PARAM"``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``PARAMCD``)``[``1``]``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        label ``=`` ``"Select labs:"`\
+`      ``)``,`\
+`      ``filter_spec``(`\
+`        vars ``=`` ``"AVISIT"``,`\
+`        choices ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``,`\
+`        selected ``=`` `[`levels`](https://rdrr.io/r/base/levels.html)`(``data``[[``"ADLB"``]``]``$``AVISIT``)``[``1``]``,`\
+`        multiple ``=`` ``FALSE``,`\
+`        label ``=`` ``"Select visit:"`\
+`      ``)`\
+`    ``)``,`\
+`    select ``=`` ``select_spec``(`\
+`      choices ``=`` ``variable_choices``(``data``[[``"ADLB"``]``]``, `[`c`](https://rdrr.io/r/base/c.html)`(``"AVAL"``, ``"AGE"``, ``"BMRKR1"``, ``"BMRKR2"``, ``"SEX"``, ``"ARM"``)``)``,`\
+`      selected ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"AVAL"``, ``"BMRKR1"``)``,`\
+`      multiple ``=`` ``TRUE`\
+`    ``)`\
+`  ``)`\
+`)`\
+\
+`# initialize the app`\
+`app`` ``<-`` ``init``(`\
+`  data ``=`` ``data``,`\
+`  modules ``=`` ``modules``(`\
+`    ``modules``(`\
+`      label ``=`` ``"Regression plots"``,`\
+`      ``mod1``,`\
+`      ``mod2``,`\
+`      ``mod3``,`\
+`      ``mod4``,`\
+`      ``mod5`\
+`    ``)`\
+`  ``)`\
+`)`
 
 ### 4 - Run the app
 
@@ -269,10 +263,8 @@ A simple
 will let you run the app. Note that app is only displayed when running
 this code inside an `R` session.
 
-``` r
-
-shinyApp(app$ui, app$server, options = list(height = 1024, width = 1024))
-```
+\
+`shinyApp``(``app``$``ui``, ``app``$``server``, options ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``height ``=`` ``1024``, width ``=`` ``1024``)``)`
 
 ### 5 - Try it out in Shinylive
 

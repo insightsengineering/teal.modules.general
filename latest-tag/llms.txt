@@ -61,18 +61,14 @@ examples of `teal` apps with modules from this package.
 
 ## Installation
 
-``` r
-
-install.packages('teal.modules.general')
-```
+\
+[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``'teal.modules.general'``)`
 
 Alternatively, you might want to use the development version.
 
-``` r
-
-# install.packages("pak")
-pak::pak("insightsengineering/teal.modules.general")
-```
+\
+`# install.packages("pak")`\
+`pak``::`[`pak`](https://pak.r-lib.org/reference/pak.html)`(``"insightsengineering/teal.modules.general"``)`
 
 ## Usage
 
