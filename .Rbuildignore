@@ -50,3 +50,5 @@ data-raw/data.R
 ^.revdeprefs\.yaml$
 ^revdep$
 ^\.covrignore$
+^CLAUDE\.md$
+^_AGENTS\.md$
