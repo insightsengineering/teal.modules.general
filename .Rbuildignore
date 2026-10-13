@@ -51,4 +51,4 @@ data-raw/data.R
 ^revdep$
 ^\.covrignore$
 ^CLAUDE\.md$
-^_AGENTS\.md$
+^AGENTS\.md$
