@@ -9,7 +9,7 @@ output:
 params:
   url:  "https://raw.githubusercontent.com/insightsengineering/teal/refs/heads/main/SHARED_AGENTS.md"
 ---
-# teal R Package Development Guide
+# teal.modules.general R Package Development Guide
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

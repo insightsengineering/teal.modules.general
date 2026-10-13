@@ -1,5 +1,5 @@
 
-# teal R Package Development Guide
+# teal.modules.general R Package Development Guide
 
 ## Package Overview
 
