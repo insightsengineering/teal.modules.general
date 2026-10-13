@@ -1,6 +1,6 @@
 # Changelog
 
-## teal.modules.general 0.8.0.9003
+## teal.modules.general 0.9.0.9000
 
 #### Bug fixes
 
@@ -15,6 +15,8 @@
   ([\#1015](https://github.com/insightsengineering/teal.modules.general/issues/1015)).
 - Fixed plot ticks for Date types in `tm_variable_browser` data type
   ([\#1015](https://github.com/insightsengineering/teal.modules.general/issues/1015)).
+- Fixed integration tests
+  ([\#1018](https://github.com/insightsengineering/teal.modules.general/issues/1018))
 
 ## teal.modules.general 0.8.0
 

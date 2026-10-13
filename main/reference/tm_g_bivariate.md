@@ -276,15 +276,7 @@ app <- init(
     )
   )
 )
-#> Warning: teal.picks::variables(selected = "conc")
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 #> Initializing tm_g_bivariate
-#> Warning: teal.picks::variables(selected = "uptake")
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
-#> Warning: teal.picks::variables(selected = "Type")
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
-#> Warning: teal.picks::variables(selected = "Treatment")
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
@@ -319,15 +311,7 @@ app <- init(
     )
   )
 )
-#> Warning: teal.picks::variables(selected = "AGE")
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 #> Initializing tm_g_bivariate
-#> Warning: teal.picks::variables(selected = "SEX")
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
-#> Warning: teal.picks::variables(selected = "ARM")
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
-#> Warning: teal.picks::variables(selected = "COUNTRY")
-#>  - Setting explicit `selected` while `choices` are delayed (set using `tidyselect`) doesn't guarantee that `selected` is a subset of `choices`.
 if (interactive()) {
   shinyApp(app$ui, app$server)
 }
