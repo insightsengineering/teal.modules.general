@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Package Overview
 
-`teal.modules.general` is a package of the `teal` framework that provides modules for general tasks.
+`teal.modules.general` is a package of the `teal` framework that provides analysis and visualization modules for generic tasks.
 
 The most important functions are the module functions that start with `tm_*`.
 
@@ -59,7 +59,7 @@ common_agents_url <- params$url
 common_agents_path <- tempfile()
 download.file(url = common_agents_url, destfile = common_agents_path, quiet = TRUE)
 common_agents_shared <- readLines(common_agents_path)
-# remove a heading line only intented to aovid a markdown lint error
+# remove a heading line only intented to avoid a markdown lint error
 line_to_avoid_lintr <- grep("^# ", common_agents_shared)
 common_agents_shared <- common_agents_shared[-1 * line_to_avoid_lintr]
 cat(common_agents_shared, sep = "\n")
