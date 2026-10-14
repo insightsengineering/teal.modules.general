@@ -4,7 +4,7 @@
 ## Package Overview
 
 `teal.modules.general` is a package of the `teal` framework that
-provides modules for general tasks.
+provides analysis and visualization modules for generic tasks.
 
 The most important functions are the module functions that start with
 `tm_*`.
@@ -16,7 +16,6 @@ apps.
 
 ### Direct dependencies
 
-- **shiny** - Web app generation and isolating framework.
 - **teal** - Provides the framework and helpers to operate with teal
   modules.
 - **teal.code** - Bare code generation and evaluation ensuring
@@ -34,10 +33,22 @@ apps.
 
 ### Supporting Packages
 
+The `teal.modules.general` package uses many package for its modules:
+
+- **DT** - For tables
+- **gtsummary** - For generating tables with **gt**.
+- **tern** - For generating tables with **rtables**.
+- **goftest** - For some statistical methods.
+- **broom** - For nice visualization of statistical methods.
+- **ggrepel**, **ggpp**, **ggExtra** and **ggmisc** for different
+  visualizations helpers for **ggplot2**.
+
 The `teal.modules.general` package is used in examples by:
 
 - **uteals** - Utility package that provides decorators and
   transformators for teal modules.
+- **teal.gallery** - Repository with several example apps that use these
+  modules.
 
 ## Workflows
 
