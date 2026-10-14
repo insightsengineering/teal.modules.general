@@ -1,4 +1,5 @@
 ADaM
+DT
 ElementaryTable
 Hoffmann
 Prebuilt
@@ -10,14 +11,20 @@ datatables
 dropdown
 facetting
 funder
+ggExtra
+ggmisc
 ggmosaic
 ggplot
+ggpp
+ggrepel
+goftest
 gtsummary
 pca
 pre
 qq
 reportable
 rmarkdown
+rtables
 sortable
 tm
 transformators
