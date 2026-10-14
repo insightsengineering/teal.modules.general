@@ -12,7 +12,9 @@ The most important functions are the module functions that start with
 ## Development Context
 
 The main feature of this package is to provide modules that are used in
-apps.
+apps. We have visualization modules (usally start with `tm_g`), others
+that display tables (usually start with `tm_t`) and others than display
+specific results for statistical analysis.
 
 ### Direct dependencies
 
