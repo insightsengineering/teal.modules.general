@@ -28,7 +28,6 @@ The main feature of this package is to provide modules that are used in apps.
 
 ### Direct dependencies
 
-- **shiny** - Web app generation and isolating framework. 
 - **teal** - Provides the framework and helpers to operate with teal modules.
 - **teal.code** - Bare code generation and evaluation ensuring reproducibility.
 - **teal.data** - Data management and relationships between datasets via join_keys.
