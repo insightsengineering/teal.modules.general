@@ -53,7 +53,7 @@ The `teal.modules.general` package uses many package for its modules:
 The `teal.modules.general` package is used in examples by:
 
 - **uteals** - Utility package that provides decorators and transformators for teal modules.
-
+- **teal.gallery** - Repository with several example apps that use these modules.
 
 ## Workflows
 
