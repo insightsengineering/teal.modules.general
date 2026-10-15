@@ -68,8 +68,5 @@ common_agents_url <- params$url
 common_agents_path <- tempfile()
 download.file(url = common_agents_url, destfile = common_agents_path, quiet = TRUE)
 common_agents_shared <- readLines(common_agents_path)
-# remove a heading line only intented to avoid a markdown lint error
-line_to_avoid_lintr <- grep("^# ", common_agents_shared)
-common_agents_shared <- common_agents_shared[-1 * line_to_avoid_lintr]
 cat(common_agents_shared, sep = "\n")
 ```
