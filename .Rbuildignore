@@ -50,3 +50,6 @@ data-raw/data.R
 ^.revdeprefs\.yaml$
 ^revdep$
 ^\.covrignore$
+^CLAUDE\.md$
+^AGENTS\.md$
+^vignettes/_AGENTS\.Rmd$
